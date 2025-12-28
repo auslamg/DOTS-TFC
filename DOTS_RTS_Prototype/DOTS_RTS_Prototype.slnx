@@ -21,11 +21,11 @@
   <Project Path="UnityEngine.TestRunner.csproj" />
   <Project Path="Unity.Burst.csproj" />
   <Project Path="Unity.VisualScripting.Flow.Editor.csproj" />
-  <Project Path="Unity.VisualStudio.Editor.csproj" />
   <Project Path="Unity.InputSystem.csproj" />
-  <Project Path="PPv2URPConverters.csproj" />
+  <Project Path="Unity.VisualStudio.Editor.csproj" />
   <Project Path="Unity.Entities.csproj" />
   <Project Path="Unity.Scenes.csproj" />
+  <Project Path="PPv2URPConverters.csproj" />
   <Project Path="Unity.Entities.Editor.csproj" />
   <Project Path="Unity.Searcher.Editor.csproj" />
   <Project Path="Unity.InternalAPIEngineBridge.002.csproj" />
@@ -68,8 +68,8 @@
   <Project Path="Unity.Entities.UI.csproj" />
   <Project Path="Unity.Transforms.csproj" />
   <Project Path="Unity.Entities.Build.csproj" />
-  <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.CollabProxy.Editor.csproj" />
+  <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.ShaderGraph.Utilities.csproj" />
   <Project Path="Unity.Numerics.Memory.csproj" />
   <Project Path="Unity.VisualScripting.Shared.Editor.csproj" />
