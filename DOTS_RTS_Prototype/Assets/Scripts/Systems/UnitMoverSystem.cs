@@ -1,40 +1,73 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+//TODO: Document: Why partial? Source generation?
 partial struct UnitMoverSystem : ISystem
 {
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        UnitMoverJob unitMoverJob = new UnitMoverJob
+        {
+            deltaTime = SystemAPI.Time.DeltaTime
+        };
+        unitMoverJob.ScheduleParallel();
+
+        //[Deprecated]
+        // Single-thread alternative.
+        /* 
         foreach ((
             RefRW<LocalTransform> localTransform,
-            RefRO<MoveSpeed> moveSpeed,
+            RefRO<UnitMover> unitMover,
             RefRW<PhysicsVelocity> physicsVelocity)
                in SystemAPI.Query<
                 RefRW<LocalTransform>,
-                RefRO<MoveSpeed>,
+                RefRO<UnitMover>,
                 RefRW<PhysicsVelocity>>())
         {
-            //Desired normalized move direction based on target difference
-            float3 targetPosition = MouseWorldPosition.Instance.GetPositionFlat();
-            float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
+            //Desired normalized move direction based on positional difference
+            float3 moveDirection = unitMover.ValueRO.targetPosition - localTransform.ValueRO.Position;
             moveDirection = math.normalize(moveDirection);
 
             //Rotate unit towards move direction
-            float rotationSpeed = 10f;
             localTransform.ValueRW.Rotation =
-                        math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), SystemAPI.Time.DeltaTime * rotationSpeed);
+                        math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), SystemAPI.Time.DeltaTime * unitMover.ValueRO.rotationSpeed);
 
             //Apply linear velocity and clamp angular (safety measure for constraint failures)
-            physicsVelocity.ValueRW.Linear = moveDirection * moveSpeed.ValueRO.value;
+            physicsVelocity.ValueRW.Linear = moveDirection * unitMover.ValueRO.moveSpeed;
             physicsVelocity.ValueRW.Angular = float3.zero;
 
             //Transform movement alternative:
-            //localTransform.ValueRW.Position += moveDirection * moveSpeed.ValueRO.value * SystemAPI.Time.DeltaTime;
+            //localTransform.ValueRW.Position += moveDirection * unitMover.ValueRO.value * SystemAPI.Time.DeltaTime;
         }
+         */
+    }
+}
+
+[BurstCompile]
+public partial struct UnitMoverJob : IJobEntity
+{
+    public float deltaTime;
+    public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
+    {
+        //Desired normalized move direction based on positional difference
+        float3 moveDirection = unitMover.targetPosition - localTransform.Position;
+        moveDirection = math.normalize(moveDirection);
+
+        //Rotate unit towards move direction
+        localTransform.Rotation =
+                    math.slerp(localTransform.Rotation, quaternion.LookRotation(moveDirection, math.up()), deltaTime * unitMover.rotationSpeed);
+
+        //Apply linear velocity and clamp angular (safety measure for constraint failures)
+        physicsVelocity.Linear = moveDirection * unitMover.moveSpeed;
+        physicsVelocity.Angular = float3.zero;
+
+        //Transform movement alternative:
+        //localTransform.ValueRW.Position += moveDirection * unitMover.ValueRO.value * SystemAPI.Time.DeltaTime;
     }
 }

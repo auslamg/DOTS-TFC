@@ -3,6 +3,7 @@ using UnityEngine;
 public class MouseWorldPosition : MonoBehaviour
 {
     public static MouseWorldPosition Instance { get; private set; }
+    public static bool usePhysics = false;
     /// <summary>
     /// Awake() : MonoBehaviour
     /// </summary>
@@ -26,8 +27,17 @@ public class MouseWorldPosition : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Debug.Log(GetPositionFlat());
+            Debug.Log(GetPosition());
         }
+    }
+
+    /// <summary>
+    /// Returns raycasted clicked point of ground.
+    /// Relies on usePhysics bool.
+    /// </summary>
+    public Vector3 GetPosition()
+    {
+        return usePhysics ? GetPositionFlat() : GetPositionPhysics();
     }
 
     /// <summary>
