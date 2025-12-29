@@ -6,9 +6,7 @@ public class UnitMoverAuthoring : MonoBehaviour
 {
     public float moveSpeed;
     public float rotationSpeed;
-
-
-    public class Baker : Baker<UnitMoverAuthoring>
+    public class UnitMoverBaker : Baker<UnitMoverAuthoring>
     {
         public override void Bake(UnitMoverAuthoring authoring)
         {

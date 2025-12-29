@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
+//TODO: Rename to UnitTargetManager if only target is handled.
 public class UnitSelectionManager : MonoBehaviour
 {
     /// <summary>
@@ -14,9 +15,9 @@ public class UnitSelectionManager : MonoBehaviour
         {
             Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
 
-            //Query all entities with the UnitMover component to set their target
+            //Query all entities with the UnitMover and Selected components to set their target
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover>().Build(entityManager);
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected>().Build(entityManager);
 
             //Register entities and components to modify in order to run Set on the original struct
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
