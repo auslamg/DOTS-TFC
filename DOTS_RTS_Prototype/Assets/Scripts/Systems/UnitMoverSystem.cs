@@ -49,6 +49,9 @@ partial struct UnitMoverSystem : ISystem
     }
 }
 
+/// <summary>
+/// Moves a unit towards its target position and adjusts the rotation to match the movement direction.
+/// </summary>
 [BurstCompile]
 public partial struct UnitMoverJob : IJobEntity
 {
@@ -57,6 +60,16 @@ public partial struct UnitMoverJob : IJobEntity
     {
         //Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
+
+        float reachedTargetDistanceSQ = 2f; //TODO: Extract
+        if (math.lengthsq(moveDirection) < reachedTargetDistanceSQ)
+        {
+            //Reached target
+            physicsVelocity.Linear = float3.zero;
+            physicsVelocity.Angular = float3.zero;
+            return;
+        }
+
         moveDirection = math.normalize(moveDirection);
 
         //Rotate unit towards move direction
