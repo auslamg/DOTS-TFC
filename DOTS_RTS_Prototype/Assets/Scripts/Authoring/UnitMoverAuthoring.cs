@@ -6,17 +6,18 @@ public class UnitMoverAuthoring : MonoBehaviour
 {
     public float moveSpeed;
     public float rotationSpeed;
-    public class UnitMoverBaker : Baker<UnitMoverAuthoring>
+}
+
+public class UnitMoverBaker : Baker<UnitMoverAuthoring>
+{
+    public override void Bake(UnitMoverAuthoring authoring)
     {
-        public override void Bake(UnitMoverAuthoring authoring)
+        Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new UnitMover
         {
-            Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new UnitMover
-            {
-                moveSpeed = authoring.moveSpeed,
-                rotationSpeed = authoring.rotationSpeed
-            });
-        }
+            moveSpeed = authoring.moveSpeed,
+            rotationSpeed = authoring.rotationSpeed
+        });
     }
 }
 

@@ -3,19 +3,22 @@ using UnityEngine;
 public class MouseWorldPosition : MonoBehaviour
 {
     public static MouseWorldPosition Instance { get; private set; }
-    public static bool usePhysics = false;
+    [SerializeField] private bool usePhysics = false;
+
     /// <summary>
     /// Awake() : MonoBehaviour
+    /// Used for singleton logic.
     /// </summary>
     void Awake()
     {
+        //Singleton logic
         if (Instance == null)
         {
             Instance = this;
         }
         else
         {
-            Debug.LogError("Multipled instances of singleton found on " + this.gameObject.name);
+            Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
             Destroy(this);
         }
     }
