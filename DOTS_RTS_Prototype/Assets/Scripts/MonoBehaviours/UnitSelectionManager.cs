@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor;
 
 //TODO: Rename to UnitTargetManager if only target is handled.
 public class UnitSelectionManager : MonoBehaviour
@@ -19,6 +20,9 @@ public class UnitSelectionManager : MonoBehaviour
     public event EventHandler OnSelectionAreaEnd;
 
     private Vector2 selectionStartMousePosition;
+
+    [Header("Line formation parameters")]
+    [SerializeField] private float unitOffset = 1.6f;
 
     [Header("Ring formation parameters")]
     [SerializeField] private float ringOffset = 1.6f;
@@ -150,12 +154,19 @@ public class UnitSelectionManager : MonoBehaviour
 
             //Query all entities with the UnitMover and Selected components to set their target
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected>().Build(entityManager);
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().Build(entityManager);
 
             //Register entities and components to modify in order to run Set on the original struct
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
             NativeArray<UnitMover> unitMoverArray = query.ToComponentDataArray<UnitMover>(Allocator.Temp);
-            NativeArray<float3> movePositionArray = GenerateMovePositionArray(targetPosition, entityArray.Length);
+
+
+            //Get average position of all entities queried to send it as start position
+            float3 avgPosition = float3.zero;
+            NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+            avgPosition = AveragePosition(localTransformArray);
+
+            NativeArray<float3> movePositionArray = GenerateMovePositionArray(avgPosition, targetPosition, entityArray.Length);
             for (int i = 0; i < unitMoverArray.Length; i++)
             {
                 //Copy of value, not reference. Setter must use entityManager.SetComponentData()
@@ -172,6 +183,39 @@ public class UnitSelectionManager : MonoBehaviour
             query.CopyFromComponentDataArray(unitMoverArray); //Remove when implementing single-entity instructions
 
         }
+    }
+
+    private static float3 AveragePosition(NativeArray<LocalTransform> localTransformArray)
+    {
+        float3 avgPosition = 0;
+        if (localTransformArray.Length > 1)
+        {
+            float avgX = 0;
+            float avgY = 0;
+            float avgZ = 0;
+
+            for (int i = 0; i < localTransformArray.Length; i++)
+            {
+                avgX += localTransformArray[i].Position.x;
+                avgY += localTransformArray[i].Position.y;
+                avgZ += localTransformArray[i].Position.z;
+            }
+            avgX /= localTransformArray.Length;
+            avgY /= localTransformArray.Length;
+            avgZ /= localTransformArray.Length;
+
+            avgPosition = new float3(avgX, 0, avgZ);
+        }
+        else if (localTransformArray.Length == 1)
+        {
+            avgPosition = localTransformArray[0].Position;
+        }
+        else
+        {
+            throw new InvalidOperationException("Cannot calculate average of zero elements");
+        }
+
+        return avgPosition;
     }
 
     public Rect GetSelectionAreaRect()
@@ -195,7 +239,7 @@ public class UnitSelectionManager : MonoBehaviour
         );
     }
 
-    private NativeArray<float3> GenerateMovePositionArray(float3 targetPosition, int positionCount)
+    private NativeArray<float3> GenerateMovePositionArray(float3 startPosition, float3 targetPosition, int positionCount)
     {
         NativeArray<float3> positionArray = new NativeArray<float3>(positionCount, Allocator.Temp);
         if (positionCount == 0)
@@ -208,18 +252,64 @@ public class UnitSelectionManager : MonoBehaviour
             return positionArray;
         }
 
-        float ringSize = ringOffset;
-        int ring = 0;
+        //TODO: Implement formations
+        /* return CalculateLineFormation(positionArray, startPosition, targetPosition, positionCount); */
+        return CalculateCircleFormation(positionArray, targetPosition, positionCount);
+
+    }
+
+    private NativeArray<float3> CalculateLineFormation(NativeArray<float3> positionArray, float3 startPosition, float3 targetPosition, int positionCount)
+    {
+        float offest = unitOffset;
+        float3 targetDirection = targetPosition - startPosition;
+        int positionIndex = 0;
+
+
+        float angle =
+        math.atan2(math.cross(math.forward(), targetDirection).y, math.dot(math.forward(), targetDirection));
+        Debug.Log("Angle: " + math.degrees(angle));
+
+        while (positionIndex < positionCount)
+        {
+            //Used for offsetting center
+            bool isEvenCount = positionIndex % 2 == 0;
+            //Decide right or left
+            bool isRight = positionIndex % 2 == 0;
+
+            float3 currentTargetVector = math.rotate(quaternion.RotateY(angle), new float3(unitOffset * positionIndex, 0, 0));
+            float3 centerOffset = math.rotate(quaternion.RotateY(angle), new float3(-unitOffset * positionCount / 2, 0, 0));
+
+
+            //Posicion final
+            float3 currentTargetPosition = targetPosition + currentTargetVector + centerOffset;
+
+            positionArray[positionIndex] = currentTargetPosition;
+            positionIndex++;
+
+            //TODO: Refactor into no break use
+            if (positionIndex >= positionCount)
+            {
+                break;
+            }
+        }
+        return positionArray;
+    }
+
+
+    private NativeArray<float3> CalculateCircleFormation(NativeArray<float3> positionArray, float3 targetPosition, int positionCount)
+    {
+        float ringRadius = ringOffset;
+        int ringIndex = 0;
         int positionIndex = 1;
 
         while (positionIndex < positionCount)
         {
-            int ringPositionCount = centerUnits + ring * unitsPerRing;
+            int ringPositionCount = centerUnits + ringIndex * unitsPerRing;
 
             for (int i = 0; i < ringPositionCount; i++)
             {
                 float angle = i * (math.PI2 / ringPositionCount);
-                float3 currentTargetVectorFromCenter = math.rotate(quaternion.RotateY(angle), new float3(ringSize * (ring + 1), 0, 0));
+                float3 currentTargetVectorFromCenter = math.rotate(quaternion.RotateY(angle), new float3(ringRadius * (ringIndex + 1), 0, 0));
                 float3 currentTargetPosition = targetPosition + currentTargetVectorFromCenter;
 
                 positionArray[positionIndex] = currentTargetPosition;
@@ -230,11 +320,13 @@ public class UnitSelectionManager : MonoBehaviour
                 {
                     break;
                 }
-                
+
             }
-            ring++;
+            ringIndex++;
         }
         return positionArray;
-
     }
+
+
+
 }

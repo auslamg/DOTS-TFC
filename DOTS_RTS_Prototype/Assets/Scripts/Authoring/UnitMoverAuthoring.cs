@@ -6,6 +6,7 @@ public class UnitMoverAuthoring : MonoBehaviour
 {
     public float moveSpeed;
     public float rotationSpeed;
+    public float targetReachedDistanceSquared = 2f;
 }
 
 public class UnitMoverBaker : Baker<UnitMoverAuthoring>
@@ -16,7 +17,8 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
         AddComponent(entity, new UnitMover
         {
             moveSpeed = authoring.moveSpeed,
-            rotationSpeed = authoring.rotationSpeed
+            rotationSpeed = authoring.rotationSpeed,
+            targetReachedDistanceSquared = authoring.targetReachedDistanceSquared
         });
     }
 }
@@ -25,6 +27,8 @@ public struct UnitMover : IComponentData
 {
     public float moveSpeed;
     public float rotationSpeed;
+    public float targetReachedDistanceSquared;
+
     public float3 targetPosition;
 }
 

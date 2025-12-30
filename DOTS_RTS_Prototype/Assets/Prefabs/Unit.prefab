@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MoveSpeedAuthoring
   moveSpeed: 10
   rotationSpeed: 10
+  targetReachedDistanceSquared: 0.2
 --- !u!114 &8856217631832574785
 MonoBehaviour:
   m_ObjectHideFlags: 0

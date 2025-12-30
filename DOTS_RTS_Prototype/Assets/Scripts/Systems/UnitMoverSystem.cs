@@ -61,8 +61,8 @@ public partial struct UnitMoverJob : IJobEntity
         //Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
 
-        float reachedTargetDistanceSQ = 2f; //TODO: Extract
-        if (math.lengthsq(moveDirection) < reachedTargetDistanceSQ)
+        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; //REVIEW: Take in account for melee atacks
+        if (math.lengthsq(moveDirection) < targetReachedDistanceSquared)
         {
             //Reached target
             physicsVelocity.Linear = float3.zero;
