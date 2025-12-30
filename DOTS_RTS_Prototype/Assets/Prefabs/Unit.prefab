@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 8856217631832574785}
   - component: {fileID: 7740293143244234447}
   - component: {fileID: 6489530662347955522}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,14 +183,14 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 2.5
   m_Direction: 1
-  m_Center: {x: 0, y: 1.1, z: 0}
+  m_Center: {x: 0, y: 1.25, z: 0}
 --- !u!54 &6489530662347955522
 Rigidbody:
   m_ObjectHideFlags: 0
