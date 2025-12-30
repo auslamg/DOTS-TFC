@@ -252,7 +252,7 @@ public class UnitSelectionManager : MonoBehaviour
             return positionArray;
         }
 
-        //TODO: Implement formations
+        //TODO: Implement formations.
         /* return CalculateLineFormation(positionArray, startPosition, targetPosition, positionCount); */
         return CalculateCircleFormation(positionArray, targetPosition, positionCount);
 
@@ -264,10 +264,10 @@ public class UnitSelectionManager : MonoBehaviour
         float3 targetDirection = targetPosition - startPosition;
         int positionIndex = 0;
 
-
-        float angle =
-        math.atan2(math.cross(math.forward(), targetDirection).y, math.dot(math.forward(), targetDirection));
-        Debug.Log("Angle: " + math.degrees(angle));
+        //Calculate angle for proper orientation
+        float3 directionNormalized = math.normalize(targetDirection);
+        float angle = math.atan2(directionNormalized.x, directionNormalized.z);
+        /* Debug.Log("Angle: " + math.degrees(angle)); */
 
         while (positionIndex < positionCount)
         {
