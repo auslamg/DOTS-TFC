@@ -29,4 +29,7 @@ public struct Selected : IComponentData, IEnableableComponent
 {
     public Entity selectedGizmoEntity;
     public float displayScale;
+
+    public bool onSelected;
+    public bool onDeselected;
 }

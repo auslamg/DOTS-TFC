@@ -69,9 +69,13 @@ public class UnitSelectionManager : MonoBehaviour
             EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected>().Build(entityManager);
 
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+            NativeArray<Selected> selectedArray = query.ToComponentDataArray<Selected>(Allocator.Temp);
             for (int i = 0; i < entityArray.Length; i++)
             {
                 entityManager.SetComponentEnabled<Selected>(entityArray[i], false);
+                Selected selected = selectedArray[i];
+                selected.onDeselected = true;
+                entityManager.SetComponentData(entityArray[i], selected);
             }
 
             //TODO: Extract into SelectSingle() method
@@ -80,7 +84,7 @@ public class UnitSelectionManager : MonoBehaviour
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
             bool isMultipleSelection = selectionAreaSize >= multipleSelectionSizeMinimum;
-            Debug.Log(isMultipleSelection + " " + selectionAreaSize);
+            /* Debug.Log(isMultipleSelection + " " + selectionAreaSize); */
 
             if (isMultipleSelection)
             {
@@ -102,6 +106,9 @@ public class UnitSelectionManager : MonoBehaviour
                     if (selectionAreaRect.Contains(unitScreenPosition))
                     {
                         entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
+                        Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
+                        selected.onSelected = true;
+                        entityManager.SetComponentData(entityArray[i], selected);
                     }
                 }
             }
@@ -137,6 +144,9 @@ public class UnitSelectionManager : MonoBehaviour
                     if (entityManager.HasComponent<Unit>(raycastHit.Entity))
                     {
                         entityManager.SetComponentEnabled<Selected>(raycastHit.Entity, true);
+                        Selected selected = entityManager.GetComponentData<Selected>(raycastHit.Entity);
+                        selected.onSelected = true;
+                        entityManager.SetComponentData(raycastHit.Entity, selected);
                     }
                 }
 
