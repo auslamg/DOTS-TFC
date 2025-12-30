@@ -185,6 +185,9 @@ public class UnitSelectionManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates the average position of all LocalTransform components given.
+    /// </summary>
     private static float3 AveragePosition(NativeArray<LocalTransform> localTransformArray)
     {
         float3 avgPosition = 0;
@@ -218,6 +221,9 @@ public class UnitSelectionManager : MonoBehaviour
         return avgPosition;
     }
 
+    /// <summary>
+    /// Calculates the box-select feature's SelectionAreaRectangle.
+    /// </summary>
     public Rect GetSelectionAreaRect()
     {
         Vector2 selectionEndMousePosition = Input.mousePosition;
@@ -239,6 +245,10 @@ public class UnitSelectionManager : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Calculates the array of individual movement positions for each UnitMober component of a given size.
+    /// TODO: Implement additional formations like Line, Square and Wedge.
+    /// </summary>
     private NativeArray<float3> GenerateMovePositionArray(float3 startPosition, float3 targetPosition, int positionCount)
     {
         NativeArray<float3> positionArray = new NativeArray<float3>(positionCount, Allocator.Temp);
@@ -258,6 +268,9 @@ public class UnitSelectionManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Calculates the array of individual movement positions in a Line formation.
+    /// </summary>
     private NativeArray<float3> CalculateLineFormation(NativeArray<float3> positionArray, float3 startPosition, float3 targetPosition, int positionCount)
     {
         float offest = unitOffset;
@@ -296,6 +309,9 @@ public class UnitSelectionManager : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Calculates the array of individual movement positions in a Cricle formation.
+    /// </summary>
     private NativeArray<float3> CalculateCircleFormation(NativeArray<float3> positionArray, float3 targetPosition, int positionCount)
     {
         float ringRadius = ringOffset;
