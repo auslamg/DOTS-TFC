@@ -170,6 +170,11 @@ public class UnitSelectionManager : MonoBehaviour
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
             NativeArray<UnitMover> unitMoverArray = query.ToComponentDataArray<UnitMover>(Allocator.Temp);
 
+            //No entities = no operations to perform
+            if (entityArray.Length < 1)
+            {
+                return;
+            }
 
             //Get average position of all entities queried to send it as start position
             float3 avgPosition = float3.zero;

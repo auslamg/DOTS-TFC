@@ -99,13 +99,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4618404140319113980}
+  - component: {fileID: 6532467466477002344}
   - component: {fileID: 56818754141239383}
   - component: {fileID: 4299751784424829594}
-  - component: {fileID: 8856217631832574785}
   - component: {fileID: 7740293143244234447}
   - component: {fileID: 6489530662347955522}
   m_Layer: 6
-  m_Name: Unit
+  m_Name: BaseUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -128,6 +128,20 @@ Transform:
   - {fileID: 6893553274419761154}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6532467466477002344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a4d93cebab7eec4ead71dde272c9f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SelectedAuthoring
+  selectedGizmoGameObject: {fileID: 6839834371917816080}
+  displayScale: 2
 --- !u!114 &56818754141239383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,20 +169,6 @@ MonoBehaviour:
   moveSpeed: 10
   rotationSpeed: 10
   targetReachedDistanceSquared: 0.2
---- !u!114 &8856217631832574785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3032814909107480270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a4d93cebab7eec4ead71dde272c9f01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SelectedAuthoring
-  selectedGizmoGameObject: {fileID: 6839834371917816080}
-  displayScale: 2
 --- !u!136 &7740293143244234447
 CapsuleCollider:
   m_ObjectHideFlags: 0

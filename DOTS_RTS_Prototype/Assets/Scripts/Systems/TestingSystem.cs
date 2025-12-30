@@ -11,13 +11,15 @@ partial struct TestingSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        //TestQuery(ref state);        
+        //TestQuerySelected(ref state); 
+        TestQueryFriendly(ref state);
+
     }
 
     /// <summary>
-    /// Used for testing queries on Selected enableable component entities.
+    /// Used for testing queries on Selected component entities.
     /// </summary>
-    private void TestQuery(ref SystemState state)
+    private void TestQuerySelected(ref SystemState state)
     {
         int unitCount = 0;
         foreach ((
@@ -30,6 +32,22 @@ partial struct TestingSystem : ISystem
                 RefRO<UnitMover>,
                 RefRW<PhysicsVelocity>,
                 RefRO<Selected>>())
+        {
+            unitCount++;
+        }
+        Debug.Log("unitCount: " + unitCount);
+    }
+
+    /// <summary>
+    /// Used for testing queries on Friendly component entities.
+    /// </summary>
+    private void TestQueryFriendly(ref SystemState state)
+    {
+        int unitCount = 0;
+        foreach (
+            RefRW<Friendly> friendly
+                in SystemAPI.Query<
+                RefRW<Friendly>>())
         {
             unitCount++;
         }
