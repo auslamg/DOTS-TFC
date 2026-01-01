@@ -3,6 +3,7 @@ using UnityEngine;
 
 class TargetAuthoring : MonoBehaviour
 {
+    public GameObject testTargetGameObject;
 
 }
 
@@ -13,7 +14,7 @@ class TargetBaker : Baker<TargetAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new Target
         {
-
+            targetEntity = GetEntity(authoring.testTargetGameObject, TransformUsageFlags.Dynamic)
         });
     }
 }
