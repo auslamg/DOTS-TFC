@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: targetFaction
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 56818754141239383, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: ownerID
       value: 1
@@ -63,6 +67,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       insertIndex: 4
       addedObject: {fileID: -8077952642277582190}
+    - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      insertIndex: 7
+      addedObject: {fileID: 325613256193888693}
   m_SourcePrefab: {fileID: 100100000, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
 --- !u!1 &8260496261795234366 stripped
 GameObject:
@@ -81,3 +88,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e82ce4f62ed33f4180633598f506469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FriendlyAuthoring
+--- !u!114 &325613256193888693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8260496261795234366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
+  attackFrequency: 0.1

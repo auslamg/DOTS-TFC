@@ -12,7 +12,7 @@ partial struct TestingSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //TestQuerySelected(ref state); 
-        TestQueryFriendly(ref state);
+        //TestQueryFriendly(ref state);
 
     }
 
