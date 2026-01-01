@@ -9,6 +9,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: targetRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: scanFrequency
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: targetFaction
       value: 2
       objectReference: {fileID: 0}
@@ -100,4 +108,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
-  attackFrequency: 0.1
+  attackFrequency: 0.5

@@ -17,20 +17,25 @@ partial struct ShootAttackSystem : ISystem
                 >())
         {
             //FIX: Avoid continue. Maybe labels/goto?
+            //If there is no target, go for next entity
             if (target.ValueRO.targetEntity == Entity.Null)
             {
                 continue;
             }
 
+            //IDEA: Refactor into corroutines
+            //FIX: Avoid continue. Maybe labels/goto?
+            //If there is a target and the attack phase is over, attack and restart phase.
             ShootAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
             if (ShootAttack.ValueRO.attackPhaseTime > 0f) 
             {
                 continue; 
             }
-
             ShootAttack.ValueRW.attackPhaseTime = ShootAttack.ValueRO.attackFrequency;
 
-            Debug.Log("Shoot");
+            RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.targetEntity);
+            int damageAmount = 3;
+            targetHealth.ValueRW.currentHealth -= damageAmount;
         }
     }
 }

@@ -33,7 +33,6 @@ partial struct FindTargetSystem : ISystem
                 continue;
             }
             findTarget.ValueRW.scanPhaseTime = findTarget.ValueRO.scanFrequency;
-            Debug.Log("Scanning target");
 
             distanceHitList.Clear();
 
@@ -44,7 +43,7 @@ partial struct FindTargetSystem : ISystem
                 CollidesWith = 1u << GameAssets.UNITS_LAYER,
                 GroupIndex = 0
             };
-            //Scan areound entity
+            //Scan around entity
             if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.targetRange, ref distanceHitList, collisionFilter))
             {
                 foreach (DistanceHit distanceHit in distanceHitList)
@@ -57,7 +56,6 @@ partial struct FindTargetSystem : ISystem
                     {
                         //Valid target
                         target.ValueRW.targetEntity = distanceHit.Entity;
-                        Debug.Log(distanceHit.Entity);
                         break;
                     }
                 }

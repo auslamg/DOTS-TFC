@@ -6,7 +6,6 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-//TODO: Document: Why partial? Source generation?
 partial struct UnitMoverSystem : ISystem
 {
     [BurstCompile]
