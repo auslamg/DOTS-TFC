@@ -1,7 +1,10 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 
-[UpdateInGroup(typeof(LateSimulationSystemGroup))]
+//TODO: Document extensively
+//For all targetters queried, if the target has been removed or is pending for destruction, set the target to null
+[UpdateInGroup(typeof(LateSimulationSystemGroup), OrderFirst = true)]
 partial struct ResetTargetSystem : ISystem
 {
     [BurstCompile]
@@ -11,9 +14,12 @@ partial struct ResetTargetSystem : ISystem
             RefRW<Target> target in SystemAPI.Query<RefRW<Target>>()
              )
         {
-            if (!SystemAPI.Exists(target.ValueRO.targetEntity))
+            if (target.ValueRO.targetEntity != Entity.Null)
             {
-                target.ValueRW.targetEntity = Entity.Null;
+                if (!SystemAPI.Exists(target.ValueRO.targetEntity) || !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.targetEntity))
+                {
+                    target.ValueRW.targetEntity = Entity.Null;
+                }
             }
         }
     }

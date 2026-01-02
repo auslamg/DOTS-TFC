@@ -202,6 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b4b1fb7c3e8b324ea07acd58f4bf81b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetAuthoring
+  testTargetGameObject: {fileID: 0}
 --- !u!114 &4611505598139493670
 MonoBehaviour:
   m_ObjectHideFlags: 0
