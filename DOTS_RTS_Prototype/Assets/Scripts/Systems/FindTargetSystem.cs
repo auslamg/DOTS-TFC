@@ -18,11 +18,11 @@ partial struct FindTargetSystem : ISystem
         foreach ((
             RefRO<LocalTransform> localTransform,
             RefRW<FindTarget> findTarget,
-            RefRW<Target> target)
+            RefRW<Targetter> targetter)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<FindTarget>,
-                RefRW<Target>>()
+                RefRW<Targetter>>()
              )
         {
             //IDEA: Refactor into corroutines
@@ -55,7 +55,7 @@ partial struct FindTargetSystem : ISystem
                     if (targetUnit.faction == findTarget.ValueRO.targetFaction)
                     {
                         //Valid target
-                        target.ValueRW.targetEntity = distanceHit.Entity;
+                        targetter.ValueRW.targetEntity = distanceHit.Entity;
                         break;
                     }
                 }

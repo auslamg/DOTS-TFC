@@ -12,20 +12,20 @@ partial struct BulletMoverSystem : ISystem
 
         foreach ((RefRW<LocalTransform> localTransform,
                   RefRO<Bullet> bullet,
-                  RefRO<Target> target,
+                  RefRO<Targetter> targetter,
                   Entity entity)
                     in SystemAPI.Query<
                     RefRW<LocalTransform>,
                     RefRO<Bullet>,
-                    RefRO<Target>>().
+                    RefRO<Targetter>>().
                     WithEntityAccess())
         {
-            if (target.ValueRO.targetEntity == Entity.Null)
+            if (targetter.ValueRO.targetEntity == Entity.Null)
             {
                 entityCommandBuffer.DestroyEntity(entity);
             }
 
-            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity);
+            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
 
             float distanceBeforeSquared = math.distancesq(localTransform.ValueRO.Position, targetLocalTransform.Position);
 
@@ -50,7 +50,7 @@ partial struct BulletMoverSystem : ISystem
             if (math.distancesq(localTransform.ValueRO.Position, targetLocalTransform.Position) <= destroyDistanceSquared)
             {
                 //Close enough to damage target
-                RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.targetEntity);
+                RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                 targetHealth.ValueRW.currentHealth -= bullet.ValueRO.damageAmount;
 
                 entityCommandBuffer.DestroyEntity(entity);

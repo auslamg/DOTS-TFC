@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7721686750752798839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5785980750958341896}
+  m_Layer: 6
+  m_Name: BulletSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5785980750958341896
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7721686750752798839}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.264, y: 1.932, z: 1.926}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1775063230344422924}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6392178535785784560
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -70,7 +101,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4618404140319113980, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5785980750958341896}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       insertIndex: 4
@@ -79,6 +113,11 @@ PrefabInstance:
       insertIndex: 7
       addedObject: {fileID: 325613256193888693}
   m_SourcePrefab: {fileID: 100100000, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+--- !u!4 &1775063230344422924 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4618404140319113980, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+  m_PrefabInstance: {fileID: 6392178535785784560}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8260496261795234366 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
@@ -111,3 +150,4 @@ MonoBehaviour:
   attackFrequency: 1.2
   damageAmount: 3
   attackDistance: 10
+  bulletSpawnPointTransform: {fileID: 5785980750958341896}

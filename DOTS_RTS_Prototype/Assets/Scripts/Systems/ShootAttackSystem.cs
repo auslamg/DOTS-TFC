@@ -14,18 +14,18 @@ partial struct ShootAttackSystem : ISystem
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
-            RefRO<Target> target,
+            RefRO<Targetter> targetter,
             RefRW<UnitMover> unitMover)
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<ShootAttack>,
-                RefRO<Target>,
+                RefRO<Targetter>,
                 RefRW<UnitMover>
                 >())
         {
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, go for next entity
-            if (target.ValueRO.targetEntity == Entity.Null)
+            if (targetter.ValueRO.targetEntity == Entity.Null)
             {
                 continue;
             }
@@ -34,7 +34,7 @@ partial struct ShootAttackSystem : ISystem
             //DONE: FIX: Distance checks are only run on attack frequency instead of periodically
             //BUG: Distance checks override movement orders, because they rewrite target
             //If target is too far away to attack, get closer
-            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity);
+            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
             if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shootAttack.ValueRO.attackDistance)
             {
                 //Too far, move closer
@@ -73,13 +73,14 @@ partial struct ShootAttackSystem : ISystem
             targetHealth.ValueRW.currentHealth -= damageAmount; */
 
             Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.bulletPrefabEntity);
-            SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
+            float3 bulletSpawnPoint = localTransform.ValueRO.TransformPoint( shootAttack.ValueRO.bulletSpawnPointLocalPosition);
+            SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnPoint));
 
             RefRW<Bullet> bulletComponent = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
             bulletComponent.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
 
-            RefRW<Target> bulletTarget = SystemAPI.GetComponentRW<Target>(bulletEntity);
-            bulletTarget.ValueRW.targetEntity = target.ValueRO.targetEntity;
+            RefRW<Targetter> bulletTarget = SystemAPI.GetComponentRW<Targetter>(bulletEntity);
+            bulletTarget.ValueRW.targetEntity = targetter.ValueRO.targetEntity;
         }
     }
 }

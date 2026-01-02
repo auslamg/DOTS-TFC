@@ -11,14 +11,14 @@ partial struct ResetTargetSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         foreach (
-            RefRW<Target> target in SystemAPI.Query<RefRW<Target>>()
+            RefRW<Targetter> targetter in SystemAPI.Query<RefRW<Targetter>>()
              )
         {
-            if (target.ValueRO.targetEntity != Entity.Null)
+            if (targetter.ValueRO.targetEntity != Entity.Null)
             {
-                if (!SystemAPI.Exists(target.ValueRO.targetEntity) || !SystemAPI.HasComponent<LocalTransform>(target.ValueRO.targetEntity))
+                if (!SystemAPI.Exists(targetter.ValueRO.targetEntity) || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
                 {
-                    target.ValueRW.targetEntity = Entity.Null;
+                    targetter.ValueRW.targetEntity = Entity.Null;
                 }
             }
         }

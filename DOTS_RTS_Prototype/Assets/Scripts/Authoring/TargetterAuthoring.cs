@@ -1,25 +1,25 @@
 using Unity.Entities;
 using UnityEngine;
 
-class TargetAuthoring : MonoBehaviour
+class TargetterAuthoring : MonoBehaviour
 {
     public GameObject testTargetGameObject;
 
 }
 
-class TargetBaker : Baker<TargetAuthoring>
+class TargetterBaker : Baker<TargetterAuthoring>
 {
-    public override void Bake(TargetAuthoring authoring)
+    public override void Bake(TargetterAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new Target
+        AddComponent(entity, new Targetter
         {
             targetEntity = GetEntity(authoring.testTargetGameObject, TransformUsageFlags.Dynamic)
         });
     }
 }
 
-public struct Target : IComponentData
+public struct Targetter : IComponentData
 {
     public Entity targetEntity;
 }
