@@ -16,6 +16,7 @@ partial struct ResetTargetSystem : ISystem
         {
             if (targetter.ValueRO.targetEntity != Entity.Null)
             {
+                //IDEA: Extract into EntityUtil.Exists() method
                 if (!SystemAPI.Exists(targetter.ValueRO.targetEntity) || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
                 {
                     targetter.ValueRW.targetEntity = Entity.Null;

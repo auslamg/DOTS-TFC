@@ -14,6 +14,7 @@ partial struct FindTargetSystem : ISystem
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
 
+        //Used for registering all available targets
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
         foreach ((
             RefRO<LocalTransform> localTransform,
@@ -50,8 +51,16 @@ partial struct FindTargetSystem : ISystem
                 {
                     //TODO: Refactor into using owner IDs
                     //TODO: Add logic to find the closest target
-                    //FIX: Find alternative to break
+
+                    //FIX: Avoid continue. Maybe labels/goto?
+                    //IDEA: Extract into EntityUtil.Exists() method
+                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                    {
+                        continue;
+                    }
+
                     Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
+                    //FIX: Find alternative to break
                     if (targetUnit.faction == findTarget.ValueRO.targetFaction)
                     {
                         //Valid target

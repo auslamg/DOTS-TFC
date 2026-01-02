@@ -10,7 +10,9 @@ partial struct ShootAttackSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        //Used for prefab instancing
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
@@ -23,9 +25,10 @@ partial struct ShootAttackSystem : ISystem
                 RefRW<UnitMover>
                 >())
         {
+            //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, go for next entity
-            if (targetter.ValueRO.targetEntity == Entity.Null)
+            if (targetter.ValueRO.targetEntity == Entity.Null || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
             {
                 continue;
             }
