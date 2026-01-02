@@ -61,7 +61,7 @@ public partial struct UnitMoverJob : IJobEntity
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
 
         float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; //REVIEW: Take in account for melee atacks
-        if (math.lengthsq(moveDirection) < targetReachedDistanceSquared)
+        if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
             //Reached target
             physicsVelocity.Linear = float3.zero;

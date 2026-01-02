@@ -20,9 +20,13 @@ partial struct BulletMoverSystem : ISystem
                     RefRO<Targetter>>().
                     WithEntityAccess())
         {
-            if (targetter.ValueRO.targetEntity == Entity.Null)
+            //IDEA: Extract into EntityUtil.Exists() method
+            //FIX: Avoid continue. Maybe labels/goto?
+            //If there is no target, destroy this and go for next entity
+            if (targetter.ValueRO.targetEntity == Entity.Null || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
             {
                 entityCommandBuffer.DestroyEntity(entity);
+                continue;
             }
 
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
@@ -54,6 +58,7 @@ partial struct BulletMoverSystem : ISystem
                 //Close enough to damage target
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                 targetHealth.ValueRW.currentHealth -= bullet.ValueRO.damageAmount;
+                targetHealth.ValueRW.onHealthChanged = true;
 
                 entityCommandBuffer.DestroyEntity(entity);
             }

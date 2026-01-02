@@ -15,7 +15,8 @@ class HealthBaker : Baker<HealthAuthoring>
         AddComponent(entity, new Health
         {
             currentHealth = authoring.currentHealth,
-            maxHealth = authoring.maxHealth
+            maxHealth = authoring.maxHealth,
+            onHealthChanged = true
         });
     }
 }
@@ -24,4 +25,5 @@ public struct Health : IComponentData
 {
     public int currentHealth;
     public int maxHealth;
+    public bool onHealthChanged;
 }

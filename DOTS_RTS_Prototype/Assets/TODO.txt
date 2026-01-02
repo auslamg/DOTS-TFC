@@ -2,3 +2,4 @@
 - Fix unit selection rect scaling with screen size
 Optimize render resolution
 - https://www.youtube.com/shorts/eYke6tpAdws
+- Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization

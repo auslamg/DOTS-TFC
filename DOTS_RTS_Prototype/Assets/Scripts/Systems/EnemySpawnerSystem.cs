@@ -9,6 +9,9 @@ partial struct EnemySpawnerSystem : ISystem
     {
         //Used for prefab instancing
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        //TODO Why?
+        EntityCommandBuffer entityCommandBuffer = 
+            SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach ((RefRO<LocalTransform> localTransform,
                   RefRW<EnemySpawner> enemySpawner)
@@ -27,6 +30,17 @@ partial struct EnemySpawnerSystem : ISystem
 
             Entity enemyEntity = state.EntityManager.Instantiate(entitiesReferences.enemyPrefabEntity);
             SystemAPI.SetComponent(enemyEntity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
+
+            entityCommandBuffer.AddComponent(enemyEntity, new RandomWalk
+            {
+                originPointPosition = localTransform.ValueRO.Position,
+                targetPostion = localTransform.ValueRO.Position,
+                //TODO: Refactor into reference to EntitiesReference (through query)
+                minDistance = enemySpawner.ValueRO.minDistance,                
+                maxDistance = enemySpawner.ValueRO.maxDistance,
+                random = new Unity.Mathematics.Random((uint)enemyEntity.Index)
+            });
+
         }        
     }
 }

@@ -75,15 +75,19 @@ partial struct ShootAttackSystem : ISystem
             int damageAmount = 3;
             targetHealth.ValueRW.currentHealth -= damageAmount; */
 
+            //Spawn bullet calculating global position
             Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.bulletPrefabEntity);
             float3 bulletSpawnPoint = localTransform.ValueRO.TransformPoint( shootAttack.ValueRO.bulletSpawnPointLocalPosition);
             SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnPoint));
 
+            //Set spawned bullet values
             RefRW<Bullet> bulletComponent = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
             bulletComponent.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
-
             RefRW<Targetter> bulletTarget = SystemAPI.GetComponentRW<Targetter>(bulletEntity);
             bulletTarget.ValueRW.targetEntity = targetter.ValueRO.targetEntity;
+
+            shootAttack.ValueRW.onShoot.isTriggered = true;
+            shootAttack.ValueRW.onShoot.shootFromPosition = bulletSpawnPoint;
         }
     }
 }
