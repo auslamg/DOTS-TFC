@@ -5,22 +5,22 @@ using UnityEngine;
 
 class ShootableAuthoring : MonoBehaviour
 {
-    public Transform hitPoint;
+    public Transform hitPointTransform;
 }
 
-class ShootableAuthoringBaker : Baker<ShootableAuthoring>
+class ShootableBaker : Baker<ShootableAuthoring>
 {
     public override void Bake(ShootableAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        SetComponent(entity, new Shootable
+        AddComponent(entity, new Shootable
         {
-            hitPoint = authoring.hitPoint.localPosition
+            hitPointPosition = authoring.hitPointTransform.localPosition
         });
     }
 }
 
 public struct Shootable : IComponentData
 {
-    public float3 hitPoint;
+    public float3 hitPointPosition;
 }

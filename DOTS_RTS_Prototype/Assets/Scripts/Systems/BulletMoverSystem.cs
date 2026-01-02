@@ -26,28 +26,30 @@ partial struct BulletMoverSystem : ISystem
             }
 
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
+            Shootable targetShootable = SystemAPI.GetComponent<Shootable>(targetter.ValueRO.targetEntity);
+            float3 targetPosition = targetLocalTransform.TransformPoint(targetShootable.hitPointPosition);
 
-            float distanceBeforeSquared = math.distancesq(localTransform.ValueRO.Position, targetLocalTransform.Position);
+            float distanceBeforeSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
             //Caclculate move direction
-            float3 moveDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
+            float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
             moveDirection = math.normalize(moveDirection);
 
             //Move towards target
             localTransform.ValueRW.Position += moveDirection * bullet.ValueRO.speed * SystemAPI.Time.DeltaTime;
 
-            float distanceAfterSquared = math.distancesq(localTransform.ValueRO.Position, targetLocalTransform.Position);
+            float distanceAfterSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
             //Overshoot clipping countermeasure
             if (distanceBeforeSquared < distanceAfterSquared)
             {
                 //Overshot
-                localTransform.ValueRW.Position = targetLocalTransform.Position;
+                localTransform.ValueRW.Position = targetPosition;
             }
 
             //Destroy bullet and apply effects when close enough to target
             float destroyDistanceSquared = .2f;
-            if (math.distancesq(localTransform.ValueRO.Position, targetLocalTransform.Position) <= destroyDistanceSquared)
+            if (math.distancesq(localTransform.ValueRO.Position, targetPosition) <= destroyDistanceSquared)
             {
                 //Close enough to damage target
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
