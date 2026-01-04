@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-class FindTargetAuthoring : MonoBehaviour
+class TargetFinderAuthoring : MonoBehaviour
 {
     public float targetRange;
     public Faction targetFaction;
@@ -9,12 +9,12 @@ class FindTargetAuthoring : MonoBehaviour
     public float swapTargetMinDistance;
 }
 
-class FindTargetBaker : Baker<FindTargetAuthoring>
+class TargetFinderBaker : Baker<TargetFinderAuthoring>
 {
-    public override void Bake(FindTargetAuthoring authoring)
+    public override void Bake(TargetFinderAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new FindTarget
+        AddComponent(entity, new TargetFinder
         {
             targetRange = authoring.targetRange,
             targetFaction = authoring.targetFaction,
@@ -24,7 +24,7 @@ class FindTargetBaker : Baker<FindTargetAuthoring>
     }
 }
 
-public struct FindTarget : IComponentData
+public struct TargetFinder : IComponentData
 {
     public float targetRange;
     public Faction targetFaction;

@@ -20,21 +20,21 @@ partial struct FindTargetSystem : ISystem
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
         foreach ((
             RefRO<LocalTransform> localTransform,
-            RefRW<FindTarget> findTarget,
+            RefRW<TargetFinder> targetFinder,
             RefRW<Targetter> targetter)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
-                RefRW<FindTarget>,
+                RefRW<TargetFinder>,
                 RefRW<Targetter>>())
         {
             //IDEA: Refactor into corroutines
             //FIX: Find alternative to continue
-            findTarget.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
-            if (findTarget.ValueRO.scanPhaseTime > 0)
+            targetFinder.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
+            if (targetFinder.ValueRO.scanPhaseTime > 0)
             {
                 continue;
             }
-            findTarget.ValueRW.scanPhaseTime = findTarget.ValueRO.scanFrequency;
+            targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
 
             distanceHitList.Clear();
 
@@ -55,11 +55,11 @@ partial struct FindTargetSystem : ISystem
                 closestTargetEntity = targetter.ValueRO.targetEntity;
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
                 closestTargetDistance = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
-                swapTargetMinDistance = findTarget.ValueRO.swapTargetMinDistance;
+                swapTargetMinDistance = targetFinder.ValueRO.swapTargetMinDistance;
             }
 
             //Scan around entity
-            if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.targetRange, ref distanceHitList, collisionFilter))
+            if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, targetFinder.ValueRO.targetRange, ref distanceHitList, collisionFilter))
             {
                 foreach (DistanceHit distanceHit in distanceHitList)
                 {
@@ -74,7 +74,7 @@ partial struct FindTargetSystem : ISystem
 
                     //Valid target with valid faction
                     Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    if (targetUnit.faction == findTarget.ValueRO.targetFaction)
+                    if (targetUnit.faction == targetFinder.ValueRO.targetFaction)
                     {
                         //Closest target logic
                         if (closestTargetEntity == Entity.Null)
