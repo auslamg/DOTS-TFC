@@ -7,6 +7,7 @@ using UnityEngine;
 
 partial struct FindTargetSystem : ISystem
 {
+    //TODO: //BUG: Target changes even if there is already an alive target
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

@@ -18,7 +18,8 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
         {
             moveSpeed = authoring.moveSpeed,
             rotationSpeed = authoring.rotationSpeed,
-            targetReachedDistanceSquared = authoring.targetReachedDistanceSquared
+            targetReachedDistanceSquared = authoring.targetReachedDistanceSquared,
+            targetPosition = authoring.transform.position
         });
     }
 }

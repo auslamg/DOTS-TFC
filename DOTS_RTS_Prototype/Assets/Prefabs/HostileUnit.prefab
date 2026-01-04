@@ -86,6 +86,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       insertIndex: 9
       addedObject: {fileID: -5160759997080905760}
+    - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      insertIndex: 10
+      addedObject: {fileID: 2413361963158423108}
   m_SourcePrefab: {fileID: 100100000, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
 --- !u!1 &4211631314389968475 stripped
 GameObject:
@@ -127,3 +130,18 @@ MonoBehaviour:
   minDistance: 3
   maxDistance: 10
   randomSeed: 0
+--- !u!114 &2413361963158423108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4211631314389968475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e2cb75675117594fbd0a711f6a116aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
+  attackFrequency: 0.5
+  attackDistanceSquared: 1
+  damageAmount: 30

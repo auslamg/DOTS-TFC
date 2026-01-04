@@ -1,4 +1,6 @@
+using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 //TODO: Implement owners with ID's as Data
@@ -12,12 +14,32 @@ class UnitBaker : Baker<UnitAuthoring>
 {
     public override void Bake(UnitAuthoring authoring)
     {
+        float colliderOffset = GetOffset(authoring);
+
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new Unit
         {
             faction = authoring.faction,
-            ownerID = authoring.ownerID
+            ownerID = authoring.ownerID,
+            colliderOffsetRadius = colliderOffset,
         });
+    }
+
+    private float GetOffset(UnitAuthoring authoring)
+    {
+        if (authoring.GetComponent<CapsuleCollider>() != null)
+        {
+            return authoring.GetComponent<CapsuleCollider>().radius;
+        }
+        if (authoring.GetComponent<SphereCollider>() != null)
+        {
+            return authoring.GetComponent<SphereCollider>().radius;
+        }
+        if (authoring.GetComponent<BoxCollider>() != null)
+        {
+            return authoring.GetComponent<BoxCollider>().size.x;
+        }
+        return 2f;
     }
 }
 
@@ -25,5 +47,5 @@ public struct Unit : IComponentData
 {
     public Faction faction;
     public int ownerID;
-
+    public float colliderOffsetRadius;
 }

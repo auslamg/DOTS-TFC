@@ -48,7 +48,6 @@ partial struct ShootAttackSystem : ISystem
             {
                 //Close enough, stop moving and attack
                 unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
-                Debug.Log("STOPPED");
             }
 
             float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
