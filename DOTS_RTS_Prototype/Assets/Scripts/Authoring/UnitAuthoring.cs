@@ -37,9 +37,12 @@ class UnitBaker : Baker<UnitAuthoring>
         }
         if (authoring.GetComponent<BoxCollider>() != null)
         {
-            return authoring.GetComponent<BoxCollider>().size.x;
+            return math.sqrt(
+                math.pow(authoring.GetComponent<BoxCollider>().size.x, 2) +
+                math.pow(authoring.GetComponent<BoxCollider>().size.y, 2)
+                );
         }
-        return 2f;
+        return 0f;
     }
 }
 

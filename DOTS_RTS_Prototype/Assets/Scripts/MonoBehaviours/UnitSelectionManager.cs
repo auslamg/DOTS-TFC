@@ -163,11 +163,11 @@ public class UnitSelectionManager : MonoBehaviour
 
             //Query all entities with the UnitMover and Selected components to set their target
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().Build(entityManager);
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().WithPresent<MoveOverride>().Build(entityManager);
 
             //Register entities and components to modify in order to run Set on the original struct
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-            NativeArray<UnitMover> unitMoverArray = query.ToComponentDataArray<UnitMover>(Allocator.Temp);
+            NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
 
             //No entities = no operations to perform
             if (entityArray.Length < 1)
@@ -175,26 +175,27 @@ public class UnitSelectionManager : MonoBehaviour
                 return;
             }
 
-            //Get average position of all entities queried to send it as start position
+            //Get average position of all entities queried to send it as start position to formation methods
             float3 avgPosition = float3.zero;
             NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
             avgPosition = AveragePosition(localTransformArray);
 
             NativeArray<float3> movePositionArray = GenerateMovePositionArray(avgPosition, targetPosition, entityArray.Length);
-            for (int i = 0; i < unitMoverArray.Length; i++)
+            for (int i = 0; i < moveOverrideArray.Length; i++)
             {
                 //Copy of value, not reference. Setter must use entityManager.SetComponentData()
-                UnitMover newUnitMover = unitMoverArray[i];
-                newUnitMover.targetPosition = movePositionArray[i];
+                MoveOverride newMoveOverride = moveOverrideArray[i];
+                newMoveOverride.targetPosition = movePositionArray[i];
 
                 //[Deprecated]
                 // Single-entity instruction alternative.
                 /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
 
                 // Overwriting the local array and copying values to the query is preferable since it reduces writing operations.
-                unitMoverArray[i] = newUnitMover;
+                moveOverrideArray[i] = newMoveOverride;
+                entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
             }
-            query.CopyFromComponentDataArray(unitMoverArray); //Remove when implementing single-entity instructions
+            query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
 
         }
     }

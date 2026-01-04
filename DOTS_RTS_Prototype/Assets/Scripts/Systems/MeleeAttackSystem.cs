@@ -12,17 +12,20 @@ partial struct MeleeAttackSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach ((RefRO<LocalTransform> localTransform,
-                  RefRW<MeleeAttack> meleeAttack,
-                  RefRO<Targetter> targetter,
-                  RefRW<UnitMover> unitMover,
-                  RefRO<Unit> unit)
-                    in SystemAPI.Query<
-                    RefRO<LocalTransform>,
-                    RefRW<MeleeAttack>,
-                    RefRO<Targetter>,
-                    RefRW<UnitMover>,
-                    RefRO<Unit>>())
+        foreach ((
+            RefRO<LocalTransform> localTransform,
+            RefRW<MeleeAttack> meleeAttack,
+            RefRO<Targetter> targetter,
+            RefRW<UnitMover> unitMover,
+            RefRO<Unit> unit)
+                in SystemAPI.Query<
+                RefRO<LocalTransform>,
+                RefRW<MeleeAttack>,
+                RefRO<Targetter>,
+                RefRW<UnitMover>,
+                RefRO<Unit>>().
+                WithDisabled<MoveOverride>()
+                )
         {
             //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?

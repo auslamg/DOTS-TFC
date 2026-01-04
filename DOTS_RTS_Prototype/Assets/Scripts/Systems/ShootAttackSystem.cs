@@ -22,8 +22,8 @@ partial struct ShootAttackSystem : ISystem
                 RefRW<LocalTransform>,
                 RefRW<ShootAttack>,
                 RefRO<Targetter>,
-                RefRW<UnitMover>
-                >())
+                RefRW<UnitMover>>().
+                WithDisabled<MoveOverride>())
         {
             //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?

@@ -3,4 +3,8 @@
 Optimize render resolution
 - https://www.youtube.com/shorts/eYke6tpAdws
 - Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
-ZOMBIE CANT FIND TARGET
+- Add order queue
+- 
+
+
+FIXED: ZOMBIE CANT FIND TARGET

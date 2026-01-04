@@ -15,8 +15,9 @@ partial struct RandomWalkSystem : ISystem
                 in SystemAPI.Query<
                 RefRW<RandomWalk>,
                 RefRW<UnitMover>,
-                RefRO<LocalTransform>>()
-             )
+                RefRO<LocalTransform>>().
+                WithDisabled<MoveOverride>()
+                )
         {
             float targetReachedDistanceSquared = unitMover.ValueRO.targetReachedDistanceSquared;
             if (math.distancesq(localTransform.ValueRO.Position, randomWalk.ValueRO.targetPostion) < targetReachedDistanceSquared)
