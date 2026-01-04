@@ -4,7 +4,6 @@ using UnityEngine;
 class TargetFinderAuthoring : MonoBehaviour
 {
     public float targetRange;
-    public Faction targetFaction;
     public float scanFrequency;
     public float swapTargetMinDistance;
 }
@@ -17,7 +16,6 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
         AddComponent(entity, new TargetFinder
         {
             targetRange = authoring.targetRange,
-            targetFaction = authoring.targetFaction,
             scanFrequency = authoring.scanFrequency,
             swapTargetMinDistance = authoring.swapTargetMinDistance
         });
@@ -27,7 +25,6 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
 public struct TargetFinder : IComponentData
 {
     public float targetRange;
-    public Faction targetFaction;
     public float scanPhaseTime;
     public float scanFrequency;
     public float swapTargetMinDistance;

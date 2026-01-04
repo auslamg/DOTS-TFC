@@ -6,7 +6,6 @@ using UnityEngine;
 //TODO: Implement owners with ID's as Data
 public class UnitAuthoring : MonoBehaviour
 {
-    public Faction faction;
     public int ownerID;
 }
 
@@ -19,7 +18,6 @@ class UnitBaker : Baker<UnitAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new Unit
         {
-            faction = authoring.faction,
             ownerID = authoring.ownerID,
             colliderOffsetRadius = colliderOffset,
         });
@@ -48,7 +46,6 @@ class UnitBaker : Baker<UnitAuthoring>
 
 public struct Unit : IComponentData
 {
-    public Faction faction;
     public int ownerID;
     public float colliderOffsetRadius;
 }

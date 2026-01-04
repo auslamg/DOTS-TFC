@@ -45,7 +45,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: scanFrequency
-      value: 1.5
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: -8038847630424215430, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: targetFaction
@@ -107,6 +107,10 @@ PrefabInstance:
       propertyPath: hitPointTransform
       value: 
       objectReference: {fileID: 5785980750958341896}
+    - target: {fileID: 6343553190312268273, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: factionID
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

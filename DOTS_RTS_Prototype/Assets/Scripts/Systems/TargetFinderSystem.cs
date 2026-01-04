@@ -21,11 +21,13 @@ partial struct FindTargetSystem : ISystem
         foreach ((
             RefRO<LocalTransform> localTransform,
             RefRW<TargetFinder> targetFinder,
-            RefRW<Targetter> targetter)
+            RefRW<Targetter> targetter,
+            RefRO<Faction> faction)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<TargetFinder>,
-                RefRW<Targetter>>())
+                RefRW<Targetter>,
+                RefRO<Faction>>())
         {
             //IDEA: Refactor into corroutines
             //FIX: Find alternative to continue
@@ -50,7 +52,8 @@ partial struct FindTargetSystem : ISystem
             Entity closestTargetEntity = Entity.Null;
             float closestTargetDistance = float.MaxValue;
             float swapTargetMinDistance = 0f;
-            if (targetter.ValueRO.targetEntity != Entity.Null)
+            //IDEA: Extract into EntityUtil.Exists() method
+            if (targetter.ValueRO.targetEntity != Entity.Null && !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
             {
                 closestTargetEntity = targetter.ValueRO.targetEntity;
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
@@ -74,7 +77,10 @@ partial struct FindTargetSystem : ISystem
 
                     //Valid target with valid faction
                     Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    if (targetUnit.faction == targetFinder.ValueRO.targetFaction)
+                    Faction targetFaction = SystemAPI.GetComponent<Faction>(distanceHit.Entity);
+                    if (faction.ValueRO.factionID != targetFaction.factionID &&
+                        faction.ValueRO.factionID != 0 &&
+                        targetFaction.factionID != 0)
                     {
                         //Closest target logic
                         if (closestTargetEntity == Entity.Null)
