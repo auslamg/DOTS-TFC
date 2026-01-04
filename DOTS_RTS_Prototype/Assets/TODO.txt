@@ -1,10 +1,13 @@
-- Refactor unit turn speed from 
-- Fix unit selection rect scaling with screen size
 Optimize render resolution
 - https://www.youtube.com/shorts/eYke6tpAdws
 - Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
 - Add order queue
-- 
 
+- LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
+DOCUMENT: Targets dont swap if they dont pass the threshold
+
+FIXED: Refactor unit turn speed source
 FIXED: ZOMBIE CANT FIND TARGET
+FIXED: Fix unit selection rect scaling with screen size
+FIXED: Could not find singleton oftype EntitiesReference

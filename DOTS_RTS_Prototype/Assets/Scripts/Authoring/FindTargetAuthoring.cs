@@ -6,7 +6,7 @@ class FindTargetAuthoring : MonoBehaviour
     public float targetRange;
     public Faction targetFaction;
     public float scanFrequency;
-
+    public float swapTargetMinDistance;
 }
 
 class FindTargetBaker : Baker<FindTargetAuthoring>
@@ -18,7 +18,8 @@ class FindTargetBaker : Baker<FindTargetAuthoring>
         {
             targetRange = authoring.targetRange,
             targetFaction = authoring.targetFaction,
-            scanFrequency = authoring.scanFrequency
+            scanFrequency = authoring.scanFrequency,
+            swapTargetMinDistance = authoring.swapTargetMinDistance
         });
     }
 }
@@ -29,4 +30,5 @@ public struct FindTarget : IComponentData
     public Faction targetFaction;
     public float scanPhaseTime;
     public float scanFrequency;
+    public float swapTargetMinDistance;
 }

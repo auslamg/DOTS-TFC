@@ -296,6 +296,7 @@ MonoBehaviour:
   targetRange: 20
   targetFaction: 0
   scanFrequency: 1.5
+  swapTargetMinDistance: 2
 --- !u!114 &5529214234308960562
 MonoBehaviour:
   m_ObjectHideFlags: 0

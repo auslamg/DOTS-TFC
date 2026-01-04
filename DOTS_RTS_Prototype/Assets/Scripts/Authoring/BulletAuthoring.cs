@@ -1,6 +1,10 @@
 using Unity.Entities;
 using UnityEngine;
 
+/// <summary>
+/// Bullet component.
+/// Used for projectiles shot by ShootAttack component entities.
+/// </summary>
 class BulletAuthoring : MonoBehaviour
 {
     public float speed;

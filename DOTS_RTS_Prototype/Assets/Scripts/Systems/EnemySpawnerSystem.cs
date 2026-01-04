@@ -5,6 +5,12 @@ using Unity.Transforms;
 partial struct EnemySpawnerSystem : ISystem
 {
     [BurstCompile]
+    private void OnCreate(ref SystemState state) {
+        state.RequireForUpdate<EntitiesReferences>();
+    }
+
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing

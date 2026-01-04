@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
@@ -45,13 +46,25 @@ partial struct FindTargetSystem : ISystem
                 CollidesWith = 1u << GameAssets.UNITS_LAYER,
                 GroupIndex = 0
             };
+
+            //Closest target data
+            Entity closestTargetEntity = Entity.Null;
+            float closestTargetDistance = float.MaxValue;
+            float swapTargetMinDistance = 0f;
+            if (targetter.ValueRO.targetEntity != Entity.Null)
+            {
+                closestTargetEntity = targetter.ValueRO.targetEntity;
+                LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
+                closestTargetDistance = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
+                swapTargetMinDistance = findTarget.ValueRO.swapTargetMinDistance;
+            }
+
             //Scan around entity
             if (collisionWorld.OverlapSphere(localTransform.ValueRO.Position, findTarget.ValueRO.targetRange, ref distanceHitList, collisionFilter))
             {
                 foreach (DistanceHit distanceHit in distanceHitList)
                 {
                     //TODO: Refactor into using owner IDs
-                    //TODO: Add logic to find the closest target
 
                     //FIX: Avoid continue. Maybe labels/goto?
                     //IDEA: Extract into EntityUtil.Exists() method
@@ -60,16 +73,32 @@ partial struct FindTargetSystem : ISystem
                         continue;
                     }
 
+                    //Valid target with valid faction
                     Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
-                    //FIX: Find alternative to break
                     if (targetUnit.faction == findTarget.ValueRO.targetFaction)
                     {
-                        //Valid target
-                        targetter.ValueRW.targetEntity = distanceHit.Entity;
-                        break;
+                        //Closest target logic
+                        if (closestTargetEntity == Entity.Null)
+                        {
+                            closestTargetEntity = distanceHit.Entity;
+                            closestTargetDistance = distanceHit.Distance;
+                        }
+                        else
+                        {
+                            if (distanceHit.Distance < closestTargetDistance)
+                            {
+                                closestTargetEntity = distanceHit.Entity;
+                                closestTargetDistance = distanceHit.Distance;
+                            }
+                        }
                     }
                 }
             }
+            if (closestTargetEntity != Entity.Null)
+            {
+                targetter.ValueRW.targetEntity = closestTargetEntity;
+            }
+
         }
     }
 }
