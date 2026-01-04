@@ -20,7 +20,7 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
             attackFrequency = authoring.attackFrequency,
             damageAmount = authoring.damageAmount,
             attackDistance = authoring.attackDistance,
-            bulletSpawnPointLocalPosition = authoring.bulletSpawnPointTransform.localPosition
+            projectileSpawnPointLocalPosition = authoring.bulletSpawnPointTransform.localPosition
         });
     }
 }
@@ -31,7 +31,7 @@ public struct ShootAttack : IComponentData
     public float attackFrequency;
     public int damageAmount;
     public float attackDistance;
-    public float3 bulletSpawnPointLocalPosition;
+    public float3 projectileSpawnPointLocalPosition;
     public OnShootEvent onShoot;
 
     public struct OnShootEvent

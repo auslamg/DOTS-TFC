@@ -80,19 +80,19 @@ partial struct ShootAttackSystem : ISystem
             int damageAmount = 3;
             targetHealth.ValueRW.currentHealth -= damageAmount; */
 
-            //Spawn bullet calculating global position
-            Entity bulletEntity = state.EntityManager.Instantiate(entitiesReferences.bulletPrefabEntity);
-            float3 bulletSpawnPoint = localTransform.ValueRO.TransformPoint( shootAttack.ValueRO.bulletSpawnPointLocalPosition);
-            SystemAPI.SetComponent(bulletEntity, LocalTransform.FromPosition(bulletSpawnPoint));
+            //Spawn projectile calculating global position
+            Entity projectileEntity = state.EntityManager.Instantiate(entitiesReferences.bulletPrefabEntity);
+            float3 projectileSpawnPoint = localTransform.ValueRO.TransformPoint( shootAttack.ValueRO.projectileSpawnPointLocalPosition);
+            SystemAPI.SetComponent(projectileEntity, LocalTransform.FromPosition(projectileSpawnPoint));
 
-            //Set spawned bullet values
-            RefRW<Bullet> bulletComponent = SystemAPI.GetComponentRW<Bullet>(bulletEntity);
-            bulletComponent.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
-            RefRW<Targetter> bulletTarget = SystemAPI.GetComponentRW<Targetter>(bulletEntity);
-            bulletTarget.ValueRW.targetEntity = targetter.ValueRO.targetEntity;
+            //Set spawned projectile values
+            RefRW<Projectile> projectileComponent = SystemAPI.GetComponentRW<Projectile>(projectileEntity);
+            projectileComponent.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
+            RefRW<Targetter> projectileTarget = SystemAPI.GetComponentRW<Targetter>(projectileEntity);
+            projectileTarget.ValueRW.targetEntity = targetter.ValueRO.targetEntity;
 
             shootAttack.ValueRW.onShoot.isTriggered = true;
-            shootAttack.ValueRW.onShoot.shootFromPosition = bulletSpawnPoint;
+            shootAttack.ValueRW.onShoot.shootFromPosition = projectileSpawnPoint;
         }
     }
 }

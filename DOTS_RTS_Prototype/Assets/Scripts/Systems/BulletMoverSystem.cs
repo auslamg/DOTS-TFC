@@ -2,7 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-partial struct BulletMoverSystem : ISystem
+partial struct ProjectileMoverSystem : ISystem
 {
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
@@ -11,12 +11,12 @@ partial struct BulletMoverSystem : ISystem
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach ((RefRW<LocalTransform> localTransform,
-                  RefRO<Bullet> bullet,
+                  RefRO<Projectile> projectile,
                   RefRO<Targetter> targetter,
                   Entity entity)
                     in SystemAPI.Query<
                     RefRW<LocalTransform>,
-                    RefRO<Bullet>,
+                    RefRO<Projectile>,
                     RefRO<Targetter>>().
                     WithEntityAccess())
         {
@@ -40,7 +40,7 @@ partial struct BulletMoverSystem : ISystem
             moveDirection = math.normalize(moveDirection);
 
             //Move towards target
-            localTransform.ValueRW.Position += moveDirection * bullet.ValueRO.speed * SystemAPI.Time.DeltaTime;
+            localTransform.ValueRW.Position += moveDirection * projectile.ValueRO.speed * SystemAPI.Time.DeltaTime;
 
             float distanceAfterSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
@@ -51,13 +51,13 @@ partial struct BulletMoverSystem : ISystem
                 localTransform.ValueRW.Position = targetPosition;
             }
 
-            //Destroy bullet and apply effects when close enough to target
+            //Destroy projectile and apply effects when close enough to target
             float destroyDistanceSquared = .2f;
             if (math.distancesq(localTransform.ValueRO.Position, targetPosition) <= destroyDistanceSquared)
             {
                 //Close enough to damage target
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
-                targetHealth.ValueRW.currentHealth -= bullet.ValueRO.damageAmount;
+                targetHealth.ValueRW.currentHealth -= projectile.ValueRO.damageAmount;
                 targetHealth.ValueRW.onHealthChanged = true;
 
                 entityCommandBuffer.DestroyEntity(entity);
