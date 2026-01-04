@@ -54,6 +54,7 @@ partial struct UnitMoverSystem : ISystem
 [BurstCompile]
 public partial struct UnitMoverJob : IJobEntity
 {
+    //Set on struct construction
     public float deltaTime;
     public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
     {
