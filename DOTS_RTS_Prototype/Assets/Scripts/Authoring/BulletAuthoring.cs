@@ -6,9 +6,8 @@ using UnityEngine;
 /// </summary>
 /// <remarks>
 /// Managed fields are used exclusively for in-scene pre-built GameObject testing,
-/// and they are meant to be written real-time when intantiating a <c>Projectile</c> component
+/// and they are meant to be written real-time when intantiating a <c>Projectile</c> component.
 /// </remarks>
-/// <typeparam name="speed">The type of the authoring component.</typeparam>
 class ProjectileAuthoring : MonoBehaviour
 {
     /// <summary>
@@ -42,8 +41,9 @@ class ProjectileBaker : Baker<ProjectileAuthoring>
 }
 
 /// <summary>
-/// <c>Projectile</c> component.
+/// <c>Projectile</c> entity component.
 /// Used for straight-path projectiles shot by ShootAttack component.
+/// Must set values for all fields on instantiation.
 /// </summary>
 public struct Projectile : IComponentData
 {
