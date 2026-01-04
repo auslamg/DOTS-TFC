@@ -17,8 +17,7 @@ partial struct MoveOverrideSystem : ISystem
                 RefRO<LocalTransform>,
                 RefRW<MoveOverride>,
                 EnabledRefRW<MoveOverride>,
-                RefRW<UnitMover>>()
-                )
+                RefRW<UnitMover>>())
         {
             if (math.distancesq(localTransform.ValueRO.Position, moveOverride.ValueRO.targetPosition) > unitMover.ValueRO.targetReachedDistanceSquared)
             {

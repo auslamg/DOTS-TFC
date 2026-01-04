@@ -10,9 +10,7 @@ partial struct ResetTargetSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach (
-            RefRW<Targetter> targetter in SystemAPI.Query<RefRW<Targetter>>()
-             )
+        foreach (RefRW<Targetter> targetter in SystemAPI.Query<RefRW<Targetter>>())
         {
             if (targetter.ValueRO.targetEntity != Entity.Null)
             {

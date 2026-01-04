@@ -24,8 +24,7 @@ partial struct MeleeAttackSystem : ISystem
                 RefRO<Targetter>,
                 RefRW<UnitMover>,
                 RefRO<Unit>>().
-                WithDisabled<MoveOverride>()
-                )
+                WithDisabled<MoveOverride>())
         {
             //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?
@@ -60,7 +59,7 @@ partial struct MeleeAttackSystem : ISystem
                     Filter = CollisionFilter.Default
                 };
                 raycastHitList.Clear(); */
-                
+
                 Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
                 float minDistanceOffset = meleeAttack.ValueRO.attackDistanceSquared + targetUnit.colliderOffsetRadius + unit.ValueRO.colliderOffsetRadius;
                 isTouchingTarget = distanceToTarget < minDistanceOffset;

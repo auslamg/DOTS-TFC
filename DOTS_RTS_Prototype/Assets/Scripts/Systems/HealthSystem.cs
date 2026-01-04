@@ -12,10 +12,11 @@ partial struct HealthSystem : ISystem
         //Alternative new EntityCommandBuffer (unoptimized)
         /* new EntityCommandBuffer(Allocator.Temp); */
 
-        foreach ((RefRO<Health> unitHealth,
-                  Entity entity)
-                    in SystemAPI.Query<
-                    RefRO<Health>>().WithEntityAccess())
+        foreach ((
+            RefRO<Health> unitHealth,
+            Entity entity)
+                in SystemAPI.Query<
+                RefRO<Health>>().WithEntityAccess())
         {
             if (unitHealth.ValueRO.currentHealth <= 0)
             {

@@ -16,13 +16,12 @@ partial struct HealthBarSystem : ISystem
         //Access to managed Camera.main is non-compatible with burst-compiler
         UnityEngine.Vector3 cameraForward = Camera.main != null ? Camera.main.transform.forward : UnityEngine.Vector3.zero;
 
-        foreach (
-            (RefRW<LocalTransform> localTransform,
+        foreach ((
+            RefRW<LocalTransform> localTransform,
             RefRO<HealthBar> healthBar)
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
-                RefRO<HealthBar>>()
-             )
+                RefRO<HealthBar>>())
         {
 
             //Turn healthbar towards camera converting global camera direction into local

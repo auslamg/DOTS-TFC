@@ -25,8 +25,7 @@ partial struct FindTargetSystem : ISystem
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<FindTarget>,
-                RefRW<Targetter>>()
-             )
+                RefRW<Targetter>>())
         {
             //IDEA: Refactor into corroutines
             //FIX: Find alternative to continue

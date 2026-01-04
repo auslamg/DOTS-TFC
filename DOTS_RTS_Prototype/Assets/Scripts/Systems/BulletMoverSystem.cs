@@ -10,15 +10,16 @@ partial struct ProjectileMoverSystem : ISystem
         EntityCommandBuffer entityCommandBuffer =
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach ((RefRW<LocalTransform> localTransform,
-                  RefRO<Projectile> projectile,
-                  RefRO<Targetter> targetter,
-                  Entity entity)
-                    in SystemAPI.Query<
-                    RefRW<LocalTransform>,
-                    RefRO<Projectile>,
-                    RefRO<Targetter>>().
-                    WithEntityAccess())
+        foreach ((
+            RefRW<LocalTransform> localTransform,
+            RefRO<Projectile> projectile,
+            RefRO<Targetter> targetter,
+            Entity entity)
+                in SystemAPI.Query<
+                RefRW<LocalTransform>,
+                RefRO<Projectile>,
+                RefRO<Targetter>>().
+                WithEntityAccess())
         {
             //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?

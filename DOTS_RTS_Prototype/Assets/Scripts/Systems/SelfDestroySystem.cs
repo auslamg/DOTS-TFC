@@ -9,11 +9,12 @@ partial struct SelfDestroySystem : ISystem
         EntityCommandBuffer entityCommandBuffer =
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach ((RefRW<SelfDestroy> selfDestroy,
-                  Entity entity) 
-                    in SystemAPI.Query<
-                    RefRW<SelfDestroy>>().
-                    WithEntityAccess())
+        foreach ((
+            RefRW<SelfDestroy> selfDestroy,
+            Entity entity)
+                in SystemAPI.Query<
+                RefRW<SelfDestroy>>().
+                WithEntityAccess())
         {
             selfDestroy.ValueRW.delay -= SystemAPI.Time.DeltaTime;
             if (selfDestroy.ValueRO.delay <= 0)
