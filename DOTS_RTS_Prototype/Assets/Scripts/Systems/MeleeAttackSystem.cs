@@ -35,7 +35,7 @@ partial struct MeleeAttackSystem : ISystem
             //Calculate if the target can be attacked
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
             float distanceToTarget = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
-            bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistanceSquared;
+            bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistance;
 
             //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDINGS
             //Note:
@@ -61,7 +61,7 @@ partial struct MeleeAttackSystem : ISystem
 
                 Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
                 float minDistanceOffset = 
-                    meleeAttack.ValueRO.attackDistanceSquared + 
+                    meleeAttack.ValueRO.attackDistance + 
                     targetUnit.colliderOffsetRadius + 
                     unit.ValueRO.colliderOffsetRadius + 
                     unitMover.ValueRO.targetReachedDistanceSquared;

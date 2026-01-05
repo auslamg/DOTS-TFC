@@ -5,7 +5,7 @@ using UnityEngine;
 class MeleeAttackAuthoring : MonoBehaviour
 {
     public float attackFrequency;
-    public float attackDistanceSquared;
+    public float attackDistance;
     public int damageAmount;
 
 }
@@ -18,7 +18,7 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
         AddComponent(entity, new MeleeAttack
         {
             attackFrequency = authoring.attackFrequency,
-            attackDistanceSquared = authoring.attackDistanceSquared,
+            attackDistance = authoring.attackDistance,
             damageAmount = authoring.damageAmount,
         });
     }
@@ -28,6 +28,6 @@ public struct MeleeAttack : IComponentData
 {
     public float attackPhaseTime;
     public float attackFrequency;
-    public float attackDistanceSquared;
+    public float attackDistance;
     public int damageAmount;
 }

@@ -23,13 +23,15 @@ partial struct ShootAttackSystem : ISystem
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
             RefRO<Targetter> targetter,
-            RefRW<UnitMover> unitMover)
+            RefRW<UnitMover> unitMover,
+            Entity entity)
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<ShootAttack>,
                 RefRO<Targetter>,
                 RefRW<UnitMover>>().
-                WithDisabled<MoveOverride>())
+                WithDisabled<MoveOverride>().
+                WithEntityAccess())
         {
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, go for next entity
@@ -85,8 +87,9 @@ partial struct ShootAttackSystem : ISystem
             SystemAPI.SetComponent(projectileEntity, LocalTransform.FromPosition(projectileSpawnPoint));
 
             //Set spawned projectile values
-            RefRW<Projectile> projectileComponent = SystemAPI.GetComponentRW<Projectile>(projectileEntity);
-            projectileComponent.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
+            RefRW<Projectile> projectile = SystemAPI.GetComponentRW<Projectile>(projectileEntity);
+            projectile.ValueRW.damageAmount = shootAttack.ValueRO.damageAmount;
+            projectile.ValueRW.shooterEntity = entity;
             RefRW<Targetter> projectileTarget = SystemAPI.GetComponentRW<Targetter>(projectileEntity);
             projectileTarget.ValueRW.targetEntity = targetter.ValueRO.targetEntity;
 

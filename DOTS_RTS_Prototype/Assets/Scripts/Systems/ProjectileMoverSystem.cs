@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 partial struct ProjectileMoverSystem : ISystem
 {
     [BurstCompile]
@@ -56,9 +57,19 @@ partial struct ProjectileMoverSystem : ISystem
             if (math.distancesq(localTransform.ValueRO.Position, targetPosition) <= destroyDistanceSquared)
             {
                 //Close enough to damage target
+
+                //Damage target
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                 targetHealth.ValueRW.currentHealth -= projectile.ValueRO.damageAmount;
                 targetHealth.ValueRW.onHealthChanged = true;
+
+                //Set the target's target as the shooter for retribution
+                RefRW<Targetter> targetTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
+
+                if (!state.EntityManager.ExistsAndPersists(targetTargetter.ValueRO.targetEntity))
+                {
+                    targetTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
+                }
 
                 entityCommandBuffer.DestroyEntity(entity);
             }

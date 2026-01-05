@@ -5,6 +5,12 @@ Optimize render resolution
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
+- FEATURE: Spawn a crosshair / cross-swords particle when manually attacking for feedback.
+
+- FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
+    >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
+    - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
+
 DOCUMENT: Targets dont swap if they dont pass the threshold
 
 FIXED: Refactor unit turn speed source

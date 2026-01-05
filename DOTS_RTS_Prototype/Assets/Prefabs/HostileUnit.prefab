@@ -89,10 +89,10 @@ PrefabInstance:
       addedObject: {fileID: -6727081750685951634}
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       insertIndex: 9
-      addedObject: {fileID: -5160759997080905760}
-    - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
-      insertIndex: 10
       addedObject: {fileID: 2413361963158423108}
+    - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      insertIndex: 14
+      addedObject: {fileID: 7235035469828675330}
   m_SourcePrefab: {fileID: 100100000, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
 --- !u!1 &4211631314389968475 stripped
 GameObject:
@@ -111,29 +111,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb72a7aae17700439213694268016ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HostileAuthoring
---- !u!114 &-5160759997080905760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4211631314389968475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6466dc0cbe40e14ea776727be072785, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RandomWalkAuthoring
-  targetPostion:
-    x: 11
-    y: 0
-    z: 12
-  originPointPosition:
-    x: 11
-    y: 0
-    z: 11
-  minDistance: 3
-  maxDistance: 10
-  randomSeed: 0
 --- !u!114 &2413361963158423108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,4 +125,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
   attackFrequency: 0.5
   attackDistanceSquared: 1
-  damageAmount: 1
+  damageAmount: 2
+--- !u!114 &7235035469828675330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4211631314389968475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6466dc0cbe40e14ea776727be072785, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RandomWalkAuthoring
+  targetPostion:
+    x: 0
+    y: 0
+    z: 0
+  originPointPosition:
+    x: 0
+    y: 0
+    z: 0
+  minDistance: 0
+  maxDistance: 0
+  randomSeed: 0

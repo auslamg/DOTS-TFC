@@ -113,11 +113,7 @@ public class UnitSelectionManager : MonoBehaviour
             }
             else
             {
-                //TEST Start
-
                 Entity hitEntity = ClickRayCastForEntity(entityManager);
-
-                //TEST Finish
 
                 if (entityManager.ExistsAndPersists(hitEntity))
                 {
@@ -148,7 +144,6 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (isAttackingAnEntity)
             {
-                Unit hitUnit = entityManager.GetComponentData<Unit>(hitEntity);
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
             else
@@ -156,50 +151,6 @@ public class UnitSelectionManager : MonoBehaviour
                 SetDestinationOnSelectedUnits(entityManager);
             }
         }
-    }
-
-    /// <summary>
-    /// Sets the movement destination for all UnitMover/MoveOverride Units selected
-    /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
-    private void SetDestinationOnSelectedUnits(EntityManager entityManager)
-    {
-        Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
-        Vector3 targetPosition = mouseWorldPosition;
-
-        //Query all entities with the UnitMover and Selected components to set their target
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().WithPresent<MoveOverride>().Build(entityManager);
-
-        //Register entities and components to modify in order to run Set on the original struct
-        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-        if (entityArray.Length < 1) return; //No entities = no operations to perform
-        NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
-        NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-
-        //Get average position of all entities queried to send it as start position to formation methods
-        float3 avgPosition = float3.zero;
-        avgPosition = AveragePosition(localTransformArray);
-
-        //Calculate offset for each selected Unit inside a set formation.
-        NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
-
-        for (int i = 0; i < moveOverrideArray.Length; i++)
-        {
-            //Copy of value, not reference. Setter must use entityManager.SetComponentData()
-            MoveOverride newMoveOverride = moveOverrideArray[i];
-            newMoveOverride.targetPosition = formationPositionsArray[i];
-
-            //[Deprecated]
-            // Single-entity instruction alternative.
-            /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
-
-            // Overwriting the local array and copying values to the query is preferable since it reduces writing operations.
-            moveOverrideArray[i] = newMoveOverride;
-            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
-        }
-        query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
     }
 
     /// <summary>
@@ -235,10 +186,69 @@ public class UnitSelectionManager : MonoBehaviour
                 newTargetOverride.targetEntity = hitEntity;
             }
             targetOverrideArray[i] = newTargetOverride;
-            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], false);
         }
         query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
     }
+
+    /// <summary>
+    /// Sets the movement destination for all UnitMover/MoveOverride Units selected
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
+    private void SetDestinationOnSelectedUnits(EntityManager entityManager)
+    {
+        Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
+        Vector3 targetPosition = mouseWorldPosition;
+
+        //Query all entities with the UnitMover and Selected components to set their target
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
+            UnitMover,
+            Selected,
+            LocalTransform>().
+            WithPresent<MoveOverride,TargetOverride>().Build(entityManager);
+
+        //Register entities and components to modify in order to run Set on the original struct
+        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+        if (entityArray.Length < 1) return; //No entities = no operations to perform
+        NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
+        NativeArray<TargetOverride> targetOverrideArray = query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+        NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+
+        //Get average position of all entities queried to send it as start position to formation methods
+        float3 avgPosition = float3.zero;
+        avgPosition = AveragePosition(localTransformArray);
+
+        //Calculate offset for each selected Unit inside a set formation.
+        NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
+
+        for (int i = 0; i < moveOverrideArray.Length; i++)
+        {
+            //New MoveOverride values
+            MoveOverride newMoveOverride = moveOverrideArray[i];
+            newMoveOverride.targetPosition = formationPositionsArray[i];
+            moveOverrideArray[i] = newMoveOverride;
+            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+
+            //New TargetOverride values
+            TargetOverride newTargetOverride = targetOverrideArray[i];
+            newTargetOverride.targetEntity = Entity.Null;
+            targetOverrideArray[i] = newTargetOverride;
+            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+
+            //[Deprecated]
+            // Single-entity instruction alternative.
+            /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
+
+            // Writing a new local array and copying values to the query is preferable since it reduces writing operations.
+
+        }
+        query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
+        query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
+    }
+
+
 
     /// <summary>
     /// Retrieves a clicked-on Entity in the scene Collision (if any).

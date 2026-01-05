@@ -11,25 +11,37 @@ partial struct LoseTargetSystem : ISystem
         foreach ((
             RefRO<LocalTransform> LocalTransform,
             RefRW<Targetter> targetter,
-            RefRO<LoseTarget> loseTarget,
+            RefRW<LoseTarget> loseTarget,
             RefRO<TargetOverride> targetOverride)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<Targetter>,
-                RefRO<LoseTarget>,
+                RefRW<LoseTarget>,
                 RefRO<TargetOverride>>())
         {
             //FIX: Avoid continue. Maybe labels/goto?
             if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
             {
+                loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
                 continue;
             }
 
             //FIX: Avoid continue. Maybe labels/goto?
             if (state.EntityManager.ExistsAndPersists(targetOverride.ValueRO.targetEntity))
             {
+                loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
                 continue;
             }
+
+            //IDEA: Refactor into corroutines
+            //FIX: Avoid continue. Maybe labels/goto?
+            //Note: Only runs when other conditions are met. This is intentional
+            loseTarget.ValueRW.attemptPhaseTime -= SystemAPI.Time.DeltaTime;
+            if (loseTarget.ValueRO.attemptPhaseTime > 0)
+            {
+                continue;
+            }
+            loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
 
             LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
             float targetDistance = math.distance(LocalTransform.ValueRO.Position, targetLocalTransform.Position);

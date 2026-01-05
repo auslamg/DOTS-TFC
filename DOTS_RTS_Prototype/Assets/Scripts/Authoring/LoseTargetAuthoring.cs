@@ -4,6 +4,7 @@ using UnityEngine;
 class LoseTargetAuthoring : MonoBehaviour
 {
     public float thresholdDistance;
+    public float attemptFrequency;
 }
 
 class LoseTargetAuthoringBaker : Baker<LoseTargetAuthoring>
@@ -13,7 +14,8 @@ class LoseTargetAuthoringBaker : Baker<LoseTargetAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new LoseTarget
         {
-            thresholdDistance = authoring.thresholdDistance
+            thresholdDistance = authoring.thresholdDistance,
+            attemptFrequency = authoring.attemptFrequency
         });
         
     }
@@ -22,4 +24,6 @@ class LoseTargetAuthoringBaker : Baker<LoseTargetAuthoring>
 public struct LoseTarget : IComponentData
 {
     public float thresholdDistance;
+    public float attemptPhaseTime;
+    public float attemptFrequency;
 }

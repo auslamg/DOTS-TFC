@@ -55,6 +55,10 @@ public struct Projectile : IComponentData
     /// The damage dealt to the target on contact.
     /// </summary>
     public int damageAmount;
+    /// <summary>
+    /// The Entity that spawned the projectile.
+    /// </summary>
+    public Entity shooterEntity;
 }
 
 
