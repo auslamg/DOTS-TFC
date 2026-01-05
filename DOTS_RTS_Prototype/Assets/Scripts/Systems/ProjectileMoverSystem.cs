@@ -23,7 +23,7 @@ partial struct ProjectileMoverSystem : ISystem
         {
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, destroy this and go for next entity
-            if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
+            if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
             {
                 entityCommandBuffer.DestroyEntity(entity);
                 continue;

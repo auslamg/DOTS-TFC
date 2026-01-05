@@ -53,7 +53,7 @@ partial struct FindTargetSystem : ISystem
             float closestTargetDistance = float.MaxValue;
             float swapTargetMinDistance = 0f;
 
-            if (state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
+            if (state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
             {
                 closestTargetEntity = targetter.ValueRO.targetEntity;
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
@@ -69,7 +69,7 @@ partial struct FindTargetSystem : ISystem
                     //TODO: Refactor into using owner IDs
 
                     //FIX: Avoid continue. Maybe labels/goto?
-                    if (!state.EntityManager.ExistsAndRemains(distanceHit.Entity))
+                    if (!state.EntityManager.ExistsAndPersists(distanceHit.Entity))
                     {
                         continue;
                     }

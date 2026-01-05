@@ -2,8 +2,14 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 
-//TODO: Document extensively
 //For all targetters queried, if the target has been removed or is pending for destruction, set the target to null
+/// <summary>
+/// Resets the <c>targetEntity</c> field for all non-persistent targets on Targetter components. 
+/// </summary>
+/// <remarks>
+/// This is required to avoid null entity errors, hence why it runs at
+/// the start of the LateSimulationSystemGroup (after all systems that use Targetter.targetEntity references have finished).
+/// </remarks>
 [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderFirst = true)]
 partial struct ResetTargetSystem : ISystem
 {
@@ -14,7 +20,7 @@ partial struct ResetTargetSystem : ISystem
         {
             if (targetter.ValueRO.targetEntity != Entity.Null)
             {
-                if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
+                if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
                 {
                     targetter.ValueRW.targetEntity = Entity.Null;
                 }

@@ -11,7 +11,6 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
 
-//TODO: Rename to UnitTargetManager if only target is handled.
 public class UnitSelectionManager : MonoBehaviour
 {
     public static UnitSelectionManager Instance { get; private set; }
@@ -136,6 +135,7 @@ public class UnitSelectionManager : MonoBehaviour
                     }
                 };
 
+                //TODO: Refactor into SphereCast
                 //Query Raycast for a single Unit Entity
                 if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
                 {
@@ -314,7 +314,7 @@ public class UnitSelectionManager : MonoBehaviour
             positionArray[positionIndex] = currentTargetPosition;
             positionIndex++;
 
-            //TODO: Refactor into no break use
+            //FIX: Refactor into no break use
             if (positionIndex >= positionCount)
             {
                 break;
@@ -346,7 +346,7 @@ public class UnitSelectionManager : MonoBehaviour
                 positionArray[positionIndex] = currentTargetPosition;
                 positionIndex++;
 
-                //TODO: Refactor into no break use
+                //FIX: Refactor into no break use
                 if (positionIndex >= positionCount)
                 {
                     break;

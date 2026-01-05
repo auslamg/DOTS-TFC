@@ -19,7 +19,7 @@ public static class EntityUtil
     /// The method validates an entity checking if it actually exists and if it's queued for removal. If any of both conditions fail, returns false.
     /// This must be used in place of plain <see cref="EntityManager.Exists(Entity)"/>, since entities queued for removal returns true in said method.
     /// </remarks>
-    public static bool ExistsAndRemains(this EntityManager em, Entity entity)
+    public static bool ExistsAndPersists(this EntityManager em, Entity entity)
     {
         if (entity == Entity.Null)
         {
