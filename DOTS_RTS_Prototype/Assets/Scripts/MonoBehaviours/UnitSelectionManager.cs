@@ -113,92 +113,153 @@ public class UnitSelectionManager : MonoBehaviour
             }
             else
             {
-                //TODO: Extract into SingleSelect() method
-                //query = entityManager.CreateEntityQuery(typeof (PhysicsWorldSingleton)); //TODO: Alternative. Remove.
+                //TEST Start
 
-                //Register CollisionWorld for physics queries
-                query = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>().Build(entityManager);
-                PhysicsWorldSingleton physiscsWorldSingleton = query.GetSingleton<PhysicsWorldSingleton>();
-                CollisionWorld collisionWorld = physiscsWorldSingleton.CollisionWorld;
+                Entity hitEntity = ClickRayCastForEntity(entityManager);
 
-                //Build raycast from mouse position in appropiate layers
-                UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastInput raycastInput = new RaycastInput
+                //TEST Finish
+
+                if (entityManager.ExistsAndPersists(hitEntity))
                 {
-                    Start = cameraRay.GetPoint(0f),
-                    End = cameraRay.GetPoint(5000f),
-                    Filter = new CollisionFilter
+                    //An entity was hit
+                    if (entityManager.HasComponent<Unit>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
                     {
-                        BelongsTo = ~0u, //All layers
-                        CollidesWith = 1u << GameAssets.UNITS_LAYER,
-                        GroupIndex = 0
-                    }
-                };
+                        //A Unit was hit > Select unit
 
-                //TODO: Refactor into SphereCast
-                //Query Raycast for a single Unit Entity
-                if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
-                {
-                    //If a Unit Entity was hit 
-                    if (entityManager.HasComponent<Unit>(raycastHit.Entity) && entityManager.HasComponent<Selected>(raycastHit.Entity))
-                    {
-                        entityManager.SetComponentEnabled<Selected>(raycastHit.Entity, true);
-                        Selected selected = entityManager.GetComponentData<Selected>(raycastHit.Entity);
+                        entityManager.SetComponentEnabled<Selected>(hitEntity, true);
+                        Selected selected = entityManager.GetComponentData<Selected>(hitEntity);
                         selected.onSelected = true;
-                        entityManager.SetComponentData(raycastHit.Entity, selected);
+                        entityManager.SetComponentData(hitEntity, selected);
                     }
                 }
-
             }
-
 
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
         }
-
         if (Input.GetMouseButtonDown(1))
         {
-            //TODO: Extract into MoveUnits() method
-            Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
-            Vector3 targetPosition = mouseWorldPosition;
-
-            //Query all entities with the UnitMover and Selected components to set their target
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().WithPresent<MoveOverride>().Build(entityManager);
 
-            //Register entities and components to modify in order to run Set on the original struct
-            NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-            NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
+            //Check if the click landed on an entity
+            Entity hitEntity = ClickRayCastForEntity(entityManager);
+            bool isAttackingAnEntity =
+                entityManager.ExistsAndPersists(hitEntity) &&
+                entityManager.HasComponent<Unit>(hitEntity);
 
-            //No entities = no operations to perform
-            if (entityArray.Length < 1)
+            if (isAttackingAnEntity)
             {
-                return;
+                Debug.Log("Attacking entity: " + hitEntity);
+
+                Unit hitUnit = entityManager.GetComponentData<Unit>(hitEntity);
+                SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
-
-            //Get average position of all entities queried to send it as start position to formation methods
-            float3 avgPosition = float3.zero;
-            NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-            avgPosition = AveragePosition(localTransformArray);
-
-            NativeArray<float3> movePositionArray = GenerateMovePositionArray(avgPosition, targetPosition, entityArray.Length);
-            for (int i = 0; i < moveOverrideArray.Length; i++)
+            else
             {
-                //Copy of value, not reference. Setter must use entityManager.SetComponentData()
-                MoveOverride newMoveOverride = moveOverrideArray[i];
-                newMoveOverride.targetPosition = movePositionArray[i];
-
-                //[Deprecated]
-                // Single-entity instruction alternative.
-                /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
-
-                // Overwriting the local array and copying values to the query is preferable since it reduces writing operations.
-                moveOverrideArray[i] = newMoveOverride;
-                entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+                SetDestinationOnSelectedUnits(entityManager);
             }
-            query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
-
         }
     }
+
+    private void SetDestinationOnSelectedUnits(EntityManager entityManager)
+    {
+        Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
+        Vector3 targetPosition = mouseWorldPosition;
+
+        //Query all entities with the UnitMover and Selected components to set their target
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<UnitMover, Selected, LocalTransform>().WithPresent<MoveOverride>().Build(entityManager);
+
+        //Register entities and components to modify in order to run Set on the original struct
+        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+        if (entityArray.Length < 1) return; //No entities = no operations to perform
+        NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
+        NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+
+        //Get average position of all entities queried to send it as start position to formation methods
+        float3 avgPosition = float3.zero;
+        avgPosition = AveragePosition(localTransformArray);
+
+        //Calculate offset for each selected Unit inside a set formation.
+        NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
+
+        for (int i = 0; i < moveOverrideArray.Length; i++)
+        {
+            //Copy of value, not reference. Setter must use entityManager.SetComponentData()
+            MoveOverride newMoveOverride = moveOverrideArray[i];
+            newMoveOverride.targetPosition = formationPositionsArray[i];
+
+            //[Deprecated]
+            // Single-entity instruction alternative.
+            /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
+
+            // Overwriting the local array and copying values to the query is preferable since it reduces writing operations.
+            moveOverrideArray[i] = newMoveOverride;
+            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+        }
+        query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
+    }
+
+    private void SetTargetOnSelectedUnits(EntityManager entityManager, Entity hitEntity)
+    {
+        //Query all entities with the UnitMover and Selected components to set their target
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
+            Selected,
+            Faction>().
+            WithPresent<TargetOverride>().Build(entityManager);
+
+        //Register entities and components to modify in order to run Set on the original struct
+        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+        if (entityArray.Length < 1) return; //No entities = no operations to perform
+        NativeArray<Faction> factionArray = query.ToComponentDataArray<Faction>(Allocator.Temp);
+        NativeArray<TargetOverride> targetOverrideArray = query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+
+        //Get faction for targetted unit
+        Faction targetedFaction = entityManager.GetComponentData<Faction>(hitEntity);
+
+        for (int i = 0; i < targetOverrideArray.Length; i++)
+        {
+            //Copy of value, not reference. Setter must use entityManager.SetComponentData()
+            TargetOverride newTargetOverride = targetOverrideArray[i];
+
+            if (factionArray[i].factionID != targetedFaction.factionID)
+            {
+                newTargetOverride.targetEntity = hitEntity;
+            }
+            targetOverrideArray[i] = newTargetOverride;
+            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+        }
+        query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
+    }
+
+    private Entity ClickRayCastForEntity(EntityManager entityManager)
+    {
+        CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
+
+        //Build raycast from mouse position in appropiate layers
+        UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastInput raycastInput = new RaycastInput
+        {
+            Start = cameraRay.GetPoint(0f),
+            End = cameraRay.GetPoint(5000f), //Arbitrarily large float, but must be kept small-ish for performance cost. Else it would be float.max
+            Filter = new CollisionFilter
+            {
+                BelongsTo = ~0u, //All layers
+                CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                GroupIndex = 0
+            }
+        };
+
+        //TODO: Refactor into SphereCast
+        //Query Raycast for a single Entity
+        if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
+        {
+            if (entityManager.ExistsAndPersists(raycastHit.Entity))
+            {
+                return raycastHit.Entity;
+            }
+        }
+        return Entity.Null;
+    }
+
 
     /// <summary>
     /// Calculates the average position of all LocalTransform components given.
@@ -264,7 +325,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// Calculates the array of individual movement positions for each UnitMober component of a given size.
     /// TODO: Implement additional formations like Line, Square and Wedge.
     /// </summary>
-    private NativeArray<float3> GenerateMovePositionArray(float3 startPosition, float3 targetPosition, int positionCount)
+    private NativeArray<float3> GenerateFormationPositionsArray(float3 startPosition, float3 targetPosition, int positionCount)
     {
         NativeArray<float3> positionArray = new NativeArray<float3>(positionCount, Allocator.Temp);
         if (positionCount == 0)

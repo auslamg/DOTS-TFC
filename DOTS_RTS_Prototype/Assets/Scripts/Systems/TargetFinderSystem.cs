@@ -22,12 +22,14 @@ partial struct FindTargetSystem : ISystem
             RefRO<LocalTransform> localTransform,
             RefRW<TargetFinder> targetFinder,
             RefRW<Targetter> targetter,
-            RefRO<Faction> faction)
+            RefRO<Faction> faction,
+            RefRO<TargetOverride> targetOverride)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<TargetFinder>,
                 RefRW<Targetter>,
-                RefRO<Faction>>())
+                RefRO<Faction>,
+                RefRO<TargetOverride>>())
         {
             //IDEA: Refactor into corroutines
             //FIX: Avoid continue. Maybe labels/goto?
@@ -38,8 +40,14 @@ partial struct FindTargetSystem : ISystem
             }
             targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
 
-            distanceHitList.Clear();
+            //FIX: Avoid continue. Maybe labels/goto?
+            if (state.EntityManager.ExistsAndPersists(targetOverride.ValueRO.targetEntity))
+            {
+                targetter.ValueRW.targetEntity = targetOverride.ValueRO.targetEntity;
+                continue;
+            }
 
+            distanceHitList.Clear();
             //CollisionFilter for physics query (OverlapSphere)
             CollisionFilter collisionFilter = new CollisionFilter
             {

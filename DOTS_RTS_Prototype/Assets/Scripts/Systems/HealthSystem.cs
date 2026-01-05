@@ -16,7 +16,8 @@ partial struct HealthSystem : ISystem
             RefRO<Health> unitHealth,
             Entity entity)
                 in SystemAPI.Query<
-                RefRO<Health>>().WithEntityAccess())
+                RefRO<Health>>().
+                WithEntityAccess())
         {
             if (unitHealth.ValueRO.currentHealth <= 0)
             {

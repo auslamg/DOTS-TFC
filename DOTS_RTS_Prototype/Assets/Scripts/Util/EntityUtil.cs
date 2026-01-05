@@ -1,5 +1,7 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
 
 /// <summary>
@@ -10,7 +12,6 @@ using Unity.Transforms;
 /// </remarks>
 public static class EntityUtil
 {
-    static EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
     /// <summary>
     /// Checks if an entity currently valid against null values. . 
@@ -25,14 +26,25 @@ public static class EntityUtil
         {
             return false;
         }
-        if (!entityManager.Exists(entity))
+        if (!em.Exists(entity))
         {
             return false;
         }
-        if (!entityManager.HasComponent<LocalTransform>(entity))
+        if (!em.HasComponent<LocalTransform>(entity))
         {
             return false;
         }
         return true;
+    }
+
+    public static CollisionWorld GetCollisionWorld(this EntityManager em)
+    {
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>().Build(em);
+
+        PhysicsWorldSingleton physiscsWorldSingleton = query.GetSingleton<PhysicsWorldSingleton>();
+
+        CollisionWorld collisionWorld = physiscsWorldSingleton.CollisionWorld;
+
+        return collisionWorld;
     }
 }

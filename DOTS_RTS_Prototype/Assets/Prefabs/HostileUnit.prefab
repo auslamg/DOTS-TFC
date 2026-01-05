@@ -148,4 +148,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
   attackFrequency: 0.5
   attackDistanceSquared: 1
-  damageAmount: 30
+  damageAmount: 1

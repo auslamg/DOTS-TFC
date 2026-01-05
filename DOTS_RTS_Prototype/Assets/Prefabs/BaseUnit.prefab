@@ -195,6 +195,8 @@ GameObject:
   - component: {fileID: -8969996158608910852}
   - component: {fileID: -8038847630424215430}
   - component: {fileID: 5529214234308960562}
+  - component: {fileID: -2479219367038610689}
+  - component: {fileID: -1753336010078613680}
   - component: {fileID: 4611505598139493670}
   - component: {fileID: 7405699747885851844}
   - component: {fileID: 6343553190312268273}
@@ -294,7 +296,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FindTargetAuthoring
   targetRange: 20
-  targetFaction: 0
   scanFrequency: 1.5
   swapTargetMinDistance: 2
 --- !u!114 &5529214234308960562
@@ -310,6 +311,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetAuthoring
   testTargetGameObject: {fileID: 0}
+--- !u!114 &-2479219367038610689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8425bb6f3b4f2e44b37da67de6e00fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetOverrideAuthoring
+--- !u!114 &-1753336010078613680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7640c4dc6ec350e408020a618bc57ef2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LoseTargetAuthoring
+  thresholdDistance: 20
 --- !u!114 &4611505598139493670
 MonoBehaviour:
   m_ObjectHideFlags: 0
