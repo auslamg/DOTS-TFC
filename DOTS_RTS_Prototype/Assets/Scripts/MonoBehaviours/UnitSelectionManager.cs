@@ -49,6 +49,7 @@ public class UnitSelectionManager : MonoBehaviour
 
     /// <summary>
     /// Update() : MonoBehaviour
+    /// //TODO: Document extensively
     /// </summary>
     void Update()
     {
@@ -83,7 +84,6 @@ public class UnitSelectionManager : MonoBehaviour
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
             bool isMultipleSelection = selectionAreaSize >= multipleSelectionSizeMinimum;
-            /* Debug.Log(isMultipleSelection + " " + selectionAreaSize); */
 
             if (isMultipleSelection)
             {
@@ -148,8 +148,6 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (isAttackingAnEntity)
             {
-                Debug.Log("Attacking entity: " + hitEntity);
-
                 Unit hitUnit = entityManager.GetComponentData<Unit>(hitEntity);
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
@@ -160,6 +158,12 @@ public class UnitSelectionManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the movement destination for all UnitMover/MoveOverride Units selected
+    /// </summary>
+    /// <remarks>
+    /// 
+    /// </remarks>
     private void SetDestinationOnSelectedUnits(EntityManager entityManager)
     {
         Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
@@ -198,6 +202,12 @@ public class UnitSelectionManager : MonoBehaviour
         query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
     }
 
+    /// <summary>
+    /// Sets the target for all TargetOverride Units selected
+    /// </summary>
+    /// <remarks>
+    /// The target will only be set for units of a valid faction (different from the target Unit).
+    /// </remarks>
     private void SetTargetOnSelectedUnits(EntityManager entityManager, Entity hitEntity)
     {
         //Query all entities with the UnitMover and Selected components to set their target
@@ -230,6 +240,10 @@ public class UnitSelectionManager : MonoBehaviour
         query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
     }
 
+    /// <summary>
+    /// Retrieves a clicked-on Entity in the scene Collision (if any).
+    /// </summary>
+    // IDEA: Either convert to SphereCast or add a secondary larger collider used exclusively for selection
     private Entity ClickRayCastForEntity(EntityManager entityManager)
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
@@ -248,7 +262,6 @@ public class UnitSelectionManager : MonoBehaviour
             }
         };
 
-        //TODO: Refactor into SphereCast
         //Query Raycast for a single Entity
         if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
         {
@@ -356,7 +369,6 @@ public class UnitSelectionManager : MonoBehaviour
         //Calculate angle for proper orientation
         float3 directionNormalized = math.normalize(targetDirection);
         float angle = math.atan2(directionNormalized.x, directionNormalized.z);
-        /* Debug.Log("Angle: " + math.degrees(angle)); */
 
         while (positionIndex < positionCount)
         {
