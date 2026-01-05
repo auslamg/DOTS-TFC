@@ -60,7 +60,11 @@ partial struct MeleeAttackSystem : ISystem
                 raycastHitList.Clear(); */
 
                 Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
-                float minDistanceOffset = meleeAttack.ValueRO.attackDistanceSquared + targetUnit.colliderOffsetRadius + unit.ValueRO.colliderOffsetRadius;
+                float minDistanceOffset = 
+                    meleeAttack.ValueRO.attackDistanceSquared + 
+                    targetUnit.colliderOffsetRadius + 
+                    unit.ValueRO.colliderOffsetRadius + 
+                    unitMover.ValueRO.targetReachedDistanceSquared;
                 isTouchingTarget = distanceToTarget < minDistanceOffset;
             }
 

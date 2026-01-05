@@ -38,7 +38,6 @@ partial struct RandomWalkSystem : ISystem
             }
             else
             {
-                //REVIEW: This overrides player commands, take into account if any movable unit should also have RandomWalk
                 //Too far, move closer
                 if (!unitMover.ValueRO.targetPosition.Equals(randomWalk.ValueRO.targetPostion))
                 {
