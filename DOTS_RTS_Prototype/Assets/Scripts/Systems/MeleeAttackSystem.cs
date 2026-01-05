@@ -26,9 +26,8 @@ partial struct MeleeAttackSystem : ISystem
                 RefRO<Unit>>().
                 WithDisabled<MoveOverride>())
         {
-            //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?
-            if (targetter.ValueRO.targetEntity == Entity.Null || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
+            if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
             {
                 continue;
             }

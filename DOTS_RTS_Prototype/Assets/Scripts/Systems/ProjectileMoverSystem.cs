@@ -21,10 +21,9 @@ partial struct ProjectileMoverSystem : ISystem
                 RefRO<Targetter>>().
                 WithEntityAccess())
         {
-            //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, destroy this and go for next entity
-            if (targetter.ValueRO.targetEntity == Entity.Null || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
+            if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
             {
                 entityCommandBuffer.DestroyEntity(entity);
                 continue;

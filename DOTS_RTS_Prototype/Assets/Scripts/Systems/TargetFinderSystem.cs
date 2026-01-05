@@ -30,7 +30,7 @@ partial struct FindTargetSystem : ISystem
                 RefRO<Faction>>())
         {
             //IDEA: Refactor into corroutines
-            //FIX: Find alternative to continue
+            //FIX: Avoid continue. Maybe labels/goto?
             targetFinder.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
             if (targetFinder.ValueRO.scanPhaseTime > 0)
             {
@@ -52,8 +52,8 @@ partial struct FindTargetSystem : ISystem
             Entity closestTargetEntity = Entity.Null;
             float closestTargetDistance = float.MaxValue;
             float swapTargetMinDistance = 0f;
-            //IDEA: Extract into EntityUtil.Exists() method
-            if (targetter.ValueRO.targetEntity != Entity.Null && !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
+
+            if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
             {
                 closestTargetEntity = targetter.ValueRO.targetEntity;
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
@@ -69,8 +69,7 @@ partial struct FindTargetSystem : ISystem
                     //TODO: Refactor into using owner IDs
 
                     //FIX: Avoid continue. Maybe labels/goto?
-                    //IDEA: Extract into EntityUtil.Exists() method
-                    if (!SystemAPI.Exists(distanceHit.Entity) || !SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                    if (!state.EntityManager.ExistsAndRemains(distanceHit.Entity))
                     {
                         continue;
                     }

@@ -31,10 +31,9 @@ partial struct ShootAttackSystem : ISystem
                 RefRW<UnitMover>>().
                 WithDisabled<MoveOverride>())
         {
-            //IDEA: Extract into EntityUtil.Exists() method
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, go for next entity
-            if (targetter.ValueRO.targetEntity == Entity.Null || !SystemAPI.HasComponent<LocalTransform>(targetter.ValueRO.targetEntity))
+            if (!state.EntityManager.ExistsAndRemains(targetter.ValueRO.targetEntity))
             {
                 continue;
             }
