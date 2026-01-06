@@ -25,7 +25,7 @@ class EnemySpawnerAuthoring : MonoBehaviour
 /// <summary>
 /// Baker for the <c>EnemySpawner</c> component.
 /// </summary>
-class EnemySpawnerAuthoringBaker : Baker<EnemySpawnerAuthoring>
+class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
 {
     public override void Bake(EnemySpawnerAuthoring authoring)
     {

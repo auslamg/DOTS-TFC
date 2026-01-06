@@ -6,8 +6,15 @@ using UnityEngine;
 partial struct ActiveAnimationSystem : ISystem
 {
     [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<AnimationDataHolder>();
+    }
+    
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
         foreach ((
            RefRW<ActiveAnimation> activeAnimation,
            RefRW<MaterialMeshInfo> materialMeshInfo)
@@ -15,33 +22,40 @@ partial struct ActiveAnimationSystem : ISystem
                RefRW<ActiveAnimation>,
                RefRW<MaterialMeshInfo>>())
         {
-            //Time loop
-            activeAnimation.ValueRW.framePhaseTime += SystemAPI.Time.DeltaTime;
-            if (activeAnimation.ValueRO.framePhaseTime >= activeAnimation.ValueRO.frameFrequency)
+            if (!activeAnimation.ValueRO.animationDataBlobAssetReference.IsCreated)
             {
-                activeAnimation.ValueRW.framePhaseTime -= activeAnimation.ValueRO.frameFrequency;
+                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierIdle;
+            }
 
-                Debug.Log("Changed animation");
+            //TEST
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierIdle;
+            }
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierWalk;
+            }
+
+
+            ref var animData = ref activeAnimation.ValueRO.animationDataBlobAssetReference.Value;            
+            //Time loop
+            //IDEA: Use corroutines
+            activeAnimation.ValueRW.framePhaseTime += SystemAPI.Time.DeltaTime;
+            if (activeAnimation.ValueRO.framePhaseTime >= animData.frameFrequency)
+            {
+                activeAnimation.ValueRW.framePhaseTime -= animData.frameFrequency;
+
 
                 //Animation loop
+                //IDEA: Use corroutines
                 activeAnimation.ValueRW.currentFrame += 1;
-                if (activeAnimation.ValueRO.currentFrame >= activeAnimation.ValueRO.frameCount)
+                if (activeAnimation.ValueRO.currentFrame >= animData.frameCount)
                 {
                     activeAnimation.ValueRW.currentFrame = 0;
                 }
-                
-                Debug.Log("Changed animation");
 
-                switch (activeAnimation.ValueRO.currentFrame)
-                {
-                    default:
-                    case 0:
-                        materialMeshInfo.ValueRW.MeshID = activeAnimation.ValueRO.frame0;
-                        break;
-                    case 1:
-                        materialMeshInfo.ValueRW.MeshID = activeAnimation.ValueRO.frame1;
-                        break;
-                }
+                materialMeshInfo.ValueRW.MeshID = animData.batchMeshIdBlobArray[activeAnimation.ValueRO.currentFrame];
             }
         }
     }

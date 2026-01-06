@@ -17,7 +17,7 @@ class FactionAuthoring : MonoBehaviour
 /// <summary>
 /// Baker for the <c>Faction</c> component.
 /// </summary>
-class FactionAuthoringBaker : Baker<FactionAuthoring>
+class FactionBaker : Baker<FactionAuthoring>
 {
     public override void Bake(FactionAuthoring authoring)
     {

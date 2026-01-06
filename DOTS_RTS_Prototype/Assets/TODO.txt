@@ -12,7 +12,8 @@ Optimize render resolution
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
 
 - DOCUMENT: Targets dont swap if they dont pass the threshold
-
+- REFACTOR: Remove "Authoring" from all baker signatures
+- REFACTOR: >= consistency in timer code blocks
 
 
 FIXED: Refactor unit turn speed source
