@@ -30,7 +30,7 @@ partial struct ShootAttackSystem : ISystem
                 RefRW<ShootAttack>,
                 RefRO<Targetter>,
                 RefRW<UnitMover>>().
-                WithDisabled<MoveOverride>().
+                WithDisabled<ManualMove>().
                 WithEntityAccess())
         {
             //FIX: Avoid continue. Maybe labels/goto?

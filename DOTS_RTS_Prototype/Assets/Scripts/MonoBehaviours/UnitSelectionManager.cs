@@ -165,30 +165,30 @@ public class UnitSelectionManager : MonoBehaviour
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
             Selected,
             Faction>().
-            WithPresent<TargetOverride>().Build(entityManager);
+            WithPresent<ManualTarget>().Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
         if (entityArray.Length < 1) return; //No entities = no operations to perform
         NativeArray<Faction> factionArray = query.ToComponentDataArray<Faction>(Allocator.Temp);
-        NativeArray<TargetOverride> targetOverrideArray = query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+        NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
 
         //Get faction for targetted unit
         Faction targetedFaction = entityManager.GetComponentData<Faction>(hitEntity);
 
-        for (int i = 0; i < targetOverrideArray.Length; i++)
+        for (int i = 0; i < manualTargetArray.Length; i++)
         {
             //Copy of value, not reference. Setter must use entityManager.SetComponentData()
-            TargetOverride newTargetOverride = targetOverrideArray[i];
+            ManualTarget newManualTarget = manualTargetArray[i];
 
             if (factionArray[i].factionID != targetedFaction.factionID)
             {
-                newTargetOverride.targetEntity = hitEntity;
+                newManualTarget.targetEntity = hitEntity;
             }
-            targetOverrideArray[i] = newTargetOverride;
-            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], false);
+            manualTargetArray[i] = newManualTarget;
+            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], false);
         }
-        query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
+        query.CopyFromComponentDataArray(manualTargetArray); //Remove when implementing single-entity instructions
     }
 
     /// <summary>
@@ -207,13 +207,13 @@ public class UnitSelectionManager : MonoBehaviour
             UnitMover,
             Selected,
             LocalTransform>().
-            WithPresent<MoveOverride,TargetOverride>().Build(entityManager);
+            WithPresent<ManualMove,ManualTarget>().Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
         if (entityArray.Length < 1) return; //No entities = no operations to perform
-        NativeArray<MoveOverride> moveOverrideArray = query.ToComponentDataArray<MoveOverride>(Allocator.Temp);
-        NativeArray<TargetOverride> targetOverrideArray = query.ToComponentDataArray<TargetOverride>(Allocator.Temp);
+        NativeArray<ManualMove> manualMoveArray = query.ToComponentDataArray<ManualMove>(Allocator.Temp);
+        NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
 
         //Get average position of all entities queried to send it as start position to formation methods
@@ -223,19 +223,19 @@ public class UnitSelectionManager : MonoBehaviour
         //Calculate offset for each selected Unit inside a set formation.
         NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
 
-        for (int i = 0; i < moveOverrideArray.Length; i++)
+        for (int i = 0; i < manualMoveArray.Length; i++)
         {
             //New MoveOverride values
-            MoveOverride newMoveOverride = moveOverrideArray[i];
-            newMoveOverride.targetPosition = formationPositionsArray[i];
-            moveOverrideArray[i] = newMoveOverride;
-            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+            ManualMove newManualMove = manualMoveArray[i];
+            newManualMove.targetPosition = formationPositionsArray[i];
+            manualMoveArray[i] = newManualMove;
+            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
             //New TargetOverride values
-            TargetOverride newTargetOverride = targetOverrideArray[i];
-            newTargetOverride.targetEntity = Entity.Null;
-            targetOverrideArray[i] = newTargetOverride;
-            entityManager.SetComponentEnabled<MoveOverride>(entityArray[i], true);
+            ManualTarget newManualTarget = manualTargetArray[i];
+            newManualTarget.targetEntity = Entity.Null;
+            manualTargetArray[i] = newManualTarget;
+            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
             //[Deprecated]
             // Single-entity instruction alternative.
@@ -244,8 +244,8 @@ public class UnitSelectionManager : MonoBehaviour
             // Writing a new local array and copying values to the query is preferable since it reduces writing operations.
 
         }
-        query.CopyFromComponentDataArray(moveOverrideArray); //Remove when implementing single-entity instructions
-        query.CopyFromComponentDataArray(targetOverrideArray); //Remove when implementing single-entity instructions
+        query.CopyFromComponentDataArray(manualMoveArray); //Remove when implementing single-entity instructions
+        query.CopyFromComponentDataArray(manualTargetArray); //Remove when implementing single-entity instructions
     }
 
 

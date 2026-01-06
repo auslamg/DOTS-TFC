@@ -10,25 +10,25 @@ partial struct MoveOverrideSystem : ISystem
     {
         foreach ((
             RefRO<LocalTransform> localTransform,
-            RefRW<MoveOverride> moveOverride,
-            EnabledRefRW<MoveOverride> moveOverrideEnabled,
+            RefRW<ManualMove> manualNove,
+            EnabledRefRW<ManualMove> manualMoveEnabled,
             RefRW<UnitMover> unitMover)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
-                RefRW<MoveOverride>,
-                EnabledRefRW<MoveOverride>,
+                RefRW<ManualMove>,
+                EnabledRefRW<ManualMove>,
                 RefRW<UnitMover>>())
         {
-            if (math.distancesq(localTransform.ValueRO.Position, moveOverride.ValueRO.targetPosition) > unitMover.ValueRO.targetReachedDistanceSquared)
+            if (math.distancesq(localTransform.ValueRO.Position, manualNove.ValueRO.targetPosition) > unitMover.ValueRO.targetReachedDistanceSquared)
             {
                 //Move closer
-                unitMover.ValueRW.targetPosition = moveOverride.ValueRO.targetPosition;
+                unitMover.ValueRW.targetPosition = manualNove.ValueRO.targetPosition;
             }
             else
             {
                 //Reached move override position
                 /* SystemAPI.SetComponentEnabled<MoveOverride>(false, entity); */
-                moveOverrideEnabled.ValueRW = false;
+                manualMoveEnabled.ValueRW = false;
             }
         }
     }

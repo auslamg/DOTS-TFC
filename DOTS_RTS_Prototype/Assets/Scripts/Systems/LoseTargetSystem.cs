@@ -12,12 +12,12 @@ partial struct LoseTargetSystem : ISystem
             RefRO<LocalTransform> LocalTransform,
             RefRW<Targetter> targetter,
             RefRW<LoseTarget> loseTarget,
-            RefRO<TargetOverride> targetOverride)
+            RefRO<ManualTarget> manualTarget)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<Targetter>,
                 RefRW<LoseTarget>,
-                RefRO<TargetOverride>>())
+                RefRO<ManualTarget>>())
         {
             //FIX: Avoid continue. Maybe labels/goto?
             if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
@@ -27,7 +27,7 @@ partial struct LoseTargetSystem : ISystem
             }
 
             //FIX: Avoid continue. Maybe labels/goto?
-            if (state.EntityManager.ExistsAndPersists(targetOverride.ValueRO.targetEntity))
+            if (state.EntityManager.ExistsAndPersists(manualTarget.ValueRO.targetEntity))
             {
                 loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
                 continue;

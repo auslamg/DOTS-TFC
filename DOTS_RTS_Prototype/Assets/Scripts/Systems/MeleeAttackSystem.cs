@@ -24,7 +24,7 @@ partial struct MeleeAttackSystem : ISystem
                 RefRO<Targetter>,
                 RefRW<UnitMover>,
                 RefRO<Unit>>().
-                WithDisabled<MoveOverride>())
+                WithDisabled<ManualMove>())
         {
             //FIX: Avoid continue. Maybe labels/goto?
             if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))

@@ -11,9 +11,14 @@ Optimize render resolution
     >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
 
-DOCUMENT: Targets dont swap if they dont pass the threshold
+- DOCUMENT: Targets dont swap if they dont pass the threshold
+- REFACTOR: Rename TargetOverride to ManualTarget
+
+
 
 FIXED: Refactor unit turn speed source
 FIXED: ZOMBIE CANT FIND TARGET
 FIXED: Fix unit selection rect scaling with screen size
 FIXED: Could not find singleton oftype EntitiesReference
+
+DONE: REFACTOR: Rename MoveOverride to ManualMove

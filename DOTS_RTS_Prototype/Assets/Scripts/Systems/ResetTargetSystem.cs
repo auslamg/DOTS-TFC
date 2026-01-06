@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 
@@ -13,28 +14,63 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderFirst = true)]
 partial struct ResetTargetSystem : ISystem
 {
+    private ComponentLookup<LocalTransform> localTransformLookup;
+    private EntityStorageInfoLookup esiLookup;
+
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        EntityUtil.GetEntityLookups(ref state, out localTransformLookup, out esiLookup);
+    }
+
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach (RefRW<Targetter> targetter in SystemAPI.Query<RefRW<Targetter>>())
+        EntityUtil.UpdateEntityLookups(ref state, ref localTransformLookup, ref esiLookup);
+
+        new ResetTargetterJob
         {
-            if (targetter.ValueRO.targetEntity != Entity.Null)
+            localTransformComponentLookup = localTransformLookup,
+            entityStorageInfoLookup = esiLookup
+        }.ScheduleParallel();
+
+        new ResetManualTargetJob
+        {
+            localTransformComponentLookup = localTransformLookup,
+            entityStorageInfoLookup = esiLookup
+        }.ScheduleParallel();
+    }
+}
+
+[BurstCompile]
+public partial struct ResetTargetterJob : IJobEntity
+{
+    [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
+    [ReadOnly] public EntityStorageInfoLookup entityStorageInfoLookup;
+    public void Execute(ref Targetter targetter)
+    {
+        if (targetter.targetEntity != Entity.Null)
+        {
+            if (!targetter.targetEntity.ExistsAndPersists(entityStorageInfoLookup, localTransformComponentLookup))
             {
-                if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
-                {
-                    targetter.ValueRW.targetEntity = Entity.Null;
-                }
+                targetter.targetEntity = Entity.Null;
             }
         }
+    }
+}
 
-        foreach (RefRW<TargetOverride> targetOverride in SystemAPI.Query<RefRW<TargetOverride>>())
+[BurstCompile]
+public partial struct ResetManualTargetJob : IJobEntity
+{
+    [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
+    [ReadOnly] public EntityStorageInfoLookup entityStorageInfoLookup;
+    public void Execute(ref ManualTarget manualTarget)
+    {
+        if (manualTarget.targetEntity != Entity.Null)
         {
-            if (targetOverride.ValueRO.targetEntity != Entity.Null)
+            if (!manualTarget.targetEntity.ExistsAndPersists(entityStorageInfoLookup, localTransformComponentLookup))
             {
-                if (!state.EntityManager.ExistsAndPersists(targetOverride.ValueRO.targetEntity))
-                {
-                    targetOverride.ValueRW.targetEntity = Entity.Null;
-                }
+                manualTarget.targetEntity = Entity.Null;
             }
         }
     }

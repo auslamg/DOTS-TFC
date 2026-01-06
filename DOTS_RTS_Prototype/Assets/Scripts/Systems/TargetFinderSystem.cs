@@ -23,13 +23,13 @@ partial struct FindTargetSystem : ISystem
             RefRW<TargetFinder> targetFinder,
             RefRW<Targetter> targetter,
             RefRO<Faction> faction,
-            RefRO<TargetOverride> targetOverride)
+            RefRO<ManualTarget> manualTarget)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<TargetFinder>,
                 RefRW<Targetter>,
                 RefRO<Faction>,
-                RefRO<TargetOverride>>())
+                RefRO<ManualTarget>>())
         {
             //IDEA: Refactor into corroutines
             //FIX: Avoid continue. Maybe labels/goto?
@@ -41,9 +41,9 @@ partial struct FindTargetSystem : ISystem
             targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
 
             //FIX: Avoid continue. Maybe labels/goto?
-            if (state.EntityManager.ExistsAndPersists(targetOverride.ValueRO.targetEntity))
+            if (state.EntityManager.ExistsAndPersists(manualTarget.ValueRO.targetEntity))
             {
-                targetter.ValueRW.targetEntity = targetOverride.ValueRO.targetEntity;
+                targetter.ValueRW.targetEntity = manualTarget.ValueRO.targetEntity;
                 continue;
             }
 
