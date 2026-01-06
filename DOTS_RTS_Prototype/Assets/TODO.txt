@@ -12,7 +12,6 @@ Optimize render resolution
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
 
 - DOCUMENT: Targets dont swap if they dont pass the threshold
-- REFACTOR: Rename TargetOverride to ManualTarget
 
 
 
@@ -22,3 +21,4 @@ FIXED: Fix unit selection rect scaling with screen size
 FIXED: Could not find singleton oftype EntitiesReference
 
 DONE: REFACTOR: Rename MoveOverride to ManualMove
+DONE: REFACTOR: Rename TargetOverride to ManualTarget
