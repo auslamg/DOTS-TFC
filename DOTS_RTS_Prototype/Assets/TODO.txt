@@ -1,5 +1,5 @@
 Optimize render resolution
-- https://www.youtube.com/shorts/eYke6tpAdws
+- LOOK INTO: https://www.youtube.com/shorts/eYke6tpAdws
 - LOOK INTO: Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
@@ -9,11 +9,15 @@ Optimize render resolution
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
     >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
+- FEATURE: FSM bot
 
-- DOCUMENT: Targets dont swap if they dont pass the threshold
+- GDD: Full targetting behaviour
+- GDD: Targets dont swap if they dont pass the threshold
+
 - REFACTOR: Remove "Authoring" from all baker signatures
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
+- REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
 
 
 FIXED: Refactor unit turn speed source
