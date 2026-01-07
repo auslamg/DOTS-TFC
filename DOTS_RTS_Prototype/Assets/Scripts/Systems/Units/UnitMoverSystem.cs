@@ -56,7 +56,7 @@ public partial struct UnitMoverJob : IJobEntity
 {
     //Set on struct construction
     public float deltaTime;
-    public void Execute(ref LocalTransform localTransform, in UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
+    public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
     {
         //Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
@@ -67,8 +67,11 @@ public partial struct UnitMoverJob : IJobEntity
             //Reached target
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;
+            unitMover.isMoving = false;
             return;
         }
+        unitMover.isMoving = true;
+
 
         moveDirection = math.normalize(moveDirection);
 

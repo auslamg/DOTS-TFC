@@ -31,5 +31,6 @@ public struct UnitMover : IComponentData
     public float targetReachedDistanceSquared;
 
     public float3 targetPosition;
+    public bool isMoving;
 }
 

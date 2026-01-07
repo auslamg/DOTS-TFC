@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3416487c01c35ae40a209f43c2b204ee, type: 3}
   m_Name: _AnimationDataListSO
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataListSO
-  animationDataSOList: []
+  animationDataSOList:
+  - {fileID: 11400000, guid: e627bf9d6e1158f4286d92e140badea4, type: 2}
+  - {fileID: 11400000, guid: c4a50172bccb1384cb5c54beb9861de5, type: 2}
+  - {fileID: 11400000, guid: 4b02fa74101b2f04086d78b5d2f78ad8, type: 2}

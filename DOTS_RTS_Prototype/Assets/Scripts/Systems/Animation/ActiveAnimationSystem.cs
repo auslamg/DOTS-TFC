@@ -22,16 +22,6 @@ partial struct ActiveAnimationSystem : ISystem
                RefRW<ActiveAnimation>,
                RefRW<MaterialMeshInfo>>())
         {
-            //TEST
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                activeAnimation.ValueRW.nextAnimationType = AnimationDataSO.AnimationType.SoldierIdle;
-            }
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                activeAnimation.ValueRW.nextAnimationType = AnimationDataSO.AnimationType.SoldierWalk;
-            }
-
             //Cached AnimDataBlobArrayAsset reference index pointer for readability
             ref AnimationData animData =
                 ref animationDataHolder.animationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.activeAnimationType];

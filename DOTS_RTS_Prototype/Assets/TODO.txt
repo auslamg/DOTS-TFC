@@ -4,16 +4,22 @@ Optimize render resolution
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
+Aesthetic/UX addons
+- FEATURE: Randomized animation delay (time or frame based) for visual noise
 - FEATURE: Spawn a crosshair / cross-swords particle when manually attacking for feedback.
+- FEATURE: Parabollic path arrow trajectory
 
+Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
     >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
-- FEATURE: FSM bot
+
+- FEATURE: FSM bot enemy
 
 - GDD: Full targetting behaviour
 - GDD: Targets dont swap if they dont pass the threshold
 
+- REFACTOR: Change unit selector method for spherecast OR increase selection hitboxes
 - REFACTOR: Remove "Authoring" from all baker signatures
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)

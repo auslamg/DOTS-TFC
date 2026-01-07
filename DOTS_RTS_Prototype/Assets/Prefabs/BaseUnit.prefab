@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1751740341382187913}
   - component: {fileID: 872868429596404478}
   - component: {fileID: 3091455407788612166}
+  - component: {fileID: 5728159663399185578}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -90,6 +91,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5728159663399185578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424743919092990234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671713eebed6ddd4cba599a29a1af522, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActiveAnimationAuthoring
+  nextAnimationType: 0
 --- !u!1 &1649022060362177192
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,6 +214,8 @@ GameObject:
   - component: {fileID: 4611505598139493670}
   - component: {fileID: 7405699747885851844}
   - component: {fileID: 6343553190312268273}
+  - component: {fileID: 8468989917634599923}
+  - component: {fileID: 326186315894104495}
   - component: {fileID: 7740293143244234447}
   - component: {fileID: 6489530662347955522}
   - component: {fileID: 2363472213376058156}
@@ -377,6 +393,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FactionAuthoring
   factionID: 0
+--- !u!114 &8468989917634599923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7460e43d0786d4fa44baebe66821e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimatedMeshReferenceAuthoring
+  animatedMeshGameObject: {fileID: 1424743919092990234}
+--- !u!114 &326186315894104495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b94e508c5a129784683043a4a0a2f8d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimationsAuthoring
+  idleAnimationType: 0
+  walkAnimationType: 0
 --- !u!136 &7740293143244234447
 CapsuleCollider:
   m_ObjectHideFlags: 0
