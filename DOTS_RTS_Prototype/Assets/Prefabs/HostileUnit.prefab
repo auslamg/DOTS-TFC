@@ -85,13 +85,10 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
-      insertIndex: 4
-      addedObject: {fileID: -6727081750685951634}
-    - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
-      insertIndex: 9
+      insertIndex: 8
       addedObject: {fileID: 2413361963158423108}
     - targetCorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
-      insertIndex: 14
+      insertIndex: 13
       addedObject: {fileID: 7235035469828675330}
   m_SourcePrefab: {fileID: 100100000, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
 --- !u!1 &4211631314389968475 stripped
@@ -99,18 +96,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
   m_PrefabInstance: {fileID: 1181070422267658389}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-6727081750685951634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4211631314389968475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eb72a7aae17700439213694268016ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HostileAuthoring
 --- !u!114 &2413361963158423108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
   attackFrequency: 0.5
-  attackDistanceSquared: 1
+  attackDistance: 0
   damageAmount: 2
 --- !u!114 &7235035469828675330
 MonoBehaviour:

@@ -41,7 +41,7 @@ partial struct TestingSystem : ISystem
     /// <summary>
     /// Used for testing queries on Friendly component entities.
     /// </summary>
-    private void TestQueryFriendly(ref SystemState state)
+    /* private void TestQueryFriendly(ref SystemState state)
     {
         int unitCount = 0;
         foreach (
@@ -52,5 +52,5 @@ partial struct TestingSystem : ISystem
             unitCount++;
         }
         Debug.Log("unitCount: " + unitCount);
-    }
+    } */
 }

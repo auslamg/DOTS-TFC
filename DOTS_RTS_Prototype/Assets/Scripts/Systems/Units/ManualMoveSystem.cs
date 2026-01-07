@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-partial struct MoveOverrideSystem : ISystem
+partial struct ManualMoveSystem : ISystem
 {
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
