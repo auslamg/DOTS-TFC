@@ -6,8 +6,7 @@ using UnityEngine.Rendering;
 
 class AnimationDataHolderAuthoring : MonoBehaviour
 {
-    public AnimationDataSO soldierIdle;
-    public AnimationDataSO soldierWalk;
+    public AnimationDataListSO animationDataListSO;
 
     public static AnimationDataHolderAuthoring Instance { get; private set; }
 
@@ -33,78 +32,73 @@ class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
 {
     public override void Bake(AnimationDataHolderAuthoring authoring)
     {
-        EntitiesGraphicsSystem egs =
-            World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
-
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AnimationDataHolder animationDataHolder = new AnimationDataHolder();
 
-        {
-            //Build new blob 
-            BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp);
-            ref AnimationData animationData = ref blobBuilder.ConstructRoot<AnimationData>();
-
-            //Edit singular data inside blob
-            animationData.frameFrequency = authoring.soldierIdle.frameFrequency;
-            animationData.frameCount = authoring.soldierIdle.meshArray.Length;
-
-            //Allocate memory for the array
-            BlobBuilderArray<BatchMeshID> blobBuilderArray =
-                blobBuilder.Allocate(ref animationData.batchMeshIdBlobArray, authoring.soldierIdle.meshArray.Length);
-
-            for (int i = 0; i < authoring.soldierIdle.meshArray.Length; i++)
-            {
-                Mesh mesh = authoring.soldierIdle.meshArray[i];
-                blobBuilderArray[i] =
-                    egs.RegisterMesh(mesh);
-            }
-
-            //Build blobAssetReference
-            animationDataHolder.soldierIdle = blobBuilder.CreateBlobAssetReference<AnimationData>(Allocator.Persistent);
-
-            //Dispose resources to avoid memory leaks
-            blobBuilder.Dispose();
-            //Register one usage to avoid deallocation
-            AddBlobAsset(ref animationDataHolder.soldierIdle, out Unity.Entities.Hash128 objectHash);
-        }
-
-        {
-            //Build new blob 
-            BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp);
-            ref AnimationData animationData = ref blobBuilder.ConstructRoot<AnimationData>();
-
-            //Edit singular data inside blob
-            animationData.frameFrequency = authoring.soldierWalk.frameFrequency;
-            animationData.frameCount = authoring.soldierWalk.meshArray.Length;
-
-            //Allocate memory for the array
-            BlobBuilderArray<BatchMeshID> blobBuilderArray =
-                blobBuilder.Allocate(ref animationData.batchMeshIdBlobArray, authoring.soldierWalk.meshArray.Length);
-
-            for (int i = 0; i < authoring.soldierWalk.meshArray.Length; i++)
-            {
-                Mesh mesh = authoring.soldierWalk.meshArray[i];
-                blobBuilderArray[i] =
-                    egs.RegisterMesh(mesh);
-            }
-
-            //Build blobAssetReference
-            animationDataHolder.soldierWalk = blobBuilder.CreateBlobAssetReference<AnimationData>(Allocator.Persistent);
-
-            //Dispose resources to avoid memory leaks
-            blobBuilder.Dispose();
-            //Register one usage to avoid deallocation
-            AddBlobAsset(ref animationDataHolder.soldierWalk, out Unity.Entities.Hash128 objectHash);
-        }
+        //Retrieve and allocate all AnimationDataSO into arrays and initialize inside managed AnimationDataHolder
+        animationDataHolder = AllocateAnimationData(authoring);
+        //Register one usage to avoid deallocation
+        AddBlobAsset(ref animationDataHolder.animationDataBlobArrayAssetReference, out Unity.Entities.Hash128 objectHash);
 
         AddComponent(entity, animationDataHolder);
+    }
+
+    //TODO: Document
+    private static AnimationDataHolder AllocateAnimationData(AnimationDataHolderAuthoring authoring)
+    {
+        AnimationDataHolder animationDataHolder;
+
+        EntitiesGraphicsSystem egs =
+        World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
+
+        //Build new blob root
+        BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp);
+        ref BlobArray<AnimationData> animationDataBlobArray = ref blobBuilder.ConstructRoot<BlobArray<AnimationData>>();
+
+        //Allocate memory for AnimationData array
+        BlobBuilderArray<AnimationData> animationDataBlobBuilderArray =
+            blobBuilder.Allocate<AnimationData>(ref animationDataBlobArray, System.Enum.GetValues(typeof(AnimationDataSO.AnimationType)).Length);
+
+        //AnimationDataListSO reader
+        int animationSOIndex = 0;
+        foreach (AnimationDataSO.AnimationType animationType in System.Enum.GetValues(typeof(AnimationDataSO.AnimationType)))
+        {
+            AnimationDataSO animationDataSO = authoring.animationDataListSO.GetAnimationDataSO(animationType);
+
+            //Allocate memory for the mesh array
+            BlobBuilderArray<BatchMeshID> blobBuilderArray =
+                blobBuilder.Allocate(ref animationDataBlobBuilderArray[animationSOIndex].batchMeshIdBlobArray, animationDataSO.meshArray.Length);
+
+            //Edit singular data inside blob
+            animationDataBlobBuilderArray[animationSOIndex].frameFrequency = animationDataSO.frameFrequency;
+            animationDataBlobBuilderArray[animationSOIndex].frameCount = animationDataSO.meshArray.Length;
+
+            //Register all meshes in the mesh array
+            for (int i = 0; i < animationDataSO.meshArray.Length; i++)
+            {
+                Mesh mesh = animationDataSO.meshArray[i];
+                //Add to BlobBuilder registry
+                blobBuilderArray[i] =
+                    egs.RegisterMesh(mesh);
+            }
+
+            animationSOIndex++;
+        }
+
+        //Build blobAssetReference
+        animationDataHolder.animationDataBlobArrayAssetReference =
+            blobBuilder.CreateBlobAssetReference<BlobArray<AnimationData>>(Allocator.Persistent);
+
+        //Dispose resources to avoid memory leaks
+        blobBuilder.Dispose();
+
+        return animationDataHolder;
     }
 }
 
 public struct AnimationDataHolder : IComponentData
 {
-    public BlobAssetReference<AnimationData> soldierIdle;
-    public BlobAssetReference<AnimationData> soldierWalk;
+    public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
 }
 
 public struct AnimationData

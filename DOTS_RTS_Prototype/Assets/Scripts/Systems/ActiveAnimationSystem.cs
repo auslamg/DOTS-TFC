@@ -10,7 +10,7 @@ partial struct ActiveAnimationSystem : ISystem
     {
         state.RequireForUpdate<AnimationDataHolder>();
     }
-    
+
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -22,23 +22,20 @@ partial struct ActiveAnimationSystem : ISystem
                RefRW<ActiveAnimation>,
                RefRW<MaterialMeshInfo>>())
         {
-            if (!activeAnimation.ValueRO.animationDataBlobAssetReference.IsCreated)
-            {
-                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierIdle;
-            }
-
             //TEST
             if (Input.GetKeyDown(KeyCode.T))
             {
-                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierIdle;
+                activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.SoldierIdle;
             }
             if (Input.GetKeyDown(KeyCode.Y))
             {
-                activeAnimation.ValueRW.animationDataBlobAssetReference = animationDataHolder.soldierWalk;
+                activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.SoldierWalk;
             }
 
+            //Cached AnimDataBlobArrayAsset reference index pointer for readability
+            ref AnimationData animData =
+                ref animationDataHolder.animationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.activeAnimationType];
 
-            ref var animData = ref activeAnimation.ValueRO.animationDataBlobAssetReference.Value;            
             //Time loop
             //IDEA: Use corroutines
             activeAnimation.ValueRW.framePhaseTime += SystemAPI.Time.DeltaTime;
@@ -55,7 +52,8 @@ partial struct ActiveAnimationSystem : ISystem
                     activeAnimation.ValueRW.currentFrame = 0;
                 }
 
-                materialMeshInfo.ValueRW.MeshID = animData.batchMeshIdBlobArray[activeAnimation.ValueRO.currentFrame];
+                materialMeshInfo.ValueRW.MeshID =
+                    animData.batchMeshIdBlobArray[activeAnimation.ValueRO.currentFrame];
             }
         }
     }
