@@ -25,11 +25,11 @@ partial struct ActiveAnimationSystem : ISystem
             //TEST
             if (Input.GetKeyDown(KeyCode.T))
             {
-                activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.SoldierIdle;
+                activeAnimation.ValueRW.nextAnimationType = AnimationDataSO.AnimationType.SoldierIdle;
             }
             if (Input.GetKeyDown(KeyCode.Y))
             {
-                activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.SoldierWalk;
+                activeAnimation.ValueRW.nextAnimationType = AnimationDataSO.AnimationType.SoldierWalk;
             }
 
             //Cached AnimDataBlobArrayAsset reference index pointer for readability

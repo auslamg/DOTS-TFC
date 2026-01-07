@@ -1,7 +1,6 @@
 Optimize render resolution
 - https://www.youtube.com/shorts/eYke6tpAdws
-- Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
-- Add order queue
+- LOOK INTO: Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
