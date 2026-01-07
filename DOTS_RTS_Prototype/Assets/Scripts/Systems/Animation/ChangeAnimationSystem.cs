@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Rendering;
+using UnityEngine;
 
 [UpdateBefore(typeof(ActiveAnimationSystem))]
 partial struct ChangeAnimationSystem : ISystem
@@ -16,6 +17,19 @@ partial struct ChangeAnimationSystem : ISystem
                 RefRW<ActiveAnimation>,
                 RefRW<MaterialMeshInfo>>())
         {
+            //TODO: Refactor into "PlayFull tag" or something
+            //If the current animation is PlayFull (shoot), then do NOT change it
+            if (activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
+            {
+                Debug.Log("Busy shooting!");
+                continue;
+            }
+            if (activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
+            {
+                Debug.Log("Busy shooting!");
+                continue;
+            }
+
             if (activeAnimation.ValueRO.activeAnimationType != activeAnimation.ValueRO.nextAnimationType)
             {
                 //Set new animation

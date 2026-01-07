@@ -4,6 +4,17 @@ Optimize render resolution
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
+Document
+- ANIMATION ADDITION PROCESS:
+    UnitAnimationsAuthoring definition
+    AnimationDataSO AnimationType definition
+    Editor ScriptableObject instance
+    Set SO Instance fields
+    Add SO to AnimationDataListSO
+    Set UnitAnimations component fields
+- DOCUMENT: (Animation files extensively)
+
+
 Aesthetic/UX addons
 - FEATURE: Randomized animation delay (time or frame based) for visual noise
 - FEATURE: Spawn a crosshair / cross-swords particle when manually attacking for feedback.

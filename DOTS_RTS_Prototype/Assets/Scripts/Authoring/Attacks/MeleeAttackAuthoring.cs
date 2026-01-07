@@ -30,4 +30,5 @@ public struct MeleeAttack : IComponentData
     public float attackFrequency;
     public float attackDistance;
     public int damageAmount;
+    public bool onAttack;
 }

@@ -44,6 +44,21 @@ partial struct ActiveAnimationSystem : ISystem
 
                 materialMeshInfo.ValueRW.MeshID =
                     animData.batchMeshIdBlobArray[activeAnimation.ValueRO.currentFrame];
+
+                //TODO: Refactor into "PlayFull tag" or something
+                //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
+                if (activeAnimation.ValueRO.currentFrame == 0 &&
+                    activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
+                {
+                    Debug.Log("Turned back to 0!");
+                    activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.None;
+                }
+                if (activeAnimation.ValueRO.currentFrame == 0 &&
+                    activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
+                {
+                    Debug.Log("Turned back to 0!");
+                    activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.None;
+                }
             }
         }
     }

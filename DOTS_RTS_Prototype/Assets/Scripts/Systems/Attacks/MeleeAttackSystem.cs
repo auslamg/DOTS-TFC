@@ -91,6 +91,8 @@ partial struct MeleeAttackSystem : ISystem
                 RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                 targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;
                 targetHealth.ValueRW.onHealthChanged = true;
+
+                meleeAttack.ValueRW.onAttack = true;
             }
         }
     }

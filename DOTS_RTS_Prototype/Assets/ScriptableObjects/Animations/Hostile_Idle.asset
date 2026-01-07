@@ -18,4 +18,4 @@ MonoBehaviour:
   - {fileID: 4300000, guid: df8fb447f0ed85645b85d4f14274d82c, type: 2}
   - {fileID: 4300000, guid: 57e97f108cef90448a9bd096ce862f2b, type: 2}
   - {fileID: 4300000, guid: 4661aaf9b1976d141aa8fe113d423529, type: 2}
-  frameFrequency: 0.5
+  frameFrequency: 0.25
