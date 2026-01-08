@@ -3,7 +3,12 @@ using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
-
+/// <summary>
+/// Managed component for the <c>AnimationDataHolder</c> unmanaged component.
+/// </summary>
+/// <remarks>
+/// The component is a Singleton.
+/// </remarks>
 class AnimationDataHolderAuthoring : MonoBehaviour
 {
     public AnimationDataListSO animationDataListSO;
@@ -48,6 +53,7 @@ class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
     {
         AnimationDataHolder animationDataHolder;
 
+        //Cache EGS to register meshes in order to bake them
         EntitiesGraphicsSystem egs =
         World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
 
@@ -77,7 +83,7 @@ class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
             for (int i = 0; i < animationDataSO.meshArray.Length; i++)
             {
                 Mesh mesh = animationDataSO.meshArray[i];
-                //Add to BlobBuilder registry
+                //Add to BlobBuilder registered (baked) meshes
                 blobBuilderArray[i] =
                     egs.RegisterMesh(mesh);
             }
@@ -98,12 +104,20 @@ class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
 
 public struct AnimationDataHolder : IComponentData
 {
+    //TODO: Document
     public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
 }
 
 public struct AnimationData
 {
+    /// <summary>
+    /// Total number of frames in the animation.
+    /// </summary>
     public int frameCount;
+    /// <summary>
+    /// Time span for each frame change.
+    /// Animations are meant to follow a strictly linear frame-rate dictated by this value.
+    /// </summary>
     public float frameFrequency;
     public BlobArray<BatchMeshID> batchMeshIdBlobArray;
 }

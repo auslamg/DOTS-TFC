@@ -1,6 +1,9 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>UnitAnimations</c> unmanaged component.
+/// </summary>
+//TODO: Refactor EXTENSIVELY
 class UnitAnimationsAuthoring : MonoBehaviour
 {
     public AnimationDataSO.AnimationType idleAnimationType;
@@ -26,7 +29,7 @@ class UnitAnimationsAuthoringBaker : Baker<UnitAnimationsAuthoring>
         });
     }
 }
-
+//TODO: Refactor EXTENSIVELY
 public struct UnitAnimations : IComponentData
 {
     public AnimationDataSO.AnimationType idleAnimationType;

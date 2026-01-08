@@ -4,8 +4,12 @@ Optimize render resolution
 
 - LOOK INTO: Leak Detected : Persistent allocates 8 individual allocations. To find out more please enable 'Preferences > Jobs > Leak Detection Level > Enabled With Stack Trace' and reproduce the leak again.
 
+Repository
+- Track "Scripts\Util"
+- Check ScriptableObject persistency
+
 Document
-- ANIMATION ADDITION PROCESS:
+- ANIMATION ADDITION PROCESS: [GETTING REFACTORED]
     UnitAnimationsAuthoring definition
     AnimationDataSO AnimationType definition
     Editor ScriptableObject instance
@@ -17,24 +21,34 @@ Document
 
 Aesthetic/UX addons
 - FEATURE: Randomized animation delay (time or frame based) for visual noise
-- FEATURE: Spawn a crosshair / cross-swords particle when manually attacking for feedback.
 - FEATURE: Parabollic path arrow trajectory
+- FEATURE: UX particle feedback (spawn particles on events)
+    - OnSpawnUnit: smoke cloud
+    - OnTargetSelect: cross-swords / crosshair
+    - OnKillUnit: skull / crossbones
 
 Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
     >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
+- FEATURE: Buildings
 
+AI features
 - FEATURE: FSM bot enemy
+- FEATURE: FlowField pathfinding (requires grid)
+- FEATURE: Non-seeking, calculated projectiles
 
 - GDD: Full targetting behaviour
 - GDD: Targets dont swap if they dont pass the threshold
 
+Refactors
 - REFACTOR: Change unit selector method for spherecast OR increase selection hitboxes
 - REFACTOR: Remove "Authoring" from all baker signatures
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
 - REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
+- REFACTOR: Animation system into dictionary values rather than enums (see documentation)
+    - FSM for animation states
 
 
 FIXED: Refactor unit turn speed source

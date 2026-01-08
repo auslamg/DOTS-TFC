@@ -1,8 +1,13 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>AnimatedMeshReference</c> unmanaged component.
+/// </summary>
 class AnimatedMeshReferenceAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Pointer to the Entity that holds the animated mesh.
+    /// </summary>
     public GameObject animatedMeshGameObject;
 }
 
@@ -20,5 +25,8 @@ class AnimatedMeshReferenceAuthoringBaker : Baker<AnimatedMeshReferenceAuthoring
 
 public struct AnimatedMeshReference : IComponentData
 {
+    /// <summary>
+    /// Pointer to the Entity that holds the animated mesh.
+    /// </summary>
     public Entity meshEntity;
 }

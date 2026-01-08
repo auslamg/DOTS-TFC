@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>Targetter</c> unmanaged component.
+/// </summary>
 class TargetterAuthoring : MonoBehaviour
 {
     public GameObject testTargetGameObject;

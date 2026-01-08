@@ -2,7 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// GameObject for the <c>Projectile</c> component.
+/// Managed component for the <c>Projectile</c> unmanaged component.
 /// </summary>
 /// <remarks>
 /// Managed fields are used exclusively for in-scene pre-built GameObject testing,

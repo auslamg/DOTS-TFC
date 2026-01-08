@@ -1,7 +1,9 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>RandomWalk</c> unmanaged component.
+/// </summary>
 class RandomWalkAuthoring : MonoBehaviour
 {
     public float3 targetPostion;

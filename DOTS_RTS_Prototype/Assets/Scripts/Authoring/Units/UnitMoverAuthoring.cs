@@ -1,7 +1,9 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>UnitMover</c> unmanaged component.
+/// </summary>
 public class UnitMoverAuthoring : MonoBehaviour
 {
     public float moveSpeed;

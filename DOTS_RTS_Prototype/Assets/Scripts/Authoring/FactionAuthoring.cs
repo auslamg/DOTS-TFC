@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// GameObject for the <c>Faction</c> component.
+/// Managed component for the <c>Faction</c> unmanaged component.
 /// </summary>
 class FactionAuthoring : MonoBehaviour
 {

@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>TargetFinder</c> unmanaged component.
+/// </summary>
 class TargetFinderAuthoring : MonoBehaviour
 {
     public float targetRange;

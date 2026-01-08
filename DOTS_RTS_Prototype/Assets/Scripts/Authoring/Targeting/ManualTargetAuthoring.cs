@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>ManualTarget</c> unmanaged component.
+/// </summary>
 class ManualTargetAuthoring : MonoBehaviour
 {
 

@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>SelfDestroy</c> unmanaged component.
+/// </summary>
 class SelfDestroyAuthoring : MonoBehaviour
 {
     public float delay;

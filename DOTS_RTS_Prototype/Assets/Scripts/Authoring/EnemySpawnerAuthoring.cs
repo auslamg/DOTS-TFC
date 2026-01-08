@@ -4,7 +4,7 @@ using UnityEngine;
 //IDEA: Refactor into "EntitySpawner" with a set Prefab field
 
 /// <summary>
-/// GameObject for the <c>EnemySpawner</c> component.
+/// Managed component for the <c>EnemySpawner</c> unmanaged component.
 /// </summary>
 class EnemySpawnerAuthoring : MonoBehaviour
 {

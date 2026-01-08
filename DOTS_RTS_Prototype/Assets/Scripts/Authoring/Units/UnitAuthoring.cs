@@ -2,7 +2,9 @@ using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>Unit</c> unmanaged component.
+/// </summary>
 //TODO: Implement owners with ID's as Data
 public class UnitAuthoring : MonoBehaviour
 {

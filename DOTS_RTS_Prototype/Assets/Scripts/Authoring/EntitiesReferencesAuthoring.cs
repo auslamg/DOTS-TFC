@@ -2,7 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// GameObject for the <c>EntitiesReferences</c> component.
+/// Managed component for the <c>EntitiesReferences</c> unmanaged component.
 /// </summary>
 /// <remarks>
 /// The component is a Singleton.

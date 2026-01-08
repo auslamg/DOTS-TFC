@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>Health</c> unmanaged component.
+/// </summary>
 class HealthAuthoring : MonoBehaviour
 {
     public int currentHealth;

@@ -1,6 +1,8 @@
 using Unity.Entities;
 using UnityEngine;
-
+/// <summary>
+/// Managed component for the <c>Selected</c> unmanaged component.
+/// </summary>
 class SelectedAuthoring : MonoBehaviour
 {
     public GameObject selectedGizmoGameObject;
