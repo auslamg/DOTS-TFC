@@ -21,5 +21,8 @@ class ManualTargetAuthoringBaker : Baker<ManualTargetAuthoring>
 
 public struct ManualTarget : IComponentData
 {
+    /// <summary>
+    /// Targetted entity.
+    /// </summary>
     public Entity targetEntity;
 }

@@ -23,6 +23,10 @@ public class MoveOverrideBaker : Baker<ManualMoveAuthoring>
 
 public struct ManualMove : IComponentData, IEnableableComponent
 {
+    //TODO: Rename to destination
+    /// <summary>
+    /// Desired position to move the Entity to.
+    /// </summary>
     public float3 targetPosition;
 }
 

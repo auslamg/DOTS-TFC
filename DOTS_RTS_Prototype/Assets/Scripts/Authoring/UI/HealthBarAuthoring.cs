@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 class HealthBarAuthoring : MonoBehaviour
 {
+    //TODO: Document
     public GameObject visualBarGameObject;
     public GameObject healthGameObject;
 }

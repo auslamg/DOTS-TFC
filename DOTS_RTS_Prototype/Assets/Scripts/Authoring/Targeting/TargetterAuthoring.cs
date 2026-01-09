@@ -5,6 +5,12 @@ using UnityEngine;
 /// </summary>
 class TargetterAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Targetted GameObject baked to an Entity.
+    /// </summary>
+    /// <remarks>
+    /// Entities with this component will usually have their own means for acquiring targets, so this field is mainly for testing purposes.
+    /// </remarks>
     public GameObject testTargetGameObject;
 
 }
@@ -23,5 +29,8 @@ class TargetterBaker : Baker<TargetterAuthoring>
 
 public struct Targetter : IComponentData
 {
+    /// <summary>
+    /// Targetted entity.
+    /// </summary>
     public Entity targetEntity;
 }

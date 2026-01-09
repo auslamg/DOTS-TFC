@@ -5,8 +5,17 @@ using UnityEngine;
 /// </summary>
 class TargetFinderAuthoring : MonoBehaviour
 {
-    public float targetRange;
+    /// <summary>
+    /// Time span between scans.
+    /// </summary>
     public float scanFrequency;
+    /// <summary>
+    /// Maximum distance for acquiring targets.
+    /// </summary>
+    public float targetRange;
+    /// <summary>
+    /// Minimum distance between targets to consider swapping to the closest one.
+    /// </summary>
     public float swapTargetMinDistance;
 }
 
@@ -26,8 +35,20 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
 
 public struct TargetFinder : IComponentData
 {
-    public float targetRange;
+    /// <summary>
+    /// Current time passed since the last scan.
+    /// </summary>
     public float scanPhaseTime;
+    /// <summary>
+    /// Time span between scans.
+    /// </summary>
     public float scanFrequency;
+    /// <summary>
+    /// Maximum distance for acquiring targets.
+    /// </summary>
+    public float targetRange;
+    /// <summary>
+    /// Minimum distance between targets to consider swapping to the closest one.
+    /// </summary>
     public float swapTargetMinDistance;
 }
