@@ -173,6 +173,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
   attackFrequency: 0.3
-  damageAmount: 1
   attackDistance: 25
-  bulletSpawnPointTransform: {fileID: 5785980750958341896}
+  damageAmount: 1
+  projectileSpawnPointTransform: {fileID: 5785980750958341896}

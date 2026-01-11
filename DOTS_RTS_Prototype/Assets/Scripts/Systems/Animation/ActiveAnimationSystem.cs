@@ -15,51 +15,61 @@ partial struct ActiveAnimationSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
-        foreach ((
-           RefRW<ActiveAnimation> activeAnimation,
-           RefRW<MaterialMeshInfo> materialMeshInfo)
-               in SystemAPI.Query<
-               RefRW<ActiveAnimation>,
-               RefRW<MaterialMeshInfo>>())
+
+        ActiveAnimationJob job = new ActiveAnimationJob
         {
-            //Cached AnimDataBlobArrayAsset reference index pointer for readability
-            ref AnimationData animData =
-                ref animationDataHolder.animationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.activeAnimationType];
+            deltaTime = SystemAPI.Time.DeltaTime,
+            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayAssetReference
+        };
+        job.ScheduleParallel();
+    }
+}
 
-            //Time loop
+[BurstCompile]
+public partial struct ActiveAnimationJob : IJobEntity
+{
+    public float deltaTime;
+    public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
+    public void Execute(ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
+    {
+        //Cached AnimDataBlobArrayAsset reference index pointer for readability
+        ref AnimationData animData =
+            ref animationDataBlobArrayAssetReference.Value[(int)activeAnimation.activeAnimationType];
+
+        //Time loop
+        //IDEA: Use corroutines
+        activeAnimation.framePhaseTime += deltaTime;
+        if (activeAnimation.framePhaseTime >= animData.frameFrequency)
+        {
+            activeAnimation.framePhaseTime -= animData.frameFrequency;
+
+
+            //Animation loop
             //IDEA: Use corroutines
-            activeAnimation.ValueRW.framePhaseTime += SystemAPI.Time.DeltaTime;
-            if (activeAnimation.ValueRO.framePhaseTime >= animData.frameFrequency)
+            activeAnimation.currentFrame += 1;
+            if (activeAnimation.currentFrame >= animData.frameCount)
             {
-                activeAnimation.ValueRW.framePhaseTime -= animData.frameFrequency;
+                activeAnimation.currentFrame = 0;
+            }
 
+            materialMeshInfo.MeshID =
+                animData.batchMeshIdBlobArray[activeAnimation.currentFrame];
 
-                //Animation loop
-                //IDEA: Use corroutines
-                activeAnimation.ValueRW.currentFrame += 1;
-                if (activeAnimation.ValueRO.currentFrame >= animData.frameCount)
-                {
-                    activeAnimation.ValueRW.currentFrame = 0;
-                }
-
-                materialMeshInfo.ValueRW.MeshID =
-                    animData.batchMeshIdBlobArray[activeAnimation.ValueRO.currentFrame];
-
-                //TODO: Refactor into "PlayFull tag" or something
-                //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
-                if (activeAnimation.ValueRO.currentFrame == 0 &&
-                    activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
-                {
-                    Debug.Log("Turned back to 0!");
-                    activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.None;
-                }
-                if (activeAnimation.ValueRO.currentFrame == 0 &&
-                    activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
-                {
-                    Debug.Log("Turned back to 0!");
-                    activeAnimation.ValueRW.activeAnimationType = AnimationDataSO.AnimationType.None;
-                }
+            //TODO: Refactor into "PlayFull tag" or something
+            //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
+            if (activeAnimation.currentFrame == 0 &&
+                activeAnimation.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
+            {
+                Debug.Log("Turned back to 0!");
+                activeAnimation.activeAnimationType = AnimationDataSO.AnimationType.None;
+            }
+            if (activeAnimation.currentFrame == 0 &&
+                activeAnimation.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
+            {
+                Debug.Log("Turned back to 0!");
+                activeAnimation.activeAnimationType = AnimationDataSO.AnimationType.None;
             }
         }
     }
 }
+

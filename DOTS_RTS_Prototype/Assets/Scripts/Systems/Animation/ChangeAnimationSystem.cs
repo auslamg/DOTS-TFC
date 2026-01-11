@@ -10,38 +10,45 @@ partial struct ChangeAnimationSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
-        foreach ((
-            RefRW<ActiveAnimation> activeAnimation,
-            RefRW<MaterialMeshInfo> materialMeshInfo)
-                in SystemAPI.Query<
-                RefRW<ActiveAnimation>,
-                RefRW<MaterialMeshInfo>>())
+
+        ChangeAnimationJob changeAnimationJob = new ChangeAnimationJob
         {
-            //TODO: Refactor into "PlayFull tag" or something
-            //If the current animation is PlayFull (shoot), then do NOT change it
-            if (activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
-            {
-                Debug.Log("Busy shooting!");
-                continue;
-            }
-            if (activeAnimation.ValueRO.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
-            {
-                Debug.Log("Busy shooting!");
-                continue;
-            }
+            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayAssetReference
+        };
+        changeAnimationJob.ScheduleParallel();
+    }
+}
 
-            if (activeAnimation.ValueRO.activeAnimationType != activeAnimation.ValueRO.nextAnimationType)
-            {
-                //Set new animation
-                activeAnimation.ValueRW.currentFrame = 0;
-                activeAnimation.ValueRW.framePhaseTime = 0;
-                activeAnimation.ValueRW.activeAnimationType = activeAnimation.ValueRO.nextAnimationType;
+public partial struct ChangeAnimationJob : IJobEntity
+{
+    public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
 
-                //Get and set first frame
-                ref AnimationData animData =
-                                ref animationDataHolder.animationDataBlobArrayAssetReference.Value[(int)activeAnimation.ValueRW.activeAnimationType];
-                materialMeshInfo.ValueRW.MeshID = animData.batchMeshIdBlobArray[0];
-            }
+    public void Execute(ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
+    {
+        //TODO: Refactor into "PlayFull tag" or something
+        //If the current animation is PlayFull (shoot), then do NOT change it
+        if (activeAnimation.activeAnimationType == AnimationDataSO.AnimationType.SoldierShoot)
+        {
+            Debug.Log("Busy shooting!");
+            return;
+        }
+        if (activeAnimation.activeAnimationType == AnimationDataSO.AnimationType.ZombieAttack)
+        {
+            Debug.Log("Busy shooting!");
+            return;
+        }
+
+        if (activeAnimation.activeAnimationType != activeAnimation.nextAnimationType)
+        {
+            //Set new animation
+            activeAnimation.currentFrame = 0;
+            activeAnimation.framePhaseTime = 0;
+            activeAnimation.activeAnimationType = activeAnimation.nextAnimationType;
+
+            //Get and set first frame
+            ref AnimationData animData =
+                            ref animationDataBlobArrayAssetReference.Value[(int)activeAnimation.activeAnimationType];
+            materialMeshInfo.MeshID = animData.batchMeshIdBlobArray[0];
         }
     }
 }
