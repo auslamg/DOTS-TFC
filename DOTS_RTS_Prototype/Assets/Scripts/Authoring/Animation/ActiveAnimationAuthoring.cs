@@ -15,9 +15,6 @@ class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
 {
     public override void Bake(ActiveAnimationAuthoring authoring)
     {
-        EntitiesGraphicsSystem egs =
-            World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>();
-
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new ActiveAnimation
         {

@@ -8,10 +8,10 @@ partial struct ResetEventSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        new ResetSelectedEventsJob().ScheduleParallel();
-        new ResetHealthEventsJob().ScheduleParallel();
-        new ResetMeleeAttackEventsJob().ScheduleParallel();
-        new ResetShootAttackEventsJob().ScheduleParallel();
+        new ResetSelectedEventsJob().ScheduleParallel(state.Dependency);
+        new ResetHealthEventsJob().ScheduleParallel(state.Dependency);
+        new ResetMeleeAttackEventsJob().ScheduleParallel(state.Dependency);
+        new ResetShootAttackEventsJob().ScheduleParallel(state.Dependency);
     }
 
 }

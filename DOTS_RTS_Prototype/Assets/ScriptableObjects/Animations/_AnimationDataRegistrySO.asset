@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3416487c01c35ae40a209f43c2b204ee, type: 3}
-  m_Name: _AnimationDataListSO
+  m_Name: _AnimationDataRegistrySO
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataListSO
   animationDataSOList:
   - {fileID: 11400000, guid: e627bf9d6e1158f4286d92e140badea4, type: 2}

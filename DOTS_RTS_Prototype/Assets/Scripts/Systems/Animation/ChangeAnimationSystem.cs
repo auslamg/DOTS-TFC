@@ -7,6 +7,12 @@ using UnityEngine;
 partial struct ChangeAnimationSystem : ISystem
 {
     [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<AnimationDataHolder>();
+    }
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
@@ -42,14 +48,14 @@ public partial struct ChangeAnimationJob : IJobEntity
             activeAnimation.activeAnimationKey = activeAnimation.nextAnimationKey;
 
             //Get and set first frame
-            ref AnimationData animData = 
+            ref AnimationData animData =
                 ref EntityUtil.GetAnimationData(animationDataBlobArrayAssetReference, activeAnimation.activeAnimationKey);
 
 
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey
 
 
-            materialMeshInfo.MeshID = animData.batchMeshIdBlobArray[0];
+            materialMeshInfo.Mesh = animData.intMeshIdBlobArray[0];
         }
     }
 }

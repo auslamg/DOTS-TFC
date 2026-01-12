@@ -66,8 +66,8 @@ public partial struct ActiveAnimationJob : IJobEntity
                 activeAnimation.currentFrame = 0;
             }
 
-            materialMeshInfo.MeshID =
-                animData.batchMeshIdBlobArray[activeAnimation.currentFrame];
+            materialMeshInfo.Mesh =
+                animData.intMeshIdBlobArray[activeAnimation.currentFrame];
 
             //Get UnitAnimations inside parent's component
             RefRO<UnitAnimations> unitAnimations =

@@ -44,6 +44,10 @@ public struct AnimationKey : IEquatable<AnimationKey>
         return name.Equals(other.name);
     }
 
+    public override string ToString()
+    {
+        return name + "[AnimationType:" + animationType + "]";
+    }
     public override int GetHashCode()
     {
         unchecked
