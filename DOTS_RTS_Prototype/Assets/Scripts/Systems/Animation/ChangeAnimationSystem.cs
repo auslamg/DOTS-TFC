@@ -27,14 +27,10 @@ public partial struct ChangeAnimationJob : IJobEntity
     {
         //TODO: Refactor into "PlayFull tag" or something
         //If the current animation is PlayFull (shoot), then do NOT change it
-        if (activeAnimation.activeAnimationKey.animationType == AnimationType.Shoot)
+        if (activeAnimation.activeAnimationKey.animationType == AnimationType.Shoot ||
+            activeAnimation.activeAnimationKey.animationType == AnimationType.Melee)
         {
-            Debug.Log("Busy shooting!");
-            return;
-        }
-        if (activeAnimation.activeAnimationKey.animationType == AnimationType.Melee)
-        {
-            Debug.Log("Busy melee!");
+            //Busy attacking
             return;
         }
 

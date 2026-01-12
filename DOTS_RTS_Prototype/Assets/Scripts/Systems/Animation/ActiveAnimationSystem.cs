@@ -46,8 +46,6 @@ public partial struct ActiveAnimationJob : IJobEntity
 
     public void Execute(Entity entity, ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
-        Debug.Log("Code reached");
-
         //Cached AnimDataBlobArrayAsset reference index pointer for readability
         ref AnimationData animData =
             ref EntityUtil.GetAnimationData(animationDataBlobArrayAssetReference, activeAnimation.activeAnimationKey);
@@ -72,23 +70,16 @@ public partial struct ActiveAnimationJob : IJobEntity
                 animData.batchMeshIdBlobArray[activeAnimation.currentFrame];
 
             //Get UnitAnimations inside parent's component
-            RefRO<UnitAnimations> unitAnimations = 
+            RefRO<UnitAnimations> unitAnimations =
                 unitAnimationsComponentLookup.GetRefRO(parentComponentLookup[entity].Value);
 
             //TODO: Refactor into "PlayFull tag" or something
             //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
             if (activeAnimation.currentFrame == 0 &&
-                activeAnimation.activeAnimationKey.animationType == AnimationType.Shoot)
+                (activeAnimation.activeAnimationKey.animationType == AnimationType.Shoot ||
+                 activeAnimation.activeAnimationKey.animationType == AnimationType.Melee))
             {
-                
-
-                Debug.Log("Turned back to 0!");
-                activeAnimation.activeAnimationKey = unitAnimations.ValueRO.noneAnimationKey;
-            }
-            if (activeAnimation.currentFrame == 0 &&
-                activeAnimation.activeAnimationKey.animationType == AnimationType.Melee)
-            {
-                Debug.Log("Turned back to 0!");
+                //Busy attacking
                 activeAnimation.activeAnimationKey = unitAnimations.ValueRO.noneAnimationKey;
             }
         }
