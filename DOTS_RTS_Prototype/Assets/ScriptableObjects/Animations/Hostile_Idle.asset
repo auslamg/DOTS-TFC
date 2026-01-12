@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
   m_Name: Hostile_Idle
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
-  animationType: 3
+  animationName: hostile_idle
+  animationType: 1
+  playFull: 0
   meshArray:
   - {fileID: 4300000, guid: 704f5ea696ef75944b30d5c8ec37f428, type: 2}
   - {fileID: 4300000, guid: df8fb447f0ed85645b85d4f14274d82c, type: 2}

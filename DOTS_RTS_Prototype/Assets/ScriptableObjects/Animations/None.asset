@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
   m_Name: None
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationName: none
   animationType: 0
+  playFull: 0
   meshArray: []
   frameFrequency: 10

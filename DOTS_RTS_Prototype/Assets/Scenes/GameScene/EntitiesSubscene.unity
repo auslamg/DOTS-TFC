@@ -247,7 +247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5797222689594016361, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -14.051147
+      value: -0.051146507
       objectReference: {fileID: 0}
     - target: {fileID: 5797222689594016361, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
       propertyPath: m_LocalPosition.y
@@ -255,7 +255,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5797222689594016361, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 32.67109
+      value: 19.67109
       objectReference: {fileID: 0}
     - target: {fileID: 5797222689594016361, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
       propertyPath: m_LocalRotation.w
@@ -423,7 +423,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebc91cf425b9aae49a6dc68451fadc0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataHolderAuthoring
-  animationDataListSO: {fileID: 11400000, guid: 3f064285f34821641a7063268517a9ec, type: 2}
+  animationDataRegistrySO: {fileID: 11400000, guid: 3f064285f34821641a7063268517a9ec, type: 2}
 --- !u!4 &1663743517
 Transform:
   m_ObjectHideFlags: 0
@@ -480,7 +480,7 @@ Transform:
   m_GameObject: {fileID: 1890641265}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 30, y: 0, z: 30}
+  m_LocalPosition: {x: 20, y: 0, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
