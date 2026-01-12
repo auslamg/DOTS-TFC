@@ -103,7 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671713eebed6ddd4cba599a29a1af522, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActiveAnimationAuthoring
-  nextAnimationType: 0
 --- !u!1 &1649022060362177192
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,8 +323,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5320d3555fca3a843abfc396b5808e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FindTargetAuthoring
-  targetRange: 20
   scanFrequency: 1.5
+  targetRange: 20
   swapTargetMinDistance: 2
 --- !u!114 &-2479219367038610689
 MonoBehaviour:
@@ -418,8 +417,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b94e508c5a129784683043a4a0a2f8d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAnimationsAuthoring
-  idleAnimationType: 0
-  walkAnimationType: 0
+  noneAnimationKey: none
+  idleAnimationKey: 
+  walkAnimationKey: 
+  meleeAttackAnimationKey: 
+  shootAnimationKey: 
+  aimAnimationKey: 
 --- !u!136 &7740293143244234447
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -6,11 +6,12 @@ using UnityEngine;
 //TODO: Refactor EXTENSIVELY
 class UnitAnimationsAuthoring : MonoBehaviour
 {
-    public AnimationDataSO.AnimationType idleAnimationType;
-    public AnimationDataSO.AnimationType walkAnimationType;
-    public AnimationDataSO.AnimationType shootAnimationType;
-    public AnimationDataSO.AnimationType aimAnimationType;
-    public AnimationDataSO.AnimationType meleeAttackAnimationType;
+    public string noneAnimationKey;
+    public string idleAnimationKey;
+    public string walkAnimationKey;
+    public string meleeAttackAnimationKey;
+    public string shootAnimationKey;
+    public string aimAnimationKey;
 
 }
 
@@ -21,20 +22,51 @@ class UnitAnimationsAuthoringBaker : Baker<UnitAnimationsAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new UnitAnimations
         {
-            idleAnimationType = authoring.idleAnimationType,
-            walkAnimationType = authoring.walkAnimationType,
-            shootAnimationType = authoring.shootAnimationType,
-            aimAnimationType = authoring.aimAnimationType,
-            meleeAttackAnimationType = authoring.meleeAttackAnimationType,
+            noneAnimationKey = new AnimationKey
+            {
+                name = authoring.noneAnimationKey,
+                animationType = AnimationType.None
+            },
+
+            idleAnimationKey = new AnimationKey
+            {
+                name = authoring.idleAnimationKey,
+                animationType = AnimationType.Idle
+            },
+
+            walkAnimationKey = new AnimationKey
+            {
+                name = authoring.walkAnimationKey,
+                animationType = AnimationType.Move
+            },
+
+            meleeAttackAnimationKey = new AnimationKey
+            {
+                name = authoring.meleeAttackAnimationKey,
+                animationType = AnimationType.Melee
+            },
+
+            shootAnimationKey = new AnimationKey
+            {
+                name = authoring.shootAnimationKey,
+                animationType = AnimationType.Shoot
+            },
+
+            aimAnimationKey = new AnimationKey
+            {
+                name = authoring.aimAnimationKey,
+                animationType = AnimationType.Aim
+            },
         });
     }
 }
 //TODO: Refactor EXTENSIVELY
 public struct UnitAnimations : IComponentData
 {
-    public AnimationDataSO.AnimationType idleAnimationType;
-    public AnimationDataSO.AnimationType walkAnimationType;
-    public AnimationDataSO.AnimationType shootAnimationType;
-    public AnimationDataSO.AnimationType aimAnimationType;
-    public AnimationDataSO.AnimationType meleeAttackAnimationType;
+    public AnimationKey noneAnimationKey;
+    public AnimationKey idleAnimationKey;
+    public AnimationKey walkAnimationKey;
+    public AnimationKey shootAnimationKey;
+    public AnimationKey aimAnimationKey;
+    public AnimationKey meleeAttackAnimationKey;
 }

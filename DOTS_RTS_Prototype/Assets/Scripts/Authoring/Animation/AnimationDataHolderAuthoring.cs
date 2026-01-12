@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Rendering;
@@ -11,7 +12,7 @@ using UnityEngine.Rendering;
 /// </remarks>
 class AnimationDataHolderAuthoring : MonoBehaviour
 {
-    public AnimationDataListSO animationDataListSO;
+    public AnimationDataRegistrySO animationDataRegistrySO;
 
     public static AnimationDataHolderAuthoring Instance { get; private set; }
 
@@ -62,20 +63,21 @@ class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
         ref BlobArray<AnimationData> animationDataBlobArray = ref blobBuilder.ConstructRoot<BlobArray<AnimationData>>();
 
         //Allocate memory for AnimationData array
+        int blobArraySize = authoring.animationDataRegistrySO.animationDataSOList.Count();
         BlobBuilderArray<AnimationData> animationDataBlobBuilderArray =
-            blobBuilder.Allocate<AnimationData>(ref animationDataBlobArray, System.Enum.GetValues(typeof(AnimationDataSO.AnimationType)).Length);
+            blobBuilder.Allocate<AnimationData>(ref animationDataBlobArray, blobArraySize);
 
-        //AnimationDataListSO reader
+        //For all Animation ScriptableObjects found in the list reader
         int animationSOIndex = 0;
-        foreach (AnimationDataSO.AnimationType animationType in System.Enum.GetValues(typeof(AnimationDataSO.AnimationType)))
+        foreach (AnimationDataSO animationDataSO in authoring.animationDataRegistrySO.animationDataSOList)
         {
-            AnimationDataSO animationDataSO = authoring.animationDataListSO.GetAnimationDataSO(animationType);
-
             //Allocate memory for the mesh array
             BlobBuilderArray<BatchMeshID> blobBuilderArray =
                 blobBuilder.Allocate(ref animationDataBlobBuilderArray[animationSOIndex].batchMeshIdBlobArray, animationDataSO.meshArray.Length);
 
             //Edit singular data inside blob
+            animationDataBlobBuilderArray[animationSOIndex].animationKey = animationDataSO.animationKey;
+            animationDataBlobBuilderArray[animationSOIndex].playFull = animationDataSO.playFull;
             animationDataBlobBuilderArray[animationSOIndex].frameFrequency = animationDataSO.frameFrequency;
             animationDataBlobBuilderArray[animationSOIndex].frameCount = animationDataSO.meshArray.Length;
 
@@ -110,6 +112,8 @@ public struct AnimationDataHolder : IComponentData
 
 public struct AnimationData
 {
+    public AnimationKey animationKey;
+    public bool playFull;
     /// <summary>
     /// Total number of frames in the animation.
     /// </summary>

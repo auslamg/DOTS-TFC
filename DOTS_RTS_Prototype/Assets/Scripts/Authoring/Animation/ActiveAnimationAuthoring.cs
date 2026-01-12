@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 class ActiveAnimationAuthoring : MonoBehaviour
 {
     //TODO: Refactor. Undocumented. 
-    public AnimationDataSO.AnimationType nextAnimationType;
+    public AnimationKey nextAnimationKey;
 }
 
 class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
@@ -21,7 +21,7 @@ class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new ActiveAnimation
         {
-            nextAnimationType = authoring.nextAnimationType
+            nextAnimationKey = authoring.nextAnimationKey
         });
     }
 }
@@ -39,7 +39,7 @@ public struct ActiveAnimation : IComponentData
     /// </summary>
     public float framePhaseTime;
     //TODO: Refactor. Undocumented. 
-    public AnimationDataSO.AnimationType activeAnimationType;
+    public AnimationKey activeAnimationKey;
     //TODO: Refactor. Undocumented. 
-    public AnimationDataSO.AnimationType nextAnimationType;
+    public AnimationKey nextAnimationKey;
 }

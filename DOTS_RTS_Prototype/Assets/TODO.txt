@@ -49,6 +49,7 @@ Refactors
 - REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
 - REFACTOR: Animation system into dictionary values rather than enums (see documentation)
     - FSM for animation states
+- REFACTOR: Standardize jobs schedulling and lookups
 
 
 FIXED: Refactor unit turn speed source

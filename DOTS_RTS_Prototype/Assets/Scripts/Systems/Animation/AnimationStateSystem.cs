@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
@@ -6,101 +7,102 @@ using UnityEngine;
 [UpdateAfter(typeof(ShootAttackSystem))]
 partial struct AnimationStateSystem : ISystem
 {
+    public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
+
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        activeAnimationComponentLookup = state.GetComponentLookup<ActiveAnimation>(false);
+    }
+
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach ((
-            RefRO<AnimatedMeshReference> animatedMesh,
-            RefRO<UnitMover> unitMover,
-            RefRO<UnitAnimations> unitAnimations)
-                in SystemAPI.Query<
-                RefRO<AnimatedMeshReference>,
-                RefRO<UnitMover>,
-                RefRO<UnitAnimations>>())
+        activeAnimationComponentLookup.Update(ref state);
+
+        IdleWalkingAnimationStateJob job = new IdleWalkingAnimationStateJob
+        {
+            activeAnimationComponentLookup = activeAnimationComponentLookup
+        };
+        job.ScheduleParallel(); //TODO: Rename
+
+        AimShootAnimationStateJob job2 = new AimShootAnimationStateJob
+        {
+            activeAnimationComponentLookup = activeAnimationComponentLookup
+        };
+        job2.ScheduleParallel(); //TODO: Rename
+
+        MeleeAttackAnimationStateJob job3 = new MeleeAttackAnimationStateJob
+        {
+            activeAnimationComponentLookup = activeAnimationComponentLookup
+        };
+        job3.ScheduleParallel(); //TODO: Rename
+    }
+}
+
+public partial struct IdleWalkingAnimationStateJob : IJobEntity
+{
+    [NativeDisableParallelForRestriction] public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
+    public void Execute(in AnimatedMeshReference animatedMesh,
+            in UnitMover unitMover,
+            in UnitAnimations unitAnimations)
+    {
+        RefRW<ActiveAnimation> activeAnimation = activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
+
+        //TODO: Refactor into fsm
+        if (unitMover.isMoving)
+        {
+            activeAnimation.ValueRW.nextAnimationKey = unitAnimations.walkAnimationKey;
+        }
+        else
+        {
+            activeAnimation.ValueRW.nextAnimationKey = unitAnimations.idleAnimationKey;
+        }
+    }
+}
+
+public partial struct AimShootAnimationStateJob : IJobEntity
+{
+    [NativeDisableParallelForRestriction] public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
+    public void Execute(in AnimatedMeshReference animatedMesh,
+            in UnitMover unitMover,
+            in Targetter targetter,
+            in ShootAttack shootAttack,
+            in UnitAnimations unitAnimations)
+    {
+        //FIX: Use utils method
+        //TODO: Refactor into fsm
+        if (!unitMover.isMoving && targetter.targetEntity != Entity.Null)
         {
             RefRW<ActiveAnimation> activeAnimation =
-                SystemAPI.GetComponentRW<ActiveAnimation>(animatedMesh.ValueRO.meshEntity);
-
-            //TODO: Refactor into fsm
-            if (unitMover.ValueRO.isMoving)
-            {
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.walkAnimationType;
-            }
-            else
-            {
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.idleAnimationType;
-            }
+                activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
+            activeAnimation.ValueRW.nextAnimationKey = unitAnimations.aimAnimationKey;
         }
 
-        foreach ((
-            RefRO<AnimatedMeshReference> animatedMesh,
-            RefRO<ShootAttack> shootAttack,
-            RefRO<UnitMover> unitMover,
-            RefRO<Targetter> targetter,
-            RefRO<UnitAnimations> unitAnimations)
-                in SystemAPI.Query<
-                RefRO<AnimatedMeshReference>,
-                RefRO<ShootAttack>,
-                RefRO<UnitMover>,
-                RefRO<Targetter>,
-                RefRO <UnitAnimations>>())
+
+        //TODO: Refactor into fsm
+        if (shootAttack.onShoot.isTriggered)
         {
-
-            //Explanation
-            //If the entity is NOT moving AND has a target, default to aim.
-            //If it additionally is onShoot TRUE, then shoot
-
-            //The animation will NOT get changed if it's currently a PlayFull (shoot) animation
-            //Playfull animations will default to None after playing once, meaning other animations
-            //can finally play.
-            
-            //FIX: Use utils method
-            //TODO: Refactor into fsm
-            if (!unitMover.ValueRO.isMoving && targetter.ValueRO.targetEntity != Entity.Null)
-            {
-                RefRW<ActiveAnimation> activeAnimation =
-                    SystemAPI.GetComponentRW<ActiveAnimation>(animatedMesh.ValueRO.meshEntity);
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.aimAnimationType;
-            }
-
-
-            //TODO: Refactor into fsm
-            if (shootAttack.ValueRO.onShoot.isTriggered)
-            {
-                RefRW<ActiveAnimation> activeAnimation =
-                    SystemAPI.GetComponentRW<ActiveAnimation>(animatedMesh.ValueRO.meshEntity);
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.shootAnimationType;
-            }
+            RefRW<ActiveAnimation> activeAnimation =
+                activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
+            activeAnimation.ValueRW.nextAnimationKey = unitAnimations.shootAnimationKey;
         }
+    }
+}
 
-        foreach ((
-            RefRO<AnimatedMeshReference> animatedMesh,
-            RefRO<MeleeAttack> meleeAttack,
-            RefRO<UnitAnimations> unitAnimations)
-                in SystemAPI.Query<
-                RefRO<AnimatedMeshReference>,
-                RefRO<MeleeAttack>,
-                RefRO<UnitAnimations>>())
+public partial struct MeleeAttackAnimationStateJob : IJobEntity
+{
+    [NativeDisableParallelForRestriction] public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
+    public void Execute(in AnimatedMeshReference animatedMesh,
+            in MeleeAttack meleeAttack,
+            in UnitAnimations unitAnimations)
+    {
+        //TODO: Refactor into fsm
+        if (meleeAttack.onAttack)
         {
+            RefRW<ActiveAnimation> activeAnimation = activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
             
-            //FIX: Use utils method
-            //TODO: Refactor into fsm
-
-            /* if (!unitMover.ValueRO.isMoving && targetter.ValueRO.targetEntity != Entity.Null)
-            {
-                RefRW<ActiveAnimation> activeAnimation =
-                    SystemAPI.GetComponentRW<ActiveAnimation>(animatedMesh.ValueRO.meshEntity);
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.aimAnimationType;
-            } */
-
-
-            //TODO: Refactor into fsm
-            if (meleeAttack.ValueRO.onAttack)
-            {
-                RefRW<ActiveAnimation> activeAnimation =
-                    SystemAPI.GetComponentRW<ActiveAnimation>(animatedMesh.ValueRO.meshEntity);
-                activeAnimation.ValueRW.nextAnimationType = unitAnimations.ValueRO.meleeAttackAnimationType;
-            }
+            activeAnimation.ValueRW.nextAnimationKey = unitAnimations.meleeAttackAnimationKey;
         }
     }
 }
