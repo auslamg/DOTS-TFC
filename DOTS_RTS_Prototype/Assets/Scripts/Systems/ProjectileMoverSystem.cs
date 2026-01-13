@@ -26,7 +26,6 @@ partial struct ProjectileMoverSystem : ISystem
             //If there is no target, destroy this and go for next entity
             if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
-                Debug.Log("Destroyed bullet!");
                 entityCommandBuffer.DestroyEntity(entity);
                 continue;
             }
