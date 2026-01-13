@@ -141,8 +141,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
   attackFrequency: 0.5
-  attackDistance: 0
-  damageAmount: 2
+  attackDistance: 1
+  damageAmount: 20
 --- !u!114 &7235035469828675330
 MonoBehaviour:
   m_ObjectHideFlags: 0

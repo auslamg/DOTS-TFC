@@ -20,6 +20,7 @@ Document
 
 
 Aesthetic/UX addons
+- FEATURE/FIX: Right click on friendly unit = move (click layer priorities)
 - FEATURE: Randomized animation delay (time or frame based) for visual noise
 - FEATURE: Parabollic path arrow trajectory
 - FEATURE: UX particle feedback (spawn particles on events)

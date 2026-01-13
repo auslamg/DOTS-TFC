@@ -51,17 +51,14 @@ public static class EntityUtil
         EntityManager em = state.EntityManager;
         if (entity == Entity.Null)
         {
-            Debug.Log("Entity is null");
             return false;
         }
         if (!em.Exists(entity))
         {
-            Debug.Log("Entity doesn't exist in em");
             return false;
         }
         if (!em.HasComponent<LocalTransform>(entity))
         {
-            Debug.Log("Entity doesn'thave LocalTransform");
             return false;
         }
         return true;
