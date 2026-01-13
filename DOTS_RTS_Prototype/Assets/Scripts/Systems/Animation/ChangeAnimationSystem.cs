@@ -25,6 +25,7 @@ partial struct ChangeAnimationSystem : ISystem
     }
 }
 
+[BurstCompile]
 public partial struct ChangeAnimationJob : IJobEntity
 {
     public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
@@ -49,7 +50,9 @@ public partial struct ChangeAnimationJob : IJobEntity
 
             //Get and set first frame
             ref AnimationData animData =
-                ref EntityUtil.GetAnimationData(animationDataBlobArrayAssetReference, activeAnimation.activeAnimationKey);
+                ref EntityUtil.GetAnimationData(
+                    ref animationDataBlobArrayAssetReference,
+                    activeAnimation.activeAnimationKey);
 
 
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey

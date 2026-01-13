@@ -20,14 +20,14 @@ partial struct LoseTargetSystem : ISystem
                 RefRO<ManualTarget>>())
         {
             //FIX: Avoid continue. Maybe labels/goto?
-            if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
+            if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
                 loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
                 continue;
             }
 
             //FIX: Avoid continue. Maybe labels/goto?
-            if (state.EntityManager.ExistsAndPersists(manualTarget.ValueRO.targetEntity))
+            if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
             {
                 loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
                 continue;

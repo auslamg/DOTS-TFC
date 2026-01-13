@@ -48,7 +48,9 @@ public partial struct ActiveAnimationJob : IJobEntity
     {
         //Cached AnimDataBlobArrayAsset reference index pointer for readability
         ref AnimationData animData =
-            ref EntityUtil.GetAnimationData(animationDataBlobArrayAssetReference, activeAnimation.activeAnimationKey);
+            ref EntityUtil.GetAnimationData(
+                ref animationDataBlobArrayAssetReference,
+                activeAnimation.activeAnimationKey);
 
         //Time loop
         //IDEA: Use corroutines

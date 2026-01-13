@@ -35,7 +35,7 @@ partial struct ShootAttackSystem : ISystem
         {
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, go for next entity
-            if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
+            if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
                 continue;
             }

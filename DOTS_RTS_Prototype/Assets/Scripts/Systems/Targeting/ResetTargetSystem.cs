@@ -20,13 +20,15 @@ partial struct ResetTargetSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        EntityUtil.GetEntityLookups(ref state, out localTransformLookup, out esiLookup);
+        localTransformLookup = state.GetComponentLookup<LocalTransform>(true);
+        esiLookup = state.GetEntityStorageInfoLookup();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntityUtil.UpdateEntityLookups(ref state, ref localTransformLookup, ref esiLookup);
+        localTransformLookup.Update(ref state);
+        esiLookup.Update(ref state);
 
         new ResetTargetterJob
         {
@@ -51,7 +53,8 @@ public partial struct ResetTargetterJob : IJobEntity
     {
         if (targetter.targetEntity != Entity.Null)
         {
-            if (!targetter.targetEntity.ExistsAndPersists(entityStorageInfoLookup, localTransformComponentLookup))
+            if (!entityStorageInfoLookup.Exists(targetter.targetEntity) ||
+                !localTransformComponentLookup.HasComponent(targetter.targetEntity))
             {
                 targetter.targetEntity = Entity.Null;
             }
@@ -68,7 +71,8 @@ public partial struct ResetManualTargetJob : IJobEntity
     {
         if (manualTarget.targetEntity != Entity.Null)
         {
-            if (!manualTarget.targetEntity.ExistsAndPersists(entityStorageInfoLookup, localTransformComponentLookup))
+            if (!entityStorageInfoLookup.Exists(manualTarget.targetEntity) ||
+                !localTransformComponentLookup.HasComponent(manualTarget.targetEntity))
             {
                 manualTarget.targetEntity = Entity.Null;
             }

@@ -24,8 +24,9 @@ partial struct ProjectileMoverSystem : ISystem
         {
             //FIX: Avoid continue. Maybe labels/goto?
             //If there is no target, destroy this and go for next entity
-            if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
+            if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
+                Debug.Log("Destroyed bullet!");
                 entityCommandBuffer.DestroyEntity(entity);
                 continue;
             }
@@ -65,8 +66,8 @@ partial struct ProjectileMoverSystem : ISystem
 
                 //Set the target's target as the shooter for retribution
                 RefRW<Targetter> targetTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
-
-                if (!state.EntityManager.ExistsAndPersists(targetTargetter.ValueRO.targetEntity))
+                
+                if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
                 {
                     targetTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
                 }

@@ -1,5 +1,4 @@
 using System;
-using Unity.Android.Gradle.Manifest;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
@@ -114,8 +113,7 @@ public class UnitSelectionManager : MonoBehaviour
             else
             {
                 Entity hitEntity = ClickRayCastForEntity(entityManager);
-
-                if (entityManager.ExistsAndPersists(hitEntity))
+                if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
                 {
                     //An entity was hit
                     if (entityManager.HasComponent<Unit>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
@@ -139,7 +137,7 @@ public class UnitSelectionManager : MonoBehaviour
             //Check if the click landed on an entity
             Entity hitEntity = ClickRayCastForEntity(entityManager);
             bool isAttackingAnEntity =
-                entityManager.ExistsAndPersists(hitEntity) &&
+                EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
                 entityManager.HasComponent<Unit>(hitEntity);
 
             if (isAttackingAnEntity)
@@ -275,9 +273,11 @@ public class UnitSelectionManager : MonoBehaviour
         //Query Raycast for a single Entity
         if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
         {
-            if (entityManager.ExistsAndPersists(raycastHit.Entity))
+            Entity hitEntity = raycastHit.Entity;
+            if (entityManager.Exists(hitEntity) &&
+                entityManager.HasComponent<LocalTransform>(hitEntity))
             {
-                return raycastHit.Entity;
+                return hitEntity;
             }
         }
         return Entity.Null;

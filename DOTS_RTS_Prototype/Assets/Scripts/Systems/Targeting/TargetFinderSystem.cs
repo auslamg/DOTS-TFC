@@ -41,7 +41,7 @@ partial struct FindTargetSystem : ISystem
             targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
 
             //FIX: Avoid continue. Maybe labels/goto?
-            if (state.EntityManager.ExistsAndPersists(manualTarget.ValueRO.targetEntity))
+            if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
             {
                 targetter.ValueRW.targetEntity = manualTarget.ValueRO.targetEntity;
                 continue;
@@ -61,7 +61,7 @@ partial struct FindTargetSystem : ISystem
             float closestTargetDistance = float.MaxValue;
             float swapTargetMinDistance = 0f;
 
-            if (state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
+            if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
                 closestTargetEntity = targetter.ValueRO.targetEntity;
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(closestTargetEntity);
@@ -77,7 +77,7 @@ partial struct FindTargetSystem : ISystem
                     //TODO: Refactor into using owner IDs
 
                     //FIX: Avoid continue. Maybe labels/goto?
-                    if (!state.EntityManager.ExistsAndPersists(distanceHit.Entity))
+                    if (!EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity))
                     {
                         continue;
                     }

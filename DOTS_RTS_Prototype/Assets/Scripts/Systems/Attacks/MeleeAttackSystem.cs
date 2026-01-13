@@ -27,7 +27,7 @@ partial struct MeleeAttackSystem : ISystem
                 WithDisabled<ManualMove>())
         {
             //FIX: Avoid continue. Maybe labels/goto?
-            if (!state.EntityManager.ExistsAndPersists(targetter.ValueRO.targetEntity))
+            if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
                 continue;
             }

@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 /// <summary>
 /// Utility class for entities and their components.
@@ -13,7 +14,6 @@ using Unity.Transforms;
 [BurstCompile]
 public static class EntityUtil
 {
-
     /// <summary>
     /// Validates a that an Entity exists.
     /// </summary>
@@ -21,8 +21,7 @@ public static class EntityUtil
     /// The method validates an entity checking if it actually exists and if it's queued for removal (by checking if it contains a LocalTransform component). If any of both conditions fail, returns false.
     /// This must be used in place of plain <see cref="EntityManager.Exists(Entity)"/>, since entities queued for removal returns true in said method.
     /// </remarks>
-    [BurstCompile]
-    public static bool ExistsAndPersists(this EntityManager em, Entity entity)
+    public static bool ExistsAndPersists(ref EntityManager em, ref Entity entity)
     {
         if (entity == Entity.Null)
         {
@@ -44,42 +43,33 @@ public static class EntityUtil
     /// </summary>
     /// <remarks>
     /// The method validates an entity checking if it actually exists and if it's queued for removal (by checking if it contains a LocalTransform component). If any of both conditions fail, returns false.
-    /// This must be used in place of default <see cref="EntityManager.ExistsAndPersists(Entity entity)"/> in Jobs and parallel code, since EntityManagers are main-thread only and must remain thread-safe. Conditions are checked through lookups on this override.
+    /// This must be used in place of plain <see cref="EntityManager.Exists(Entity)"/>, since entities queued for removal returns true in said method.
     /// </remarks>
     [BurstCompile]
-    public static bool ExistsAndPersists(this Entity entity, EntityStorageInfoLookup esiLookup, ComponentLookup<LocalTransform> componentLookup)
+    public static bool ExistsAndPersists(ref SystemState state, in Entity entity)
     {
-        if (!esiLookup.Exists(entity))
+        EntityManager em = state.EntityManager;
+        if (entity == Entity.Null)
         {
+            Debug.Log("Entity is null");
             return false;
         }
-        if (!componentLookup.HasComponent(entity))
+        if (!em.Exists(entity))
         {
+            Debug.Log("Entity doesn't exist in em");
+            return false;
+        }
+        if (!em.HasComponent<LocalTransform>(entity))
+        {
+            Debug.Log("Entity doesn'thave LocalTransform");
             return false;
         }
         return true;
     }
 
-    [BurstCompile]
-    public static void GetEntityLookups(ref SystemState state, out ComponentLookup<LocalTransform> localTransformLookup, out EntityStorageInfoLookup entityStorageInfoLookup)
-    {
-        localTransformLookup = state.GetComponentLookup<LocalTransform>(true);
-        entityStorageInfoLookup = state.GetEntityStorageInfoLookup();
-    }
-
-    [BurstCompile]
-    public static void UpdateEntityLookups(ref SystemState state, ref ComponentLookup<LocalTransform> localTransformLookup, ref EntityStorageInfoLookup entityStorageInfoLookup)
-    {
-        localTransformLookup.Update(ref state);
-        entityStorageInfoLookup.Update(ref state);
-    }
-
-
-
     /// <summary>
     /// Gets the CollisionWorld for an EntityManager, used for physics queries. 
     /// </summary>
-    [BurstCompile]
     public static CollisionWorld GetCollisionWorld(this EntityManager em)
     {
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>().Build(em);
@@ -94,9 +84,9 @@ public static class EntityUtil
     /// <summary>
     /// Gets the AnimationData entry in the registry's BlobArray. 
     /// </summary>
-    [BurstCompile]
+    /// //TODO: CHeck burst
     public static ref AnimationData GetAnimationData(
-    BlobAssetReference<BlobArray<AnimationData>> blobRef,
+    ref BlobAssetReference<BlobArray<AnimationData>> blobRef,
     in AnimationKey key)
     {
         ref var array = ref blobRef.Value;
