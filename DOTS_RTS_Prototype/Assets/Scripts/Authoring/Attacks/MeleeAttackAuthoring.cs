@@ -13,7 +13,7 @@ class MeleeAttackAuthoring : MonoBehaviour
     /// <summary>
     /// Maximum distance for attacks.
     /// </summary>
-    // TODO: Rename to attackRange
+    //TODO: Rename to attackRange
     public float attackDistance;
     /// <summary>
     /// Base damage dealt with each attack.
@@ -47,7 +47,7 @@ public struct MeleeAttack : IComponentData
     /// <summary>
     /// Maximum distance for attacks.
     /// </summary>
-    // TODO: Rename to attackRange
+    //TODO: Rename to attackRange
 
     public float attackDistance;
     /// <summary>

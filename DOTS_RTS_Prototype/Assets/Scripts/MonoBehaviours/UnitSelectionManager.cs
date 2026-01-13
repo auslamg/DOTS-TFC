@@ -346,7 +346,7 @@ public class UnitSelectionManager : MonoBehaviour
 
     /// <summary>
     /// Calculates the array of individual movement positions for each UnitMober component of a given size.
-    /// TODO: Implement additional formations like Line, Square and Wedge.
+    ///TODO: Implement additional formations like Line, Square and Wedge.
     /// </summary>
     private NativeArray<float3> GenerateFormationPositionsArray(float3 startPosition, float3 targetPosition, int positionCount)
     {
