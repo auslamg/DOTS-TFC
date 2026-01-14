@@ -43,6 +43,8 @@ AI features
 - GDD: Targets dont swap if they dont pass the threshold
 
 Refactors
+- REFACTOR: Implement hard requirements for dependencies in authoring files for unmanaged components
+- REFACTOR: Remove commented obsolete code from the animation baking authoring file
 - REFACTOR: Change unit selector method for spherecast OR increase selection hitboxes
 - REFACTOR: Remove "Authoring" from all baker signatures
 - REFACTOR: >= consistency in timer code blocks
