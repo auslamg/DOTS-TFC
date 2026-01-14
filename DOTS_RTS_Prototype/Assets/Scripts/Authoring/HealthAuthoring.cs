@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>Health</c> unmanaged component.
+/// Managed component for the <see cref="Health"/> unmanaged component.
 /// </summary>
 class HealthAuthoring : MonoBehaviour
 {
@@ -16,7 +16,7 @@ class HealthAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>Health</c> unmanaged component.
+/// Baker for the <see cref="Health"/> unmanaged component.
 /// </summary>
 class HealthBaker : Baker<HealthAuthoring>
 {
@@ -32,6 +32,9 @@ class HealthBaker : Baker<HealthAuthoring>
     }
 }
 
+/// <summary>
+/// Used to represent health for units that can receive damage.
+/// </summary>
 public struct Health : IComponentData
 {
     /// <summary>

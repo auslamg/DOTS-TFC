@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>ShootAttack</c> unmanaged component.
+/// Managed component for the <see cref="ShootAttack"/> unmanaged component.
 /// </summary>
 class ShootAttackAuthoring : MonoBehaviour
 {
@@ -28,7 +28,7 @@ class ShootAttackAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>ShootAttack</c> unmanaged component.
+/// Baker for the <see cref="ShootAttack"/> unmanaged component.
 /// </summary>
 class ShootAttackBaker : Baker<ShootAttackAuthoring>
 {
@@ -45,6 +45,13 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that can perform a projectile-based attack.
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="Targetter"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
+/// </remarks>
 public struct ShootAttack : IComponentData
 {
     /// <summary>

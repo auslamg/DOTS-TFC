@@ -3,7 +3,7 @@ using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 /// <summary>
-/// Managed component for the <c>ActiveAnimation</c> unmanaged component.
+/// Managed component for the <see cref="ActiveAnimation"/> unmanaged component.
 /// </summary>
 class ActiveAnimationAuthoring : MonoBehaviour
 {
@@ -12,7 +12,7 @@ class ActiveAnimationAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>ActiveAnimation</c> unmanaged component.
+/// Baker for the <see cref="ActiveAnimation"/> unmanaged component.
 /// </summary>
 class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
 {

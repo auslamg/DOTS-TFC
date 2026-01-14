@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>AnimatedMeshReference</c> unmanaged component.
+/// Managed component for the <see cref="AnimatedMeshReference"/> unmanaged component.
 /// </summary>
 class AnimatedMeshReferenceAuthoring : MonoBehaviour
 {
@@ -12,7 +12,7 @@ class AnimatedMeshReferenceAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>AnimatedMeshReference</c> unmanaged component.
+/// Baker for the <see cref="AnimatedMeshReference"/> unmanaged component.
 /// </summary>
 class AnimatedMeshReferenceBaker : Baker<AnimatedMeshReferenceAuthoring>
 {
@@ -26,6 +26,9 @@ class AnimatedMeshReferenceBaker : Baker<AnimatedMeshReferenceAuthoring>
     }
 }
 
+/// <summary>
+/// Used to reference a child entity containing the animated mesh from the parent.
+/// </summary>
 public struct AnimatedMeshReference : IComponentData
 {
     /// <summary>

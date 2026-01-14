@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>UnitAnimations</c> unmanaged component.
+/// Managed component for the <see cref="UnitAnimations"/> unmanaged component.
 /// </summary>
 //TODO: Refactor EXTENSIVELY
 class UnitAnimationsAuthoring : MonoBehaviour
@@ -16,7 +16,7 @@ class UnitAnimationsAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>UnitAnimations</c> unmanaged component.
+/// Baker for the <see cref="UnitAnimations"/> unmanaged component.
 /// </summary>
 class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
 {
@@ -63,6 +63,10 @@ class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
         });
     }
 }
+/// <summary>
+/// Contains the keys for the animations of a unit.
+/// </summary>
+/// //REVIEW: Rename into HumanoidAnimations if other non-humanoid unit types are implemented
 public struct UnitAnimations : IComponentData
 {
     public AnimationKey noneAnimationKey;

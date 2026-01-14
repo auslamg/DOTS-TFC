@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>MeleeAttack</c> unmanaged component.
+/// Managed component for the <see cref="MeleeAttack"/> unmanaged component.
 /// </summary>
 class MeleeAttackAuthoring : MonoBehaviour
 {
@@ -22,7 +22,7 @@ class MeleeAttackAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>MeleeAttack</c> unmanaged component.
+/// Baker for the <see cref="MeleeAttack"/> unmanaged component.
 /// </summary>
 class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
 {
@@ -38,6 +38,13 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that can perform a melee attack.
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="Targetter"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
+/// </remarks>
 public struct MeleeAttack : IComponentData
 {
     /// <summary>

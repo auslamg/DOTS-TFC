@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>Selected</c> unmanaged component.
+/// Managed component for the <see cref="Selected"/> unmanaged component.
 /// </summary>
 class SelectedAuthoring : MonoBehaviour
 {
@@ -15,6 +15,9 @@ class SelectedAuthoring : MonoBehaviour
     public float displayScale;
 }
 
+/// <summary>
+/// Baker for the <see cref="Selected"/> unmanaged component.
+/// </summary>
 class SelectedBaker : Baker<SelectedAuthoring>
 {
     public override void Bake(SelectedAuthoring authoring)

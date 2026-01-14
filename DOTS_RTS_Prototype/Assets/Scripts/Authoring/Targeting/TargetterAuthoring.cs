@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>Targetter</c> unmanaged component.
+/// Managed component for the <see cref="Targetter"/> unmanaged component.
 /// </summary>
 class TargetterAuthoring : MonoBehaviour
 {
@@ -16,7 +16,7 @@ class TargetterAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>Targetter</c> unmanaged component.
+/// Baker for the <see cref="Targetter"/> unmanaged component.
 /// </summary>
 class TargetterBaker : Baker<TargetterAuthoring>
 {
@@ -30,6 +30,9 @@ class TargetterBaker : Baker<TargetterAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that can acquire a target. Mainly used for attacks, but it should be implemented in any additional AI behaviours based around another entity's position (follow, defend, surround, etc.)
+/// </summary>
 public struct Targetter : IComponentData
 {
     /// <summary>

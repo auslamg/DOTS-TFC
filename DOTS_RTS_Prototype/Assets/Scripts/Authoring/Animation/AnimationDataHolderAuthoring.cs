@@ -5,7 +5,7 @@ using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 /// <summary>
-/// Managed component for the <c>AnimationDataHolder</c> unmanaged component.
+/// Managed component for the <see cref="AnimationDataHolder"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// The component is a Singleton.
@@ -36,7 +36,7 @@ class AnimationDataHolderAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>AnimationDataHolder</c> unmanaged component.
+/// Baker for the <see cref="AnimationDataHolder"/> unmanaged component and //FIX AnimationData.
 /// </summary>
 /// <remarks>
 /// //TODO: Document extensively.
@@ -96,8 +96,9 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
     {
         AnimationDataHolder animationDataHolder = new AnimationDataHolder();
 
+        //TODO: Cleanup
         //Cache EGS to register meshes in order to bake them
-        //Note: Only works with open subscenes
+        //Note: Only works with open subscenes. Egs cannot be accessed from closed subscenes during baketime, only during runtime.
         /* EntitiesGraphicsSystem egs =
             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>(); */
 
@@ -128,7 +129,7 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
             for (int i = 0; i < animationDataSO.meshArray.Length; i++)
             {
                 Mesh mesh = animationDataSO.meshArray[i];
-                Entity additionalEntity = CreateAdditionalEntity(TransformUsageFlags.None, false); //TODO: Change to true, false only for debug
+                Entity additionalEntity = CreateAdditionalEntity(TransformUsageFlags.None, true); //TODO: Change to true, false only for debug
 
                 AddComponent(additionalEntity, new MaterialMeshInfo());
                 AddComponent(additionalEntity, new RenderMeshUnmanaged
@@ -159,13 +160,18 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
     }
 }
 
-//Used for passing down AnimationKey and MeshIndex to the postBaking process
+/// <summary>
+/// Used for passing down AnimationKey and MeshIndex to the postBaking process
+/// </summary>
 public struct AnimationDataHolderSubEntity : IComponentData
 {
     public AnimationKey animationKey;
     public int meshIndex;
 }
 
+/// <summary>
+/// Used for passing down a <see cref="AnimationDataRegistrySO"/> reference to the postBaking process
+/// </summary>
 public struct AnimationRegistryReference : IComponentData
 {
     public UnityObjectRef<AnimationDataRegistrySO> registry;
@@ -176,13 +182,18 @@ public struct AnimationRegistryReference : IComponentData
     public AnimationDataRegistrySO registry;
 } */
 
-
+/// <summary>
+/// Contains the entirety of the animation data baked from the <see cref="AnimationDataRegistrySO"/>.
+/// </summary>
 public struct AnimationDataHolder : IComponentData
 {
     //TODO: Document
     public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
 }
 
+/// <summary>
+/// Contains the animation data baked from an <see cref="AnimationDataSO"/>.
+/// </summary>
 public struct AnimationData
 {
     public AnimationKey animationKey;

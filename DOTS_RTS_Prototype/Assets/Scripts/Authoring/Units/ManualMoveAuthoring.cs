@@ -2,14 +2,14 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>ManualMove</c> unmanaged component.
+/// Managed component for the <see cref="ManualMove"/> unmanaged component.
 /// </summary>
 public class ManualMoveAuthoring : MonoBehaviour
 {
 }
 
 /// <summary>
-/// Baker for the <c>ManualMove</c> unmanaged component.
+/// Baker for the <see cref="ManualMove"/> unmanaged component.
 /// </summary>
 public class ManualMoveBaker : Baker<ManualMoveAuthoring>
 {
@@ -24,6 +24,13 @@ public class ManualMoveBaker : Baker<ManualMoveAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that allow for the manual selection of a movement destination. 
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="UnitMover"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(UnitMover))]
+/// </remarks>
 public struct ManualMove : IComponentData, IEnableableComponent
 {
     //TODO: Rename to destination

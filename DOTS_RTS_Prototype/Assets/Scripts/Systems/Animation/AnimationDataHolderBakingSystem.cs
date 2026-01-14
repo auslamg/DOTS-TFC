@@ -7,6 +7,7 @@ using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.BakingSystem)]
 [UpdateInGroup(typeof(PostBakingSystemGroup))]
+// IDEA: Require matching queries for update
 partial struct AnimationDataHolderBakingSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
