@@ -11,6 +11,9 @@ class ActiveAnimationAuthoring : MonoBehaviour
     public AnimationKey nextAnimationKey;
 }
 
+/// <summary>
+/// Baker for the <c>ActiveAnimation</c> unmanaged component.
+/// </summary>
 class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
 {
     public override void Bake(ActiveAnimationAuthoring authoring)
@@ -23,6 +26,9 @@ class ActiveAnimationBaker : Baker<ActiveAnimationAuthoring>
     }
 }
 
+/// <summary>
+/// Used for the execution of the current selected animation loop.
+/// </summary>
 public struct ActiveAnimation : IComponentData
 {
     /// <summary>

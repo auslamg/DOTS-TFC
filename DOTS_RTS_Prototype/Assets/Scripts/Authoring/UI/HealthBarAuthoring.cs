@@ -12,6 +12,9 @@ class HealthBarAuthoring : MonoBehaviour
     public GameObject healthGameObject;
 }
 
+/// <summary>
+/// Baker for the <c>HealthBar</c> unmanaged component.
+/// </summary>
 class HealthBarBaker : Baker<HealthBarAuthoring>
 {
     public override void Bake(HealthBarAuthoring authoring)

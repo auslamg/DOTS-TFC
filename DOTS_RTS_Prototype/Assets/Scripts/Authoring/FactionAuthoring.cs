@@ -15,7 +15,7 @@ class FactionAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>Faction</c> component.
+/// Baker for the <c>Faction</c> unmanaged component.
 /// </summary>
 class FactionBaker : Baker<FactionAuthoring>
 {

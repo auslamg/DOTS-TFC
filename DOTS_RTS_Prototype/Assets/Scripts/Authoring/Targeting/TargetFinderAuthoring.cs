@@ -19,6 +19,9 @@ class TargetFinderAuthoring : MonoBehaviour
     public float swapTargetMinDistance;
 }
 
+/// <summary>
+/// Baker for the <c>TargetFinder</c> unmanaged component.
+/// </summary>
 class TargetFinderBaker : Baker<TargetFinderAuthoring>
 {
     public override void Bake(TargetFinderAuthoring authoring)

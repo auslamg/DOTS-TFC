@@ -31,6 +31,9 @@ class RandomWalkAuthoring : MonoBehaviour
     public uint randomSeed;
 }
 
+/// <summary>
+/// Baker for the <c>RandomWalk</c> unmanaged component.
+/// </summary>
 class RandomWalkBaker : Baker<RandomWalkAuthoring>
 {
     public override void Bake(RandomWalkAuthoring authoring)

@@ -8,7 +8,10 @@ public class ManualMoveAuthoring : MonoBehaviour
 {
 }
 
-public class MoveOverrideBaker : Baker<ManualMoveAuthoring>
+/// <summary>
+/// Baker for the <c>ManualMove</c> unmanaged component.
+/// </summary>
+public class ManualMoveBaker : Baker<ManualMoveAuthoring>
 {
     public override void Bake(ManualMoveAuthoring authoring)
     {

@@ -35,7 +35,7 @@ class EntitiesReferencesAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>EntitiesReferences</c> component.
+/// Baker for the <c>EntitiesReferences</c> unmanaged component.
 /// </summary>
 class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 {

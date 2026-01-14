@@ -35,7 +35,13 @@ class AnimationDataHolderAuthoring : MonoBehaviour
     }
 }
 
-class AnimationDataBaker : Baker<AnimationDataHolderAuthoring>
+/// <summary>
+/// Baker for the <c>AnimationDataHolder</c> unmanaged component.
+/// </summary>
+/// <remarks>
+/// //TODO: Document extensively.
+/// </remarks>
+class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
 {
     public override void Bake(AnimationDataHolderAuthoring authoring)
     {

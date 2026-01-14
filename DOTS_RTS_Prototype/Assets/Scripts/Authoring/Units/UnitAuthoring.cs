@@ -11,6 +11,9 @@ public class UnitAuthoring : MonoBehaviour
     public int ownerID;
 }
 
+/// <summary>
+/// Baker for the <c>Unit</c> unmanaged component.
+/// </summary>
 class UnitBaker : Baker<UnitAuthoring>
 {
     public override void Bake(UnitAuthoring authoring)

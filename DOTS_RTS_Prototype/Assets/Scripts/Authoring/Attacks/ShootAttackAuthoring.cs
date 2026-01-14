@@ -27,6 +27,9 @@ class ShootAttackAuthoring : MonoBehaviour
     public Transform projectileSpawnPointTransform;
 }
 
+/// <summary>
+/// Baker for the <c>ShootAttack</c> unmanaged component.
+/// </summary>
 class ShootAttackBaker : Baker<ShootAttackAuthoring>
 {
     public override void Bake(ShootAttackAuthoring authoring)

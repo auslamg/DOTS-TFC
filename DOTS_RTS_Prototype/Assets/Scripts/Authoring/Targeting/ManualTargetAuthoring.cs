@@ -8,7 +8,10 @@ class ManualTargetAuthoring : MonoBehaviour
 
 }
 
-class ManualTargetAuthoringBaker : Baker<ManualTargetAuthoring>
+/// <summary>
+/// Baker for the <c>ManualTarget</c> unmanaged component.
+/// </summary>
+class ManualTargetBaker : Baker<ManualTargetAuthoring>
 {
     public override void Bake(ManualTargetAuthoring authoring)
     {

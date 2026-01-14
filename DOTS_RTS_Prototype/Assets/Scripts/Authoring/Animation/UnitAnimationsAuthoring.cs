@@ -15,7 +15,10 @@ class UnitAnimationsAuthoring : MonoBehaviour
 
 }
 
-class UnitAnimationsAuthoringBaker : Baker<UnitAnimationsAuthoring>
+/// <summary>
+/// Baker for the <c>UnitAnimations</c> unmanaged component.
+/// </summary>
+class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
 {
     public override void Bake(UnitAnimationsAuthoring authoring)
     {
@@ -60,7 +63,6 @@ class UnitAnimationsAuthoringBaker : Baker<UnitAnimationsAuthoring>
         });
     }
 }
-//TODO: Refactor EXTENSIVELY
 public struct UnitAnimations : IComponentData
 {
     public AnimationKey noneAnimationKey;

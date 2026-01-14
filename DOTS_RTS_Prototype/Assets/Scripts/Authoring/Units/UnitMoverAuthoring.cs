@@ -20,6 +20,9 @@ public class UnitMoverAuthoring : MonoBehaviour
     public float targetReachedDistanceSquared = 2f;
 }
 
+/// <summary>
+/// Baker for the <c>UnitMover</c> unmanaged component.
+/// </summary>
 public class UnitMoverBaker : Baker<UnitMoverAuthoring>
 {
     public override void Bake(UnitMoverAuthoring authoring)

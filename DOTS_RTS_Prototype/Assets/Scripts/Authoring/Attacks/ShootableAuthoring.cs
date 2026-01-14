@@ -17,6 +17,9 @@ class ShootableAuthoring : MonoBehaviour
     public Transform hitPointTransform;
 }
 
+/// <summary>
+/// Baker for the <c>Shootable</c> unmanaged component.
+/// </summary>
 class ShootableBaker : Baker<ShootableAuthoring>
 {
     public override void Bake(ShootableAuthoring authoring)

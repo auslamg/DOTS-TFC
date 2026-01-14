@@ -15,7 +15,10 @@ class LoseTargetAuthoring : MonoBehaviour
     public float attemptFrequency;
 }
 
-class LoseTargetAuthoringBaker : Baker<LoseTargetAuthoring>
+/// <summary>
+/// Baker for the <c>LoseTarget</c> unmanaged component.
+/// </summary>
+class LoseTargetBaker : Baker<LoseTargetAuthoring>
 {
     public override void Bake(LoseTargetAuthoring authoring)
     {

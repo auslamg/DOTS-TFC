@@ -15,6 +15,9 @@ class TargetterAuthoring : MonoBehaviour
 
 }
 
+/// <summary>
+/// Baker for the <c>Targetter</c> unmanaged component.
+/// </summary>
 class TargetterBaker : Baker<TargetterAuthoring>
 {
     public override void Bake(TargetterAuthoring authoring)

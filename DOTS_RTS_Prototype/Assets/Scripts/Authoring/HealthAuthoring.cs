@@ -15,6 +15,9 @@ class HealthAuthoring : MonoBehaviour
     public int maxHealth;
 }
 
+/// <summary>
+/// Baker for the <c>Health</c> unmanaged component.
+/// </summary>
 class HealthBaker : Baker<HealthAuthoring>
 {
     public override void Bake(HealthAuthoring authoring)

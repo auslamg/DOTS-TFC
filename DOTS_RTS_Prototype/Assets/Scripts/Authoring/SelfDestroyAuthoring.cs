@@ -5,6 +5,9 @@ using UnityEngine;
 /// </summary>
 class SelfDestroyAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Time delay in seconds before object self-destruction.
+    /// </summary>
     public float delay;
 }
 
@@ -22,5 +25,8 @@ class SelfDestroyAuthoringBaker : Baker<SelfDestroyAuthoring>
 
 public struct SelfDestroy : IComponentData
 {
+    /// <summary>
+    /// Time delay in seconds before object self-destruction.
+    /// </summary>
     public float delay;
 }

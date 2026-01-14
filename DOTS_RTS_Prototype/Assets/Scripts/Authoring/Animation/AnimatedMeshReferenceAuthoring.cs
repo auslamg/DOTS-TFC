@@ -11,7 +11,10 @@ class AnimatedMeshReferenceAuthoring : MonoBehaviour
     public GameObject animatedMeshGameObject;
 }
 
-class AnimatedMeshReferenceAuthoringBaker : Baker<AnimatedMeshReferenceAuthoring>
+/// <summary>
+/// Baker for the <c>AnimatedMeshReference</c> unmanaged component.
+/// </summary>
+class AnimatedMeshReferenceBaker : Baker<AnimatedMeshReferenceAuthoring>
 {
     public override void Bake(AnimatedMeshReferenceAuthoring authoring)
     {

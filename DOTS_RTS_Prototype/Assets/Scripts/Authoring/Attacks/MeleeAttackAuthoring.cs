@@ -20,6 +20,10 @@ class MeleeAttackAuthoring : MonoBehaviour
     /// </summary>
     public int damageAmount;
 }
+
+/// <summary>
+/// Baker for the <c>MeleeAttack</c> unmanaged component.
+/// </summary>
 class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
 {
     public override void Bake(MeleeAttackAuthoring authoring)

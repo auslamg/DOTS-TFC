@@ -23,7 +23,7 @@ class EnemySpawnerAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>EnemySpawner</c> component.
+/// Baker for the <c>EnemySpawner</c> unmanaged component.
 /// </summary>
 class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
 {
