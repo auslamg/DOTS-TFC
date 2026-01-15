@@ -26,73 +26,70 @@ partial struct MeleeAttackSystem : ISystem
                 RefRO<Unit>>().
                 WithDisabled<ManualMove>())
         {
-            //FIX: Avoid continue. Maybe labels/goto?
-            if (!EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
+            if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
-                continue;
-            }
+                //Calculate if the target can be attacked
+                LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
+                float distanceToTarget = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
+                bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistance;
 
-            //Calculate if the target can be attacked
-            LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
-            float distanceToTarget = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
-            bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistance;
-
-            //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDINGS
-            //Note:
-            //This differs greatly from the tutorial.
-            //Real distance is calculated taking into account both target's and attacker's collider radius, obtained at baking Unit component.
-            //This is to avoid performance cost of RayCasts, which are a far superior order of magnitude in performance cost scaling.
-            //Might come at the inconvenienve of sucking for non-circular colliders, like BoxColliders or horizontal capsules.
-            bool isTouchingTarget = false;
-            if (!isWithinAttackDistance)
-            {
-                //Incomplete tutorial code. Requires external declarations
-                /* NativeList<RaycastHit> raycastHitList = new NativeList<RaycastHit>(Allocator.Temp);
-                float3 dirToTarget = targetLocalTransform.Position - localTransform.ValueRO.Position;
-                dirToTarget = math.normalize(dirToTarget);
-                float distanceExtraToTestRayCast = .4f;
-                RaycastInput raycastInput = new RaycastInput
+                //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDINGS
+                //Note:
+                //This differs greatly from the tutorial.
+                //Real distance is calculated taking into account both target's and attacker's collider radius, obtained at baking Unit component.
+                //This is to avoid performance cost of RayCasts, which are a far superior order of magnitude in performance cost scaling.
+                //Might come at the inconvenienve of sucking for non-circular colliders, like BoxColliders or horizontal capsules.
+                bool isTouchingTarget = false;
+                if (!isWithinAttackDistance)
                 {
-                    Start = localTransform.ValueRO.Position,
-                    End = localTransform.ValueRO.Position + dirToTarget * (unit.ValueRO.colliderOffsetRadius + distanceExtraToTestRayCast),
-                    Filter = CollisionFilter.Default
-                };
-                raycastHitList.Clear(); */
+                    //Incomplete tutorial code. Requires external declarations
+                    /* NativeList<RaycastHit> raycastHitList = new NativeList<RaycastHit>(Allocator.Temp);
+                    float3 dirToTarget = targetLocalTransform.Position - localTransform.ValueRO.Position;
+                    dirToTarget = math.normalize(dirToTarget);
+                    float distanceExtraToTestRayCast = .4f;
+                    RaycastInput raycastInput = new RaycastInput
+                    {
+                        Start = localTransform.ValueRO.Position,
+                        End = localTransform.ValueRO.Position + dirToTarget * (unit.ValueRO.colliderOffsetRadius + distanceExtraToTestRayCast),
+                        Filter = CollisionFilter.Default
+                    };
+                    raycastHitList.Clear(); */
 
-                Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
-                float minDistanceOffset = 
-                    meleeAttack.ValueRO.attackDistance + 
-                    targetUnit.colliderOffsetRadius + 
-                    unit.ValueRO.colliderOffsetRadius + 
-                    unitMover.ValueRO.targetReachedDistanceSquared;
-                isTouchingTarget = distanceToTarget < minDistanceOffset;
-            }
-
-            if (!isWithinAttackDistance && !isTouchingTarget)
-            {
-                //Target is too far
-                unitMover.ValueRW.targetPosition = targetLocalTransform.Position;
-            }
-            else
-            {
-                //Target is close enough to attack
-                unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
-
-                //TODO: Extract into AttackLoop() method or corroutine
-                //IDEA: Refactor into corroutines
-                //FIX: Avoid continue. Maybe labels/goto?
-                meleeAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
-                if (meleeAttack.ValueRO.attackPhaseTime > 0)
-                {
-                    continue;
+                    Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
+                    float minDistanceOffset =
+                        meleeAttack.ValueRO.attackDistance +
+                        targetUnit.colliderOffsetRadius +
+                        unit.ValueRO.colliderOffsetRadius +
+                        unitMover.ValueRO.targetReachedDistanceSquared;
+                    isTouchingTarget = distanceToTarget < minDistanceOffset;
                 }
-                meleeAttack.ValueRW.attackPhaseTime = meleeAttack.ValueRO.attackFrequency;
 
-                RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
-                targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;
-                targetHealth.ValueRW.onHealthChanged = true;
+                if (!isWithinAttackDistance && !isTouchingTarget)
+                {
+                    //Target is too far to attack
+                    unitMover.ValueRW.targetPosition = targetLocalTransform.Position;
+                }
+                else
+                {
+                    //Target is close enough to attack
+                    unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
 
-                meleeAttack.ValueRW.onAttack = true;
+                    //TODO: Extract into AttackLoop() method or corroutine
+                    //IDEA: Refactor into corroutines
+                    //Timer
+                    meleeAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
+                    if (meleeAttack.ValueRO.attackPhaseTime <= 0)
+                    {
+                        meleeAttack.ValueRW.attackPhaseTime = meleeAttack.ValueRO.attackFrequency;
+
+                        //Damage target
+                        RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
+                        targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;
+                        targetHealth.ValueRW.onHealthChanged = true;
+
+                        meleeAttack.ValueRW.onAttack = true;
+                    }
+                }
             }
         }
     }

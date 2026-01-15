@@ -12,7 +12,7 @@ partial struct AnimationDataHolderBakingSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        //Create dictionary for AnimationKey :: MeshID (int) employed for animation mesh queries
+        //Dictionary for AnimationKey :: MeshID (int) employed for animation mesh queries
         Dictionary<AnimationKey, int[]> blobAssetDataDictionary = new Dictionary<AnimationKey, int[]>();
 
         //Allocate array space for each individual animation according to its frame count
@@ -54,7 +54,7 @@ partial struct AnimationDataHolderBakingSystem : ISystem
             BlobBuilderArray<AnimationData> animationDataBlobBuilderArray =
                 blobBuilder.Allocate<AnimationData>(ref animationDataBlobArray, blobArraySize);
 
-            //For all Animation ScriptableObjects found in the list reader
+            //Process all AnimationData ScriptableObjects found in the registry's list
             int animationSOIndex = 0;
             foreach (AnimationDataSO animationDataSO in animationDataRegistrySO.animationDataSOList) //FIX might be unnecessary to loop twice
             {
