@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>TargetFinder</c> unmanaged component.
+/// Managed component for the <see cref="TargetFinder"/> unmanaged component.
 /// </summary>
 class TargetFinderAuthoring : MonoBehaviour
 {
@@ -19,6 +19,9 @@ class TargetFinderAuthoring : MonoBehaviour
     public float swapTargetMinDistance;
 }
 
+/// <summary>
+/// Baker for the <see cref="TargetFinder"/> unmanaged component.
+/// </summary>
 class TargetFinderBaker : Baker<TargetFinderAuthoring>
 {
     public override void Bake(TargetFinderAuthoring authoring)
@@ -33,6 +36,13 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that automatically scan for nearby entities to acquire a target whenever there is no target set. 
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="Targetter"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
+/// </remarks>
 public struct TargetFinder : IComponentData
 {
     /// <summary>

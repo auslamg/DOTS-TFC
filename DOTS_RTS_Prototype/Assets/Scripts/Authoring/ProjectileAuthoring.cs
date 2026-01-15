@@ -2,7 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Managed component for the <c>Projectile</c> unmanaged component.
+/// Managed component for the <see cref="Projectile"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// Managed fields are used exclusively for in-scene pre-built GameObject testing,
@@ -21,7 +21,7 @@ class ProjectileAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>Projectile</c> component.
+/// Baker for the <see cref="Projectile"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// Managed fields are used exclusively for in-scene pre-built GameObject testing,
@@ -41,8 +41,7 @@ class ProjectileBaker : Baker<ProjectileAuthoring>
 }
 
 /// <summary>
-/// <c>Projectile</c> entity component.
-/// Used for straight-path projectiles shot by ShootAttack component.
+/// Used for straight-path projectiles shot by <see cref="ShootAttack"/> component.
 /// Must set values for all fields on instantiation.
 /// </summary>
 public struct Projectile : IComponentData

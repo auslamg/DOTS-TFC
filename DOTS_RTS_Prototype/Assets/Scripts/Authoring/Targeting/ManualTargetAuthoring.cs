@@ -1,14 +1,17 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>ManualTarget</c> unmanaged component.
+/// Managed component for the <see cref="ManualTarget"/> unmanaged component.
 /// </summary>
 class ManualTargetAuthoring : MonoBehaviour
 {
 
 }
 
-class ManualTargetAuthoringBaker : Baker<ManualTargetAuthoring>
+/// <summary>
+/// Baker for the <see cref="ManualTarget"/> unmanaged component.
+/// </summary>
+class ManualTargetBaker : Baker<ManualTargetAuthoring>
 {
     public override void Bake(ManualTargetAuthoring authoring)
     {
@@ -19,6 +22,13 @@ class ManualTargetAuthoringBaker : Baker<ManualTargetAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that allow for the manual selection of an individual target. 
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="Targetter"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
+/// </remarks>
 public struct ManualTarget : IComponentData
 {
     /// <summary>

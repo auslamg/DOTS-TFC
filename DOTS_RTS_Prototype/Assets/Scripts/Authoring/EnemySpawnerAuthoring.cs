@@ -4,7 +4,7 @@ using UnityEngine;
 //IDEA: Refactor into "EntitySpawner" with a set Prefab field
 
 /// <summary>
-/// Managed component for the <c>EnemySpawner</c> unmanaged component.
+/// Managed component for the <see cref="EnemySpawner"/> unmanaged component.
 /// </summary>
 class EnemySpawnerAuthoring : MonoBehaviour
 {
@@ -23,7 +23,7 @@ class EnemySpawnerAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>EnemySpawner</c> component.
+/// Baker for the <see cref="EnemySpawner"/> unmanaged component.
 /// </summary>
 class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
 {
@@ -39,10 +39,9 @@ class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
     }
 }
 
+//IDEA: Refactor into "EntitySpawner" with a set Prefab field
 /// <summary>
-/// <c>EnemySpawner</c> entity component.
-/// Used for enemy spawn points with random position distribution.
-/// Must set values for all fields on instantiation.
+/// Used for enemy spawn points that generate enemies in a random position in a radius around the <c>LocalTransform</c> position.
 /// </summary>
 public struct EnemySpawner : IComponentData {
     /// <summary>

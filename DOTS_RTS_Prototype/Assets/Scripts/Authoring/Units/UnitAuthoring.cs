@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>Unit</c> unmanaged component.
+/// Managed component for the <see cref="Unit"/> unmanaged component.
 /// </summary>
 //TODO: Implement owners with ID's as Data
 public class UnitAuthoring : MonoBehaviour
@@ -11,6 +11,9 @@ public class UnitAuthoring : MonoBehaviour
     public int ownerID;
 }
 
+/// <summary>
+/// Baker for the <see cref="Unit"/> unmanaged component.
+/// </summary>
 class UnitBaker : Baker<UnitAuthoring>
 {
     public override void Bake(UnitAuthoring authoring)
@@ -46,6 +49,9 @@ class UnitBaker : Baker<UnitAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that represent a unit.
+/// </summary>
 public struct Unit : IComponentData
 {
     public int ownerID;

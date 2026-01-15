@@ -2,7 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Managed component for the <c>EntitiesReferences</c> unmanaged component.
+/// Managed component for the <see cref="EntitiesReferences"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// The component is a Singleton.
@@ -35,7 +35,7 @@ class EntitiesReferencesAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>EntitiesReferences</c> component.
+/// Baker for the <see cref="EntitiesReferences"/> unmanaged component.
 /// </summary>
 class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 {
@@ -53,8 +53,7 @@ class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 }
 
 /// <summary>
-/// <c>EntitiesReferences</c> entity component.
-/// Used for passing down references to Entity prefabs.
+/// Used for passing down references to entity prefabs.
 /// Must set values for all fields on instantiation.
 /// </summary>
 /// <remarks>

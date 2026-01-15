@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>Shootable</c> unmanaged component.
+/// Managed component for the <see cref="Shootable"/> unmanaged component.
 /// </summary>
 class ShootableAuthoring : MonoBehaviour
 {
@@ -17,6 +17,9 @@ class ShootableAuthoring : MonoBehaviour
     public Transform hitPointTransform;
 }
 
+/// <summary>
+/// Baker for the <see cref="Shootable"/> unmanaged component.
+/// </summary>
 class ShootableBaker : Baker<ShootableAuthoring>
 {
     public override void Bake(ShootableAuthoring authoring)
@@ -29,6 +32,14 @@ class ShootableBaker : Baker<ShootableAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that get shot at by ShootAttack entities at a specific position.
+/// </summary>
+/// <remarks>
+/// Usually <see cref="ShootAttack"/> will aim projectiles at the mass center of a target whenever it doesn't have this component.
+/// The component, which must be added on the target entity (and not the shooter) will override the projectile's desired
+/// destination from the center of mass to the specified <c>hitPointPosition</c>.
+/// </remarks>
 public struct Shootable : IComponentData
 {
     /// <summary>

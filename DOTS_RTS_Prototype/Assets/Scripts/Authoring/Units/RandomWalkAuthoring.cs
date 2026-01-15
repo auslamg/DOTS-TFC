@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>RandomWalk</c> unmanaged component.
+/// Managed component for the <see cref="RandomWalk"/> unmanaged component.
 /// </summary>
 class RandomWalkAuthoring : MonoBehaviour
 {
@@ -31,6 +31,9 @@ class RandomWalkAuthoring : MonoBehaviour
     public uint randomSeed;
 }
 
+/// <summary>
+/// Baker for the <see cref="RandomWalk"/> unmanaged component.
+/// </summary>
 class RandomWalkBaker : Baker<RandomWalkAuthoring>
 {
     public override void Bake(RandomWalkAuthoring authoring)
@@ -50,6 +53,13 @@ class RandomWalkBaker : Baker<RandomWalkAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that automatically generate random move destinations in a set radius around an origin position whenever there is no destination set.
+/// </summary>
+/// <remarks>
+/// Requires the <see cref="UnitMover"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(UnitMover))]
+/// </remarks>
 public struct RandomWalk : IComponentData
 {
     /// <summary>

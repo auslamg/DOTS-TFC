@@ -1,14 +1,20 @@
 using Unity.Entities;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>SelfDestroy</c> unmanaged component.
+/// Managed component for the <see cref="SelfDestroy"/> unmanaged component.
 /// </summary>
 class SelfDestroyAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Time delay in seconds before object self-destruction.
+    /// </summary>
     public float delay;
 }
 
-class SelfDestroyAuthoringBaker : Baker<SelfDestroyAuthoring>
+/// <summary>
+/// Baker for the <see cref="SelfDestroy"/> unmanaged component.
+/// </summary>
+class SelfDestroyBaker : Baker<SelfDestroyAuthoring>
 {
     public override void Bake(SelfDestroyAuthoring authoring)
     {
@@ -22,5 +28,8 @@ class SelfDestroyAuthoringBaker : Baker<SelfDestroyAuthoring>
 
 public struct SelfDestroy : IComponentData
 {
+    /// <summary>
+    /// Time delay in seconds before object self-destruction.
+    /// </summary>
     public float delay;
 }

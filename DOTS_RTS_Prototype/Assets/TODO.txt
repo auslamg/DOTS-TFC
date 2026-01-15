@@ -43,8 +43,9 @@ AI features
 - GDD: Targets dont swap if they dont pass the threshold
 
 Refactors
+- REFACTOR: Implement hard requirements for dependencies in authoring files for unmanaged components
+- REFACTOR: Remove commented obsolete code from the animation baking authoring file
 - REFACTOR: Change unit selector method for spherecast OR increase selection hitboxes
-- REFACTOR: Remove "Authoring" from all baker signatures
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
 - REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
@@ -60,3 +61,5 @@ FIXED: Could not find singleton oftype EntitiesReference
 
 DONE: REFACTOR: Rename MoveOverride to ManualMove
 DONE: REFACTOR: Rename TargetOverride to ManualTarget
+DONE: REFACTOR: Remove "Authoring" from all baker signatures
+

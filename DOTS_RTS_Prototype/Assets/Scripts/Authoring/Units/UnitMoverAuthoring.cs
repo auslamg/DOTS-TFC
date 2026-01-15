@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 /// <summary>
-/// Managed component for the <c>UnitMover</c> unmanaged component.
+/// Managed component for the <see cref="UnitMover"/> unmanaged component.
 /// </summary>
 public class UnitMoverAuthoring : MonoBehaviour
 {
@@ -20,6 +20,9 @@ public class UnitMoverAuthoring : MonoBehaviour
     public float targetReachedDistanceSquared = 2f;
 }
 
+/// <summary>
+/// Baker for the <see cref="UnitMover"/> unmanaged component.
+/// </summary>
 public class UnitMoverBaker : Baker<UnitMoverAuthoring>
 {
     public override void Bake(UnitMoverAuthoring authoring)
@@ -35,6 +38,13 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
     }
 }
 
+/// <summary>
+/// Used by unit entities that gradually move across the scene with set destinations.
+/// </summary>
+/// /// <remarks>
+/// Requires the <see cref="Unit"/> component 
+/// //IDEA: Enforce implementation through [RequireComponent(typeof(Unit))]
+/// </remarks>
 public struct UnitMover : IComponentData
 {
     /// <summary>

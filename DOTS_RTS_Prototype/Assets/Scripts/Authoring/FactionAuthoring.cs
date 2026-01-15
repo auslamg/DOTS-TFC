@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Managed component for the <c>Faction</c> unmanaged component.
+/// Managed component for the <see cref="Faction"/> unmanaged component.
 /// </summary>
 class FactionAuthoring : MonoBehaviour
 {
@@ -15,7 +15,7 @@ class FactionAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <c>Faction</c> component.
+/// Baker for the <see cref="Faction"/> unmanaged component.
 /// </summary>
 class FactionBaker : Baker<FactionAuthoring>
 {
@@ -30,8 +30,7 @@ class FactionBaker : Baker<FactionAuthoring>
 }
 
 /// <summary>
-/// <c>Faction</c> entity component.
-/// Used for unit ownership identification.
+/// Used for unit ownership identification. //IDEA Use Unit.ownerID
 /// </summary>
 public struct Faction : IComponentData
 {
