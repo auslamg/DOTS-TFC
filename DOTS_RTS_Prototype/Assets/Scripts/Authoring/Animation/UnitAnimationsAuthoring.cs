@@ -12,6 +12,7 @@ class UnitAnimationsAuthoring : MonoBehaviour
     public string meleeAttackAnimationKey;
     public string shootAnimationKey;
     public string aimAnimationKey;
+    //TODO: Bake bool playFull for custom animations
 
 }
 

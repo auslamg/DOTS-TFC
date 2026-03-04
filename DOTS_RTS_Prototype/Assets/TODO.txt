@@ -16,8 +16,19 @@ Document
     Set SO Instance fields
     Add SO to AnimationDataListSO
     Set UnitAnimations component fields
-- DOCUMENT: (Animation files extensively)
 
+    FOR PREEXISTING ANIMATION TYPES:
+        Create ScriptableObjects per animation
+            KEY
+            TYPE
+            PLAYFULL
+            MESHARRAY
+            FRAME FREQUENCY
+        Add keys to UnitAnimations managed component
+        Add ScriptableObjects to AnimationDataRegistrySO list
+
+- DOCUMENT: (Animation files extensively)
+- DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
 
 Aesthetic/UX addons
 - FEATURE/FIX: Right click on friendly unit = move (click layer priorities)
@@ -43,15 +54,18 @@ AI features
 - GDD: Targets dont swap if they dont pass the threshold
 
 Refactors
-- REFACTOR: Implement hard requirements for dependencies in authoring files for unmanaged components
+- REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components
 - REFACTOR: Remove commented obsolete code from the animation baking authoring file
-- REFACTOR: Change unit selector method for spherecast OR increase selection hitboxes
+- REFACTOR: Change unit selector method for single unit for spherecast OR increase selection hitboxes
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
 - REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
-- REFACTOR: Animation system into dictionary values rather than enums (see documentation)
     - FSM for animation states
 - REFACTOR: Standardize jobs schedulling and lookups
+- REFACTOR: Rename Walk animatiobs to Move
+- REFACTOR: Rename Hostile animations to appropiate enemy name
+- REFACOR: "Frequency" variables in struct timers should be "peiod" or "interval"
+
 
 
 FIXED: Refactor unit turn speed source
@@ -62,4 +76,6 @@ FIXED: Could not find singleton oftype EntitiesReference
 DONE: REFACTOR: Rename MoveOverride to ManualMove
 DONE: REFACTOR: Rename TargetOverride to ManualTarget
 DONE: REFACTOR: Remove "Authoring" from all baker signatures
+
+DONE: REFACTOR: Animation system into dictionary values rather than enums (see documentation)
 

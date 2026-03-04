@@ -30,6 +30,7 @@ public struct AnimationKey : IEquatable<AnimationKey>
 {
     public FixedString64Bytes name;
     public AnimationType animationType;
+    public bool playFull;
     public override bool Equals(object obj)
     {
         if (!(obj is AnimationKey))
@@ -67,6 +68,24 @@ public struct AnimationKey : IEquatable<AnimationKey>
     public static bool operator !=(AnimationKey key1, AnimationKey key2)
     {
         return !key1.Equals(key2);
+    }
+
+    public bool IsUninterruptible()
+    {
+        if (playFull) return playFull;
+        
+        switch (animationType)
+        {
+            default:
+            case AnimationType.None:
+            case AnimationType.Idle:
+            case AnimationType.Move:
+            case AnimationType.Aim:
+                return false;
+            case AnimationType.Melee:
+            case AnimationType.Shoot:
+                return true;
+        }
     }
 }
 

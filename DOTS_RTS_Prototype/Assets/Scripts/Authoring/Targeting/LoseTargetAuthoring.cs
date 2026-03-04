@@ -8,6 +8,8 @@ class LoseTargetAuthoring : MonoBehaviour
     /// <summary>
     /// Minimum distance difference to target to consider losing it.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Minimum distance difference to target to consider losing it.")]
     public float thresholdDistance;
     /// <summary>
     /// Time span between attempts.

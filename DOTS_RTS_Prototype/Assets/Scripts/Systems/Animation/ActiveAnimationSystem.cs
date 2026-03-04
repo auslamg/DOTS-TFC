@@ -78,8 +78,7 @@ public partial struct ActiveAnimationJob : IJobEntity
             //TODO: Refactor into "PlayFull tag" or something
             //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
             if (activeAnimation.currentFrame == 0 &&
-                (activeAnimation.activeAnimationKey.animationType == AnimationType.Shoot ||
-                 activeAnimation.activeAnimationKey.animationType == AnimationType.Melee))
+                activeAnimation.activeAnimationKey.IsUninterruptible())
             {
                 //Busy attacking
                 activeAnimation.activeAnimationKey = unitAnimations.ValueRO.noneAnimationKey;
