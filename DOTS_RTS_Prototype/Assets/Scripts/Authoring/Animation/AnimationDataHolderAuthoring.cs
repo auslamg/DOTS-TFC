@@ -82,6 +82,7 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
         {
             registry = authoring.animationDataRegistrySO,
         });
+        
         //REVIEW: Implement if AnimationRegistryManaged is implemented instead
         /* AddComponentObject(entity, new AnimationRegistryManaged
         {
@@ -89,74 +90,6 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
         }); */
 
         AddComponent(entity, animationDataHolder);
-    }
-
-    //TODO: Document
-    private AnimationDataHolder AllocateAnimationData(AnimationDataHolderAuthoring authoring)
-    {
-        AnimationDataHolder animationDataHolder = new AnimationDataHolder();
-
-        //TODO: Cleanup
-        //Cache EGS to register meshes in order to bake them
-        //Note: Only works with open subscenes. Egs cannot be accessed from closed subscenes during baketime, only during runtime.
-        /* EntitiesGraphicsSystem egs =
-            World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<EntitiesGraphicsSystem>(); */
-
-        //Build new blob root
-        /* BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp);
-        ref BlobArray<AnimationData> animationDataBlobArray = ref blobBuilder.ConstructRoot<BlobArray<AnimationData>>();
-
-        //Allocate memory for AnimationData array
-        int blobArraySize = authoring.animationDataRegistrySO.animationDataSOList.Count();
-        BlobBuilderArray<AnimationData> animationDataBlobBuilderArray =
-            blobBuilder.Allocate<AnimationData>(ref animationDataBlobArray, blobArraySize); */
-
-        //For all Animation ScriptableObjects found in the list reader
-        int animationSOIndex = 0;
-        foreach (AnimationDataSO animationDataSO in authoring.animationDataRegistrySO.animationDataSOList)
-        {
-            //Allocate memory for the mesh array
-            /* BlobBuilderArray<BatchMeshID> blobBuilderArray =
-                blobBuilder.Allocate(ref animationDataBlobBuilderArray[animationSOIndex].batchMeshIdBlobArray, animationDataSO.meshArray.Length); */
-
-            //Edit singular data inside blob
-            /* animationDataBlobBuilderArray[animationSOIndex].animationKey = animationDataSO.animationKey;
-            animationDataBlobBuilderArray[animationSOIndex].playFull = animationDataSO.playFull;
-            animationDataBlobBuilderArray[animationSOIndex].frameFrequency = animationDataSO.frameFrequency;
-            animationDataBlobBuilderArray[animationSOIndex].frameCount = animationDataSO.meshArray.Length; */
-
-            //Register all meshes in the mesh array
-            for (int i = 0; i < animationDataSO.meshArray.Length; i++)
-            {
-                Mesh mesh = animationDataSO.meshArray[i];
-                Entity additionalEntity = CreateAdditionalEntity(TransformUsageFlags.None, true); //TODO: Change to true, false only for debug
-
-                AddComponent(additionalEntity, new MaterialMeshInfo());
-                AddComponent(additionalEntity, new RenderMeshUnmanaged
-                {
-                    mesh = mesh,
-                });
-                AddComponent(additionalEntity, new AnimationDataHolderSubEntity
-                {
-                    animationKey = animationDataSO.animationKey,
-                    meshIndex = i, 
-                });
-
-                //Add to BlobBuilder registered (baked) meshes
-                /* blobBuilderArray[i] = egs.RegisterMesh(mesh); */
-            }
-
-            animationSOIndex++;
-        }
-
-        //Build blobAssetReference
-        /* animationDataHolder.animationDataBlobArrayAssetReference =
-            blobBuilder.CreateBlobAssetReference<BlobArray<AnimationData>>(Allocator.Persistent); */
-
-        //Dispose resources to avoid memory leaks
-        /* blobBuilder.Dispose(); */
-
-        return animationDataHolder;
     }
 }
 

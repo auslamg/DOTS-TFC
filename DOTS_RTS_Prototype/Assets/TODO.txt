@@ -76,6 +76,7 @@ Refactors
 - REFACTOR: Rename Walk animatiobs to Move
 - REFACTOR: Rename Hostile animations to appropiate enemy name
 - REFACOR: "Frequency" variables in struct timers should be "peiod" or "interval"
+- REFACTOR: Parametrize EnemySpawner and rename to EntitySpawner
 
 
 
