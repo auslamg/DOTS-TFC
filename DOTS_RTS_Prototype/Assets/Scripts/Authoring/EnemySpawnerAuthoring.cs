@@ -20,6 +20,14 @@ class EnemySpawnerAuthoring : MonoBehaviour
     /// Maximum distance from the LocalTransform center for spawn offset.
     /// </summary>
     public float maxDistance;
+    /// <summary>
+    /// Maximum value for nearby scanned enemies to keep spawning more.
+    /// </summary>
+    public int nearbyEnemyCap;
+    /// <summary>
+    /// Radius for scanning around for nearby enemies in order to check if the cap was reached.
+    /// </summary>
+    public float nearbyEnemyScanRadius;
 }
 
 /// <summary>
@@ -35,6 +43,8 @@ class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
             spawnFrequency = authoring.spawnFrequency,
             minDistance = authoring.minDistance,
             maxDistance = authoring.maxDistance,
+            nearbyEnemyCap = authoring.nearbyEnemyCap,
+            nearbyEnemyScanRadius = authoring.nearbyEnemyScanRadius
         });
     }
 }
@@ -60,5 +70,13 @@ public struct EnemySpawner : IComponentData {
     /// Maximum distance from the LocalTransform center for spawn offset.
     /// </summary>
     public float maxDistance;
+    /// <summary>
+    /// Maximum value for nearby scanned enemies to keep spawning more.
+    /// </summary>
+    public int nearbyEnemyCap;
+    /// <summary>
+    /// Radius for scanning around for nearby enemies in order to check if the cap was reached.
+    /// </summary>
+    public float nearbyEnemyScanRadius;
 
 }

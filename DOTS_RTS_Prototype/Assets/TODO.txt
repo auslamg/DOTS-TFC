@@ -27,6 +27,17 @@ Document
         Add keys to UnitAnimations managed component
         Add ScriptableObjects to AnimationDataRegistrySO list
 
+- UNMANAGED PHYSICS QUERIES PROCESS
+    Get PhysicsWorldSingleton for CollisionWorld
+    Make CollisionFilter with appropiate layers
+    Cache NativeList<DistanceHit> with allocated memory
+    Clear list before running
+    Call collisionWorld.OverlapX() passing these:
+        - Position
+        - Radius
+        - ref NativeList<DistanceHit>
+        - CollisionFilter
+
 - DOCUMENT: (Animation files extensively)
 - DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
 

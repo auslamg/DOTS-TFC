@@ -1,6 +1,9 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
+using Unity.VisualScripting;
 
 partial struct EnemySpawnerSystem : ISystem
 {
@@ -15,7 +18,10 @@ partial struct EnemySpawnerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-        
+        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+        CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+        NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
+
         EntityCommandBuffer entityCommandBuffer =
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
@@ -33,7 +39,54 @@ partial struct EnemySpawnerSystem : ISystem
             {
                 enemySpawner.ValueRW.spawnPhaseTime = enemySpawner.ValueRW.spawnFrequency;
 
+                //Ready up physics query
+                distanceHitList.Clear();
+                CollisionFilter collisionFilter = new CollisionFilter
+                {
+                    BelongsTo = ~0u, //All layers
+                    CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                    GroupIndex = 0
+                };
+
+                //Check for nearby enemies to avoid overflow
+                int nearbyEnemiesAmount = 0;
+                if (collisionWorld.OverlapSphere(
+                    localTransform.ValueRO.Position,
+                    enemySpawner.ValueRO.nearbyEnemyScanRadius,
+                    ref distanceHitList,
+                    collisionFilter))
+                {
+                    foreach (DistanceHit distanceHit in distanceHitList)
+                    {
+                        if (!EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity))
+                        {
+                            continue;
+                        }
+                        else if (SystemAPI.HasComponent<Unit>(distanceHit.Entity))
+                        {
+                            //If the target has a faction
+                            if (SystemAPI.HasComponent<Faction>(distanceHit.Entity))
+                            {
+                                //TODO: Parametrize
+                                //If the target faction matches the spawned entity faction
+                                if (SystemAPI.GetComponent<Faction>(distanceHit.Entity).factionID ==
+                                    SystemAPI.GetComponent<Faction>(entitiesReferences.enemyPrefabEntity).factionID)
+                                {
+                                    nearbyEnemiesAmount++;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //If cap was exceeded stop
+                if (nearbyEnemiesAmount >= enemySpawner.ValueRO.nearbyEnemyCap)
+                {
+                    continue;
+                }
+
                 //Generate spawn
+                //TODO: Parametrize
                 Entity enemyEntity = state.EntityManager.Instantiate(entitiesReferences.enemyPrefabEntity);
                 SystemAPI.SetComponent(enemyEntity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
 
