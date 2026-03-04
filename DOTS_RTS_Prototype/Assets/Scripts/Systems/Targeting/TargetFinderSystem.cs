@@ -37,7 +37,7 @@ partial struct FindTargetSystem : ISystem
             if (targetFinder.ValueRO.scanPhaseTime <= 0)
             {
                 targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
-                
+
                 if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
                 {
                     //There's a manual target, don't try to find a new one
@@ -50,7 +50,7 @@ partial struct FindTargetSystem : ISystem
                     CollisionFilter collisionFilter = new CollisionFilter
                     {
                         BelongsTo = ~0u, //All layers
-                        CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                        CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                         GroupIndex = 0
                     };
 
@@ -72,12 +72,11 @@ partial struct FindTargetSystem : ISystem
                     {
                         foreach (DistanceHit distanceHit in distanceHitList)
                         {
-                            //TODO: Refactor into using owner IDs
+                            //IDEA: Refactor into using owner IDs
                             //If an entity was hit
-                            if (EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity))
+                            if (EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity) || SystemAPI.HasComponent<Faction>(distanceHit.Entity))
                             {
                                 //Valid target with valid faction
-                                Unit targetUnit = SystemAPI.GetComponent<Unit>(distanceHit.Entity);
                                 Faction targetFaction = SystemAPI.GetComponent<Faction>(distanceHit.Entity);
                                 if (faction.ValueRO.factionID != targetFaction.factionID &&
                                     faction.ValueRO.factionID != 0 &&

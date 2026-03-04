@@ -90,7 +90,6 @@ public class UnitSelectionManager : MonoBehaviour
                 //Query all entities with the UnitMover and Selected components to check if they're inside the SelectionAreaRect
                 query = new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform, Unit>().WithPresent<Selected>().Build(entityManager);
 
-
                 //Register entities and components to access LocalTransform component and Entity memory adress
                 entityArray = query.ToEntityArray(Allocator.Temp);
                 NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
@@ -116,10 +115,9 @@ public class UnitSelectionManager : MonoBehaviour
                 if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
                 {
                     //An entity was hit
-                    if (entityManager.HasComponent<Unit>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
+                    if (entityManager.HasComponent<Faction>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
                     {
-                        //A Unit was hit > Select unit
-
+                        //A Faction entity was hit > Select unit
                         entityManager.SetComponentEnabled<Selected>(hitEntity, true);
                         Selected selected = entityManager.GetComponentData<Selected>(hitEntity);
                         selected.onSelected = true;
@@ -138,10 +136,19 @@ public class UnitSelectionManager : MonoBehaviour
             Entity hitEntity = ClickRayCastForEntity(entityManager);
             bool isAttackingAnEntity =
                 EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
-                entityManager.HasComponent<Unit>(hitEntity);
+                entityManager.HasComponent<Health>(hitEntity); 
+                //NOTE: Health is used a common ground for attackalbe units and buildings
+
+            //TEST
+            if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
+            {
+                Debug.Log("Hit entity:" + hitEntity);
+            }
+            //TEST END
 
             if (isAttackingAnEntity)
             {
+                Debug.Log("ATTEMPTED MANUAL ATTACK");
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
             else
@@ -265,7 +272,7 @@ public class UnitSelectionManager : MonoBehaviour
             Filter = new CollisionFilter
             {
                 BelongsTo = ~0u, //All layers
-                CollidesWith = 1u << GameAssets.UNITS_LAYER,
+                CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                 GroupIndex = 0
             }
         };

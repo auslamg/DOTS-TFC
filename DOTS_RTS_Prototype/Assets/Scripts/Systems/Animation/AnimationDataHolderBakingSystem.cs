@@ -34,11 +34,12 @@ partial struct AnimationDataHolderBakingSystem : ISystem
             blobAssetDataDictionary[animationDataHolderSubEntity.ValueRO.animationKey][animationDataHolderSubEntity.ValueRO.meshIndex] =
                 materialMeshInfo.ValueRO.Mesh;
 
-            Debug.Log(
+            //Debug logging for baking info
+            /* Debug.Log(
                 "Baked animation frame mesh:\t" +
                 animationDataHolderSubEntity.ValueRO.animationKey +
                 " :: " + animationDataHolderSubEntity.ValueRO.meshIndex +
-                " = " + materialMeshInfo.ValueRO.Mesh);
+                " = " + materialMeshInfo.ValueRO.Mesh); */
         }
 
         //REVIEW: This might just run once, making the foreach pointless

@@ -66,11 +66,15 @@ partial struct ProjectileMoverSystem : ISystem
 
                     //If the target has no target themselves set it to the shooter for retribution
                     //TODO: reuse for MeleeAttackSystem
-                    RefRW<Targetter> targetTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
-                    if (!EntityUtil.ExistsAndPersists(ref state, targetTargetter.ValueRO.targetEntity))
+                    if (SystemAPI.HasComponent<Targetter>(targetter.ValueRO.targetEntity))
                     {
-                        targetTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
+                        RefRW<Targetter> targetOwnTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
+                        if (!EntityUtil.ExistsAndPersists(ref state, targetOwnTargetter.ValueRO.targetEntity))
+                        {
+                            targetOwnTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
+                        }
                     }
+                    
 
                     entityCommandBuffer.DestroyEntity(entity);
                 }
