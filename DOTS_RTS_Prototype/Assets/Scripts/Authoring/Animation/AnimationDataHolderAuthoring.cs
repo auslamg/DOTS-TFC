@@ -36,92 +36,85 @@ class AnimationDataHolderAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <see cref="AnimationDataHolder"/> unmanaged component and //FIX AnimationData.
+/// Baker for the <see cref="AnimationDataHolder"/> unmanaged component.
+/// The process requires PostBaking because <see cref="EntitiesGraphicsSystem"/> isn't registered during bake-time, only after.
+/// Therefore the meshes are baked in additional objects "meshBakingEntity" and later registered in PostBaking.
+/// See <see cref="AnimationDataHolderBakingSystem"/>
 /// </summary>
-/// <remarks>
-/// //TODO: Document extensively.
-/// </remarks>
 class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
 {
     public override void Bake(AnimationDataHolderAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        //TODO: Document
-        AnimationDataHolder animationDataHolder = new AnimationDataHolder();
-       
         //For all Animation ScriptableObjects found in the list reader
-        int animationSOIndex = 0;
         foreach (AnimationDataSO animationDataSO in authoring.animationDataRegistrySO.animationDataSOList)
         {
-
             //Register all meshes in the mesh array
             for (int i = 0; i < animationDataSO.meshArray.Length; i++)
             {
+                //Obtain each mesh from animationDataSO
                 Mesh mesh = animationDataSO.meshArray[i];
-                Entity additionalEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
 
-                AddComponent(additionalEntity, new MaterialMeshInfo());
-                AddComponent(additionalEntity, new RenderMeshUnmanaged
+                /* Generates an entity "meshBakingEntity" per each frame to link its components to said entity and bake it, and register the entity in the aniamtionDataHolder. */
+                ///See <see cref="AnimationDataHolderBakingSystem"/>
                 {
-                    materialForSubMesh = authoring.defaultMaterial,
-                    mesh = mesh,
-                });
-                AddComponent(additionalEntity, new AnimationDataHolderSubEntity
-                {
-                    animationKey = animationDataSO.animationKey,
-                    meshIndex = i,
-                });
-
+                    Entity meshBakingEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
+                    //Add unmanaged components needed for rendering
+                    AddComponent(meshBakingEntity, new MaterialMeshInfo());
+                    AddComponent(meshBakingEntity, new RenderMeshUnmanaged
+                    {
+                        materialForSubMesh = authoring.defaultMaterial,
+                        mesh = mesh,
+                    });
+                    //Add animation metadata used for identification
+                    AddComponent(meshBakingEntity, new AnimationFrameMetadata
+                    {
+                        animationKey = animationDataSO.animationKey,
+                        meshIndex = i,
+                    });
+                }
             }
-
-            animationSOIndex++;
         }
 
+        //Add reference to SO registry to access SO's during post baking.
+        ///See <see cref="AnimationDataHolderBakingSystem"/>
         AddComponent(entity, new AnimationRegistryReference
         {
             registry = authoring.animationDataRegistrySO,
         });
-        
-        //REVIEW: Implement if AnimationRegistryManaged is implemented instead
-        /* AddComponentObject(entity, new AnimationRegistryManaged
-        {
-           registry = authoring.animationDataRegistrySO,
-        }); */
 
-        AddComponent(entity, animationDataHolder);
+        AddComponent(entity, new AnimationDataHolder());
     }
 }
 
 /// <summary>
 /// Used for passing down AnimationKey and MeshIndex to the postBaking process
 /// </summary>
-public struct AnimationDataHolderSubEntity : IComponentData
+public struct AnimationFrameMetadata : IComponentData
 {
     public AnimationKey animationKey;
     public int meshIndex;
 }
 
 /// <summary>
-/// Used for passing down a <see cref="AnimationDataRegistrySO"/> reference to the postBaking process
+/// Used exclusively for passing down a managed <see cref="AnimationDataRegistrySO"/> reference to the PostBaking process.
+/// See <see cref="AnimationDataHolderBakingSystem"/>
 /// </summary>
 public struct AnimationRegistryReference : IComponentData
 {
     public UnityObjectRef<AnimationDataRegistrySO> registry;
 }
-//REVIEW: Can be swapped into the following code:
-/* public class AnimationRegistryManaged : IComponentData
-{
-    public AnimationDataRegistrySO registry;
-} */
 
 /// <summary>
-/// Contains the entirety of the animation data baked from the <see cref="AnimationDataRegistrySO"/>.
+/// Contains the entirety of the animation data baked from the <see cref="AnimationDataRegistrySO"/> for one full animation. Built during PostBaking process.
 /// </summary>
 public struct AnimationDataHolder : IComponentData
 {
-    //TODO: Document
-    public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
+    /// <summary>
+    /// Reference to the BlobArray containing all AnimationData (EGS mesh arrays).
+    /// </summary>
+    public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayReference;
 }
 
 /// <summary>
@@ -140,5 +133,5 @@ public struct AnimationData
     /// Animations are meant to follow a strictly linear frame-rate dictated by this value.
     /// </summary>
     public float frameFrequency;
-    public BlobArray<int> intMeshIdBlobArray;
+    public BlobArray<int> frameMeshIdIndex;
 }

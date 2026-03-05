@@ -19,7 +19,7 @@ partial struct ChangeAnimationSystem : ISystem
 
         ChangeAnimationJob changeAnimationJob = new ChangeAnimationJob
         {
-            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayAssetReference
+            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayReference
         };
         changeAnimationJob.ScheduleParallel();
     }
@@ -57,7 +57,7 @@ public partial struct ChangeAnimationJob : IJobEntity
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey
 
 
-            materialMeshInfo.Mesh = animData.intMeshIdBlobArray[0];
+            materialMeshInfo.Mesh = animData.frameMeshIdIndex[0];
         }
     }
 }

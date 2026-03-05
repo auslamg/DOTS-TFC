@@ -38,7 +38,6 @@ Document
         - ref NativeList<DistanceHit>
         - CollisionFilter
 
-- DOCUMENT: (Animation files extensively)
 - DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
 
 Aesthetic/UX addons
@@ -71,7 +70,7 @@ Refactors
 - REFACTOR: >= consistency in timer code blocks
 - REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
 - REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
-    - FSM for animation states
+- REFACTOR: FSM for animation states
 - REFACTOR: Standardize jobs schedulling and lookups
 - REFACTOR: Rename Walk animatiobs to Move
 - REFACTOR: Rename Hostile animations to appropiate enemy name
@@ -85,9 +84,11 @@ FIXED: ZOMBIE CANT FIND TARGET
 FIXED: Fix unit selection rect scaling with screen size
 FIXED: Could not find singleton oftype EntitiesReference
 
+DONE: DOCUMENT: (Animation baking extensively)
+
+
 DONE: REFACTOR: Rename MoveOverride to ManualMove
 DONE: REFACTOR: Rename TargetOverride to ManualTarget
 DONE: REFACTOR: Remove "Authoring" from all baker signatures
-
 DONE: REFACTOR: Animation system into dictionary values rather than enums (see documentation)
 

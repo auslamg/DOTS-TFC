@@ -81,7 +81,7 @@ public static class EntityUtil
     /// <summary>
     /// Gets the AnimationData entry in the registry's BlobArray. 
     /// </summary>
-    /// //TODO: CHeck burst
+    /// //TODO: Check burst
     public static ref AnimationData GetAnimationData(
     ref BlobAssetReference<BlobArray<AnimationData>> blobRef,
     in AnimationKey key)

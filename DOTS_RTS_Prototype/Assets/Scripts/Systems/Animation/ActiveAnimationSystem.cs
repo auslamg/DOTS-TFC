@@ -28,7 +28,7 @@ partial struct ActiveAnimationSystem : ISystem
         ActiveAnimationJob job = new ActiveAnimationJob
         {
             deltaTime = SystemAPI.Time.DeltaTime,
-            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayAssetReference,
+            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayReference,
             parentComponentLookup = parentComponentLookup,
             unitAnimationsComponentLookup = unitAnimationsComponentLookup
         };
@@ -69,7 +69,7 @@ public partial struct ActiveAnimationJob : IJobEntity
             }
 
             materialMeshInfo.Mesh =
-                animData.intMeshIdBlobArray[activeAnimation.currentFrame];
+                animData.frameMeshIdIndex[activeAnimation.currentFrame];
 
             //Get UnitAnimations inside parent's component
             RefRO<UnitAnimations> unitAnimations =
