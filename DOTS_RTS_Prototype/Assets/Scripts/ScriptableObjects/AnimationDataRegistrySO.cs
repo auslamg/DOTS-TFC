@@ -1,20 +1,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AnimationDataRegistrySO", menuName = "AnimationData/AnimationDataListSO")]
+[CreateAssetMenu(fileName = "AnimationDataRegistrySO", menuName = "AnimationData/AnimationDataRegistrySO")]
 public class AnimationDataRegistrySO : ScriptableObject
 {
-    public List<AnimationDataSO> animationDataSOList;
-    public AnimationDataSO GetAnimationDataSO(AnimationKey animationKey)
+    [SerializeField] public List<AnimationDataSO> animationDataSOList;
+    private Dictionary<AnimationKey, AnimationDataSO> animationDataDictionary;
+
+    private void OnEnable()
     {
+        BuildDictionary();
+    }
+
+    private void BuildDictionary()
+    {
+        animationDataDictionary = new Dictionary<AnimationKey, AnimationDataSO>();
+
         foreach (AnimationDataSO so in animationDataSOList)
         {
-            if (so.animationKey == animationKey)
+            if (animationDataDictionary.ContainsKey(so.animationKey))
             {
-                return so;
+                Debug.LogWarning($"Duplicate AnimationKey found: {so.animationKey}", this);
+                continue;
             }
+
+            animationDataDictionary.Add(so.animationKey, so);
         }
-        Debug.LogError("Could not find AnimationData ScriptableObject for Animation type " + animationKey);
+    }
+
+    public AnimationDataSO GetAnimationDataSO(AnimationKey animationKey)
+    {
+        if (animationDataDictionary.TryGetValue(animationKey, out var so))
+        {
+            return so;
+        }
+
+        Debug.LogError($"Could not find AnimationData ScriptableObject for Animation type {animationKey}", this);
         return null;
     }
 }
