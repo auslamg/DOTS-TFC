@@ -19,6 +19,7 @@ partial struct ShootAttackSystem : ISystem
         //Used for prefab instancing
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
+        //Logic for MOVING shooters
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
@@ -37,10 +38,12 @@ partial struct ShootAttackSystem : ISystem
             if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
+
+                //Target is too far, move closer
                 if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shootAttack.ValueRO.attackDistance)
                 {
-                    //Too far, move closer
                     unitMover.ValueRW.targetPosition = targetLocalTransform.Position;
+                    continue;
                 }
                 else
                 {
@@ -54,7 +57,40 @@ partial struct ShootAttackSystem : ISystem
                     quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
                     localTransform.ValueRW.Rotation =
                         math.slerp(localTransform.ValueRO.Rotation, aimRotation, SystemAPI.Time.DeltaTime * unitMover.ValueRO.rotationSpeed); //replace with aimRotation for no interpolation
+                }
+            }
+        }
 
+        foreach ((
+            RefRW<LocalTransform> localTransform,
+            RefRW<ShootAttack> shootAttack,
+            RefRO<Targetter> targetter,
+            Entity entity)
+                in SystemAPI.Query<
+                RefRW<LocalTransform>,
+                RefRW<ShootAttack>,
+                RefRO<Targetter>>().
+                WithEntityAccess())
+        {
+            //If there is no target, go for next entity
+            if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
+            {
+                LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
+
+                //Target is too far
+                if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shootAttack.ValueRO.attackDistance)
+                {
+                    continue;
+                }
+
+                //Entity is busy manually moving
+                if (SystemAPI.HasComponent<ManualMove>(entity) &&
+                    SystemAPI.IsComponentEnabled<ManualMove>(entity))
+                {
+                    continue;
+                }
+                
+                {
                     //TODO: Extract into AttackLoop() method or corroutine
                     //IDEA: Refactor into corroutines
                     //Timer

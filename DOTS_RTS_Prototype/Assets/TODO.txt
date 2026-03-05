@@ -59,6 +59,7 @@ AI features
 - FEATURE: FSM bot enemy
 - FEATURE: FlowField pathfinding (requires grid)
 - FEATURE: Non-seeking, calculated projectiles
+- FIX: Building colliders dont disappear on destruction, being clickable and making units float
 
 - GDD: Full targetting behaviour
 - GDD: Targets dont swap if they dont pass the threshold
@@ -74,7 +75,7 @@ Refactors
 - REFACTOR: Standardize jobs schedulling and lookups
 - REFACTOR: Rename Walk animatiobs to Move
 - REFACTOR: Rename Hostile animations to appropiate enemy name
-- REFACOR: "Frequency" variables in struct timers should be "peiod" or "interval"
+- REFACTOR: "Frequency" variables in struct timers should be "peiod" or "interval"
 - REFACTOR: Parametrize EnemySpawner and rename to EntitySpawner
 
 

@@ -138,17 +138,9 @@ public class UnitSelectionManager : MonoBehaviour
                 EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
                 entityManager.HasComponent<Health>(hitEntity); 
                 //NOTE: Health is used a common ground for attackalbe units and buildings
-
-            //TEST
-            if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
-            {
-                Debug.Log("Hit entity:" + hitEntity);
-            }
-            //TEST END
-
+            
             if (isAttackingAnEntity)
             {
-                Debug.Log("ATTEMPTED MANUAL ATTACK");
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
             else
