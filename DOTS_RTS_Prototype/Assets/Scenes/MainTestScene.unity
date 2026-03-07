@@ -457,6 +457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f83bd9bc3e7f9f48b0e93062ba5146f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameAssets
+  unitRegistrySO: {fileID: 11400000, guid: fc09bafa688b9ad429db24270935307e, type: 2}
 --- !u!4 &782020337
 Transform:
   m_ObjectHideFlags: 0

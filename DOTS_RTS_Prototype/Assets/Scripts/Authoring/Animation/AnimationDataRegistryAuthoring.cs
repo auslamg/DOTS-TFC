@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -123,15 +124,30 @@ public struct AnimationDataRegistry : IComponentData
 public struct AnimationData
 {
     public AnimationKey animationKey;
+    public AnimationType animationType;
     public bool playFull;
-    /// <summary>
-    /// Total number of frames in the animation.
-    /// </summary>
-    public int frameCount;
     /// <summary>
     /// Time span for each frame change.
     /// Animations are meant to follow a strictly linear frame-rate dictated by this value.
     /// </summary>
     public float frameFrequency;
+    /// <summary>
+    /// Total number of frames in the animation.
+    /// </summary>
+    public int frameCount;
+    /// <summary>
+    /// Blob array of each animation fram ID.
+    /// </summary>
     public BlobArray<int> frameMeshIdIndex;
+
+    public bool IsUninterruptible()
+    {
+        if (playFull) return true;
+        return animationType switch
+        {
+            AnimationType.Melee => true,
+            AnimationType.Shoot => true,
+            _ => false
+        };
+    }
 }

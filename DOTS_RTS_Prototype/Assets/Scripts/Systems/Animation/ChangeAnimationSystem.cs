@@ -32,13 +32,20 @@ public partial struct ChangeAnimationJob : IJobEntity
 
     public void Execute(ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
-        //TODO: Refactor into "PlayFull tag" or something
-        //If the current animation is PlayFull (shoot), then do NOT change it
-        if (activeAnimation.activeAnimationKey.IsUninterruptible())
+        bool currentIsBusy = false;
+        if (activeAnimation.activeAnimationKey != default)
         {
-            //Busy
-            return;
+            ref AnimationData currentAnimData = 
+                ref RegistryAccessor.GetAnimationData(
+                    ref animationDataBlobArrayAssetReference,
+                    activeAnimation.activeAnimationKey);
+
+            currentIsBusy = currentAnimData.IsUninterruptible();
         }
+
+        // Skip if current animation is busy
+        if (currentIsBusy)
+            return;
 
         if (activeAnimation.activeAnimationKey != activeAnimation.nextAnimationKey || activeAnimation.activeAnimationKey == default)
         {
@@ -47,21 +54,21 @@ public partial struct ChangeAnimationJob : IJobEntity
             activeAnimation.framePhaseTime = 0;
             activeAnimation.activeAnimationKey = activeAnimation.nextAnimationKey;
 
+            //Get and set first frame
+            ref AnimationData newAnimData =
+                ref RegistryAccessor.GetAnimationData(
+                    ref animationDataBlobArrayAssetReference,
+                    activeAnimation.activeAnimationKey);
+
             //If there is no animation simply don't animate.
             //Pretty much a workaround for null animations while animations can't be nullable
-            if (activeAnimation.activeAnimationKey.animationType == AnimationType.None)
+            if (newAnimData.animationType == AnimationType.None)
             {
                 return;
             }
 
-            //Get and set first frame
-            ref AnimationData animData =
-            ref RegistryAccessor.GetAnimationData(
-                ref animationDataBlobArrayAssetReference,
-                activeAnimation.activeAnimationKey);
-
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey
-            materialMeshInfo.Mesh = animData.frameMeshIdIndex[0];
+            materialMeshInfo.Mesh = newAnimData.frameMeshIdIndex[0];
         }
     }
 }

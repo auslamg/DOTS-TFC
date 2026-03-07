@@ -29,37 +29,31 @@ class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
             noneAnimationKey = new AnimationKey
             {
                 name = authoring.noneAnimationKey,
-                animationType = AnimationType.None
             },
 
             idleAnimationKey = new AnimationKey
             {
                 name = authoring.idleAnimationKey,
-                animationType = AnimationType.Idle
             },
 
             walkAnimationKey = new AnimationKey
             {
                 name = authoring.walkAnimationKey,
-                animationType = AnimationType.Move
             },
 
             meleeAttackAnimationKey = new AnimationKey
             {
                 name = authoring.meleeAttackAnimationKey,
-                animationType = AnimationType.Melee
             },
 
             shootAnimationKey = new AnimationKey
             {
                 name = authoring.shootAnimationKey,
-                animationType = AnimationType.Shoot
             },
 
             aimAnimationKey = new AnimationKey
             {
                 name = authoring.aimAnimationKey,
-                animationType = AnimationType.Aim
             },
         });
     }

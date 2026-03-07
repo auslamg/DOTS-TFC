@@ -6,22 +6,31 @@ using System;
 public class AnimationDataSO : ScriptableObject
 {
     [SerializeField] string animationName;
-    [SerializeField] AnimationType animationType;
+    public AnimationType animationType;
+    public bool playFull;
+    public float frameFrequency;
+    public Mesh[] meshArray;
 
     [SerializeField, HideInInspector]
     private AnimationKey cachedKey;
-
     public AnimationKey animationKey => cachedKey;
-    public bool playFull;
-    public Mesh[] meshArray;
-    public float frameFrequency;
 
     private void OnValidate()
     {
         cachedKey = new AnimationKey
         {
-            name = animationName,
-            animationType = animationType
+            name = animationName
+        };
+    }
+
+    public bool IsUninterruptible()
+    {
+        if (playFull) return true;
+        return animationType switch
+        {
+            AnimationType.Melee => true,
+            AnimationType.Shoot => true,
+            _ => false
         };
     }
 }
@@ -29,12 +38,9 @@ public class AnimationDataSO : ScriptableObject
 public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
 {
     public FixedString64Bytes name;
-    public AnimationType animationType;
-    public bool playFull;
     public bool Equals(AnimationKey other)
     {
-        // Only compare fields that define key uniqueness
-        return name.Equals(other.name) && animationType == other.animationType;
+        return name.Equals(other.name);
     }
     public override bool Equals(object obj)
     {
@@ -51,7 +57,6 @@ public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
         {
             int hash = 17;
             hash = hash * 23 + name.GetHashCode();
-            hash = hash * 23 + animationType.GetHashCode();
             return hash;
         }
     }
@@ -60,18 +65,7 @@ public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
     public static bool operator !=(AnimationKey left, AnimationKey right) => !left.Equals(right);
     public override string ToString()
     {
-        return $"{name}[AnimationType:{animationType}]";
-    }
-
-    public bool IsUninterruptible()
-    {
-        if (playFull) return true;
-        return animationType switch
-        {
-            AnimationType.Melee => true,
-            AnimationType.Shoot => true,
-            _ => false
-        };
+        return $"{name}";
     }
 }
 

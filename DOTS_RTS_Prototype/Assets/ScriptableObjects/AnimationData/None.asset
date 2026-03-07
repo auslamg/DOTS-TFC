@@ -15,5 +15,5 @@ MonoBehaviour:
   animationName: 
   animationType: 0
   playFull: 0
-  meshArray: []
   frameFrequency: 0
+  meshArray: []

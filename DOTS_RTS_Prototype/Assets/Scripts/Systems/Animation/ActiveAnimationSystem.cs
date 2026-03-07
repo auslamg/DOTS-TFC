@@ -46,18 +46,18 @@ public partial struct ActiveAnimationJob : IJobEntity
 
     public void Execute(Entity entity, ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
-        //If there is no animation simply don't animate.
-        //Pretty much a workaround for null animations while animations can't be nullable
-        if (activeAnimation.activeAnimationKey.animationType == AnimationType.None)
-        {
-            return;
-        }
-
         //Cached AnimDataBlobArrayAsset reference index pointer for readability
         ref AnimationData animData =
             ref RegistryAccessor.GetAnimationData(
                 ref animationDataBlobArrayAssetReference,
                 activeAnimation.activeAnimationKey);
+
+        //If there is no animation simply don't animate.
+        //Pretty much a workaround for null animations while animations can't be nullable
+        if (animData.animationType == AnimationType.None)
+        {
+            return;
+        }
 
         //Time loop
         //IDEA: Use corroutines
@@ -84,7 +84,7 @@ public partial struct ActiveAnimationJob : IJobEntity
             //TODO: Refactor into "PlayFull tag" or something
             //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
             if (activeAnimation.currentFrame == 0 &&
-                activeAnimation.activeAnimationKey.IsUninterruptible())
+                animData.IsUninterruptible())
             {
                 //Busy attacking
                 activeAnimation.activeAnimationKey = unitAnimations.ValueRO.noneAnimationKey;

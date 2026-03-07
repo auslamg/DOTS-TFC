@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
   animationName: soldier_aim
   animationType: 5
-  playFull: 1
+  playFull: 0
+  frameFrequency: 1
   meshArray:
   - {fileID: 4300000, guid: e274e405c96af1740a3f6351f10189f9, type: 2}
-  frameFrequency: 1

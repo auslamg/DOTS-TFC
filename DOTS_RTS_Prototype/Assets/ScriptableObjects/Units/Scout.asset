@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitSO
   unitName: Scout
   unitType: 3
+  trainingTime: 3

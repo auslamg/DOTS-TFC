@@ -81,6 +81,7 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
 
                 //Edit singular data inside blob
                 animationDataBlobEntries[animationIndex].animationKey = animationDataSO.animationKey;
+                animationDataBlobEntries[animationIndex].animationType = animationDataSO.animationType;
                 animationDataBlobEntries[animationIndex].playFull = animationDataSO.playFull;
                 animationDataBlobEntries[animationIndex].frameFrequency = animationDataSO.frameFrequency;
                 animationDataBlobEntries[animationIndex].frameCount = animationDataSO.meshArray.Length;

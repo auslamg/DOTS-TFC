@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitSO
   unitName: Melee
   unitType: 2
+  trainingTime: 5
