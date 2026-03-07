@@ -31,13 +31,11 @@ public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
     public FixedString64Bytes name;
     public AnimationType animationType;
     public bool playFull;
-
     public bool Equals(AnimationKey other)
     {
         // Only compare fields that define key uniqueness
         return name.Equals(other.name) && animationType == other.animationType;
     }
-
     public override bool Equals(object obj)
     {
         return obj is AnimationKey other && Equals(other);
@@ -47,7 +45,6 @@ public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
         int cmp = name.CompareTo(other.name);
         return cmp;
     }
-
     public override int GetHashCode()
     {
         unchecked
@@ -61,7 +58,6 @@ public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
 
     public static bool operator ==(AnimationKey left, AnimationKey right) => left.Equals(right);
     public static bool operator !=(AnimationKey left, AnimationKey right) => !left.Equals(right);
-
     public override string ToString()
     {
         return $"{name}[AnimationType:{animationType}]";

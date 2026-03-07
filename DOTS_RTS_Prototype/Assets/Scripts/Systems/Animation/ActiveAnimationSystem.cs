@@ -66,7 +66,6 @@ public partial struct ActiveAnimationJob : IJobEntity
         {
             activeAnimation.framePhaseTime -= animData.frameFrequency;
 
-
             //Animation loop
             //IDEA: Use corroutines
             activeAnimation.currentFrame += 1;

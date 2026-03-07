@@ -60,10 +60,7 @@ public partial struct ChangeAnimationJob : IJobEntity
                 ref animationDataBlobArrayAssetReference,
                 activeAnimation.activeAnimationKey);
 
-
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey
-
-
             materialMeshInfo.Mesh = animData.frameMeshIdIndex[0];
         }
     }
