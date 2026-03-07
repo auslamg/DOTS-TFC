@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -15,26 +16,27 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
         //Temporary Dictionary for AnimationKey :: MeshID (int) employed for animation mesh queries
         Dictionary<AnimationKey, int[]> animationFramesDictionary = new Dictionary<AnimationKey, int[]>();
 
-        //Allocate array space for each individual animation according to its frame count
+        // Get the registry SO
         AnimationDataRegistrySO animationRegistry =
             SystemAPI.GetSingleton<AnimationRegistrySOReference>().registry;
-        //FIX: Convert to RefRO's
-        foreach (AnimationDataSO animation in animationRegistry.animationDataSOList) 
+
+        // Allocate arrays for each animation key
+        foreach (AnimationDataSO animation in animationRegistry.animationDataSOList)
         {
             animationFramesDictionary[animation.animationKey] = new int[animation.meshArray.Length];
         }
 
-        //Fill up the dictionary entries with the relevant MaterialMeshInfo, retrieved from meshBakingEntity entities created during baking process.
+        // Fill dictionary with Mesh IDs from the baked entities
         ///See <see cref="AnimationDataRegistryBaker"/>
         foreach ((
-            RefRO<AnimationFrameMetadata> animationFrameMetadata,
-            RefRW<MaterialMeshInfo> materialMeshInfo)
+            RefRO<AnimationFrameMetadata> frameMetadata,
+            RefRW<MaterialMeshInfo> meshInfo)
                 in SystemAPI.Query<
                 RefRO<AnimationFrameMetadata>,
                 RefRW<MaterialMeshInfo>>())
         {
-            animationFramesDictionary[animationFrameMetadata.ValueRO.animationKey][animationFrameMetadata.ValueRO.meshIndex] =
-                materialMeshInfo.ValueRO.Mesh;
+            animationFramesDictionary[frameMetadata.ValueRO.animationKey][frameMetadata.ValueRO.meshIndex] =
+                meshInfo.ValueRO.Mesh;
 
             //Debug logging for baking info
             /* Debug.Log(
@@ -43,11 +45,17 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
                 " :: " + animationDataRegistryFrameMetadata.ValueRO.meshIndex +
                 " = " + materialMeshInfo.ValueRO.Mesh); */
         }
+        
+        // --- SORTED BLOB ARRAY LOGIC ---
+        // Sort the AnimationDataSO list by AnimationKey
+        AnimationDataSO[] sortedAnimations = animationRegistry.animationDataSOList
+            .OrderBy((AnimationDataSO a) => a.animationKey)
+            .ToArray();
 
         // Build the BlobAssetReference that will store all animation data in a contiguous,
         // Burst-compatible memory structure. The blob will contain a BlobArray<AnimationData>,
         // where each AnimationData entry corresponds to one AnimationDataSO in the registry.
-        
+
         // This blob is attached to the singleton AnimationDataRegistry entity and will be used
         // at runtime for extremely fast animation lookup without requiring managed memory,
         // ScriptableObject access, or entity queries.
@@ -58,32 +66,31 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
             ref BlobArray<AnimationData> animationDataBlobRoot = ref blobBuilder.ConstructRoot<BlobArray<AnimationData>>();
 
             //Allocate memory for AnimationData array in the constructed root BlobArray
-            int animationRegistrySize = animationRegistry.animationDataSOList.Count;
+            int animationCount = sortedAnimations.Length;
             BlobBuilderArray<AnimationData> animationDataBlobEntries =
-                blobBuilder.Allocate<AnimationData>(ref animationDataBlobRoot, animationRegistrySize);
+                blobBuilder.Allocate<AnimationData>(ref animationDataBlobRoot, animationCount);
 
             //Process all AnimationData ScriptableObjects found in the registry's list
-            int animationSOIndex = 0;
-            foreach (AnimationDataSO animationDataSO in animationRegistry.animationDataSOList)
+            for (int animationIndex = 0; animationIndex < animationCount; animationIndex++)
             {
+                AnimationDataSO animationDataSO = sortedAnimations[animationIndex];
+            
                 //Allocate memory for the mesh array
                 BlobBuilderArray<int> frameMeshIds =
-                    blobBuilder.Allocate<int>(ref animationDataBlobEntries[animationSOIndex].frameMeshIdIndex, animationDataSO.meshArray.Length);
+                    blobBuilder.Allocate<int>(ref animationDataBlobEntries[animationIndex].frameMeshIdIndex, animationDataSO.meshArray.Length);
 
                 //Edit singular data inside blob
-                animationDataBlobEntries[animationSOIndex].animationKey = animationDataSO.animationKey;
-                animationDataBlobEntries[animationSOIndex].playFull = animationDataSO.playFull;
-                animationDataBlobEntries[animationSOIndex].frameFrequency = animationDataSO.frameFrequency;
-                animationDataBlobEntries[animationSOIndex].frameCount = animationDataSO.meshArray.Length;
+                animationDataBlobEntries[animationIndex].animationKey = animationDataSO.animationKey;
+                animationDataBlobEntries[animationIndex].playFull = animationDataSO.playFull;
+                animationDataBlobEntries[animationIndex].frameFrequency = animationDataSO.frameFrequency;
+                animationDataBlobEntries[animationIndex].frameCount = animationDataSO.meshArray.Length;
 
-                //Register all meshes in the mesh array
-                for (int i = 0; i < animationDataSO.meshArray.Length; i++)
+                //Register all frame meshes in the mesh array
+                for (int frameIndex = 0; frameIndex < animationDataSO.meshArray.Length; frameIndex++)
                 {
                     //Add to Blob baked mesh from dictionary
-                    frameMeshIds[i] = animationFramesDictionary[animationDataSO.animationKey][i];
+                    frameMeshIds[frameIndex] = animationFramesDictionary[animationDataSO.animationKey][frameIndex];
                 }
-
-                animationSOIndex++;
             }
 
             //Build BlobAssetReference

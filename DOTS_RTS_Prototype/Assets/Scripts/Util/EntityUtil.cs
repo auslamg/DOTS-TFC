@@ -8,9 +8,6 @@ using UnityEngine;
 /// <summary>
 /// Utility class for entities and their components.
 /// </summary>
-/// <remarks>
-/// The component is a Singleton.
-/// </remarks>
 [BurstCompile]
 public static class EntityUtil
 {
@@ -76,38 +73,5 @@ public static class EntityUtil
         CollisionWorld collisionWorld = physiscsWorldSingleton.CollisionWorld;
 
         return collisionWorld;
-    }
-
-    /// <summary>
-    /// Gets the AnimationData entry in the registry's BlobArray. 
-    /// </summary>
-    /// //TODO: Check burst
-    public static ref AnimationData GetAnimationData(
-    ref BlobAssetReference<BlobArray<AnimationData>> blobRef,
-    in AnimationKey key)
-    {
-        ref var array = ref blobRef.Value;
-
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (array[i].animationKey.Equals(key))
-            {
-                return ref array[i];
-            }
-        }
-
-        // Note: 
-        // This should never happen as long as introduced keys are always valid
-        // Burst-safe option
-        ThrowAnimationKeyNotFound(key);
-
-        throw new System.Exception("AnimationKey not found in AnimationData blob. Disable Burst to see details.");
-    }
-
-    [BurstDiscard]
-    private static void ThrowAnimationKeyNotFound(AnimationKey key)
-    {
-        Debug.Log($"AnimationKey not found: {key.name}");
-        throw new System.Exception("AnimationKey not found in AnimationData blob: " + key.name);
     }
 }

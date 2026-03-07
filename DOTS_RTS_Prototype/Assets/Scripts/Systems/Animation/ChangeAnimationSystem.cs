@@ -56,7 +56,7 @@ public partial struct ChangeAnimationJob : IJobEntity
 
             //Get and set first frame
             ref AnimationData animData =
-            ref EntityUtil.GetAnimationData(
+            ref RegistryAccessor.GetAnimationData(
                 ref animationDataBlobArrayAssetReference,
                 activeAnimation.activeAnimationKey);
 

@@ -26,29 +26,28 @@ public class AnimationDataSO : ScriptableObject
     }
 }
 
-public struct AnimationKey : IEquatable<AnimationKey>
+public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
 {
     public FixedString64Bytes name;
     public AnimationType animationType;
     public bool playFull;
-    public override bool Equals(object obj)
-    {
-        if (!(obj is AnimationKey))
-            return false;
-
-        AnimationKey other = (AnimationKey)obj;
-        return this.name == other.name;
-    }
 
     public bool Equals(AnimationKey other)
     {
-        return name.Equals(other.name);
+        // Only compare fields that define key uniqueness
+        return name.Equals(other.name) && animationType == other.animationType;
     }
 
-    public override string ToString()
+    public override bool Equals(object obj)
     {
-        return name + "[AnimationType:" + animationType + "]";
+        return obj is AnimationKey other && Equals(other);
     }
+    public int CompareTo(AnimationKey other)
+    {
+        int cmp = name.CompareTo(other.name);
+        return cmp;
+    }
+
     public override int GetHashCode()
     {
         unchecked
@@ -60,32 +59,23 @@ public struct AnimationKey : IEquatable<AnimationKey>
         }
     }
 
-    public static bool operator ==(AnimationKey key1, AnimationKey key2)
-    {
-        return key1.Equals(key2);
-    }
+    public static bool operator ==(AnimationKey left, AnimationKey right) => left.Equals(right);
+    public static bool operator !=(AnimationKey left, AnimationKey right) => !left.Equals(right);
 
-    public static bool operator !=(AnimationKey key1, AnimationKey key2)
+    public override string ToString()
     {
-        return !key1.Equals(key2);
+        return $"{name}[AnimationType:{animationType}]";
     }
 
     public bool IsUninterruptible()
     {
-        if (playFull) return playFull;
-        
-        switch (animationType)
+        if (playFull) return true;
+        return animationType switch
         {
-            default:
-            case AnimationType.None:
-            case AnimationType.Idle:
-            case AnimationType.Move:
-            case AnimationType.Aim:
-                return false;
-            case AnimationType.Melee:
-            case AnimationType.Shoot:
-                return true;
-        }
+            AnimationType.Melee => true,
+            AnimationType.Shoot => true,
+            _ => false
+        };
     }
 }
 

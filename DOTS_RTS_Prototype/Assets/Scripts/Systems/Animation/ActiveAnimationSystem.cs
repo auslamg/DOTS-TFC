@@ -55,7 +55,7 @@ public partial struct ActiveAnimationJob : IJobEntity
 
         //Cached AnimDataBlobArrayAsset reference index pointer for readability
         ref AnimationData animData =
-            ref EntityUtil.GetAnimationData(
+            ref RegistryAccessor.GetAnimationData(
                 ref animationDataBlobArrayAssetReference,
                 activeAnimation.activeAnimationKey);
 
