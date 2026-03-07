@@ -5,17 +5,17 @@ using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 /// <summary>
-/// Managed component for the <see cref="AnimationDataHolder"/> unmanaged component.
+/// Managed component for the <see cref="AnimationDataRegistry"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// The component is a Singleton.
 /// </remarks>
-class AnimationDataHolderAuthoring : MonoBehaviour
+class AnimationDataRegistryAuthoring : MonoBehaviour
 {
     public AnimationDataRegistrySO animationDataRegistrySO;
     public Material defaultMaterial; //Used exclusively to avoid submesh with no material warning (unity bug since there is no submesh)
 
-    public static AnimationDataHolderAuthoring Instance { get; private set; }
+    public static AnimationDataRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
     /// Used for singleton logic.
@@ -36,14 +36,14 @@ class AnimationDataHolderAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <see cref="AnimationDataHolder"/> unmanaged component.
+/// Baker for the <see cref="AnimationDataRegistry"/> unmanaged component.
 /// The process requires PostBaking because <see cref="EntitiesGraphicsSystem"/> isn't registered during bake-time, only after.
 /// Therefore the meshes are baked in additional objects "meshBakingEntity" and later registered in PostBaking.
-/// See <see cref="AnimationDataHolderBakingSystem"/>
+/// See <see cref="AnimationDataRegistryPostBakingSystem"/>
 /// </summary>
-class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
+class AnimationDataRegistryBaker : Baker<AnimationDataRegistryAuthoring>
 {
-    public override void Bake(AnimationDataHolderAuthoring authoring)
+    public override void Bake(AnimationDataRegistryAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
@@ -56,8 +56,8 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
                 //Obtain each mesh from animationDataSO
                 Mesh mesh = animationDataSO.meshArray[i];
 
-                /* Generates an entity "meshBakingEntity" per each frame to link its components to said entity and bake it, and register the entity in the aniamtionDataHolder. */
-                ///See <see cref="AnimationDataHolderBakingSystem"/>
+                /* Generates an entity "meshBakingEntity" per each frame to link its components to said entity and bake it, and register the entity in the aniamtionDataRegistry. */
+                ///See <see cref="AnimationDataRegistryPostBakingSystem"/>
                 {
                     Entity meshBakingEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
                     //Add unmanaged components needed for rendering
@@ -78,13 +78,13 @@ class AnimationDataHolderBaker : Baker<AnimationDataHolderAuthoring>
         }
 
         //Add reference to SO registry to access SO's during post baking.
-        ///See <see cref="AnimationDataHolderBakingSystem"/>
-        AddComponent(entity, new AnimationRegistryReference
+        ///See <see cref="AnimationDataRegistryPostBakingSystem"/>
+        AddComponent(entity, new AnimationRegistrySOReference
         {
             registry = authoring.animationDataRegistrySO,
         });
 
-        AddComponent(entity, new AnimationDataHolder());
+        AddComponent(entity, new AnimationDataRegistry());
     }
 }
 
@@ -99,9 +99,9 @@ public struct AnimationFrameMetadata : IComponentData
 
 /// <summary>
 /// Used exclusively for passing down a managed <see cref="AnimationDataRegistrySO"/> reference to the PostBaking process.
-/// See <see cref="AnimationDataHolderBakingSystem"/>
+/// See <see cref="AnimationDataRegistryPostBakingSystem"/>
 /// </summary>
-public struct AnimationRegistryReference : IComponentData
+public struct AnimationRegistrySOReference : IComponentData
 {
     public UnityObjectRef<AnimationDataRegistrySO> registry;
 }
@@ -109,7 +109,7 @@ public struct AnimationRegistryReference : IComponentData
 /// <summary>
 /// Contains the entirety of the animation data baked from the <see cref="AnimationDataRegistrySO"/> for one full animation. Built during PostBaking process.
 /// </summary>
-public struct AnimationDataHolder : IComponentData
+public struct AnimationDataRegistry : IComponentData
 {
     /// <summary>
     /// Reference to the BlobArray containing all AnimationData (EGS mesh arrays).

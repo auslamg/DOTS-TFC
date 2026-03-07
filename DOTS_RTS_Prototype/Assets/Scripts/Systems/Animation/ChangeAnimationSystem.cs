@@ -9,13 +9,13 @@ partial struct ChangeAnimationSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<AnimationDataHolder>();
+        state.RequireForUpdate<AnimationDataRegistry>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
+        AnimationDataRegistry animationDataHolder = SystemAPI.GetSingleton<AnimationDataRegistry>();
 
         ChangeAnimationJob changeAnimationJob = new ChangeAnimationJob
         {
@@ -47,11 +47,18 @@ public partial struct ChangeAnimationJob : IJobEntity
             activeAnimation.framePhaseTime = 0;
             activeAnimation.activeAnimationKey = activeAnimation.nextAnimationKey;
 
+            //If there is no animation simply don't animate.
+            //Pretty much a workaround for null animations while animations can't be nullable
+            if (activeAnimation.activeAnimationKey.animationType == AnimationType.None)
+            {
+                return;
+            }
+
             //Get and set first frame
             ref AnimationData animData =
-                ref EntityUtil.GetAnimationData(
-                    ref animationDataBlobArrayAssetReference,
-                    activeAnimation.activeAnimationKey);
+            ref EntityUtil.GetAnimationData(
+                ref animationDataBlobArrayAssetReference,
+                activeAnimation.activeAnimationKey);
 
 
             //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey

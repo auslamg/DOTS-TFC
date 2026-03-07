@@ -8,7 +8,7 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.BakingSystem)]
 [UpdateInGroup(typeof(PostBakingSystemGroup))]
 // IDEA: Require matching queries for update
-partial struct AnimationDataHolderBakingSystem : ISystem
+partial struct AnimationDataRegistryPostBakingSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
@@ -17,7 +17,7 @@ partial struct AnimationDataHolderBakingSystem : ISystem
 
         //Allocate array space for each individual animation according to its frame count
         AnimationDataRegistrySO animationRegistry =
-            SystemAPI.GetSingleton<AnimationRegistryReference>().registry;
+            SystemAPI.GetSingleton<AnimationRegistrySOReference>().registry;
         //FIX: Convert to RefRO's
         foreach (AnimationDataSO animation in animationRegistry.animationDataSOList) 
         {
@@ -25,7 +25,7 @@ partial struct AnimationDataHolderBakingSystem : ISystem
         }
 
         //Fill up the dictionary entries with the relevant MaterialMeshInfo, retrieved from meshBakingEntity entities created during baking process.
-        ///See <see cref="AnimationDataHolderBaker"/>
+        ///See <see cref="AnimationDataRegistryBaker"/>
         foreach ((
             RefRO<AnimationFrameMetadata> animationFrameMetadata,
             RefRW<MaterialMeshInfo> materialMeshInfo)
@@ -39,8 +39,8 @@ partial struct AnimationDataHolderBakingSystem : ISystem
             //Debug logging for baking info
             /* Debug.Log(
                 "Baked animation frame mesh:\t" +
-                animationDataHolderFrameMetadata.ValueRO.animationKey +
-                " :: " + animationDataHolderFrameMetadata.ValueRO.meshIndex +
+                animationDataRegistryFrameMetadata.ValueRO.animationKey +
+                " :: " + animationDataRegistryFrameMetadata.ValueRO.meshIndex +
                 " = " + materialMeshInfo.ValueRO.Mesh); */
         }
 
@@ -48,10 +48,10 @@ partial struct AnimationDataHolderBakingSystem : ISystem
         // Burst-compatible memory structure. The blob will contain a BlobArray<AnimationData>,
         // where each AnimationData entry corresponds to one AnimationDataSO in the registry.
         
-        // This blob is attached to the singleton AnimationDataHolder entity and will be used
+        // This blob is attached to the singleton AnimationDataRegistry entity and will be used
         // at runtime for extremely fast animation lookup without requiring managed memory,
         // ScriptableObject access, or entity queries.
-        RefRW<AnimationDataHolder> animationDataHolder = SystemAPI.GetSingletonRW<AnimationDataHolder>();
+        RefRW<AnimationDataRegistry> animationDataRegistry = SystemAPI.GetSingletonRW<AnimationDataRegistry>();
         {
             //Build new blob root through BlobBuilder
             BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp);
@@ -87,7 +87,7 @@ partial struct AnimationDataHolderBakingSystem : ISystem
             }
 
             //Build BlobAssetReference
-            animationDataHolder.ValueRW.animationDataBlobArrayReference =
+            animationDataRegistry.ValueRW.animationDataBlobArrayReference =
                 blobBuilder.CreateBlobAssetReference<BlobArray<AnimationData>>(Allocator.Persistent);
 
             //Dispose resources to avoid memory leaks

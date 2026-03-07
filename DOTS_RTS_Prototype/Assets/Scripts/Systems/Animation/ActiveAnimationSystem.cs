@@ -13,7 +13,7 @@ partial struct ActiveAnimationSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<AnimationDataHolder>();
+        state.RequireForUpdate<AnimationDataRegistry>();
         parentComponentLookup = state.GetComponentLookup<Parent>(true);
         unitAnimationsComponentLookup = state.GetComponentLookup<UnitAnimations>(true);
     }
@@ -23,7 +23,7 @@ partial struct ActiveAnimationSystem : ISystem
     {
         parentComponentLookup.Update(ref state);
         unitAnimationsComponentLookup.Update(ref state);
-        AnimationDataHolder animationDataHolder = SystemAPI.GetSingleton<AnimationDataHolder>();
+        AnimationDataRegistry animationDataHolder = SystemAPI.GetSingleton<AnimationDataRegistry>();
 
         ActiveAnimationJob job = new ActiveAnimationJob
         {
@@ -46,6 +46,13 @@ public partial struct ActiveAnimationJob : IJobEntity
 
     public void Execute(Entity entity, ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
+        //If there is no animation simply don't animate.
+        //Pretty much a workaround for null animations while animations can't be nullable
+        if (activeAnimation.activeAnimationKey.animationType == AnimationType.None)
+        {
+            return;
+        }
+
         //Cached AnimDataBlobArrayAsset reference index pointer for readability
         ref AnimationData animData =
             ref EntityUtil.GetAnimationData(

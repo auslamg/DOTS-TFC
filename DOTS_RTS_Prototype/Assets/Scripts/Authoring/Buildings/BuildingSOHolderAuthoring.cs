@@ -18,8 +18,6 @@ class BuildingSOHolderBaker : Baker<BuildingSOHolderAuthoring>
 {
     public override void Bake(BuildingSOHolderAuthoring authoring)
     {
-        
-
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new BuildingSOHolder
         {

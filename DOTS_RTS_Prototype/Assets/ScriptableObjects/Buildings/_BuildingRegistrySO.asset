@@ -15,3 +15,4 @@ MonoBehaviour:
   buildingSOList:
   - {fileID: 11400000, guid: 3e12ffac2ef44f9409cb4f350df3b89a, type: 2}
   - {fileID: 11400000, guid: 092271eced455114ab3188392284197e, type: 2}
+  - {fileID: 11400000, guid: 520262868f020314b9f815a074a806c0, type: 2}

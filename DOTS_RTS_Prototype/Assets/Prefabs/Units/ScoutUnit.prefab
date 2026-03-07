@@ -63,6 +63,14 @@ PrefabInstance:
       propertyPath: m_EditorClassIdentifier
       value: Assembly-CSharp::TargetFinderAuthoring
       objectReference: {fileID: 0}
+    - target: {fileID: -593925199407109352, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: unitKeyName
+      value: Scout
+      objectReference: {fileID: 0}
+    - target: {fileID: -593925199407109352, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: unitKeyType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 56818754141239383, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: faction
       value: 1

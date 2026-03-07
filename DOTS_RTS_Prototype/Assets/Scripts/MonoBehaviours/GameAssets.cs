@@ -24,4 +24,6 @@ public class GameAssets : MonoBehaviour
             Destroy(this);
         }
     }
+
+    public UnitRegistrySO unitRegistrySO;
 }

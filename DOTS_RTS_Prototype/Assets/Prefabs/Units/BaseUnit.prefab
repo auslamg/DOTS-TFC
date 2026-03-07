@@ -112,6 +112,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4618404140319113980}
+  - component: {fileID: -593925199407109352}
   - component: {fileID: 6532467466477002344}
   - component: {fileID: 56818754141239383}
   - component: {fileID: 4299751784424829594}
@@ -154,6 +155,20 @@ Transform:
   - {fileID: 483861212119593189}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-593925199407109352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56bae423a4d4664408d5f5b87cfb8e7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitSOHolderAuthoring
+  unitKeyName: 
+  unitKeyType: 0
 --- !u!114 &6532467466477002344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b94e508c5a129784683043a4a0a2f8d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAnimationsAuthoring
-  noneAnimationKey: none
+  noneAnimationKey: 
   idleAnimationKey: 
   walkAnimationKey: 
   meleeAttackAnimationKey: 

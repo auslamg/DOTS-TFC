@@ -12,6 +12,8 @@ class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject bulletPrefabGameObject;
     public GameObject enemyPrefabGameObject;
     public GameObject shootLightPrefabGameObject;
+    public GameObject scoutPrefabGameObject;
+    public GameObject soldierPrefabGameObject;
 
     public static EntitiesReferencesAuthoring Instance { get; private set; }
 
@@ -47,6 +49,8 @@ class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
             bulletPrefabEntity = GetEntity(authoring.bulletPrefabGameObject, TransformUsageFlags.Dynamic),
             enemyPrefabEntity = GetEntity(authoring.enemyPrefabGameObject, TransformUsageFlags.Dynamic),
             shootLightPrefabEntity = GetEntity(authoring.shootLightPrefabGameObject, TransformUsageFlags.Dynamic),
+            scoutPrefabEntity = GetEntity(authoring.scoutPrefabGameObject, TransformUsageFlags.Dynamic),
+            soldierPrefabEntity = GetEntity(authoring.soldierPrefabGameObject, TransformUsageFlags.Dynamic)
         });
         
     }
@@ -59,10 +63,12 @@ class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 /// <remarks>
 /// The component is a Singleton, which should be obtained through <see cref="SystemAPI.GetSingleton()"/>.
 /// </remarks>
-struct EntitiesReferences : IComponentData
+public struct EntitiesReferences : IComponentData
 {
     public Entity bulletPrefabEntity;
     public Entity enemyPrefabEntity;
     public Entity shootLightPrefabEntity;
+    public Entity scoutPrefabEntity;
+    public Entity soldierPrefabEntity;
 }
 

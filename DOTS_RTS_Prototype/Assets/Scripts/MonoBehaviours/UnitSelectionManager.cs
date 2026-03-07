@@ -19,6 +19,9 @@ public class UnitSelectionManager : MonoBehaviour
 
     private Vector2 selectionStartMousePosition;
 
+    private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
+
+
     [Header("Line formation parameters")]
     [SerializeField] private float unitOffset = 1.6f;
 
@@ -26,6 +29,7 @@ public class UnitSelectionManager : MonoBehaviour
     [SerializeField] private float ringOffset = 1.6f;
     [SerializeField] private int centerUnits = 3;
     [SerializeField] private int unitsPerRing = 3;
+    
 
 
     /// <summary>
@@ -77,18 +81,18 @@ public class UnitSelectionManager : MonoBehaviour
                 entityManager.SetComponentData(entityArray[i], selected);
             }
 
-            //TODO: Extract into SelectSingle() method
+
 
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
             bool isMultipleSelection = selectionAreaSize >= multipleSelectionSizeMinimum;
 
+            //TODO: Extract into SelectArea() method
             if (isMultipleSelection)
             {
-                //TODO: Extract into SelectArea() method
                 //Query all entities with the UnitMover and Selected components to check if they're inside the SelectionAreaRect
-                query = new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform, Unit>().WithPresent<Selected>().Build(entityManager);
+                query = new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform>().WithPresent<Selected>().Build(entityManager);
 
                 //Register entities and components to access LocalTransform component and Entity memory adress
                 entityArray = query.ToEntityArray(Allocator.Temp);
@@ -97,10 +101,10 @@ public class UnitSelectionManager : MonoBehaviour
                 {
                     //Convert unit LocalTransform position into screen position to check if it is within the SelectionAreaRect
                     LocalTransform unitLocalTransform = localTransformArray[i];
-                    Vector2 unitScreenPosition = Camera.main.WorldToScreenPoint(unitLocalTransform.Position);
+                    Vector2 entityScreenPosition = Camera.main.WorldToScreenPoint(unitLocalTransform.Position);
 
                     //Unit inside of selection area
-                    if (selectionAreaRect.Contains(unitScreenPosition))
+                    if (selectionAreaRect.Contains(entityScreenPosition))
                     {
                         entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
                         Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
@@ -109,6 +113,7 @@ public class UnitSelectionManager : MonoBehaviour
                     }
                 }
             }
+            //TODO: Extract into SelectSingle() method
             else
             {
                 Entity hitEntity = ClickRayCastForEntity(entityManager);
@@ -128,6 +133,7 @@ public class UnitSelectionManager : MonoBehaviour
 
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
         }
+        //TODO: Extract to ControlsManager.cs
         if (Input.GetMouseButtonDown(1))
         {
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -136,9 +142,9 @@ public class UnitSelectionManager : MonoBehaviour
             Entity hitEntity = ClickRayCastForEntity(entityManager);
             bool isAttackingAnEntity =
                 EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
-                entityManager.HasComponent<Health>(hitEntity); 
-                //NOTE: Health is used a common ground for attackalbe units and buildings
-            
+                entityManager.HasComponent<Health>(hitEntity);
+            //NOTE: Health is used a common ground for attackable units and buildings
+
             if (isAttackingAnEntity)
             {
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
@@ -147,7 +153,29 @@ public class UnitSelectionManager : MonoBehaviour
             {
                 SetDestinationOnSelectedUnits(entityManager);
             }
+            SetRallyPositionOffset(entityManager);
         }
+    }
+
+    private void SetRallyPositionOffset(EntityManager entityManager)
+    {
+        //Query all entities with the UnitMover and Selected components to set their target
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
+            Selected,
+            Barracks,
+            LocalTransform>().Build(entityManager);
+
+        //Register entities and components to modify in order to run Set on the original struct
+        NativeArray<Barracks> barracksArray = query.ToComponentDataArray<Barracks>(Allocator.Temp);
+        NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+
+        for (int i = 0; i < barracksArray.Length; i++)
+        {
+            Barracks barracks = barracksArray[i];
+            barracks.rallyPositionOffset = (float3)mouseWorldPosition - localTransformArray[i].Position;
+            barracksArray[i] = barracks;
+        }
+        query.CopyFromComponentDataArray(barracksArray);
     }
 
     /// <summary>
@@ -196,7 +224,6 @@ public class UnitSelectionManager : MonoBehaviour
     /// </remarks>
     private void SetDestinationOnSelectedUnits(EntityManager entityManager)
     {
-        Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
         Vector3 targetPosition = mouseWorldPosition;
 
         //Query all entities with the UnitMover and Selected components to set their target
@@ -204,7 +231,7 @@ public class UnitSelectionManager : MonoBehaviour
             UnitMover,
             Selected,
             LocalTransform>().
-            WithPresent<ManualMove,ManualTarget>().Build(entityManager);
+            WithPresent<ManualMove, ManualTarget>().Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
@@ -215,7 +242,7 @@ public class UnitSelectionManager : MonoBehaviour
 
         //Get average position of all entities queried to send it as start position to formation methods
         float3 avgPosition = float3.zero;
-        avgPosition = AveragePosition(localTransformArray);
+        avgPosition = AveragePositionXZ(localTransformArray);
 
         //Calculate offset for each selected Unit inside a set formation.
         NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
@@ -282,41 +309,25 @@ public class UnitSelectionManager : MonoBehaviour
         return Entity.Null;
     }
 
-
+    //TODO: Extract
     /// <summary>
     /// Calculates the average position of all LocalTransform components given.
     /// </summary>
-    private static float3 AveragePosition(NativeArray<LocalTransform> localTransformArray)
+    private static float3 AveragePositionXZ(NativeArray<LocalTransform> localTransformArray)
     {
-        float3 avgPosition = 0;
-        if (localTransformArray.Length > 1)
-        {
-            float avgX = 0;
-            float avgY = 0;
-            float avgZ = 0;
-
-            for (int i = 0; i < localTransformArray.Length; i++)
-            {
-                avgX += localTransformArray[i].Position.x;
-                avgY += localTransformArray[i].Position.y;
-                avgZ += localTransformArray[i].Position.z;
-            }
-            avgX /= localTransformArray.Length;
-            avgY /= localTransformArray.Length;
-            avgZ /= localTransformArray.Length;
-
-            avgPosition = new float3(avgX, 0, avgZ);
-        }
-        else if (localTransformArray.Length == 1)
-        {
-            avgPosition = localTransformArray[0].Position;
-        }
-        else
-        {
+        if (localTransformArray.Length == 0)
             throw new InvalidOperationException("Cannot calculate average of zero elements");
+
+        float3 sum = float3.zero;
+        for (int i = 0; i < localTransformArray.Length; i++)
+        {
+            sum += localTransformArray[i].Position;
         }
 
-        return avgPosition;
+        float3 avg = sum / localTransformArray.Length;
+        avg.y = 0; //Only XZ
+
+        return avg;
     }
 
     /// <summary>

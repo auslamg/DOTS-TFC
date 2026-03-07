@@ -6,6 +6,7 @@ public class BuildingRegistrySO : ScriptableObject
 {
     [SerializeField] public List<BuildingSO> buildingSOList;
     private Dictionary<BuildingKey, BuildingSO> buildingDictionary;
+    
 
     private void OnEnable()
     {
@@ -28,8 +29,27 @@ public class BuildingRegistrySO : ScriptableObject
         }
     }
 
+    /// <summary>
+    /// Used to indicate if the internal Dictionary has already been verified to
+    /// contain the elements of the serialized list.
+    /// 
+    /// This is because methods OnEnable() and OnValidate() build the dictionary BEFORE 
+    /// the list is serialized, so it is verified in the first access to the Dictionary.
+    /// </summary>
+    private bool IsVerified()
+    {
+        return
+            buildingDictionary != null &&
+            buildingDictionary.Count == buildingSOList.Count;
+    }
+
     public BuildingSO GetBuildingSO(BuildingKey buildingKey)
     {
+        if (!IsVerified())
+        {
+            BuildDictionary();
+        }
+
         if (buildingDictionary.TryGetValue(buildingKey, out var so))
         {
             return so;

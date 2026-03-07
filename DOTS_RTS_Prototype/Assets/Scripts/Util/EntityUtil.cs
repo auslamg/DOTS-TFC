@@ -98,6 +98,7 @@ public static class EntityUtil
 
         // Note: 
         // This should never happen as long as introduced keys are always valid
+        Debug.Log(key);
         throw new System.Exception("AnimationKey not found in AnimationData blob: " + key.name);
     }
 }

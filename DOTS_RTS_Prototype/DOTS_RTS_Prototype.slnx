@@ -47,8 +47,8 @@
   <Project Path="Unity.Numerics.Linear.Dense.csproj" />
   <Project Path="Unity.Burst.Editor.csproj" />
   <Project Path="Unity.Rider.Editor.csproj" />
-  <Project Path="Unity.VisualScripting.State.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Unity.VisualScripting.State.csproj" />
   <Project Path="Unity.InternalAPIEditorBridge.002.csproj" />
   <Project Path="Unity.AI.Navigation.Updater.csproj" />
   <Project Path="Unity.Entities.CodeGen.csproj" />
