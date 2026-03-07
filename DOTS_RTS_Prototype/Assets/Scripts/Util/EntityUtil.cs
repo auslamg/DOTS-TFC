@@ -98,7 +98,16 @@ public static class EntityUtil
 
         // Note: 
         // This should never happen as long as introduced keys are always valid
-        Debug.Log(key);
+        // Burst-safe option
+        ThrowAnimationKeyNotFound(key);
+
+        throw new System.Exception("AnimationKey not found in AnimationData blob. Disable Burst to see details.");
+    }
+
+    [BurstDiscard]
+    private static void ThrowAnimationKeyNotFound(AnimationKey key)
+    {
+        Debug.Log($"AnimationKey not found: {key.name}");
         throw new System.Exception("AnimationKey not found in AnimationData blob: " + key.name);
     }
 }
