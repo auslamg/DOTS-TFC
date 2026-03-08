@@ -76,6 +76,7 @@ AI features
 - GDD: Targets dont swap if they dont pass the threshold
 
 Refactors
+- REFACTOR: Change ALL Instantiate references to EntityCommandBuffer pattern
 - REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components
 - REFACTOR: Remove commented obsolete code from the animation baking authoring file
 - REFACTOR: Change unit selector method for single unit for spherecast OR increase selection hitboxes

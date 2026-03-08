@@ -164,4 +164,54 @@ public static class RegistryAccessor
     {
         Debug.LogError("UnitKey not found in UnitData blob: " + key.name);
     }
+
+    /// <summary>
+    /// Gets the <see cref="EntityReference"/> entry in the registry's BlobArray.
+    /// Employs a binary sort pattern.
+    /// </summary>
+    [BurstCompile]
+    public static ref EntityReference GetEntityReference(
+    ref BlobAssetReference<BlobArray<EntityReference>> entityRefBlobArrayRef,
+    in EntityReferenceKey entityKey)
+    {
+        ref BlobArray<EntityReference> entityRefArray = ref entityRefBlobArrayRef.Value;
+
+        //Start on the leftmost end, with a maximum of the total length
+        int leftIndex = 0;
+        int rightIndex = entityRefArray.Length - 1;
+
+        while (leftIndex <= rightIndex)
+        {
+            //Get the middle index and check how it compares against the desired element
+            int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
+            int comparisonResult = entityRefArray[middleIndex].entityKey.CompareTo(entityKey);
+
+            //Element found
+            if (comparisonResult == 0)
+            {
+                return ref entityRefArray[middleIndex];
+            }
+
+            //Cut the lower half out
+            if (comparisonResult < 0)
+            {
+                leftIndex = middleIndex + 1;
+            }
+            //Cut the the upper half out
+            else
+            {
+                rightIndex = middleIndex - 1;
+            }
+        }
+
+        LogErrorEntityReferenceKeyNotFound(entityKey);
+        Debug.LogError("EntityReferenceKey not found in BlobArray. Disable Burst for details.");
+        throw new System.Exception("Tried to spawn no units");
+    }
+
+    [BurstDiscard]
+    private static void LogErrorEntityReferenceKeyNotFound(EntityReferenceKey key)
+    {
+        Debug.LogError("EntityReferenceKey not found in UnitData blob: " + key.name);
+    }
 }

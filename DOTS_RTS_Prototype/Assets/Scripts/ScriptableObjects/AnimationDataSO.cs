@@ -34,6 +34,9 @@ public class AnimationDataSO : ScriptableObject
     }
 }
 
+/// <summary>
+/// Unique identifier for a <see cref="AnimationData"/> struct, obtained from the SO name.
+/// </summary>
 public struct AnimationKey : IEquatable<AnimationKey>, IComparable<AnimationKey>
 {
     public FixedString64Bytes name;

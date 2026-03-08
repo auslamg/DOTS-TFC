@@ -20,7 +20,10 @@ public class BuildingDataSO : ScriptableObject
     }
 }
 
-public struct BuildingKey : IEquatable<BuildingKey>, IComparable<BuildingKey>
+/// <summary>
+/// Unique identifier for a <see cref="BuildingData"/> struct, obtained from the SO name.
+/// </summary>
+public struct BuildingKey : IEquatable<BuildingKey>, IComparable<BuildingKey>, IEntityPrefabMappable
 {
     public FixedString64Bytes name;
     public bool Equals(BuildingKey other)
@@ -51,6 +54,11 @@ public struct BuildingKey : IEquatable<BuildingKey>, IComparable<BuildingKey>
     public override string ToString()
     {
         return $"{name}";
+    }
+
+    public FixedString64Bytes GetKey()
+    {
+        return name;
     }
 }
 

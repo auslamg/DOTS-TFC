@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c30d30af7eb724e88af081b7736917, type: 3}
   m_Name: _UnitDataRegistrySO
   m_EditorClassIdentifier: Assembly-CSharp::UnitRegistrySO
-  unitSOList:
+  unitDataSOList:
   - {fileID: 11400000, guid: cf8980ea0a96d4147a40c0b6b45292ba, type: 2}
   - {fileID: 11400000, guid: 567b33a1620040f449668f6eaee3cc10, type: 2}
   - {fileID: 11400000, guid: 23e34c3408a33fa44a0ac156a4a0fd22, type: 2}

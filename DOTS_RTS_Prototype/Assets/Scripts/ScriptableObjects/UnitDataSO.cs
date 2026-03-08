@@ -34,7 +34,10 @@ public class UnitDataSO : ScriptableObject
     }
 }
 
-public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>
+/// <summary>
+/// Unique identifier for a <see cref="UnitData"/> struct, obtained from the SO name.
+/// </summary>
+public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>, IEntityPrefabMappable
 {
     public FixedString64Bytes name;
     public bool Equals(UnitKey other)
@@ -65,6 +68,11 @@ public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>
     public override string ToString()
     {
         return $"{name}";
+    }
+
+    public FixedString64Bytes GetKey()
+    {
+        return name;
     }
 }
 

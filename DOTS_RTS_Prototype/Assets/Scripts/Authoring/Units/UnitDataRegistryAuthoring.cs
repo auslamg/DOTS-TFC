@@ -56,7 +56,6 @@ class UnitDataRegistryBaker : Baker<UnitDataRegistryAuthoring>
             .OrderBy((UnitDataSO b) => b.unitKey)
             .ToArray();
 
-
         BlobAssetReference<BlobArray<UnitData>> blobAssetReference;
         //BlobBuilder resources
         using (BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp))
