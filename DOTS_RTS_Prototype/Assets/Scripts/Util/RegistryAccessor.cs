@@ -5,7 +5,6 @@ using UnityEngine;
 /// <summary>
 /// Utility class for accessing ScripableObject registry entries.
 /// </summary>
-[BurstCompile]
 public static class RegistryAccessor
 {
     /// <summary>
@@ -166,30 +165,27 @@ public static class RegistryAccessor
     }
 
     /// <summary>
-    /// Gets the <see cref="EntityReference"/> entry in the registry's BlobArray.
+    /// Gets the index of an <see cref="EntityReference"/> entry in the registry buffer.
     /// Employs a binary sort pattern.
     /// </summary>
-    [BurstCompile]
-    public static ref EntityReference GetEntityReference(
-    ref BlobAssetReference<BlobArray<EntityReference>> entityRefBlobArrayRef,
+    public static int GetEntityReferenceIndex(
+    ref DynamicBuffer<EntityReference> entityRefBuffer,
     in EntityReferenceKey entityKey)
     {
-        ref BlobArray<EntityReference> entityRefArray = ref entityRefBlobArrayRef.Value;
-
         //Start on the leftmost end, with a maximum of the total length
         int leftIndex = 0;
-        int rightIndex = entityRefArray.Length - 1;
+        int rightIndex = entityRefBuffer.Length - 1;
 
         while (leftIndex <= rightIndex)
         {
             //Get the middle index and check how it compares against the desired element
             int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
-            int comparisonResult = entityRefArray[middleIndex].entityKey.CompareTo(entityKey);
+            int comparisonResult = entityRefBuffer[middleIndex].entityKey.CompareTo(entityKey);
 
             //Element found
             if (comparisonResult == 0)
             {
-                return ref entityRefArray[middleIndex];
+                return middleIndex;
             }
 
             //Cut the lower half out
@@ -206,7 +202,7 @@ public static class RegistryAccessor
 
         LogErrorEntityReferenceKeyNotFound(entityKey);
         Debug.LogError("EntityReferenceKey not found in BlobArray. Disable Burst for details.");
-        throw new System.Exception("Tried to spawn no units");
+        return -1;
     }
 
     [BurstDiscard]

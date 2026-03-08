@@ -1,7 +1,5 @@
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Scenes;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -11,15 +9,19 @@ partial struct BarracksSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<UnitDataRegistry>();
-        state.RequireForUpdate<EntityReferencesRegistry>();
-
+        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
-        EntityReferencesRegistry entityReferencesRegistry = SystemAPI.GetSingleton<EntityReferencesRegistry>();
+        Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntitiesReferences>();
+        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(entityReferencesRegistryEntity);
+        EntityCommandBuffer ecb = SystemAPI
+            .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
+            .CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach ((
             RefRO<LocalTransform> localTransform,
@@ -39,31 +41,6 @@ partial struct BarracksSystem : ISystem
             }
 
 
-            //WIP //TEST
-
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
-
-            EntityReferenceKey testKey = new EntityReferenceKey
-            {
-                name = "Soldier"
-            };
-            Debug.Log($"Obtained testKey {testKey}");
-
-            EntityReference testUnitRef = RegistryAccessor.GetEntityReference(ref entityReferencesRegistry.entityReferenceBlobArrayReference, testKey);
-            Debug.Log($"Obtained unitRef {testUnitRef}");
-
-            Entity testUnitPrefab = testUnitRef.prefabEntity;
-            Debug.Log($"Obtained unitPrefab {testUnitPrefab}");
-            
-            Debug.Log($"Exists?: {testUnitPrefab != Entity.Null}");
-
-            Debug.Log($"Is prefab?: {state.EntityManager.HasComponent<Prefab>(testUnitPrefab)}");
-
-            Entity testSpawnedUnitEntity = ecb.Instantiate(testUnitPrefab);
-            Debug.Log($"Instanced testSpawnedUnitEntity {testSpawnedUnitEntity}");
-
-            //WIP End
-
             //If the acive unit (already trained) is different from the next one, adjust the progress timer max to start training the next one
             if (barracks.ValueRO.activeUnitKey != spawnUnitBuffer[0].unitKey)
             {
@@ -75,45 +52,52 @@ partial struct BarracksSystem : ISystem
                 barracks.ValueRW.maxProgress = unitData.trainingTime;
             }
 
-            //Progress timer
+            // Progress timer
             barracks.ValueRW.currentProgress += SystemAPI.Time.DeltaTime;
             if (barracks.ValueRO.currentProgress >= barracks.ValueRO.maxProgress)
             {
                 barracks.ValueRW.currentProgress = 0;
 
-                //Retrieve UnitData from UnitKey
+                // Retrieve UnitData from UnitKey
                 UnitKey unitKey = spawnUnitBuffer[0].unitKey;
                 EntityReferenceKey entityKey = new EntityReferenceKey
                 {
                     name = unitKey.name
                 };
 
-                //Retrieve from buffer to make place for next unit
+                // Retrieve from buffer to make place for next unit
                 spawnUnitBuffer.RemoveAt(0);
 
-                //Spawn unit
-                //WIP
-                Entity unitPrefab = RegistryAccessor.GetEntityReference(ref entityReferencesRegistry.entityReferenceBlobArrayReference, entityKey).prefabEntity;
-
-                // Only instantiate if valid
-                /* if (!state.EntityManager.Exists(unitPrefab))
+                // Spawn unit
+                int unitRefIndex = RegistryAccessor.GetEntityReferenceIndex(ref entityReferencesBuffer, entityKey);
+                if (unitRefIndex < 0)
                 {
-                    Debug.LogError($"Cannot spawn unit {unitKey.name}: prefab entity is invalid!");
+                    Debug.LogError($"Cannot spawn unit '{unitKey.name}': no entity reference key found in registry.");
                     continue;
-                } */
-                Entity spawnedUnitEntity = state.EntityManager.Instantiate(unitPrefab);
-                Debug.Log($"Spawn happened with no errors: {spawnedUnitEntity}");
+                }
+                
+                Entity unitPrefab = entityReferencesBuffer[unitRefIndex].prefabEntity;
 
-                SystemAPI.SetComponent<LocalTransform>(spawnedUnitEntity, LocalTransform.FromPosition(
-                    localTransform.ValueRO.Position + barracks.ValueRO.spawnPointOffset));
+                if (!state.EntityManager.Exists(unitPrefab) ||
+                    !state.EntityManager.HasComponent<Prefab>(unitPrefab))
+                {
+                    Debug.LogError($"Cannot spawn unit '{unitKey.name}': referenced entity is not a valid prefab. Check EntitiesReferencesAuthoring assignments.");
+                    continue;
+                }
 
-                //Set unit destination to RallyPosition
-                RefRW<UnitMover> spawnedUnitMover = SystemAPI.GetComponentRW<UnitMover>(spawnedUnitEntity);
-                spawnedUnitMover.ValueRW.targetPosition =
-                    localTransform.ValueRO.Position + barracks.ValueRO.rallyPositionOffset;
+                // Instantiate the unit prefab
+                Entity spawnedUnitEntity = ecb.Instantiate(unitPrefab);
+
+                // Set unit position to spawn point
+                LocalTransform spawnedTransform = state.EntityManager.GetComponentData<LocalTransform>(unitPrefab);
+                spawnedTransform.Position = localTransform.ValueRO.Position + barracks.ValueRO.spawnPointOffset;
+                ecb.SetComponent(spawnedUnitEntity, spawnedTransform);
+
+                // Set unit destination to RallyPosition.
+                UnitMover unitMover = state.EntityManager.GetComponentData<UnitMover>(unitPrefab);
+                unitMover.targetPosition = localTransform.ValueRO.Position + barracks.ValueRO.rallyPositionOffset;
+                ecb.SetComponent(spawnedUnitEntity, unitMover);
             }
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
         }
     }
 }

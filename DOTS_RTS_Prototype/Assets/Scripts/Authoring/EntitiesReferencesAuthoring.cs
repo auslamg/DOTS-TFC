@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Managed component for the <see cref="EntitiesReferences"/> unmanaged component.
@@ -46,65 +49,64 @@ class EntitiesReferencesAuthoring : MonoBehaviour
 /// </summary>
 class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 {
+    private Entity GetPrefabEntity(GameObject prefabGo)
+    {
+        return GetEntity(prefabGo, TransformUsageFlags.None);
+    }
+
     public override void Bake(EntitiesReferencesAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        //Sort items for binary search optimization
-        GameObject[] prefabsArray = authoring.gameObjectPrefabs;
+        //Smart initizalize to avoid null reference exceptions in case the user forgets to set the array in the inspector. 
+        GameObject[] prefabsArray = authoring.gameObjectPrefabs ?? Array.Empty<GameObject>();
+        //Sort items for binary search optimization.
         Array.Sort(prefabsArray, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
 
-        BlobAssetReference<BlobArray<EntityReference>> blobAssetReference;
-        //BlobBuilder resources
-        using (BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp))
+        //Ensure prefab names are unique to avoid issues with the registry.
+        HashSet<string> usedPrefabNames = new HashSet<string>(StringComparer.Ordinal);
+
+        DynamicBuffer<EntityReference> entityRefsBuffer = AddBuffer<EntityReference>(entity);
+        entityRefsBuffer.EnsureCapacity(prefabsArray.Length);
+
+        //Add each prefab in the serialized list to the buffer.
+        for (int entityIndex = 0; entityIndex < prefabsArray.Length; entityIndex++)
         {
-            //Build new blob root
-            ref BlobArray<EntityReference> root = ref blobBuilder.ConstructRoot<BlobArray<EntityReference>>();
-
-            //Allocate memory for the entity array in the root
-            BlobBuilderArray<EntityReference> entityIds =
-                blobBuilder.Allocate<EntityReference>(ref root, prefabsArray.Length);
-
-            //For all Entity ScriptableObjects found in the list reader
-            for (int entityIndex = 0; entityIndex < entityIds.Length; entityIndex++)
+            // Check for bake errors (null)
+            GameObject entityPrefab = prefabsArray[entityIndex];
+            if (entityPrefab == null)
             {
-                GameObject entityPrefab = prefabsArray[entityIndex];
-                Debug.Log($"BAKER: Is part of PrefabAsset: {UnityEditor.PrefabUtility.IsPartOfPrefabAsset(entityPrefab)}");
-
-                DependsOn(entityPrefab);
-                RegisterPrefabForBaking(entityPrefab);
-                Entity prefabEntity = GetEntity(entityPrefab, TransformUsageFlags.Dynamic);
-
-                //Bake singular data inside blob entry
-                EntityReference er = new EntityReference
-                {
-                    entityKey = new EntityReferenceKey
-                    {
-                        name = entityPrefab.name,
-                    },
-                    prefabEntity = prefabEntity
-                };
-                entityIds[entityIndex] = er;
+                Debug.LogError($"EntitiesReferencesBaker: Null prefab at index {entityIndex} in gameObjectPrefabs.");
+                continue;
             }
 
-            //Build BlobAssetReference
-            blobAssetReference = blobBuilder.CreateBlobAssetReference<BlobArray<EntityReference>>(Allocator.Persistent);
-        }
+            // Check for duplicates
+            if (!usedPrefabNames.Add(entityPrefab.name))
+            {
+                Debug.LogError($"EntitiesReferencesBaker: Duplicate prefab name '{entityPrefab.name}' in gameObjectPrefabs. Keys must be unique.");
+                continue;
+            }
 
-        AddComponent(entity, new EntityReferencesRegistry
-        {
-            entityReferenceBlobArrayReference = blobAssetReference
-        });
+            // Add prefab reference to buffer
+            Entity prefabEntity = GetPrefabEntity(entityPrefab);
+            entityRefsBuffer.Add(new EntityReference
+            {
+                entityKey = new EntityReferenceKey
+                {
+                    name = entityPrefab.name,
+                },
+                prefabEntity = prefabEntity
+            });
+        }
 
         AddComponent(entity, new EntitiesReferences
         {
-            bulletPrefabEntity = GetEntity(authoring.bulletPrefabGameObject, TransformUsageFlags.Dynamic),
-            enemyPrefabEntity = GetEntity(authoring.enemyPrefabGameObject, TransformUsageFlags.Dynamic),
-            shootLightPrefabEntity = GetEntity(authoring.shootLightPrefabGameObject, TransformUsageFlags.Dynamic),
-            scoutPrefabEntity = GetEntity(authoring.scoutPrefabGameObject, TransformUsageFlags.Dynamic),
-            soldierPrefabEntity = GetEntity(authoring.soldierPrefabGameObject, TransformUsageFlags.Dynamic)
+            bulletPrefabEntity = GetPrefabEntity(authoring.bulletPrefabGameObject),
+            enemyPrefabEntity = GetPrefabEntity(authoring.enemyPrefabGameObject),
+            shootLightPrefabEntity = GetPrefabEntity(authoring.shootLightPrefabGameObject),
+            scoutPrefabEntity = GetPrefabEntity(authoring.scoutPrefabGameObject),
+            soldierPrefabEntity = GetPrefabEntity(authoring.soldierPrefabGameObject)
         });
-
     }
 }
 
@@ -125,20 +127,10 @@ public struct EntitiesReferences : IComponentData
 }
 
 public struct EntityReference
+    : IBufferElementData
 {
     public EntityReferenceKey entityKey;
     public Entity prefabEntity;
-}
-
-/// <summary>
-/// Contains all <see cref="EntityReference"/>s baked from each prefab in the serialized list.
-/// </summary>
-public struct EntityReferencesRegistry : IComponentData
-{
-    /// <summary>
-    /// Reference to the BlobArray containing all EntityData.
-    /// </summary>
-    public BlobAssetReference<BlobArray<EntityReference>> entityReferenceBlobArrayReference;
 }
 
 /// <summary>
@@ -187,5 +179,5 @@ public struct EntityReferenceKey : IEquatable<EntityReferenceKey>, IComparable<E
 
 public interface IEntityPrefabMappable
 {
-    public abstract FixedString64Bytes GetKey();
+    FixedString64Bytes GetKey();
 }
