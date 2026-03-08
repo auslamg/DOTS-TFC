@@ -30,15 +30,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: aimAnimationKey
-      value: hostile_aim
+      value: Hostile_Aim
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: idleAnimationKey
-      value: hostile_idle
+      value: Hostile_Idle
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: walkAnimationKey
-      value: hostile_walk
+      value: Hostile_Walk
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: idleAnimationType
@@ -46,7 +46,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: shootAnimationKey
-      value: hostile_shoot
+      value: Hostile_Shoot
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: walkAnimationType
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: meleeAttackAnimationKey
-      value: hostile_melee
+      value: Hostile_Melee
       objectReference: {fileID: 0}
     - target: {fileID: 326186315894104495, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: meleeAttackAnimationType

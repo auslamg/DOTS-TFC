@@ -5,7 +5,6 @@ using System;
 [CreateAssetMenu(fileName = "AnimationDataSO", menuName = "AnimationData/AnimationDataSO")]
 public class AnimationDataSO : ScriptableObject
 {
-    [SerializeField] string animationName;
     public AnimationType animationType;
     public bool playFull;
     public float frameFrequency;
@@ -19,7 +18,7 @@ public class AnimationDataSO : ScriptableObject
     {
         cachedKey = new AnimationKey
         {
-            name = animationName
+            name = this.name
         };
     }
 

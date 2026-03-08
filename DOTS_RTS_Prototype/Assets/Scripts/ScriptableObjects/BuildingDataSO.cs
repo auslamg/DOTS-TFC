@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Buildings/BuildingDataSO")]
 public class BuildingDataSO : ScriptableObject
 {
-    [SerializeField] string buildingName;
     public BuildingType buildingType;
 
     [SerializeField, HideInInspector]
@@ -16,7 +15,7 @@ public class BuildingDataSO : ScriptableObject
     {
         cachedKey = new BuildingKey
         {
-            name = buildingName
+            name = this.name
         };
     }
 }

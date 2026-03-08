@@ -17,6 +17,13 @@ public static class RegistryAccessor
     ref BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayRef,
     in AnimationKey animationKey)
     {
+        AnimationKey searchKey = animationKey;
+
+        if (searchKey.name == "")
+        {
+            searchKey.name = "None";
+        }
+
         ref BlobArray<AnimationData> animationDataArray = ref animationDataBlobArrayRef.Value;
 
         //Start on the leftmost end, with a maximum of the total length
@@ -27,7 +34,7 @@ public static class RegistryAccessor
         {
             //Get the middle index and check how it compares against the desired element
             int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
-            int comparisonResult = animationDataArray[middleIndex].animationKey.CompareTo(animationKey);
+            int comparisonResult = animationDataArray[middleIndex].animationKey.CompareTo(searchKey);
 
             //Element found
             if (comparisonResult == 0)
@@ -47,14 +54,15 @@ public static class RegistryAccessor
             }
         }
 
-        ThrowAnimationKeyNotFound(animationKey);
-        throw new System.Exception("AnimationKey not found in BlobArray. Disable Burst for details.");
+        LogErrorAnimationKeyNotFound(searchKey);
+        Debug.LogError("AnimationKey not found in BlobArray. Disable Burst for details.");
+        return ref animationDataArray[0];
     }
 
     [BurstDiscard]
-    private static void ThrowAnimationKeyNotFound(AnimationKey key)
+    private static void LogErrorAnimationKeyNotFound(AnimationKey key)
     {
-        throw new System.Exception("AnimationKey not found in AnimationData blob: " + key.name);
+        Debug.LogError("AnimationKey not found in AnimationData blob: " + key.name);
     }
 
     /// <summary>
@@ -96,13 +104,64 @@ public static class RegistryAccessor
             }
         }
 
-        ThrowBuildingKeyNotFound(buildingKey);
-        throw new System.Exception("BuildingKey not found in BlobArray. Disable Burst for details.");
+        LogErrorBuildingKeyNotFound(buildingKey);
+        Debug.LogError("BuildingKey not found in BlobArray. Disable Burst for details.");
+        return ref buildingDataArray[0];
     }
 
     [BurstDiscard]
-    private static void ThrowBuildingKeyNotFound(BuildingKey key)
+    private static void LogErrorBuildingKeyNotFound(BuildingKey key)
     {
-        throw new System.Exception("BuildingKey not found in BuildingData blob: " + key.name);
+        Debug.LogError("BuildingKey not found in BuildingData blob: " + key.name);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="UnitData"/> entry in the registry's BlobArray.
+    /// Employs a binary sort pattern.
+    /// </summary>
+    [BurstCompile]
+    public static ref UnitData GetBuildingData(
+    ref BlobAssetReference<BlobArray<UnitData>> unitDataBlobArrayRef,
+    in UnitKey unitKey)
+    {
+        ref BlobArray<UnitData> unitDataArray = ref unitDataBlobArrayRef.Value;
+
+        //Start on the leftmost end, with a maximum of the total length
+        int leftIndex = 0;
+        int rightIndex = unitDataArray.Length - 1;
+
+        while (leftIndex <= rightIndex)
+        {
+            //Get the middle index and check how it compares against the desired element
+            int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
+            int comparisonResult = unitDataArray[middleIndex].unitKey.CompareTo(unitKey);
+
+            //Element found
+            if (comparisonResult == 0)
+            {
+                return ref unitDataArray[middleIndex];
+            }
+
+            //Cut the lower half out
+            if (comparisonResult < 0)
+            {
+                leftIndex = middleIndex + 1;
+            }
+            //Cut the the upper half out
+            else
+            {
+                rightIndex = middleIndex - 1;
+            }
+        }
+
+        LogErrorUnitKeyNotFound(unitKey);
+        Debug.LogError("UnitKey not found in BlobArray. Disable Burst for details.");
+        return ref unitDataArray[0];
+    }
+
+    [BurstDiscard]
+    private static void LogErrorUnitKeyNotFound(UnitKey key)
+    {
+        Debug.LogError("UnitKey not found in UnitData blob: " + key.name);
     }
 }

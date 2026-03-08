@@ -6,7 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UnitDataSO", menuName = "Units/UnitDataSO")]
 public class UnitDataSO : ScriptableObject
 {
-    [SerializeField] string unitName;
     public UnitType unitType;
     public float trainingTime;
 
@@ -19,7 +18,7 @@ public class UnitDataSO : ScriptableObject
     {
         cachedKey = new UnitKey
         {
-            name = unitName
+            name = this.name
         };
     }
 
