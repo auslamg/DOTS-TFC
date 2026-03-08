@@ -120,7 +120,7 @@ public static class RegistryAccessor
     /// Employs a binary sort pattern.
     /// </summary>
     [BurstCompile]
-    public static ref UnitData GetBuildingData(
+    public static ref UnitData GetUnitData(
     ref BlobAssetReference<BlobArray<UnitData>> unitDataBlobArrayRef,
     in UnitKey unitKey)
     {

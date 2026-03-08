@@ -23,12 +23,12 @@ partial struct ActiveAnimationSystem : ISystem
     {
         parentComponentLookup.Update(ref state);
         unitAnimationsComponentLookup.Update(ref state);
-        AnimationDataRegistry animationDataHolder = SystemAPI.GetSingleton<AnimationDataRegistry>();
+        AnimationDataRegistry animationDataRegistry = SystemAPI.GetSingleton<AnimationDataRegistry>();
 
         ActiveAnimationJob job = new ActiveAnimationJob
         {
             deltaTime = SystemAPI.Time.DeltaTime,
-            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayReference,
+            animationDataBlobArrayAssetReference = animationDataRegistry.animationDataBlobArrayReference,
             parentComponentLookup = parentComponentLookup,
             unitAnimationsComponentLookup = unitAnimationsComponentLookup
         };

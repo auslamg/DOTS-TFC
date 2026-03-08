@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Rendering;
@@ -125,6 +126,7 @@ public struct AnimationData
 {
     public AnimationKey animationKey;
     public AnimationType animationType;
+    [MarshalAs(UnmanagedType.U1)]
     public bool playFull;
     /// <summary>
     /// Time span for each frame change.

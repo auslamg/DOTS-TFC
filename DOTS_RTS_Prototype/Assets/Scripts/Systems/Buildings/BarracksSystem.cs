@@ -14,6 +14,7 @@ partial struct BarracksSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
 
         foreach ((
             RefRO<LocalTransform> localTransform,
@@ -35,10 +36,10 @@ partial struct BarracksSystem : ISystem
             {
                 barracks.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;
 
-                //FIX: Managed object access nullifies burst compilation
-                UnitDataSO activeUnitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(barracks.ValueRO.activeUnitKey);
+                //Retrieve UnitData from UnitKey
+                UnitData unitData = RegistryAccessor.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, barracks.ValueRO.activeUnitKey);
 
-                barracks.ValueRW.maxProgress = activeUnitSO.trainingTime;
+                barracks.ValueRW.maxProgress = unitData.trainingTime;
             }
 
             //Progress timer
@@ -48,6 +49,9 @@ partial struct BarracksSystem : ISystem
                 barracks.ValueRW.currentProgress = 0;
 
                 UnitKey unitKey = spawnUnitBuffer[0].unitKey;
+
+                //Retrieve UnitData from UnitKey
+                UnitData unitData = RegistryAccessor.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, barracks.ValueRO.activeUnitKey);
                 //FIX: Managed object access nullifies burst compilation
                 UnitDataSO unitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(unitKey);
 
@@ -55,6 +59,7 @@ partial struct BarracksSystem : ISystem
                 spawnUnitBuffer.RemoveAt(0);
 
                 //Spawn unit
+                //FIX: Requires prefab reference
                 Entity spawnedUnitEntity = state.EntityManager.Instantiate(
                     unitSO.GetPrefabEntity(entitiesReferences));
                 SystemAPI.SetComponent<LocalTransform>(spawnedUnitEntity, LocalTransform.FromPosition(

@@ -15,11 +15,11 @@ partial struct ChangeAnimationSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        AnimationDataRegistry animationDataHolder = SystemAPI.GetSingleton<AnimationDataRegistry>();
+        AnimationDataRegistry animationDataRegistry = SystemAPI.GetSingleton<AnimationDataRegistry>();
 
         ChangeAnimationJob changeAnimationJob = new ChangeAnimationJob
         {
-            animationDataBlobArrayAssetReference = animationDataHolder.animationDataBlobArrayReference
+            animationDataBlobArrayAssetReference = animationDataRegistry.animationDataBlobArrayReference
         };
         changeAnimationJob.ScheduleParallel();
     }
@@ -67,7 +67,7 @@ public partial struct ChangeAnimationJob : IJobEntity
                 return;
             }
 
-            //Locate inside animationDataHolder.animationDataBlobArrayAssetReference the animation through its AnimationKey
+            //Locate inside animationDataRegistry.animationDataBlobArrayAssetReference the animation through its AnimationKey
             materialMeshInfo.Mesh = newAnimData.frameMeshIdIndex[0];
         }
     }
