@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuildingRegistrySO", menuName = "Buildings/BuildingRegistrySO")]
+[CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Buildings/BuildingDataRegistrySO")]
 public class BuildingRegistrySO : ScriptableObject
 {
-    [SerializeField] public List<BuildingSO> buildingSOList;
-    private Dictionary<BuildingKey, BuildingSO> buildingDictionary;
+    [SerializeField] public List<BuildingDataSO> buildingDataSOList;
+    private Dictionary<BuildingKey, BuildingDataSO> buildingDataDictionary;
     
 
     private void OnEnable()
@@ -15,17 +15,17 @@ public class BuildingRegistrySO : ScriptableObject
 
     private void BuildDictionary()
     {
-        buildingDictionary = new Dictionary<BuildingKey, BuildingSO>();
+        buildingDataDictionary = new Dictionary<BuildingKey, BuildingDataSO>();
 
-        foreach (BuildingSO so in buildingSOList)
+        foreach (BuildingDataSO so in buildingDataSOList)
         {
-            if (buildingDictionary.ContainsKey(so.buildingKey))
+            if (buildingDataDictionary.ContainsKey(so.buildingKey))
             {
                 Debug.LogWarning($"Duplicate BuildingKey found: {so.buildingKey}", this);
                 continue;
             }
 
-            buildingDictionary.Add(so.buildingKey, so);
+            buildingDataDictionary.Add(so.buildingKey, so);
         }
     }
 
@@ -39,18 +39,31 @@ public class BuildingRegistrySO : ScriptableObject
     private bool IsVerified()
     {
         return
-            buildingDictionary != null &&
-            buildingDictionary.Count == buildingSOList.Count;
+            buildingDataDictionary != null &&
+            buildingDataDictionary.Count == buildingDataSOList.Count;
     }
 
-    public BuildingSO GetBuildingSO(BuildingKey buildingKey)
+    public bool RebuildDictionary()
+    {
+        if (IsVerified())
+        {
+            return true;
+        }
+        else
+        {
+            BuildDictionary();
+            return IsVerified();
+        }
+    }
+
+    public BuildingDataSO GetBuildingDataSO(BuildingKey buildingKey)
     {
         if (!IsVerified())
         {
             BuildDictionary();
         }
 
-        if (buildingDictionary.TryGetValue(buildingKey, out var so))
+        if (buildingDataDictionary.TryGetValue(buildingKey, out var so))
         {
             return so;
         }

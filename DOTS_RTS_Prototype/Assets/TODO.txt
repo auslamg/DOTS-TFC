@@ -43,9 +43,9 @@ Document
         Create prefab
         Change model
         Change collider proportions
-        Create BuildingSO
-        Add BuildingSO to registry
-        Add key to BuildingSOHolder component
+        Create BuildingDataSO
+        Add BuildingDataSO to registry
+        Add key to BuildingDataSOHolder component
 
 
 - DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
