@@ -25,5 +25,5 @@ public class GameAssets : MonoBehaviour
         }
     }
 
-    public UnitRegistrySO unitRegistrySO;
+    public UnitDataRegistrySO unitRegistrySO;
 }

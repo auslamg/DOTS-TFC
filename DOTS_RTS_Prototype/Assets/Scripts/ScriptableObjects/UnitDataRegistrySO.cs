@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "UnitRegistrySO", menuName = "Units/UnitRegistrySO")]
-public class UnitRegistrySO : ScriptableObject
+[CreateAssetMenu(fileName = "UnitDataRegistrySO", menuName = "Units/UnitDataRegistrySO")]
+public class UnitDataRegistrySO : ScriptableObject
 {
-    [SerializeField] public List<UnitSO> unitSOList;
-    private Dictionary<UnitKey, UnitSO> unitDictionary;
+    [SerializeField] public List<UnitDataSO> unitDataSOList;
+    private Dictionary<UnitKey, UnitDataSO> unitDictionary;
 
     private void OnEnable()
     {
@@ -14,9 +14,9 @@ public class UnitRegistrySO : ScriptableObject
 
     private void BuildDictionary()
     {
-        unitDictionary = new Dictionary<UnitKey, UnitSO>();
+        unitDictionary = new Dictionary<UnitKey, UnitDataSO>();
 
-        foreach (UnitSO so in unitSOList)
+        foreach (UnitDataSO so in unitDataSOList)
         {
             if (unitDictionary.ContainsKey(so.unitKey))
             {
@@ -40,10 +40,23 @@ public class UnitRegistrySO : ScriptableObject
     {
         return 
             unitDictionary != null &&
-            unitDictionary.Count == unitSOList.Count;
+            unitDictionary.Count == unitDataSOList.Count;
     }
 
-    public UnitSO GetUnitSO(UnitKey unitKey)
+    public bool RebuildDictionary()
+    {
+        if (IsVerified())
+        {
+            return true;
+        }
+        else
+        {
+            BuildDictionary();
+            return IsVerified();
+        }
+    }
+
+    public UnitDataSO GetUnitSO(UnitKey unitKey)
     {
         if (!IsVerified())
         {

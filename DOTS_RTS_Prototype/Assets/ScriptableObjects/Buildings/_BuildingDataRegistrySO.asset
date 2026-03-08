@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6283b5b30cd170f4e8a36d34e0d91586, type: 3}
-  m_Name: _BuildingRegistrySO
+  m_Name: _BuildingDataRegistrySO
   m_EditorClassIdentifier: Assembly-CSharp::BuildingRegistrySO
-  buildingSOList:
+  buildingDataSOList:
+  - {fileID: 11400000, guid: dee581d86629b7d43b61c4e70c6bdb16, type: 2}
+  - {fileID: 11400000, guid: 520262868f020314b9f815a074a806c0, type: 2}
   - {fileID: 11400000, guid: 3e12ffac2ef44f9409cb4f350df3b89a, type: 2}
   - {fileID: 11400000, guid: 092271eced455114ab3188392284197e, type: 2}
-  - {fileID: 11400000, guid: 520262868f020314b9f815a074a806c0, type: 2}

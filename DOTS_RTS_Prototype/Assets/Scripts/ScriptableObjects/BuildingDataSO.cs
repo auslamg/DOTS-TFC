@@ -10,7 +10,6 @@ public class BuildingDataSO : ScriptableObject
 
     [SerializeField, HideInInspector]
     private BuildingKey cachedKey;
-
     public BuildingKey buildingKey => cachedKey;
 
     private void OnValidate()

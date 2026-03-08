@@ -36,7 +36,7 @@ partial struct BarracksSystem : ISystem
                 barracks.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;
 
                 //FIX: Managed object access nullifies burst compilation
-                UnitSO activeUnitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(barracks.ValueRO.activeUnitKey);
+                UnitDataSO activeUnitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(barracks.ValueRO.activeUnitKey);
 
                 barracks.ValueRW.maxProgress = activeUnitSO.trainingTime;
             }
@@ -49,7 +49,7 @@ partial struct BarracksSystem : ISystem
 
                 UnitKey unitKey = spawnUnitBuffer[0].unitKey;
                 //FIX: Managed object access nullifies burst compilation
-                UnitSO unitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(unitKey);
+                UnitDataSO unitSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(unitKey);
 
                 //Retrieve from buffer to make place for next unit
                 spawnUnitBuffer.RemoveAt(0);

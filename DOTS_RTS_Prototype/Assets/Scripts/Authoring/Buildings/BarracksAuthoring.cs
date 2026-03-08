@@ -39,24 +39,21 @@ class BarracksBaker : Baker<BarracksAuthoring>
         {
             unitKey = new UnitKey
             {
-                name = "Soldier",
-                unitType = UnitType.Ranged
+                name = "Soldier"
             }
         });
         spawnUnitsDynamicBuffer.Add(new SpawnUnitsBuffer
         {
             unitKey = new UnitKey
             {
-                name = "Soldier",
-                unitType = UnitType.Ranged
+                name = "Soldier"
             }
         });
         spawnUnitsDynamicBuffer.Add(new SpawnUnitsBuffer
         {
             unitKey = new UnitKey
             {
-                name = "Scout",
-                unitType = UnitType.Ranged
+                name = "Scout"
             }
         });
     }

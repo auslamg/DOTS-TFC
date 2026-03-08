@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Buildings/BuildingDataRegistrySO")]
-public class BuildingRegistrySO : ScriptableObject
+public class BuildingDataRegistrySO : ScriptableObject
 {
     [SerializeField] public List<BuildingDataSO> buildingDataSOList;
     private Dictionary<BuildingKey, BuildingDataSO> buildingDataDictionary;
-    
 
     private void OnEnable()
     {
@@ -26,6 +25,7 @@ public class BuildingRegistrySO : ScriptableObject
             }
 
             buildingDataDictionary.Add(so.buildingKey, so);
+            /* Debug.Log($"Added unit: {so.buildingKey}"); */
         }
     }
 

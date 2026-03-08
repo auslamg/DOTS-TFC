@@ -6,7 +6,6 @@ using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-//TODO: Redocument
 /// <summary>
 /// Managed component for the <see cref="BuildingDataRegistry"/> unmanaged component.
 /// </summary>
@@ -15,7 +14,7 @@ using UnityEngine.Rendering;
 /// </remarks>
 class BuildingDataRegistryAuthoring : MonoBehaviour
 {
-    public BuildingRegistrySO buildingRegistrySO;
+    public BuildingDataRegistrySO buildingRegistrySO;
 
     public static BuildingDataRegistryAuthoring Instance { get; private set; }
 
@@ -39,9 +38,7 @@ class BuildingDataRegistryAuthoring : MonoBehaviour
 
 /// <summary>
 /// Baker for the <see cref="BuildingDataRegistry"/> unmanaged component.
-/// The process requires PostBaking because <see cref="EntitiesGraphicsSystem"/> isn't registered during bake-time, only after.
-/// Therefore the meshes are baked in additional objects "meshBakingEntity" and later registered in PostBaking.
-/// See <see cref="BuildingRegistryPostBakingSystem"/>
+/// Includes a blob building process for internal blob data.
 /// </summary>
 class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
 {
@@ -99,18 +96,18 @@ class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
 
 
 /// <summary>
-/// Contains the entirety of the building data baked from the <see cref="BuildingRegistrySO"/> for one full building. Built during PostBaking process.
+/// Contains all <see cref="BuildingData"/> baked from each <see cref="BuildingDataSO"/> in the <see cref="BuildingDataRegistrySO"/>.
 /// </summary>
 public struct BuildingDataRegistry : IComponentData
 {
     /// <summary>
-    /// Reference to the BlobArray containing all Building (EGS mesh arrays).
+    /// Reference to the BlobArray containing all BuildingData.
     /// </summary>
     public BlobAssetReference<BlobArray<BuildingData>> buildingBlobArrayReference;
 }
 
 /// <summary>
-/// Contains the building data baked from an <see cref="BuildingDataSO"/>.
+/// Contains the building data baked from a <see cref="BuildingDataSO"/>.
 /// </summary>
 public struct BuildingData
 {

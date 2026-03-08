@@ -3,29 +3,26 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "UnitSO", menuName = "Units/UnitSO")]
-public class UnitSO : ScriptableObject
+[CreateAssetMenu(fileName = "UnitDataSO", menuName = "Units/UnitDataSO")]
+public class UnitDataSO : ScriptableObject
 {
     [SerializeField] string unitName;
-    [SerializeField] UnitType unitType;
+    public UnitType unitType;
     public float trainingTime;
 
 
     [SerializeField, HideInInspector]
     private UnitKey cachedKey;
-
     public UnitKey unitKey => cachedKey;
 
     private void OnValidate()
     {
         cachedKey = new UnitKey
         {
-            name = unitName,
-            unitType = unitType
+            name = unitName
         };
     }
 
-    //TODO: REFACTOR INTO REGISTRY OR SIMILAR
     public Entity GetPrefabEntity(EntitiesReferences er)
     {
         return unitKey.name.ToString() switch
@@ -38,37 +35,37 @@ public class UnitSO : ScriptableObject
     }
 }
 
-public struct UnitKey : IEquatable<UnitKey>
+public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>
 {
     public FixedString64Bytes name;
-    public UnitType unitType;
-    public override bool Equals(object obj)
-    {
-        if (!(obj is UnitKey))
-            return false;
-
-        UnitKey other = (UnitKey)obj;
-        return this.name == other.name;
-    }
-
     public bool Equals(UnitKey other)
     {
         return name.Equals(other.name);
     }
+    public override bool Equals(object obj)
+    {
+        return obj is UnitKey other && Equals(other);
+    }
+    public int CompareTo(UnitKey other)
+    {
+        int cmp = name.CompareTo(other.name);
+        return cmp;
+    }
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 23 + name.GetHashCode();
+            return hash;
+        }
+    }
 
+    public static bool operator ==(UnitKey left, UnitKey right) => left.Equals(right);
+    public static bool operator !=(UnitKey left, UnitKey right) => !left.Equals(right);
     public override string ToString()
     {
-        return name + "[UnitType:" + unitType + "]";
-    }
-
-    public static bool operator ==(UnitKey key1, UnitKey key2)
-    {
-        return key1.Equals(key2);
-    }
-
-    public static bool operator !=(UnitKey key1, UnitKey key2)
-    {
-        return !key1.Equals(key2);
+        return $"{name}";
     }
 }
 
