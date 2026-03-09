@@ -10,14 +10,14 @@ partial struct ShootAttackSystem : ISystem
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EntityPrefabsRegistry>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing
-        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
 
         //Logic for MOVING shooters
         foreach ((

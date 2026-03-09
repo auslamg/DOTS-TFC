@@ -8,13 +8,13 @@ partial struct ShootLightSpawnerSystem : ISystem
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EntityPrefabsRegistry>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
         foreach (RefRO<ShootAttack> shootAttack in SystemAPI.Query<RefRO<ShootAttack>>())
         {
             if (shootAttack.ValueRO.onShoot.isTriggered)

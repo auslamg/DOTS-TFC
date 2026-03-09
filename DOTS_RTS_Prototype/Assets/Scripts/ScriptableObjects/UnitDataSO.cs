@@ -21,17 +21,6 @@ public class UnitDataSO : ScriptableObject
             name = this.name
         };
     }
-
-    public Entity GetPrefabEntity(EntitiesReferences er)
-    {
-        return unitKey.name.ToString() switch
-        {
-            "Hostile" => er.enemyPrefabEntity,
-            "Soldier" => er.soldierPrefabEntity,
-            "Scout" => er.scoutPrefabEntity,
-            _ => er.soldierPrefabEntity,
-        };
-    }
 }
 
 /// <summary>

@@ -10,14 +10,14 @@ partial struct EnemySpawnerSystem : ISystem
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EntityPrefabsRegistry>();
     }
 
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);

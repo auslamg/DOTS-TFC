@@ -9,7 +9,7 @@ partial struct BarracksSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<UnitDataRegistry>();
-        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EntityPrefabsRegistry>();
         state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
     }
 
@@ -17,7 +17,7 @@ partial struct BarracksSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
-        Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntitiesReferences>();
+        Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>();
         DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(entityReferencesRegistryEntity);
         EntityCommandBuffer ecb = SystemAPI
             .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()

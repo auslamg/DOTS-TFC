@@ -8,12 +8,12 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Managed component for the <see cref="EntitiesReferences"/> unmanaged component.
+/// Managed component for the <see cref="EntityPrefabsRegistry"/> unmanaged component.
 /// </summary>
 /// <remarks>
 /// The component is a Singleton.
 /// </remarks>
-class EntitiesReferencesAuthoring : MonoBehaviour
+class EntityPrefabsRegistryAuthoring : MonoBehaviour
 {
     public GameObject bulletPrefabGameObject;
     public GameObject enemyPrefabGameObject;
@@ -23,7 +23,7 @@ class EntitiesReferencesAuthoring : MonoBehaviour
 
     public GameObject[] gameObjectPrefabs;
 
-    public static EntitiesReferencesAuthoring Instance { get; private set; }
+    public static EntityPrefabsRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
     /// Used for singleton logic.
@@ -45,16 +45,16 @@ class EntitiesReferencesAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <see cref="EntitiesReferences"/> unmanaged component.
+/// Baker for the <see cref="EntityPrefabsRegistry"/> unmanaged component.
 /// </summary>
-class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
+class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 {
     private Entity GetPrefabEntity(GameObject prefabGo)
     {
         return GetEntity(prefabGo, TransformUsageFlags.None);
     }
 
-    public override void Bake(EntitiesReferencesAuthoring authoring)
+    public override void Bake(EntityPrefabsRegistryAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
@@ -99,7 +99,7 @@ class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
             });
         }
 
-        AddComponent(entity, new EntitiesReferences
+        AddComponent(entity, new EntityPrefabsRegistry
         {
             bulletPrefabEntity = GetPrefabEntity(authoring.bulletPrefabGameObject),
             enemyPrefabEntity = GetPrefabEntity(authoring.enemyPrefabGameObject),
@@ -117,7 +117,7 @@ class EntitiesReferencesBaker : Baker<EntitiesReferencesAuthoring>
 /// <remarks>
 /// The component is a Singleton, which should be obtained through <see cref="SystemAPI.GetSingleton()"/>.
 /// </remarks>
-public struct EntitiesReferences : IComponentData
+public struct EntityPrefabsRegistry : IComponentData
 {
     public Entity bulletPrefabEntity;
     public Entity enemyPrefabEntity;
@@ -126,8 +126,7 @@ public struct EntitiesReferences : IComponentData
     public Entity soldierPrefabEntity;
 }
 
-public struct EntityReference
-    : IBufferElementData
+public struct EntityReference : IBufferElementData
 {
     public EntityReferenceKey entityKey;
     public Entity prefabEntity;
