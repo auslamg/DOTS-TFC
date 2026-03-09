@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using UnityEngine;
 
 partial struct SpawnerSystem : ISystem
 {
@@ -56,12 +57,12 @@ partial struct SpawnerSystem : ISystem
                 };
 
                 //Check for nearby enemies to avoid overflow
-                int nearbyEnemiesAmount = 0;
+                int nearbyEntitiesAmount = 0;
                 if (collisionWorld.OverlapSphere(
-                    localTransform.ValueRO.Position,
-                    spawner.ValueRO.nearbyEntityScanRadius,
-                    ref distanceHitList,
-                    collisionFilter))
+                        localTransform.ValueRO.Position,
+                        spawner.ValueRO.nearbyEntityScanRadius,
+                        ref distanceHitList,
+                        collisionFilter))
                 {
                     foreach (DistanceHit distanceHit in distanceHitList)
                     {
@@ -78,7 +79,7 @@ partial struct SpawnerSystem : ISystem
                                 if (SystemAPI.GetComponent<Faction>(distanceHit.Entity).factionID ==
                                     SystemAPI.GetComponent<Faction>(prefabEntity).factionID)
                                 {
-                                    nearbyEnemiesAmount++;
+                                    nearbyEntitiesAmount++;
                                 }
                             }
                         }
@@ -86,7 +87,7 @@ partial struct SpawnerSystem : ISystem
                 }
 
                 //If cap was exceeded stop
-                if (nearbyEnemiesAmount >= spawner.ValueRO.nearbyEntityCap)
+                if (nearbyEntitiesAmount >= spawner.ValueRO.nearbyEntityCap)
                 {
                     continue;
                 }

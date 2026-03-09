@@ -168,6 +168,48 @@ public static class RegistryAccessor
     /// Gets the index of an <see cref="EntityReference"/> entry in the registry buffer.
     /// Employs a binary sort pattern.
     /// </summary>
+    public static bool TryGetEntityReferenceIndex(
+    ref DynamicBuffer<EntityReference> entityRefBuffer,
+    in EntityReferenceKey entityKey,
+    out int entityRefIndex)
+    {
+        //Start on the leftmost end, with a maximum of the total length
+        int leftIndex = 0;
+        int rightIndex = entityRefBuffer.Length - 1;
+
+        while (leftIndex <= rightIndex)
+        {
+            //Get the middle index and check how it compares against the desired element
+            int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
+            int comparisonResult = entityRefBuffer[middleIndex].entityRefKey.CompareTo(entityKey);
+
+            //Element found
+            if (comparisonResult == 0)
+            {
+                entityRefIndex = middleIndex;
+                return true;
+            }
+
+            //Cut the lower half out
+            if (comparisonResult < 0)
+            {
+                leftIndex = middleIndex + 1;
+            }
+            //Cut the the upper half out
+            else
+            {
+                rightIndex = middleIndex - 1;
+            }
+        }
+
+        entityRefIndex = -1;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the index of an <see cref="EntityReference"/> entry in the registry buffer.
+    /// Employs a binary sort pattern.
+    /// </summary>
     public static int GetEntityReferenceIndex(
     ref DynamicBuffer<EntityReference> entityRefBuffer,
     in EntityReferenceKey entityKey)
@@ -209,6 +251,21 @@ public static class RegistryAccessor
     private static void LogErrorEntityReferenceKeyNotFound(EntityReferenceKey key)
     {
         Debug.LogError("EntityReferenceKey not found in EntityReference buffer: " + key.name);
+    }
+
+    public static bool TryGetPrefabEntity(
+    ref DynamicBuffer<EntityReference> entityReferencesBuffer,
+    in EntityReferenceKey entityKey,
+    out Entity prefabEntity)
+    {
+        if (TryGetEntityReferenceIndex(ref entityReferencesBuffer, entityKey, out int entityRefIndex))
+        {
+            prefabEntity = entityReferencesBuffer[entityRefIndex].prefabEntity;
+            return true;
+        }
+
+        prefabEntity = Entity.Null;
+        return false;
     }
 
     public static Entity GetPrefabEntity(ref DynamicBuffer<EntityReference> entityReferencesBuffer, EntityReferenceKey entityKey)

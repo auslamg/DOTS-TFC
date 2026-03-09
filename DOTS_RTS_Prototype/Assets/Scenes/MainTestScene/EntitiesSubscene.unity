@@ -370,6 +370,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 325613256193888693, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
+      propertyPath: onShootSpawnedEntityKey
+      value: ShootLight
+      objectReference: {fileID: 0}
     - target: {fileID: 1775063230344422924, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.85728
@@ -937,15 +941,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d869eff6ab2b7ff42ad9ae79ee0c1bef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntitiesReferencesAuthoring
-  bulletPrefabGameObject: {fileID: 454266321647419357, guid: 56827c1c68aa95d4f9411a79bd768b24, type: 3}
-  enemyPrefabGameObject: {fileID: 4211631314389968475, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
   shootLightPrefabGameObject: {fileID: 5485309095185869559, guid: 2e0724fa45e84774d83a6d59348e18cb, type: 3}
-  scoutPrefabGameObject: {fileID: 8260496261795234366, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
-  soldierPrefabGameObject: {fileID: 8260496261795234366, guid: 3da17acd04463f442863a5ba8258ff6c, type: 3}
   gameObjectPrefabs:
   - {fileID: 454266321647419357, guid: 56827c1c68aa95d4f9411a79bd768b24, type: 3}
   - {fileID: 4211631314389968475, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
   - {fileID: 8260496261795234366, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
+  - {fileID: 5485309095185869559, guid: 2e0724fa45e84774d83a6d59348e18cb, type: 3}
   - {fileID: 8260496261795234366, guid: 3da17acd04463f442863a5ba8258ff6c, type: 3}
 --- !u!4 &1169035819
 Transform:
@@ -1306,8 +1307,8 @@ MonoBehaviour:
   spawnFrequency: 3
   minDistance: 3
   maxDistance: 10
-  nearbyEntityCap: 0
-  nearbyEntityScanRadius: 0
+  nearbyEntityCap: 5
+  nearbyEntityScanRadius: 5
 --- !u!4 &1890641267
 Transform:
   m_ObjectHideFlags: 0
@@ -1596,7 +1597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
-  projectilePrefabKey: 
+  projectilePrefabKey: Bullet
+  onShootSpawnedEntityKey: 
   attackFrequency: 0.2
   attackDistance: 20
   damageAmount: 10

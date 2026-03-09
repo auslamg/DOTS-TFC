@@ -9,7 +9,11 @@ class ShootAttackAuthoring : MonoBehaviour
     /// <summary>
     /// Key for the projectile entity to be spawned.
     /// </summary>
-    public string projectilePrefabKey;
+    public string projectilePrefabKey = "Bullet";
+    /// <summary>
+    /// Key for the entity to be spawned on shoot.
+    /// </summary>
+    public string onShootSpawnedEntityKey = "ShootLight";
     /// <summary>
     /// Time span between attacks.
     /// </summary>
@@ -48,7 +52,16 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
             attackFrequency = authoring.attackFrequency,
             attackDistance = authoring.attackDistance,
             damageAmount = authoring.damageAmount,
-            projectileSpawnPointLocalPosition = authoring.projectileSpawnPointTransform.localPosition
+            projectileSpawnPointLocalPosition = authoring.projectileSpawnPointTransform.localPosition,
+            onShoot = new ShootAttack.OnShootEvent
+            {
+                isTriggered = false,
+                shootFromPosition = float3.zero,
+                spawnedEntityKey = new EntityReferenceKey
+                {
+                    name = authoring.onShootSpawnedEntityKey
+                }
+            }
         });
     }
 }
@@ -65,7 +78,7 @@ public struct ShootAttack : IComponentData
     /// <summary>
     /// Key for the projectile entity to be spawned.
     /// </summary>
-    public EntityReferenceKey projectilePrefabKey;     
+    public EntityReferenceKey projectilePrefabKey;
     /// <summary>
     /// Current time passed since the last attack.
     /// </summary>
@@ -110,12 +123,16 @@ public struct ShootAttack : IComponentData
     public struct OnShootEvent
     {
         /// <summary>
-        /// Event-bool triggered on melee attack.
+        /// Event-bool triggered on shoot attack.
         /// </summary>
         public bool isTriggered;
         /// <summary>
         /// Global-space position from which the shot originated.
         /// </summary>
         public float3 shootFromPosition;
+        /// <summary>
+        /// Key for the projectile entity to be spawned.
+        /// </summary>
+        public EntityReferenceKey spawnedEntityKey;
     }
 }
