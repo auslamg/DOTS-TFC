@@ -180,7 +180,7 @@ public static class RegistryAccessor
         {
             //Get the middle index and check how it compares against the desired element
             int middleIndex = leftIndex + (rightIndex - leftIndex) / 2;
-            int comparisonResult = entityRefBuffer[middleIndex].entityKey.CompareTo(entityKey);
+            int comparisonResult = entityRefBuffer[middleIndex].entityRefKey.CompareTo(entityKey);
 
             //Element found
             if (comparisonResult == 0)
@@ -209,5 +209,13 @@ public static class RegistryAccessor
     private static void LogErrorEntityReferenceKeyNotFound(EntityReferenceKey key)
     {
         Debug.LogError("EntityReferenceKey not found in UnitData blob: " + key.name);
+    }
+
+    public static Entity GetPrefabEntity(ref DynamicBuffer<EntityReference> entityReferencesBuffer, EntityReferenceKey entityKey)
+    {
+        int entityRefIndex = RegistryAccessor.GetEntityReferenceIndex(ref entityReferencesBuffer, entityKey);
+        EntityReference entityReference = entityReferencesBuffer[entityRefIndex];
+        Entity prefabEntity = entityReference.prefabEntity;
+        return prefabEntity;
     }
 }

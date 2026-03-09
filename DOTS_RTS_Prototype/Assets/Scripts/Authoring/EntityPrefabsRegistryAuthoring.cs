@@ -91,7 +91,7 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
             Entity prefabEntity = GetPrefabEntity(entityPrefab);
             entityRefsBuffer.Add(new EntityReference
             {
-                entityKey = new EntityReferenceKey
+                entityRefKey = new EntityReferenceKey
                 {
                     name = entityPrefab.name,
                 },
@@ -128,7 +128,7 @@ public struct EntityPrefabsRegistry : IComponentData
 
 public struct EntityReference : IBufferElementData
 {
-    public EntityReferenceKey entityKey;
+    public EntityReferenceKey entityRefKey;
     public Entity prefabEntity;
 }
 

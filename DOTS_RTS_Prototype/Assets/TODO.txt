@@ -74,6 +74,7 @@ AI features
 
 - GDD: Full targetting behaviour
 - GDD: Targets dont swap if they dont pass the threshold
+- FEATUREA/FIX: After losing their target, RandomWalk entities should check for new targets before getting a random position
 
 Refactors
 - REFACTOR: Change ALL Instantiate references to EntityCommandBuffer pattern

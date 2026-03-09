@@ -19,6 +19,7 @@ partial struct BarracksSystem : ISystem
         UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
         Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>();
         DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(entityReferencesRegistryEntity);
+        
         EntityCommandBuffer ecb = SystemAPI
             .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);

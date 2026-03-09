@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -5,7 +6,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using Unity.VisualScripting;
 
-partial struct EnemySpawnerSystem : ISystem
+partial struct SpawnerSystem : ISystem
 {
     [BurstCompile]
     private void OnCreate(ref SystemState state)
@@ -18,26 +19,32 @@ partial struct EnemySpawnerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
+        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
+            SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
+
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
 
-        EntityCommandBuffer entityCommandBuffer =
+        EntityCommandBuffer ecb =
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach ((
             RefRO<LocalTransform> localTransform,
-            RefRW<EnemySpawner> enemySpawner)
+            RefRW<Spawner> spawner)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
-                RefRW<EnemySpawner>>())
+                RefRW<Spawner>>())
         {
             //IDEA: Refactor into corroutines
             //Timer
-            enemySpawner.ValueRW.spawnPhaseTime -= SystemAPI.Time.DeltaTime;
-            if (enemySpawner.ValueRW.spawnPhaseTime <= 0)
+            spawner.ValueRW.spawnPhaseTime -= SystemAPI.Time.DeltaTime;
+            if (spawner.ValueRW.spawnPhaseTime <= 0)
             {
-                enemySpawner.ValueRW.spawnPhaseTime = enemySpawner.ValueRW.spawnFrequency;
+                spawner.ValueRW.spawnPhaseTime = spawner.ValueRW.spawnFrequency;
+
+                //Retrieve prefab entity from EntityReferenceKey
+                Entity prefabEntity = RegistryAccessor.GetPrefabEntity(ref entityReferencesBuffer, spawner.ValueRO.spawnedEntityKey);
 
                 //Ready up physics query
                 distanceHitList.Clear();
@@ -52,7 +59,7 @@ partial struct EnemySpawnerSystem : ISystem
                 int nearbyEnemiesAmount = 0;
                 if (collisionWorld.OverlapSphere(
                     localTransform.ValueRO.Position,
-                    enemySpawner.ValueRO.nearbyEnemyScanRadius,
+                    spawner.ValueRO.nearbyEntityScanRadius,
                     ref distanceHitList,
                     collisionFilter))
                 {
@@ -67,10 +74,9 @@ partial struct EnemySpawnerSystem : ISystem
                             //If the target has a faction
                             if (SystemAPI.HasComponent<Faction>(distanceHit.Entity))
                             {
-                                //TODO: Parametrize
                                 //If the target faction matches the spawned entity faction
                                 if (SystemAPI.GetComponent<Faction>(distanceHit.Entity).factionID ==
-                                    SystemAPI.GetComponent<Faction>(entitiesReferences.enemyPrefabEntity).factionID)
+                                    SystemAPI.GetComponent<Faction>(prefabEntity).factionID)
                                 {
                                     nearbyEnemiesAmount++;
                                 }
@@ -80,26 +86,27 @@ partial struct EnemySpawnerSystem : ISystem
                 }
 
                 //If cap was exceeded stop
-                if (nearbyEnemiesAmount >= enemySpawner.ValueRO.nearbyEnemyCap)
+                if (nearbyEnemiesAmount >= spawner.ValueRO.nearbyEntityCap)
                 {
                     continue;
                 }
 
                 //Generate spawn
-                //TODO: Parametrize
-                Entity enemyEntity = state.EntityManager.Instantiate(entitiesReferences.enemyPrefabEntity);
-                SystemAPI.SetComponent(enemyEntity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
+                Entity entity = state.EntityManager.Instantiate(prefabEntity);
+                SystemAPI.SetComponent(entity, LocalTransform.FromPosition(localTransform.ValueRO.Position));
 
-                entityCommandBuffer.AddComponent(enemyEntity, new RandomWalk
+                ecb.AddComponent(entity, new RandomWalk
                 {
                     originPointPosition = localTransform.ValueRO.Position,
                     targetPostion = localTransform.ValueRO.Position,
                     //TODO: Refactor into reference to EntitiesReference (through query)
-                    minDistance = enemySpawner.ValueRO.minDistance,
-                    maxDistance = enemySpawner.ValueRO.maxDistance,
-                    random = new Unity.Mathematics.Random((uint)enemyEntity.Index)
+                    minDistance = spawner.ValueRO.minDistance,
+                    maxDistance = spawner.ValueRO.maxDistance,
+                    random = new Unity.Mathematics.Random((uint)entity.Index)
                 });
             }
         }
     }
+
+    
 }
