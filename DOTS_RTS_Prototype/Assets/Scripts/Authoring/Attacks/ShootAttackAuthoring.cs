@@ -7,6 +7,10 @@ using UnityEngine;
 class ShootAttackAuthoring : MonoBehaviour
 {
     /// <summary>
+    /// Key for the projectile entity to be spawned.
+    /// </summary>
+    public string projectilePrefabKey;
+    /// <summary>
     /// Time span between attacks.
     /// </summary>
     public float attackFrequency;
@@ -37,6 +41,10 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new ShootAttack
         {
+            projectilePrefabKey = new EntityReferenceKey
+            {
+                name = authoring.projectilePrefabKey
+            },
             attackFrequency = authoring.attackFrequency,
             attackDistance = authoring.attackDistance,
             damageAmount = authoring.damageAmount,
@@ -54,6 +62,10 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
 /// </remarks>
 public struct ShootAttack : IComponentData
 {
+    /// <summary>
+    /// Key for the projectile entity to be spawned.
+    /// </summary>
+    public EntityReferenceKey projectilePrefabKey;     
     /// <summary>
     /// Current time passed since the last attack.
     /// </summary>

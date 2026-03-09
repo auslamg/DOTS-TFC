@@ -93,6 +93,7 @@ Refactors
 - REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those
 - RENAME: Barracks scripts to Trainer
 - REFACTOR: Implement Dictionary style Map for AnimationDataRegistry
+- REFACTOR/FIX: Validate non-nullity in all baker key fields
 
 
 

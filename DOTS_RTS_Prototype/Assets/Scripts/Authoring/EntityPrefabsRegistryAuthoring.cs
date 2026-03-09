@@ -15,11 +15,7 @@ using UnityEditor;
 /// </remarks>
 class EntityPrefabsRegistryAuthoring : MonoBehaviour
 {
-    public GameObject bulletPrefabGameObject;
-    public GameObject enemyPrefabGameObject;
     public GameObject shootLightPrefabGameObject;
-    public GameObject scoutPrefabGameObject;
-    public GameObject soldierPrefabGameObject;
 
     public GameObject[] gameObjectPrefabs;
 
@@ -101,11 +97,7 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 
         AddComponent(entity, new EntityPrefabsRegistry
         {
-            bulletPrefabEntity = GetPrefabEntity(authoring.bulletPrefabGameObject),
-            enemyPrefabEntity = GetPrefabEntity(authoring.enemyPrefabGameObject),
             shootLightPrefabEntity = GetPrefabEntity(authoring.shootLightPrefabGameObject),
-            scoutPrefabEntity = GetPrefabEntity(authoring.scoutPrefabGameObject),
-            soldierPrefabEntity = GetPrefabEntity(authoring.soldierPrefabGameObject)
         });
     }
 }
@@ -119,11 +111,7 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 /// </remarks>
 public struct EntityPrefabsRegistry : IComponentData
 {
-    public Entity bulletPrefabEntity;
-    public Entity enemyPrefabEntity;
     public Entity shootLightPrefabEntity;
-    public Entity scoutPrefabEntity;
-    public Entity soldierPrefabEntity;
 }
 
 public struct EntityReference : IBufferElementData

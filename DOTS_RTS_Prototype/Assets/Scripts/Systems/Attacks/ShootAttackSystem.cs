@@ -17,7 +17,8 @@ partial struct ShootAttackSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing
-        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
+        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
+            SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
         //Logic for MOVING shooters
         foreach ((
@@ -53,7 +54,7 @@ partial struct ShootAttackSystem : ISystem
                     float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
                     aimDirection = math.normalize(aimDirection);
 
-                    //TODO: Snip for example doc [rotate into vector direction]
+                    //TODO: Snip for example in documentation [rotate into vector direction]
                     quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
                     localTransform.ValueRW.Rotation =
                         math.slerp(localTransform.ValueRO.Rotation, aimRotation, SystemAPI.Time.DeltaTime * unitMover.ValueRO.rotationSpeed); //replace with aimRotation for no interpolation
@@ -91,7 +92,6 @@ partial struct ShootAttackSystem : ISystem
                 }
                 
                 {
-                    //TODO: Extract into AttackLoop() method or corroutine
                     //IDEA: Refactor into corroutines
                     //Timer
                     shootAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
@@ -104,8 +104,11 @@ partial struct ShootAttackSystem : ISystem
                         int damageAmount = 3;
                         targetHealth.ValueRW.currentHealth -= damageAmount; */
 
+                        //Retrieve projectile prefab entity from EntityReferenceKey
+                        Entity projectilePrefab = RegistryAccessor.GetPrefabEntity(ref entityReferencesBuffer, shootAttack.ValueRO.projectilePrefabKey);
+
                         //Spawn projectile calculating global position
-                        Entity projectileEntity = state.EntityManager.Instantiate(entitiesReferences.bulletPrefabEntity);
+                        Entity projectileEntity = state.EntityManager.Instantiate(projectilePrefab);
                         float3 projectileSpawnPoint = localTransform.ValueRO.TransformPoint(shootAttack.ValueRO.projectileSpawnPointLocalPosition);
                         SystemAPI.SetComponent(projectileEntity, LocalTransform.FromPosition(projectileSpawnPoint));
 

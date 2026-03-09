@@ -121,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 8eea152ffde69634f9304062310c371a, type: 2}
     - target: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: m_Name
-      value: ScoutUnit
+      value: Scout
       objectReference: {fileID: 0}
     - target: {fileID: 4299751784424829594, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: moveSpeed
@@ -216,6 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
+  projectilePrefabKey: Bullet
   attackFrequency: 0.4
   attackDistance: 18
   damageAmount: 7

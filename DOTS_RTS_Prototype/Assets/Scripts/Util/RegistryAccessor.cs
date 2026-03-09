@@ -54,7 +54,7 @@ public static class RegistryAccessor
         }
 
         LogErrorAnimationKeyNotFound(searchKey);
-        Debug.LogError("AnimationKey not found in BlobArray. Disable Burst for details.");
+        Debug.LogError("AnimationKey not found in AnimationData blob. Disable Burst for details.");
         return ref animationDataArray[0];
     }
 
@@ -104,7 +104,7 @@ public static class RegistryAccessor
         }
 
         LogErrorBuildingKeyNotFound(buildingKey);
-        Debug.LogError("BuildingKey not found in BlobArray. Disable Burst for details.");
+        Debug.LogError("BuildingKey not found in BuildingData blob. Disable Burst for details.");
         return ref buildingDataArray[0];
     }
 
@@ -154,7 +154,7 @@ public static class RegistryAccessor
         }
 
         LogErrorUnitKeyNotFound(unitKey);
-        Debug.LogError("UnitKey not found in BlobArray. Disable Burst for details.");
+        Debug.LogError("UnitKey not found in UnitData blob. Disable Burst for details.");
         return ref unitDataArray[0];
     }
 
@@ -201,14 +201,14 @@ public static class RegistryAccessor
         }
 
         LogErrorEntityReferenceKeyNotFound(entityKey);
-        Debug.LogError("EntityReferenceKey not found in BlobArray. Disable Burst for details.");
+        Debug.LogError("EntityReferenceKey not found in EntityReference buffer. Disable Burst for details.");
         return -1;
     }
 
     [BurstDiscard]
     private static void LogErrorEntityReferenceKeyNotFound(EntityReferenceKey key)
     {
-        Debug.LogError("EntityReferenceKey not found in UnitData blob: " + key.name);
+        Debug.LogError("EntityReferenceKey not found in EntityReference buffer: " + key.name);
     }
 
     public static Entity GetPrefabEntity(ref DynamicBuffer<EntityReference> entityReferencesBuffer, EntityReferenceKey entityKey)

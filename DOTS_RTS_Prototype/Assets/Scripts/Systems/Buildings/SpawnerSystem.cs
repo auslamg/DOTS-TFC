@@ -18,7 +18,7 @@ partial struct SpawnerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
+        //Used for prefab instancing
         DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 

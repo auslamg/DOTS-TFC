@@ -943,6 +943,7 @@ MonoBehaviour:
   scoutPrefabGameObject: {fileID: 8260496261795234366, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
   soldierPrefabGameObject: {fileID: 8260496261795234366, guid: 3da17acd04463f442863a5ba8258ff6c, type: 3}
   gameObjectPrefabs:
+  - {fileID: 454266321647419357, guid: 56827c1c68aa95d4f9411a79bd768b24, type: 3}
   - {fileID: 4211631314389968475, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
   - {fileID: 8260496261795234366, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
   - {fileID: 8260496261795234366, guid: 3da17acd04463f442863a5ba8258ff6c, type: 3}
@@ -1301,11 +1302,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f40f17b43f8e9f749b3090643eab0858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnerAuthoring
+  spawnedEntityKey: Hostile
   spawnFrequency: 3
   minDistance: 3
   maxDistance: 10
-  nearbyEnemyCap: 10
-  nearbyEnemyScanRadius: 20
+  nearbyEntityCap: 0
+  nearbyEntityScanRadius: 0
 --- !u!4 &1890641267
 Transform:
   m_ObjectHideFlags: 0
@@ -1594,6 +1596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
+  projectilePrefabKey: 
   attackFrequency: 0.2
   attackDistance: 20
   damageAmount: 10
