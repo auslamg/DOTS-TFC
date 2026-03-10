@@ -9,6 +9,7 @@ using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEngine.EventSystems;
 
 public class UnitSelectionManager : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class UnitSelectionManager : MonoBehaviour
 
     public event EventHandler OnSelectionAreaStart;
     public event EventHandler OnSelectionAreaEnd;
+    public event EventHandler OnSelectionChange;
+
 
     private Vector2 selectionStartMousePosition;
 
@@ -56,6 +59,11 @@ public class UnitSelectionManager : MonoBehaviour
     /// </summary>
     void Update()
     {
+        //TODO: This disables selection if ANY GameObject is in front of the mouse. Refactor to only disable if pointer is over UI.
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
         if (Input.GetMouseButtonDown(0))
         {
             selectionStartMousePosition = Input.mousePosition;
@@ -132,6 +140,7 @@ public class UnitSelectionManager : MonoBehaviour
             }
 
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
+            OnSelectionChange?.Invoke(this, EventArgs.Empty);
         }
         //TODO: Extract to ControlsManager.cs
         if (Input.GetMouseButtonDown(1))
@@ -159,23 +168,23 @@ public class UnitSelectionManager : MonoBehaviour
 
     private void SetRallyPositionOffset(EntityManager entityManager)
     {
-        //Query all entities with the UnitMover and Selected components to set their target
+        // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
             Selected,
-            Barracks,
+            Trainer,
             LocalTransform>().Build(entityManager);
 
-        //Register entities and components to modify in order to run Set on the original struct
-        NativeArray<Barracks> barracksArray = query.ToComponentDataArray<Barracks>(Allocator.Temp);
+        // Register entities and components to modify in order to run Set on the original struct
+        NativeArray<Trainer> trainerArray = query.ToComponentDataArray<Trainer>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
 
-        for (int i = 0; i < barracksArray.Length; i++)
+        for (int i = 0; i < trainerArray.Length; i++)
         {
-            Barracks barracks = barracksArray[i];
-            barracks.rallyPositionOffset = (float3)mouseWorldPosition - localTransformArray[i].Position;
-            barracksArray[i] = barracks;
+            Trainer trainer = trainerArray[i];
+            trainer.rallyPositionOffset = (float3)mouseWorldPosition - localTransformArray[i].Position;
+            trainerArray[i] = trainer;
         }
-        query.CopyFromComponentDataArray(barracksArray);
+        query.CopyFromComponentDataArray(trainerArray);
     }
 
     /// <summary>

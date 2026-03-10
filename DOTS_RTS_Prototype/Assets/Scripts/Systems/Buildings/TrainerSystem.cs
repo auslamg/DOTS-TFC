@@ -1,9 +1,10 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-partial struct BarracksSystem : ISystem
+partial struct TrainerSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -19,20 +20,41 @@ partial struct BarracksSystem : ISystem
         UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
         Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>();
         DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(entityReferencesRegistryEntity);
-        
+
         EntityCommandBuffer ecb = SystemAPI
             .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
 
+
+        foreach ((
+            RefRW<Trainer> trainer,
+            RefRO<QueuedUnit> queuedUnit,
+            DynamicBuffer<SpawnUnitBuffer> spawnUnitBuffer,
+            EnabledRefRW<QueuedUnit> queuedUnitEnabled)
+                in SystemAPI.Query<
+                RefRW<Trainer>,
+                RefRO<QueuedUnit>,
+                DynamicBuffer<SpawnUnitBuffer>,
+                EnabledRefRW<QueuedUnit>>())
+        {
+            spawnUnitBuffer.Add(new SpawnUnitBuffer
+            {
+                unitKey = queuedUnit.ValueRO.unitKey
+            });
+            queuedUnitEnabled.ValueRW = false;
+
+            trainer.ValueRW.onUnitQueueChange = true;
+        }
+
         foreach ((
             RefRO<LocalTransform> localTransform,
-            RefRW<Barracks> barracks,
-            DynamicBuffer<SpawnUnitsBuffer> spawnUnitBuffer,
+            RefRW<Trainer> trainer,
+            DynamicBuffer<SpawnUnitBuffer> spawnUnitBuffer,
             Entity entity)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
-                RefRW<Barracks>,
-                DynamicBuffer<SpawnUnitsBuffer>>().
+                RefRW<Trainer>,
+                DynamicBuffer<SpawnUnitBuffer>>().
                 WithEntityAccess())
         {
             //No units in queue
@@ -43,21 +65,21 @@ partial struct BarracksSystem : ISystem
 
 
             //If the acive unit (already trained) is different from the next one, adjust the progress timer max to start training the next one
-            if (barracks.ValueRO.activeUnitKey != spawnUnitBuffer[0].unitKey)
+            if (trainer.ValueRO.activeUnitKey != spawnUnitBuffer[0].unitKey)
             {
-                barracks.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;
+                trainer.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;
 
                 //Retrieve UnitData from UnitKey
-                UnitData unitData = RegistryAccessor.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, barracks.ValueRO.activeUnitKey);
+                UnitData unitData = RegistryAccessor.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, trainer.ValueRO.activeUnitKey);
 
-                barracks.ValueRW.maxProgress = unitData.trainingTime;
+                trainer.ValueRW.maxProgress = unitData.trainingTime;
             }
 
             // Progress timer
-            barracks.ValueRW.currentProgress += SystemAPI.Time.DeltaTime;
-            if (barracks.ValueRO.currentProgress >= barracks.ValueRO.maxProgress)
+            trainer.ValueRW.currentProgress += SystemAPI.Time.DeltaTime;
+            if (trainer.ValueRO.currentProgress >= trainer.ValueRO.maxProgress)
             {
-                barracks.ValueRW.currentProgress = 0;
+                trainer.ValueRW.currentProgress = 0;
 
                 // Retrieve UnitData from UnitKey
                 UnitKey unitKey = spawnUnitBuffer[0].unitKey;
@@ -68,6 +90,7 @@ partial struct BarracksSystem : ISystem
 
                 // Retrieve from buffer to make place for next unit
                 spawnUnitBuffer.RemoveAt(0);
+                trainer.ValueRW.onUnitQueueChange = true;
 
                 // Spawn unit
                 int unitRefIndex = RegistryAccessor.GetEntityReferenceIndex(ref entityReferencesBuffer, entityKey);
@@ -76,7 +99,7 @@ partial struct BarracksSystem : ISystem
                     Debug.LogError($"Cannot spawn unit '{unitKey.name}': no entity reference key found in registry.");
                     continue;
                 }
-                
+
                 Entity unitPrefab = entityReferencesBuffer[unitRefIndex].prefabEntity;
 
                 if (!state.EntityManager.Exists(unitPrefab) ||
@@ -91,12 +114,12 @@ partial struct BarracksSystem : ISystem
 
                 // Set unit position to spawn point
                 LocalTransform spawnedTransform = state.EntityManager.GetComponentData<LocalTransform>(unitPrefab);
-                spawnedTransform.Position = localTransform.ValueRO.Position + barracks.ValueRO.spawnPointOffset;
+                spawnedTransform.Position = localTransform.ValueRO.Position + trainer.ValueRO.spawnPointOffset;
                 ecb.SetComponent(spawnedUnitEntity, spawnedTransform);
 
                 // Set unit destination to RallyPosition.
                 UnitMover unitMover = state.EntityManager.GetComponentData<UnitMover>(unitPrefab);
-                unitMover.targetPosition = localTransform.ValueRO.Position + barracks.ValueRO.rallyPositionOffset;
+                unitMover.targetPosition = localTransform.ValueRO.Position + trainer.ValueRO.rallyPositionOffset;
                 ecb.SetComponent(spawnedUnitEntity, unitMover);
             }
         }

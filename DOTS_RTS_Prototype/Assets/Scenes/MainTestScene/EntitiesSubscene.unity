@@ -750,6 +750,7 @@ MonoBehaviour:
   maxProgress: 2
   spawnPoint: {fileID: 1224895802}
   defaultRallyPoint: {fileID: 114396124}
+  exampleUnitsQueue: []
 --- !u!114 &958211647
 MonoBehaviour:
   m_ObjectHideFlags: 0
