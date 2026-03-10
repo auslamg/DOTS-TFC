@@ -28,16 +28,16 @@ partial struct TrainerSystem : ISystem
 
         foreach ((
             RefRW<Trainer> trainer,
-            RefRO<QueuedUnit> queuedUnit,
-            DynamicBuffer<SpawnUnitBuffer> spawnUnitBuffer,
-            EnabledRefRW<QueuedUnit> queuedUnitEnabled)
+            RefRO<TrainUnitRequest> queuedUnit,
+            DynamicBuffer<QueuedUnitBuffer> spawnUnitBuffer,
+            EnabledRefRW<TrainUnitRequest> queuedUnitEnabled)
                 in SystemAPI.Query<
                 RefRW<Trainer>,
-                RefRO<QueuedUnit>,
-                DynamicBuffer<SpawnUnitBuffer>,
-                EnabledRefRW<QueuedUnit>>())
+                RefRO<TrainUnitRequest>,
+                DynamicBuffer<QueuedUnitBuffer>,
+                EnabledRefRW<TrainUnitRequest>>())
         {
-            spawnUnitBuffer.Add(new SpawnUnitBuffer
+            spawnUnitBuffer.Add(new QueuedUnitBuffer
             {
                 unitKey = queuedUnit.ValueRO.unitKey
             });
@@ -49,12 +49,12 @@ partial struct TrainerSystem : ISystem
         foreach ((
             RefRO<LocalTransform> localTransform,
             RefRW<Trainer> trainer,
-            DynamicBuffer<SpawnUnitBuffer> spawnUnitBuffer,
+            DynamicBuffer<QueuedUnitBuffer> spawnUnitBuffer,
             Entity entity)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<Trainer>,
-                DynamicBuffer<SpawnUnitBuffer>>().
+                DynamicBuffer<QueuedUnitBuffer>>().
                 WithEntityAccess())
         {
             //No units in queue

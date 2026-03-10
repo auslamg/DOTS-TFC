@@ -13,6 +13,7 @@ public class TrainerAuthoring : MonoBehaviour
 
     public Transform defaultRallyPoint;
     public string[] exampleUnitsQueue;
+    public TrainRosterSO trainRosterSO;
 }
 
 /// <summary>
@@ -30,21 +31,35 @@ class TrainerBaker : Baker<TrainerAuthoring>
             rallyPositionOffset = authoring.defaultRallyPoint.position - authoring.transform.position
         });
 
-        DynamicBuffer<SpawnUnitBuffer> spawnUnitsDynamicBuffer = AddBuffer<SpawnUnitBuffer>(entity);
-        AddExampleUnitsQueue(spawnUnitsDynamicBuffer, authoring.exampleUnitsQueue);
+        //Buffer for unit production queue
+        DynamicBuffer<QueuedUnitBuffer> queuedUnitsDynamicBuffer = AddBuffer<QueuedUnitBuffer>(entity);
+        AddExampleUnitsQueue(queuedUnitsDynamicBuffer, authoring.exampleUnitsQueue);
 
-        AddComponent(entity, new QueuedUnit
+
+        //Verify constructed roster to ensure the Scriptable Object has deserialized data
+        if (!authoring.trainRosterSO.VerifyConstruction())
         {
-            
-        });
-        SetComponentEnabled<QueuedUnit>(entity,false);
+            Debug.Log($"Baking trainer roster went wrong in GameObject {authoring.gameObject.name}");
+        }
+        //Buffer for unit training roster
+        DynamicBuffer<TrainableEntry> trainableEntriesBuffer = AddBuffer<TrainableEntry>(entity);
+        foreach (UnitKey unitKey in authoring.trainRosterSO.unitKeySet)
+        {
+            trainableEntriesBuffer.Add(new TrainableEntry
+            {
+                unitKey = unitKey
+            });
+        }
+
+        AddComponent(entity, new TrainUnitRequest());
+        SetComponentEnabled<TrainUnitRequest>(entity, false);
     }
 
-    private static void AddExampleUnitsQueue(DynamicBuffer<SpawnUnitBuffer> spawnUnitsDynamicBuffer, string[] exampleUnitsQueue)
+    private static void AddExampleUnitsQueue(DynamicBuffer<QueuedUnitBuffer> spawnUnitsDynamicBuffer, string[] exampleUnitsQueue)
     {
         foreach (string unitName in exampleUnitsQueue)
         {
-            spawnUnitsDynamicBuffer.Add(new SpawnUnitBuffer
+            spawnUnitsDynamicBuffer.Add(new QueuedUnitBuffer
             {
                 unitKey = new UnitKey
                 {
@@ -69,12 +84,18 @@ public struct Trainer : IComponentData
 }
 
 [InternalBufferCapacity(10)]
-public struct SpawnUnitBuffer : IBufferElementData
+public struct QueuedUnitBuffer : IBufferElementData
 {
     public UnitKey unitKey;
 }
 
-public struct QueuedUnit : IComponentData, IEnableableComponent
+[InternalBufferCapacity(10)]
+public struct TrainableEntry : IBufferElementData
+{
+    public UnitKey unitKey;
+}
+
+public struct TrainUnitRequest : IComponentData, IEnableableComponent
 {
     public UnitKey unitKey;
 }

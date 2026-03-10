@@ -1,0 +1,316 @@
+"filename", "language", "XML", "JSON", "CMake", "ApexLog", "UnityShader", "C", "C++", "CMake Cache", "C#", "comment", "blank", "total"
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\cache-v2-7ef0cb894712ae4ea8a8.json", "JSON", 0, 1383, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1384
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\cmakeFiles-v1-97a14660638f7debfcc4.json", "JSON", 0, 195, 0, 0, 0, 0, 0, 0, 0, 0, 1, 196
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\codemodel-v2-79dcd52128ac19c11b97.json", "JSON", 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 1, 88
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\directory-.-RelWithDebInfo-d0094a50bb2071803777.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\directory-GameActivity-RelWithDebInfo-3edf2ef9e25ca0503118.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\index-2026-03-08T22-10-21-0824.json", "JSON", 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 1, 93
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\.cmake\api\v1\reply\target-game-RelWithDebInfo-f26a442d6d8614aeefed.json", "JSON", 0, 326, 0, 0, 0, 0, 0, 0, 0, 0, 1, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeCache.txt", "CMake Cache", 0, 0, 0, 0, 0, 0, 0, 330, 0, 0, 86, 416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCCompiler.cmake", "CMake", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 18, 73
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCXXCompiler.cmake", "CMake", 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 20, 84
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeSystem.cmake", "CMake", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdCXX\CMakeCXXCompilerId.cpp", "C++", 0, 0, 0, 0, 0, 0, 598, 0, 0, 64, 130, 792
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdC\CMakeCCompilerId.c", "C", 0, 0, 0, 0, 0, 610, 0, 0, 0, 62, 132, 804
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\CMakeFiles\CMakeOutput.log", "ApexLog", 0, 0, 0, 236, 0, 0, 0, 0, 0, 0, 72, 308
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\GameActivity\cmake_install.cmake", "CMake", 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 8, 45
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\android_gradle_build.json", "JSON", 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\android_gradle_build_mini.json", "JSON", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\cmake_install.cmake", "CMake", 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 11, 61
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\arm64-v8a\prefab_config.json", "JSON", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\cache-v2-7b01537879bb1157d1ef.json", "JSON", 0, 1415, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\cmakeFiles-v1-eb8ae1632ed50987b767.json", "JSON", 0, 810, 0, 0, 0, 0, 0, 0, 0, 0, 1, 811
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\codemodel-v2-372266730568f5fadb37.json", "JSON", 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 1, 88
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\directory-.-RelWithDebInfo-d0094a50bb2071803777.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\directory-GameActivity-RelWithDebInfo-3edf2ef9e25ca0503118.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\index-2026-03-08T22-10-29-0941.json", "JSON", 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 1, 93
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\.cmake\api\v1\reply\target-game-RelWithDebInfo-4a63218f1d612cf552e1.json", "JSON", 0, 326, 0, 0, 0, 0, 0, 0, 0, 0, 1, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeCache.txt", "CMake Cache", 0, 0, 0, 0, 0, 0, 0, 330, 0, 0, 86, 416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCCompiler.cmake", "CMake", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 18, 73
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCXXCompiler.cmake", "CMake", 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 20, 84
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\3.22.1-g37088a8-dirty\CMakeSystem.cmake", "CMake", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdCXX\CMakeCXXCompilerId.cpp", "C++", 0, 0, 0, 0, 0, 0, 598, 0, 0, 64, 130, 792
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdC\CMakeCCompilerId.c", "C", 0, 0, 0, 0, 0, 610, 0, 0, 0, 62, 132, 804
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\CMakeFiles\CMakeOutput.log", "ApexLog", 0, 0, 0, 238, 0, 0, 0, 0, 0, 0, 72, 310
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\GameActivity\cmake_install.cmake", "CMake", 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 8, 45
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\android_gradle_build.json", "JSON", 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\android_gradle_build_mini.json", "JSON", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\cmake_install.cmake", "CMake", 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 11, 61
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\armeabi-v7a\prefab_config.json", "JSON", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\prefab\arm64-v8a\prefab\lib\aarch64-linux-android\cmake\game-activity\game-activityConfig.cmake", "CMake", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\prefab\armeabi-v7a\prefab\lib\arm-linux-androideabi\cmake\game-activity\game-activityConfig.cmake", "CMake", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\prefab\x86\prefab\lib\i686-linux-android\cmake\game-activity\game-activityConfig.cmake", "CMake", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\prefab\x86_64\prefab\lib\x86_64-linux-android\cmake\game-activity\game-activityConfig.cmake", "CMake", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 3, 19
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\cache-v2-8762433b6e77ba2157cb.json", "JSON", 0, 1415, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\cmakeFiles-v1-b55b31c2af5c84742058.json", "JSON", 0, 810, 0, 0, 0, 0, 0, 0, 0, 0, 1, 811
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\codemodel-v2-748c2e7b3914816983c4.json", "JSON", 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 1, 88
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\directory-.-RelWithDebInfo-d0094a50bb2071803777.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\directory-GameActivity-RelWithDebInfo-3edf2ef9e25ca0503118.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\index-2026-03-08T22-10-36-0779.json", "JSON", 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 1, 93
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\.cmake\api\v1\reply\target-game-RelWithDebInfo-a12235fff9e53ad26cad.json", "JSON", 0, 326, 0, 0, 0, 0, 0, 0, 0, 0, 1, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeCache.txt", "CMake Cache", 0, 0, 0, 0, 0, 0, 0, 330, 0, 0, 86, 416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCCompiler.cmake", "CMake", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 18, 73
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCXXCompiler.cmake", "CMake", 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 20, 84
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\3.22.1-g37088a8-dirty\CMakeSystem.cmake", "CMake", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdCXX\CMakeCXXCompilerId.cpp", "C++", 0, 0, 0, 0, 0, 0, 598, 0, 0, 64, 130, 792
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdC\CMakeCCompilerId.c", "C", 0, 0, 0, 0, 0, 610, 0, 0, 0, 62, 132, 804
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\CMakeFiles\CMakeOutput.log", "ApexLog", 0, 0, 0, 228, 0, 0, 0, 0, 0, 0, 72, 300
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\GameActivity\cmake_install.cmake", "CMake", 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 8, 45
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\android_gradle_build.json", "JSON", 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\android_gradle_build_mini.json", "JSON", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\cmake_install.cmake", "CMake", 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 11, 61
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86\prefab_config.json", "JSON", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\cache-v2-077995323d9bc937e6cc.json", "JSON", 0, 1415, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\cmakeFiles-v1-170b820c32889fa8c7c8.json", "JSON", 0, 810, 0, 0, 0, 0, 0, 0, 0, 0, 1, 811
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\codemodel-v2-0d264d2e01f032ec899b.json", "JSON", 0, 87, 0, 0, 0, 0, 0, 0, 0, 0, 1, 88
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\directory-.-RelWithDebInfo-d0094a50bb2071803777.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\directory-GameActivity-RelWithDebInfo-3edf2ef9e25ca0503118.json", "JSON", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\index-2026-03-08T22-10-41-0801.json", "JSON", 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 1, 93
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\.cmake\api\v1\reply\target-game-RelWithDebInfo-bc851ab5214befd7eefe.json", "JSON", 0, 326, 0, 0, 0, 0, 0, 0, 0, 0, 1, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeCache.txt", "CMake Cache", 0, 0, 0, 0, 0, 0, 0, 330, 0, 0, 86, 416
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCCompiler.cmake", "CMake", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 18, 73
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\3.22.1-g37088a8-dirty\CMakeCXXCompiler.cmake", "CMake", 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 20, 84
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\3.22.1-g37088a8-dirty\CMakeSystem.cmake", "CMake", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 5, 16
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdCXX\CMakeCXXCompilerId.cpp", "C++", 0, 0, 0, 0, 0, 0, 598, 0, 0, 64, 130, 792
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\3.22.1-g37088a8-dirty\CompilerIdC\CMakeCCompilerId.c", "C", 0, 0, 0, 0, 0, 610, 0, 0, 0, 62, 132, 804
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\CMakeFiles\CMakeOutput.log", "ApexLog", 0, 0, 0, 230, 0, 0, 0, 0, 0, 0, 72, 302
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\GameActivity\cmake_install.cmake", "CMake", 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 8, 45
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\android_gradle_build.json", "JSON", 0, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\android_gradle_build_mini.json", "JSON", 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\cmake_install.cmake", "CMake", 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 11, 61
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\RelWithDebInfo\47c286z3\x86_64\prefab_config.json", "JSON", 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\tools\release\arm64-v8a\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\tools\release\armeabi-v7a\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\tools\release\x86\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\.utmp\tools\release\x86_64\compile_commands.json", "JSON", 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assembly-CSharp-Editor.csproj", "XML", 1407, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1409
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assembly-CSharp.csproj", "XML", 1357, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1359
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Animation\ActiveAnimationAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 26, 20, 3, 49
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Animation\AnimatedMeshReferenceAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 21, 15, 3, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Animation\AnimationDataRegistryAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 92, 51, 12, 155
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Animation\UnitAnimationsAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 54, 12, 8, 74
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Attacks\MeleeAttackAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 30, 42, 4, 76
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Attacks\ShootAttackAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 55, 80, 4, 139
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Attacks\ShootableAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 23, 28, 3, 54
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Buildings\BuildingAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 45, 10, 4, 59
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Buildings\BuildingDataRegistryAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 69, 30, 17, 116
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Buildings\BuildingDataSOHolderAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 26, 9, 3, 38
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Buildings\SpawnerAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 40, 50, 6, 96
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Buildings\TrainerAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 73, 12, 11, 96
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Common\FactionAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 23, 15, 4, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Common\HealthAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 26, 27, 3, 56
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Common\SelectedAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 27, 31, 6, 64
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\EntityPrefabsRegistryAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 119, 30, 22, 171
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\ProjectileAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 25, 33, 6, 64
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\SelfDestroyAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 21, 12, 2, 35
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Targeting\LoseTargetAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 27, 28, 3, 58
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Targeting\ManualTargetAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 19, 16, 3, 38
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Targeting\TargetFinderAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 28, 34, 2, 64
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Targeting\TargetterAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 21, 18, 3, 42
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\UI\HealthBarAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 24, 11, 4, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\ManualMoveAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 22, 17, 4, 43
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\RandomWalkAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 37, 49, 3, 89
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\UnitAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 45, 10, 4, 59
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\UnitDataRegistryAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 71, 30, 16, 117
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\UnitDataSOHolderAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 26, 9, 3, 38
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Authoring\Units\UnitMoverAuthoring.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 31, 37, 4, 72
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\EditorWindow\SkinnedMeshBaker.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 61, 44, 20, 125
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\DOTSEventManager.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 34, 6, 8, 48
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\GameAssets.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 20, 5, 5, 30
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\MouseWorldPosition.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 54, 20, 9, 83
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\UI\BuildingTrainerUI.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 131, 3, 23, 157
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\UI\UnitSelectionManagerUI.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 36, 11, 10, 57
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\MonoBehaviours\UnitSelectionManager.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 308, 82, 76, 466
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\AnimationDataRegistrySO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 44, 7, 10, 61
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\AnimationDataSO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 72, 3, 7, 82
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\BuildingDataRegistrySO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 56, 8, 10, 74
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\BuildingDataSO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 62, 3, 8, 73
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\TrainRosterSO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 4, 27
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\UnitDataRegistrySO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 56, 8, 10, 74
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\ScriptableObjects\UnitDataSO.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 65, 3, 8, 76
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Animation\ActiveAnimationSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 71, 11, 14, 96
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Animation\AnimationDataRegistryPostBakingSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 62, 29, 15, 106
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Animation\AnimationStateSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 91, 5, 13, 109
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Animation\ChangeAnimationSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 57, 6, 11, 74
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Attacks\MeleeAttackSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 77, 25, 8, 110
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Attacks\ShootAttackSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 96, 18, 16, 130
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Buildings\SpawnerSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 88, 11, 15, 114
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Buildings\TrainerSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 97, 10, 21, 128
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Common\HealthSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 24, 10, 5, 39
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Common\SelectedVisualSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 25, 7, 3, 35
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\OnShootSpawnSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 30, 1, 4, 35
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\ProjectileMoverSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 61, 13, 11, 85
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\ResetEventSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 76, 1, 10, 87
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\SelfDestroySystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 4, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Targeting\LoseTargetSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 48, 5, 4, 57
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Targeting\ResetTargetSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 66, 8, 7, 81
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Targeting\TargetFinderSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 92, 13, 7, 112
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\TestingSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 31, 20, 6, 57
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\UI\HealthBarSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 60, 46, 14, 120
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Units\ManualMoveSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 31, 3, 3, 37
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Units\RandomWalkSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 40, 6, 6, 52
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Systems\Units\UnitMoverSystem.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 42, 38, 10, 90
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Util\EntityUtil.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 51, 20, 7, 78
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\Scripts\Util\RegistryAccessor.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 193, 48, 38, 279
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\Benchmark01.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 63, 29, 37, 129
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\Benchmark01_UGUI.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 59, 37, 40, 136
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\Benchmark02.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 65, 6, 27, 98
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\Benchmark03.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 73, 1, 19, 93
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\Benchmark04.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 41, 26, 19, 86
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\CameraController.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 198, 25, 69, 292
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\ChatController.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 31, 5, 16, 52
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\DropdownSample.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 5, 20
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\EnvMapAnimator.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 23, 4, 9, 36
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\ObjectSpin.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 50, 4, 13, 67
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\ShaderPropAnimator.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 33, 5, 14, 52
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\SimpleScript.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 24, 15, 20, 59
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\SkewTextExample.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 95, 18, 46, 159
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_DigitValidator.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 19, 5, 4, 28
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_ExampleScript_01.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 37, 9, 19, 65
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_FrameRateCounter.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 91, 11, 33, 135
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_PhoneNumberValidator.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 93, 7, 6, 106
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_TextEventCheck.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 56, 1, 17, 74
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_TextEventHandler.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 172, 36, 56, 264
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_TextInfoDebugTool.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 409, 97, 147, 653
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_TextSelector_A.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 100, 17, 41, 158
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_TextSelector_B.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 250, 191, 107, 548
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMP_UiFrameRateCounter.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 96, 1, 28, 125
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TMPro_InstructionOverlay.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 55, 6, 24, 85
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TeleType.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 40, 15, 28, 83
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TextConsoleSimulator.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 79, 13, 29, 121
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TextMeshProFloatingText.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 135, 32, 57, 224
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\TextMeshSpawner.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 46, 13, 21, 80
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\VertexColorCycler.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 48, 13, 24, 85
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\VertexJitter.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 105, 26, 44, 175
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\VertexShakeA.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 99, 23, 39, 161
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\VertexShakeB.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 112, 29, 44, 185
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\VertexZoom.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 112, 32, 48, 192
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Examples & Extras\Scripts\WarpTextExample.cs", "C#", 0, 0, 0, 0, 0, 0, 0, 0, 87, 15, 43, 145
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl", "UnityShader", 0, 0, 0, 0, 130, 0, 0, 0, 0, 18, 31, 179
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader", "UnityShader", 0, 0, 0, 0, 113, 0, 0, 0, 0, 2, 31, 146
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader", "UnityShader", 0, 0, 0, 0, 123, 0, 0, 0, 0, 3, 30, 156
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader", "UnityShader", 0, 0, 0, 0, 113, 0, 0, 0, 0, 2, 31, 146
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader", "UnityShader", 0, 0, 0, 0, 253, 0, 0, 0, 0, 4, 70, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader", "UnityShader", 0, 0, 0, 0, 253, 0, 0, 0, 0, 4, 65, 322
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader", "UnityShader", 0, 0, 0, 0, 198, 0, 0, 0, 0, 10, 51, 259
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader", "UnityShader", 0, 0, 0, 0, 193, 0, 0, 0, 0, 8, 52, 253
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader", "UnityShader", 0, 0, 0, 0, 82, 0, 0, 0, 0, 4, 21, 107
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader", "UnityShader", 0, 0, 0, 0, 290, 0, 0, 0, 0, 15, 85, 390
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader", "UnityShader", 0, 0, 0, 0, 192, 0, 0, 0, 0, 8, 51, 251
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader", "UnityShader", 0, 0, 0, 0, 104, 0, 0, 0, 0, 8, 28, 140
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader", "UnityShader", 0, 0, 0, 0, 123, 0, 0, 0, 0, 4, 33, 160
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_SDF.shader", "UnityShader", 0, 0, 0, 0, 253, 0, 0, 0, 0, 4, 70, 327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMP_Sprite.shader", "UnityShader", 0, 0, 0, 0, 111, 0, 0, 0, 0, 0, 21, 132
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMPro.cginc", "UnityShader", 0, 0, 0, 0, 63, 0, 0, 0, 0, 2, 20, 85
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc", "UnityShader", 0, 0, 0, 0, 129, 0, 0, 0, 0, 2, 35, 166
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc", "UnityShader", 0, 0, 0, 0, 62, 0, 0, 0, 0, 6, 13, 81
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc", "UnityShader", 0, 0, 0, 0, 75, 0, 0, 0, 0, 7, 18, 100
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Assets\TextMesh Pro\Sprites\EmojiOne.json", "JSON", 0, 155, 0, 0, 0, 0, 0, 0, 0, 0, 2, 157
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\DOTS_RTS_Prototype.slnx", "XML", 103, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 104
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\PPv2URPConverters.csproj", "XML", 1229, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1231
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Packages\manifest.json", "JSON", 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 1, 54
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Packages\packages-lock.json", "JSON", 0, 553, 0, 0, 0, 0, 0, 0, 0, 0, 1, 554
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.2D.Sprite.AIIntegration.Editor.csproj", "XML", 1214, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1216
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.2D.Sprite.Editor.csproj", "XML", 1273, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1275
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.AI.Navigation.Editor.ConversionSystem.csproj", "XML", 1227, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1229
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.AI.Navigation.Editor.csproj", "XML", 1225, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1227
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.AI.Navigation.Updater.csproj", "XML", 1223, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1225
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.AI.Navigation.csproj", "XML", 1182, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1184
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Burst.CodeGen.csproj", "XML", 1189, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1191
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Burst.Editor.csproj", "XML", 1233, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1235
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Burst.csproj", "XML", 1177, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1179
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.CollabProxy.Editor.csproj", "XML", 1217, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1219
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Collections.CodeGen.csproj", "XML", 1179, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1181
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Collections.Editor.csproj", "XML", 1216, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1218
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Collections.csproj", "XML", 1247, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1249
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Core.Editor.csproj", "XML", 1163, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1165
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Deformations.csproj", "XML", 1191, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1193
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Build.csproj", "XML", 1235, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1237
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.CodeGen.csproj", "XML", 1213, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1215
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Editor.Properties.csproj", "XML", 1235, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1237
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Editor.csproj", "XML", 1468, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1470
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Graphics.Editor.csproj", "XML", 1230, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1232
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Graphics.csproj", "XML", 1318, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1320
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Hybrid.HybridComponents.csproj", "XML", 1192, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1194
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.Hybrid.csproj", "XML", 1254, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1256
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.UI.Editor.csproj", "XML", 1291, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1293
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.UI.csproj", "XML", 1187, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1189
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Entities.csproj", "XML", 1431, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1433
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InputSystem.DocCodeSamples.csproj", "XML", 1165, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1167
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InputSystem.ForUI.csproj", "XML", 1179, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1181
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InputSystem.TestFramework.csproj", "XML", 1116, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1118
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InputSystem.csproj", "XML", 1588, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1590
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InternalAPIEditorBridge.002.csproj", "XML", 1253, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1255
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InternalAPIEngineBridge.002.csproj", "XML", 1185, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1187
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.InternalAPIEngineBridge.004.csproj", "XML", 1176, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1178
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Mathematics.Editor.csproj", "XML", 1218, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1220
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Mathematics.Extensions.Hybrid.csproj", "XML", 1180, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1182
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Mathematics.Extensions.csproj", "XML", 1181, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1183
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Mathematics.csproj", "XML", 1266, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1268
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Multiplayer.Center.Common.csproj", "XML", 1181, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1183
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Multiplayer.Center.Editor.csproj", "XML", 1257, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1259
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Linear.Dense.csproj", "XML", 1194, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1196
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Linear.Solvers.Lowlevel.csproj", "XML", 1189, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1191
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Linear.Sparse.csproj", "XML", 1191, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1193
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Linear.csproj", "XML", 1181, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1183
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Memory.csproj", "XML", 1182, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1184
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Numerics.Random.csproj", "XML", 1180, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1182
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.PerformanceTesting.Editor.csproj", "XML", 1176, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1178
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.PerformanceTesting.csproj", "XML", 1146, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1148
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Physics.Editor.csproj", "XML", 1244, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1246
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Physics.Hybrid.csproj", "XML", 1251, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1253
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Physics.csproj", "XML", 1306, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1308
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.PlasticSCM.Editor.Entities.csproj", "XML", 1229, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1231
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.PlasticSCM.Editor.csproj", "XML", 1643, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1645
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Profiling.Core.csproj", "XML", 1183, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1185
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipeline.Universal.ShaderLibrary.csproj", "XML", 1235, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1237
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Core.Editor.Shared.csproj", "XML", 1216, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1218
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Core.Editor.csproj", "XML", 1458, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1460
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Core.Runtime.Shared.csproj", "XML", 1177, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1179
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Core.Runtime.csproj", "XML", 1518, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1520
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Core.ShaderLibrary.csproj", "XML", 1250, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1252
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.GPUDriven.Runtime.csproj", "XML", 1234, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1236
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.csproj", "XML", 1188, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1190
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.2D.Editor.Overrides.csproj", "XML", 1227, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1229
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.2D.Runtime.csproj", "XML", 1236, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1238
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.Config.Runtime.csproj", "XML", 1178, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1180
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.Editor.csproj", "XML", 1537, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1539
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.Runtime.csproj", "XML", 1402, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1404
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.RenderPipelines.Universal.Shaders.csproj", "XML", 1325, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1327
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Rendering.LightTransport.Editor.csproj", "XML", 1215, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1217
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Rider.Editor.csproj", "XML", 1208, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1210
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Scenes.Editor.csproj", "XML", 1271, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1273
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Scenes.csproj", "XML", 1224, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1226
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.ScriptableBuildPipeline.Editor.csproj", "XML", 1314, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1316
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.ScriptableBuildPipeline.csproj", "XML", 1177, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1179
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Searcher.Editor.csproj", "XML", 1226, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1228
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Serialization.Editor.csproj", "XML", 1217, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1219
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Serialization.csproj", "XML", 1261, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1263
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.ShaderGraph.Editor.csproj", "XML", 2056, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2058
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.ShaderGraph.Utilities.csproj", "XML", 1217, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1219
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.TextMeshPro.Editor.csproj", "XML", 1270, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1272
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.TextMeshPro.csproj", "XML", 1237, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1239
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Timeline.Editor.csproj", "XML", 1494, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1496
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Timeline.csproj", "XML", 1251, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1253
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Transforms.Hybrid.csproj", "XML", 1196, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1198
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.Transforms.csproj", "XML", 1200, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1202
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.UnifiedRayTracing.Runtime.csproj", "XML", 1241, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1243
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.Core.Editor.csproj", "XML", 1691, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1693
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.Core.csproj", "XML", 1605, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1607
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.DocCodeExamples.csproj", "XML", 1123, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1125
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.Flow.Editor.csproj", "XML", 1386, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1388
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.Flow.csproj", "XML", 1580, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1582
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.SettingsProvider.Editor.csproj", "XML", 1229, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1231
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.Shared.Editor.csproj", "XML", 1220, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1222
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.State.Editor.csproj", "XML", 1286, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1288
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualScripting.State.csproj", "XML", 1208, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1210
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\Unity.VisualStudio.Editor.csproj", "XML", 1208, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1210
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\UnityEditor.TestRunner.csproj", "XML", 1417, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1419
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\UnityEditor.UI.csproj", "XML", 1250, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1252
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\UnityEngine.TestRunner.csproj", "XML", 1246, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1248
+"e:\Unity\Dev\DOTS\DOTS_RTS_Prototype\UnityEngine.UI.csproj", "XML", 1259, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1261
+"Total", "-", 129710, 11778, 932, 932, 2860, 2440, 2392, 1320, 6712, 2807, 4654, 166537

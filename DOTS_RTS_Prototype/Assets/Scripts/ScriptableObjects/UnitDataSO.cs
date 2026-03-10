@@ -2,13 +2,14 @@ using System;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "UnitDataSO", menuName = "Units/UnitDataSO")]
 public class UnitDataSO : ScriptableObject
 {
     public UnitType unitType;
     public float trainingTime;
-
+    public Sprite imageCard;
 
     [SerializeField, HideInInspector]
     private UnitKey cachedKey;

@@ -7,27 +7,36 @@ using UnityEngine.UI;
 
 public class BuildingTrainerUI : MonoBehaviour
 {
-    [SerializeField] private Button soldierButton;
+    [Header("DOTS access")]
+    [SerializeField] private Entity trainerEntity;
+    /* [SerializeField] private Button soldierButton; */
+    [Header("Training roster")]
+    [SerializeField] private RectTransform trainingButtonContainer;
+    [SerializeField] private Button trainingButtonTemplate;
+    [SerializeField] private Sprite placeholderTrainButtonImage;
+    [Header("Production queue")]
     [SerializeField] private Image progressBarImage;
     [SerializeField] private RectTransform productionQueueContainer;
     [SerializeField] private RectTransform productionQueueTemplate;
+    //REVIEW: May use two different images. Implement if so
+    /* [SerializeField] private Sprite placeholderProductionQueueImage; */
 
-    [SerializeField] private Entity trainerEntity;
-    [SerializeField] private string spawnedEntityKey;
+    /* [SerializeField] private string spawnedEntityKey; */
     EntityManager entityManager;
 
     void Awake()
     {
-        soldierButton.onClick.AddListener(() =>
+        //TODO: Move this to every refresh? //Optimize
+        /* soldierButton.onClick.AddListener(() =>
         {
             //Enables Unit queue
-            entityManager.SetComponentData(trainerEntity, new QueuedUnit
+            entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
             {
                 unitKey = new UnitKey { name = spawnedEntityKey }
             });
-            entityManager.SetComponentEnabled<QueuedUnit>(trainerEntity, true);
-        });
-
+            entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
+        }); */
+        trainingButtonTemplate.gameObject.SetActive(false);
         productionQueueTemplate.gameObject.SetActive(false);
     }
 
@@ -47,7 +56,7 @@ public class BuildingTrainerUI : MonoBehaviour
         Entity entity = (Entity)sender;
         if (entity == trainerEntity)
         {
-            UpdateUnitQueueVisual();
+            UpdateBuildingUI();
         }
     }
 
@@ -68,7 +77,7 @@ public class BuildingTrainerUI : MonoBehaviour
             trainerEntity = entityArray[0];
             Show();
             UpdateProgressBarVisual();
-            UpdateUnitQueueVisual();
+            UpdateBuildingUI();
         }
         else
         {
@@ -96,7 +105,61 @@ public class BuildingTrainerUI : MonoBehaviour
         }
     }
 
-    void UpdateUnitQueueVisual()
+    void UpdateBuildingUI()
+    {
+        UpdateUnitRosterButtons();
+        UpdateUnitQueueVisual();
+    }
+
+    private void UpdateUnitRosterButtons()
+    {
+        foreach (Transform child in trainingButtonContainer)
+        {
+            if (child.gameObject == trainingButtonTemplate.gameObject)
+            {
+                continue;
+            }
+            else
+            {
+                Debug.Log("REMOVED UNIT BUTTON");
+                child.gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
+                Destroy(child.gameObject);
+            }
+        }
+
+        DynamicBuffer<TrainableEntry> trainableRosterBuffer =
+                entityManager.GetBuffer<TrainableEntry>(trainerEntity, isReadOnly: true);
+
+        foreach (TrainableEntry queuedUnit in trainableRosterBuffer)
+        {
+            Debug.Log("FOUND UNIT BUTTON");
+            Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingButtonContainer);
+            UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
+
+            SetUnitCard(unitDataSO, unitTrainButton.gameObject);
+
+            AddTrainingButtonListener(queuedUnit, unitTrainButton);
+
+            unitTrainButton.gameObject.SetActive(true);
+        }
+
+    }
+
+    private void AddTrainingButtonListener(TrainableEntry queuedUnit, Button unitTrainButton)
+    {
+        unitTrainButton.onClick.RemoveAllListeners();
+        unitTrainButton.onClick.AddListener(() =>
+        {
+            //Enables Unit queue
+            entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
+            {
+                unitKey = queuedUnit.unitKey
+            });
+            entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
+        });
+    }
+
+    private void UpdateUnitQueueVisual()
     {
         foreach (Transform child in productionQueueContainer)
         {
@@ -110,16 +173,32 @@ public class BuildingTrainerUI : MonoBehaviour
             }
         }
 
-        DynamicBuffer<SpawnUnitBuffer> trainerQueueBuffer =
-                entityManager.GetBuffer<SpawnUnitBuffer>(trainerEntity, isReadOnly: true);
+        DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
+                entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: true);
 
-        foreach (SpawnUnitBuffer spawnUnit in trainerQueueBuffer)
+        foreach (QueuedUnitBuffer queuedUnit in trainerQueueBuffer)
         {
             RectTransform unitQueueRectTransform = Instantiate(productionQueueTemplate, parent: productionQueueContainer);
+            UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
+
+            SetUnitCard(unitDataSO, unitQueueRectTransform.gameObject);
             unitQueueRectTransform.gameObject.SetActive(true);
         }
     }
 
+    private void SetUnitCard(UnitDataSO unitDataSO, GameObject uiElement)
+    {
+        Image image = uiElement.GetComponent<Image>();
+        if (unitDataSO != null && unitDataSO.imageCard != null)
+        {
+            image.sprite = unitDataSO.imageCard;
+        }
+        else
+        {
+            Debug.LogWarning($"No icon found for UnitKey '{unitDataSO.unitKey}'");
+            image.sprite = placeholderTrainButtonImage;
+        }
+    }
 
     private void Show()
     {

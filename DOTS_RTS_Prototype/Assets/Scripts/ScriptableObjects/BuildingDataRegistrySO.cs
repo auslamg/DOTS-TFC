@@ -9,10 +9,10 @@ public class BuildingDataRegistrySO : ScriptableObject
 
     private void OnEnable()
     {
-        BuildDictionary();
+        Construct();
     }
 
-    private void BuildDictionary()
+    private void Construct()
     {
         buildingDataDictionary = new Dictionary<BuildingKey, BuildingDataSO>();
 
@@ -43,7 +43,7 @@ public class BuildingDataRegistrySO : ScriptableObject
             buildingDataDictionary.Count == buildingDataSOList.Count;
     }
 
-    public bool RebuildDictionary()
+    public bool VerifyConstruction()
     {
         if (IsVerified())
         {
@@ -51,7 +51,7 @@ public class BuildingDataRegistrySO : ScriptableObject
         }
         else
         {
-            BuildDictionary();
+            Construct();
             return IsVerified();
         }
     }
@@ -60,7 +60,7 @@ public class BuildingDataRegistrySO : ScriptableObject
     {
         if (!IsVerified())
         {
-            BuildDictionary();
+            Construct();
         }
 
         if (buildingDataDictionary.TryGetValue(buildingKey, out var so))

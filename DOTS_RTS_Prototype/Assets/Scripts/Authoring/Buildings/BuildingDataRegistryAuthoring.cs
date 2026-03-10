@@ -46,9 +46,10 @@ class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        if (authoring.buildingRegistrySO.RebuildDictionary())
+        //Verify constructed registry to ensure the Scriptable Object has deserialized data
+        if (!authoring.buildingRegistrySO.VerifyConstruction())
         {
-            Debug.Log($"Baking building entries: {authoring.buildingRegistrySO.buildingDataSOList.Count}");
+            Debug.Log($"Baking building data registry went wrong in GameObject {authoring.gameObject.name}");
         }
 
         //Sort items for binary search optimization
