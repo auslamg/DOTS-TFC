@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using UnityEditor.Animations;
 using System.IO;
 
 /// <summary>
@@ -9,6 +8,7 @@ using System.IO;
 /// is not available at runtime. The tool samples a single AnimationClip at a fixed FPS and
 /// saves each baked Mesh as an asset on disk. User must pick useful frames manually to
 /// ensure animation readability.
+/// Supports SkinnedMeshRenderers with multiple materials.
 /// </summary>
 public class SkinnedMeshBaker : EditorWindow
 {
@@ -69,7 +69,8 @@ public class SkinnedMeshBaker : EditorWindow
     }
 
     /// <summary>
-    /// Samples the animation clip and writes each baked mesh to the output path.
+    /// Samples the animation clip and writes each baked mesh and prefab to the output path.
+    /// Supports multiple materials.
     /// </summary>
     void Bake()
     {
@@ -81,15 +82,25 @@ public class SkinnedMeshBaker : EditorWindow
             return;
         }
 
-        // Ensure the output folder exists before writing assets.
+        // Prepare the folder for prefabs.
         if (!Directory.Exists(outputPath))
         {
             Directory.CreateDirectory(outputPath);
         }
 
+        // Prepare the folder for meshes inside outputPath/Meshes
+        string meshFolder = Path.Combine(outputPath, "Meshes");
+        if (!Directory.Exists(meshFolder))
+        {
+            Directory.CreateDirectory(meshFolder);
+        }
+
         // Determine how many frames to bake based on clip length and FPS.
         float clipLength = clip.length;
         int frameCount = Mathf.CeilToInt(clipLength * framesPerSecond);
+
+        // Cache the materials from the original renderer so baked prefabs use the same materials.
+        Material[] sourceMaterials = skinnedMeshRenderer.sharedMaterials;
 
         // Enter animation sampling mode for deterministic clip evaluation.
         AnimationMode.StartAnimationMode();
@@ -106,12 +117,34 @@ public class SkinnedMeshBaker : EditorWindow
             Mesh bakedMesh = new Mesh();
             skinnedMeshRenderer.BakeMesh(bakedMesh);
 
+            // Ensure the baked mesh preserves all submeshes for multi-material support.
+            bakedMesh.subMeshCount = sourceMaterials.Length;
+
             // Give the mesh a deterministic per-frame name.
             bakedMesh.name = $"{outputName}_{i}";
 
-            // Create a new asset for the baked mesh.
-            string assetPath = $"{outputPath}/{bakedMesh.name}.asset";
-            AssetDatabase.CreateAsset(bakedMesh, assetPath);
+            // Create a new asset for the baked mesh inside the Meshes folder.
+            string meshAssetPath = Path.Combine(meshFolder, bakedMesh.name + ".asset");
+            AssetDatabase.CreateAsset(bakedMesh, meshAssetPath);
+
+            // Create a GameObject that references the baked mesh and original materials.
+            // This allows the baked frame to render correctly without manually assigning materials.
+            GameObject frameObject = new GameObject($"{outputName}_{i}");
+
+            // Add standard mesh components used by non-skinned meshes.
+            MeshFilter meshFilter = frameObject.AddComponent<MeshFilter>();
+            MeshRenderer meshRenderer = frameObject.AddComponent<MeshRenderer>();
+
+            // Assign the baked mesh and the original materials.
+            meshFilter.sharedMesh = bakedMesh;
+            meshRenderer.sharedMaterials = sourceMaterials;
+
+            // Save the GameObject as a prefab in the main outputPath.
+            string prefabPath = Path.Combine(outputPath, frameObject.name + ".prefab");
+            PrefabUtility.SaveAsPrefabAsset(frameObject, prefabPath);
+
+            // Destroy the temporary GameObject used to create the prefab.
+            DestroyImmediate(frameObject);
         }
 
         // Exit animation sampling mode and persist assets.
@@ -119,6 +152,6 @@ public class SkinnedMeshBaker : EditorWindow
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"Baked {frameCount} meshes to {outputPath}");
+        Debug.Log($"Baked {frameCount} meshes into '{meshFolder}' and prefabs into '{outputPath}'");
     }
 }

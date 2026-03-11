@@ -56,6 +56,7 @@ public partial struct ActiveAnimationJob : IJobEntity
         //Pretty much a workaround for null animations while animations can't be nullable
         if (animData.animationType == AnimationType.None)
         {
+            Debug.Log("NONE ANIMATION");
             return;
         }
 

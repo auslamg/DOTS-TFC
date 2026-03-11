@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ac75aa6b165694880c09c9a2423183, type: 3}
   m_Name: Scout
   m_EditorClassIdentifier: Assembly-CSharp::UnitSO
-  unitName: Scout
   unitType: 3
   trainingTime: 3
+  imageCard: {fileID: 21300000, guid: 7e5af9f6e92c6974baebe192ce185e5e, type: 3}

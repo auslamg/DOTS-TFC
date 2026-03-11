@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAnimationsAuthoring
   noneAnimationKey: 
-  idleAnimationKey: 
+  idleAnimationKey: Orc_Idle
   walkAnimationKey: 
   meleeAttackAnimationKey: 
   shootAnimationKey: 

@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b306e0d75a8198b4c8d68c36275bf678, type: 3}
   m_Name: BarracksTrainRoster
   m_EditorClassIdentifier: Assembly-CSharp::TrainRosterSO
-  unitKeys: []
+  unitKeys:
+  - Soldier
+  - Scout

@@ -17,6 +17,14 @@ public static class RegistryAccessor
     in AnimationKey animationKey)
     {
         AnimationKey searchKey = animationKey;
+        if (animationKey.name == "Orc_Walk" || animationKey.name == "Orc_Idle")
+        {
+            Debug.Log("ORC SEARCHED");
+        }
+        if (animationKey.name == "Soldier_Shoot")
+        {
+            Debug.Log("SOLDIER SEARCHED");
+        }
 
         if (searchKey.name == "")
         {
@@ -38,6 +46,10 @@ public static class RegistryAccessor
             //Element found
             if (comparisonResult == 0)
             {
+                if (animationKey.name == "Orc_Walk" || animationKey.name == "Orc_Idle")
+                {
+                    Debug.Log("ORC RETRIEVED");
+                }
                 return ref animationDataArray[middleIndex];
             }
 

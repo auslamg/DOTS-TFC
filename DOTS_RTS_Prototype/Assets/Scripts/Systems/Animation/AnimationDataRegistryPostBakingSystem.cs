@@ -76,6 +76,7 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
                 for (int animationIndex = 0; animationIndex < animationCount; animationIndex++)
                 {
                     AnimationDataSO animationDataSO = sortedAnimations[animationIndex];
+                    /* Debug.Log($"PostBaking animation data meshes: {animationDataSO.name}"); */
 
                     //Allocate memory for the mesh array in the AnimationData entry
                     BlobBuilderArray<int> frameMeshIds =
@@ -91,6 +92,8 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
                     //Register all frame meshes in the mesh array
                     for (int frameIndex = 0; frameIndex < animationDataSO.meshArray.Length; frameIndex++)
                     {
+                        /* Debug.Log($"Added animation Key {animationDataSO.animationKey} mesh: {frameIndex}"); */
+
                         //Add to Blob baked mesh from dictionary
                         frameMeshIds[frameIndex] = animationFramesDictionary[animationDataSO.animationKey][frameIndex];
                     }

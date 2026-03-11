@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ac75aa6b165694880c09c9a2423183, type: 3}
   m_Name: Hostile
   m_EditorClassIdentifier: Assembly-CSharp::UnitSO
-  unitName: Melee
   unitType: 2
   trainingTime: 5
+  imageCard: {fileID: 0}

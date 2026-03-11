@@ -16,6 +16,7 @@ class AnimationDataRegistryAuthoring : MonoBehaviour
 {
     public AnimationDataRegistrySO animationDataRegistrySO;
     public Material defaultMaterial; //Used exclusively to avoid submesh with no material warning (unity bug since there is no submesh)
+    public Material secondMaterial; //Used when mesh has two materials
 
     public static AnimationDataRegistryAuthoring Instance { get; private set; }
 
@@ -52,24 +53,59 @@ class AnimationDataRegistryBaker : Baker<AnimationDataRegistryAuthoring>
         //For all Animation ScriptableObjects found in the list reader
         foreach (AnimationDataSO animationDataSO in authoring.animationDataRegistrySO.animationDataSOList)
         {
+            /* Debug.Log($"Baking animation data: {animationDataSO.name}"); */
+
             //Register all meshes in the mesh array
             for (int i = 0; i < animationDataSO.meshArray.Length; i++)
             {
                 //Obtain each mesh from animationDataSO
                 Mesh mesh = animationDataSO.meshArray[i];
 
-                /* Generates an entity "meshBakingEntity" per each frame to link its components to said entity and bake it, and register the entity in the aniamtionDataRegistry. */
-                ///See <see cref="AnimationDataRegistryPostBakingSystem"/>
+                // If mesh has 2+ submeshes, create entities for each material
+                if (mesh.subMeshCount >= 2 && authoring.secondMaterial != null)
                 {
+                    // Create entity with default material
+                    {
+                        Entity meshBakingEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
+                        AddComponent(meshBakingEntity, new MaterialMeshInfo());
+                        AddComponent(meshBakingEntity, new RenderMeshUnmanaged
+                        {
+                            materialForSubMesh = authoring.defaultMaterial,
+                            mesh = mesh,
+                        });
+                        AddComponent(meshBakingEntity, new AnimationFrameMetadata
+                        {
+                            animationKey = animationDataSO.animationKey,
+                            meshIndex = i,
+                        });
+                    }
+
+                    // Create entity with second material
+                    {
+                        Entity meshBakingEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
+                        AddComponent(meshBakingEntity, new MaterialMeshInfo());
+                        AddComponent(meshBakingEntity, new RenderMeshUnmanaged
+                        {
+                            materialForSubMesh = authoring.secondMaterial,
+                            mesh = mesh,
+                        });
+                        AddComponent(meshBakingEntity, new AnimationFrameMetadata
+                        {
+                            animationKey = animationDataSO.animationKey,
+                            meshIndex = i,
+                        });
+                    }
+                }
+                else
+                {
+                    // Single material case
                     Entity meshBakingEntity = CreateAdditionalEntity(TransformUsageFlags.None, true);
-                    //Add unmanaged components needed for rendering
                     AddComponent(meshBakingEntity, new MaterialMeshInfo());
                     AddComponent(meshBakingEntity, new RenderMeshUnmanaged
                     {
                         materialForSubMesh = authoring.defaultMaterial,
                         mesh = mesh,
                     });
-                    //Add animation metadata used for identification
                     AddComponent(meshBakingEntity, new AnimationFrameMetadata
                     {
                         animationKey = animationDataSO.animationKey,
