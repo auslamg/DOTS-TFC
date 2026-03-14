@@ -17,7 +17,7 @@ partial struct ShootAttackSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing
-        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
+        DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
         //Logic for MOVING shooters
@@ -105,7 +105,7 @@ partial struct ShootAttackSystem : ISystem
                         targetHealth.ValueRW.currentHealth -= damageAmount; */
 
                         //Retrieve projectile prefab entity from EntityReferenceKey
-                        Entity projectilePrefab = RegistryAccessor.GetPrefabEntity(ref entityReferencesBuffer, shootAttack.ValueRO.projectilePrefabKey);
+                        Entity projectilePrefab = DataLookup.GetEntityPrefab(ref entityReferencesBuffer, shootAttack.ValueRO.projectilePrefabKey);
 
                         //Spawn projectile calculating global position
                         Entity projectileEntity = state.EntityManager.Instantiate(projectilePrefab);

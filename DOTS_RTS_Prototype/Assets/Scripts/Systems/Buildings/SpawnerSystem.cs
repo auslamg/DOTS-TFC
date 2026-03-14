@@ -20,7 +20,7 @@ partial struct SpawnerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing
-        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
+        DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
@@ -45,7 +45,7 @@ partial struct SpawnerSystem : ISystem
                 spawner.ValueRW.spawnPhaseTime = spawner.ValueRW.spawnFrequency;
 
                 //Retrieve prefab entity from EntityReferenceKey
-                Entity prefabEntity = RegistryAccessor.GetPrefabEntity(ref entityReferencesBuffer, spawner.ValueRO.spawnedEntityKey);
+                Entity prefabEntity = DataLookup.GetEntityPrefab(ref entityReferencesBuffer, spawner.ValueRO.spawnedEntityKey);
 
                 //Ready up physics query
                 distanceHitList.Clear();

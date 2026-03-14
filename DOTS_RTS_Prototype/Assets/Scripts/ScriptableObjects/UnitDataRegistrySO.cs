@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "UnitDataRegistrySO", menuName = "Units/UnitDataRegistrySO")]
@@ -9,10 +10,10 @@ public class UnitDataRegistrySO : ScriptableObject
 
     private void OnEnable()
     {
-        BuildDictionary();
+        Construct();
     }
 
-    private void BuildDictionary()
+    private void Construct()
     {
         unitDictionary = new Dictionary<UnitKey, UnitDataSO>();
 
@@ -27,6 +28,8 @@ public class UnitDataRegistrySO : ScriptableObject
             unitDictionary.Add(so.unitKey, so);
             /* Debug.Log($"Added unit: {so.unitKey}"); */
         }
+        
+        unitDataSOList = unitDataSOList.OrderBy((UnitDataSO so) => so.name).ToHashSet().ToList();
     }
 
     /// <summary>
@@ -43,7 +46,7 @@ public class UnitDataRegistrySO : ScriptableObject
             unitDictionary.Count == unitDataSOList.Count;
     }
 
-    public bool RebuildDictionary()
+    public bool VerifyConstruction()
     {
         if (IsVerified())
         {
@@ -51,7 +54,7 @@ public class UnitDataRegistrySO : ScriptableObject
         }
         else
         {
-            BuildDictionary();
+            Construct();
             return IsVerified();
         }
     }
@@ -60,7 +63,7 @@ public class UnitDataRegistrySO : ScriptableObject
     {
         if (!IsVerified())
         {
-            BuildDictionary();
+            Construct();
         }
 
         if (unitDictionary.TryGetValue(unitKey, out var so))

@@ -46,14 +46,14 @@ class UnitDataRegistryBaker : Baker<UnitDataRegistryAuthoring>
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        if (authoring.unitRegistrySO.RebuildDictionary())
+        if (authoring.unitRegistrySO.VerifyConstruction())
         {
             Debug.Log($"Baking unit entries: {authoring.unitRegistrySO.unitDataSOList.Count}");
         }
 
         //Sort items for binary search optimization
         UnitDataSO[] sortedUnits = authoring.unitRegistrySO.unitDataSOList
-            .OrderBy((UnitDataSO b) => b.unitKey)
+            .OrderBy((UnitDataSO so) => so.unitKey)
             .ToArray();
 
         BlobAssetReference<BlobArray<UnitData>> blobAssetReference;

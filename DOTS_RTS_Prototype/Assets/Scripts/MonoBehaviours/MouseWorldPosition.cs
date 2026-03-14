@@ -40,7 +40,7 @@ public class MouseWorldPosition : MonoBehaviour
     /// </summary>
     public Vector3 GetPosition()
     {
-        return usePhysics ? GetPositionFlat() : GetPositionPhysics();
+        return usePhysics ? GetPositionPhysics() : GetPositionFlat();
     }
 
     /// <summary>
@@ -69,7 +69,9 @@ public class MouseWorldPosition : MonoBehaviour
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(mouseCameraRay, out RaycastHit hit)) //TODO: Add layerMask
+        //TODO: Add layerMask
+
+        if (Physics.Raycast(mouseCameraRay, out RaycastHit hit))
         {
             return hit.point;
         }

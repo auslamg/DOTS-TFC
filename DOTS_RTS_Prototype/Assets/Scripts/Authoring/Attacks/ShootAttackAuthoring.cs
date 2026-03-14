@@ -45,7 +45,7 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new ShootAttack
         {
-            projectilePrefabKey = new EntityReferenceKey
+            projectilePrefabKey = new EntityPrefabKey
             {
                 name = authoring.projectilePrefabKey
             },
@@ -57,7 +57,7 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
             {
                 isTriggered = false,
                 shootFromPosition = float3.zero,
-                spawnedEntityKey = new EntityReferenceKey
+                spawnedEntityKey = new EntityPrefabKey
                 {
                     name = authoring.onShootSpawnedEntityKey
                 }
@@ -78,7 +78,7 @@ public struct ShootAttack : IComponentData
     /// <summary>
     /// Key for the projectile entity to be spawned.
     /// </summary>
-    public EntityReferenceKey projectilePrefabKey;
+    public EntityPrefabKey projectilePrefabKey;
     /// <summary>
     /// Current time passed since the last attack.
     /// </summary>
@@ -133,6 +133,6 @@ public struct ShootAttack : IComponentData
         /// <summary>
         /// Key for the projectile entity to be spawned.
         /// </summary>
-        public EntityReferenceKey spawnedEntityKey;
+        public EntityPrefabKey spawnedEntityKey;
     }
 }

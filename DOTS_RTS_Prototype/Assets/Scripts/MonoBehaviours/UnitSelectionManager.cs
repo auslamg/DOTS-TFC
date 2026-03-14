@@ -158,13 +158,10 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (isAttackingAnEntity)
             {
-                Debug.Log("Setting attack");
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
             else
             {
-                Debug.Log("Setting destination");
-                Debug.Log($"Hit Entity: {hitEntity}");
                 SetDestinationOnSelectedUnits(entityManager);
             }
             SetRallyPositionOffset(entityManager);

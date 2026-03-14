@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Buildings/BuildingDataRegistrySO")]
@@ -27,6 +28,7 @@ public class BuildingDataRegistrySO : ScriptableObject
             buildingDataDictionary.Add(so.buildingKey, so);
             /* Debug.Log($"Added unit: {so.buildingKey}"); */
         }
+        buildingDataSOList = buildingDataSOList.OrderBy((BuildingDataSO so) => so.name).ToHashSet().ToList();
     }
 
     /// <summary>

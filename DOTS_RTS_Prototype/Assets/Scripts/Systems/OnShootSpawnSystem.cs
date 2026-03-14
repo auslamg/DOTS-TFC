@@ -15,15 +15,14 @@ partial struct ShootLightSpawnerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Used for prefab instancing
-        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(
+        DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
-        EntityPrefabsRegistry entitiesReferences = SystemAPI.GetSingleton<EntityPrefabsRegistry>();
         foreach (RefRO<ShootAttack> shootAttack in SystemAPI.Query<RefRO<ShootAttack>>())
         {
             if (shootAttack.ValueRO.onShoot.isTriggered)
             {
-                if (RegistryAccessor.TryGetPrefabEntity(ref entityReferencesBuffer, shootAttack.ValueRO.onShoot.spawnedEntityKey, out Entity prefabEntity))
+                if (DataLookup.TryGetEntityPrefab(ref entityReferencesBuffer, shootAttack.ValueRO.onShoot.spawnedEntityKey, out Entity prefabEntity))
                 {
                     Entity spawnedEntity = state.EntityManager.Instantiate(prefabEntity);
                     SystemAPI.SetComponent(spawnedEntity, LocalTransform.FromPosition(shootAttack.ValueRO.onShoot.shootFromPosition));

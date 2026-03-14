@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AnimationDataRegistrySO", menuName = "AnimationData/AnimationDataRegistrySO")]
@@ -9,10 +10,10 @@ public class AnimationDataRegistrySO : ScriptableObject
     
     private void OnEnable()
     {
-        BuildDictionary();
+        Construct();
     }
 
-    private void BuildDictionary()
+    private void Construct()
     {
         animationDataDictionary = new Dictionary<AnimationKey, AnimationDataSO>();
 
@@ -26,6 +27,8 @@ public class AnimationDataRegistrySO : ScriptableObject
 
             animationDataDictionary.Add(so.animationKey, so);
         }
+
+        animationDataSOList = animationDataSOList.OrderBy((AnimationDataSO so) => so.name).ToHashSet().ToList();
     }
 
     /// <summary>
@@ -42,11 +45,24 @@ public class AnimationDataRegistrySO : ScriptableObject
             animationDataDictionary.Count == animationDataSOList.Count;
     }
 
+    public bool VerifyConstruction()
+    {
+        if (IsVerified())
+        {
+            return true;
+        }
+        else
+        {
+            Construct();
+            return IsVerified();
+        }
+    }
+
     public AnimationDataSO GetAnimationDataSO(AnimationKey animationKey)
     {
         if (!IsVerified())
         {
-            BuildDictionary();
+            Construct();
         }
 
         if (animationDataDictionary.TryGetValue(animationKey, out var so))

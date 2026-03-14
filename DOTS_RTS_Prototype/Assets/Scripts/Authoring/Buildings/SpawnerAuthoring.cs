@@ -44,7 +44,7 @@ class SpawnerBaker : Baker<SpawnerAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new Spawner
         {
-            spawnedEntityKey = new EntityReferenceKey
+            spawnedEntityKey = new EntityPrefabKey
             {
                 name = authoring.spawnedEntityKey
             },
@@ -66,7 +66,7 @@ public struct Spawner : IComponentData
     /// <summary>
     /// Key for the entity to be spawned.
     /// </summary>
-    public EntityReferenceKey spawnedEntityKey;
+    public EntityPrefabKey spawnedEntityKey;
     /// <summary>
     /// Remaining time before next spawn.
     /// </summary>

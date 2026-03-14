@@ -54,7 +54,7 @@ class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
 
         //Sort items for binary search optimization
         BuildingDataSO[] sortedBuildings = authoring.buildingRegistrySO.buildingDataSOList
-            .OrderBy((BuildingDataSO b) => b.buildingKey)
+            .OrderBy((BuildingDataSO so) => so.buildingKey)
             .ToArray();
 
 
