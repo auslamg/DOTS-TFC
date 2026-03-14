@@ -121,7 +121,6 @@ public class BuildingTrainerUI : MonoBehaviour
             }
             else
             {
-                Debug.Log("REMOVED UNIT BUTTON");
                 child.gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
                 Destroy(child.gameObject);
             }
@@ -132,7 +131,6 @@ public class BuildingTrainerUI : MonoBehaviour
 
         foreach (TrainableEntry queuedUnit in trainableRosterBuffer)
         {
-            Debug.Log("FOUND UNIT BUTTON");
             Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingButtonContainer);
             UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
 

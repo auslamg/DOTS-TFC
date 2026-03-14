@@ -31,10 +31,6 @@ public class TrainRosterSO : ScriptableObject
                 });
             }
         }
-        foreach (var item in unitKeySet)
-        {
-            Debug.Log($"Roster key: {item.name}");
-        }
     }
 
     private bool IsVerified()

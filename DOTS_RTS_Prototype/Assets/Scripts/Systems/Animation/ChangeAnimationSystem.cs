@@ -46,8 +46,6 @@ public partial struct ChangeAnimationJob : IJobEntity
         // Skip if current animation is busy
         if (currentIsBusy)
         {
-            Debug.Log("Changed animation busy");
-
             return;
         }
 

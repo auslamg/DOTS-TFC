@@ -4,12 +4,10 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Physics;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine.EventSystems;
+using Collider = Unity.Physics.Collider;
+using SphereCollider = Unity.Physics.SphereCollider;
 
 public class UnitSelectionManager : MonoBehaviour
 {
@@ -25,6 +23,10 @@ public class UnitSelectionManager : MonoBehaviour
     private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
 
 
+    [Header("SphereCast parameters")]
+    [SerializeField] private float sphereCastColliderRadius = 1.5f;
+
+
     [Header("Line formation parameters")]
     [SerializeField] private float unitOffset = 1.6f;
 
@@ -32,7 +34,7 @@ public class UnitSelectionManager : MonoBehaviour
     [SerializeField] private float ringOffset = 1.6f;
     [SerializeField] private int centerUnits = 3;
     [SerializeField] private int unitsPerRing = 3;
-    
+
 
 
     /// <summary>
@@ -124,7 +126,7 @@ public class UnitSelectionManager : MonoBehaviour
             //TODO: Extract into SelectSingle() method
             else
             {
-                Entity hitEntity = ClickRayCastForEntity(entityManager);
+                Entity hitEntity = ClickSphereCastForEntity(entityManager);
                 if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
                 {
                     //An entity was hit
@@ -156,10 +158,13 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (isAttackingAnEntity)
             {
+                Debug.Log("Setting attack");
                 SetTargetOnSelectedUnits(entityManager, hitEntity);
             }
             else
             {
+                Debug.Log("Setting destination");
+                Debug.Log($"Hit Entity: {hitEntity}");
                 SetDestinationOnSelectedUnits(entityManager);
             }
             SetRallyPositionOffset(entityManager);
@@ -234,6 +239,7 @@ public class UnitSelectionManager : MonoBehaviour
     private void SetDestinationOnSelectedUnits(EntityManager entityManager)
     {
         Vector3 targetPosition = mouseWorldPosition;
+        targetPosition.y = 0f;
 
         //Query all entities with the UnitMover and Selected components to set their target
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
@@ -281,12 +287,74 @@ public class UnitSelectionManager : MonoBehaviour
         query.CopyFromComponentDataArray(manualTargetArray); //Remove when implementing single-entity instructions
     }
 
+    /// <summary>
+    /// Retrieves a clicked-on Entity in the scene (if any) through a SphereCollider cast.
+    /// </summary>
+    private unsafe Entity ClickSphereCastForEntity(EntityManager entityManager)
+    {
+        CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
+
+        UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        float3 start = cameraRay.GetPoint(0f);
+        float3 end = cameraRay.GetPoint(5000f);
+
+        float radius = sphereCastColliderRadius;
+
+        SphereGeometry sphereGeometry = new SphereGeometry
+        {
+            Center = float3.zero,
+            Radius = radius
+        };
+
+        CollisionFilter filter = new CollisionFilter
+        {
+            BelongsTo = ~0u,
+            CollidesWith = 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
+            GroupIndex = 0
+        };
+
+        BlobAssetReference<Collider> sphereCollider = SphereCollider.Create(sphereGeometry, filter);
+
+        ColliderCastInput input = new ColliderCastInput
+        {
+            Collider = (Collider*)sphereCollider.GetUnsafePtr(),
+            Orientation = quaternion.identity,
+            Start = start,
+            End = end
+        };
+
+        if (collisionWorld.CastCollider(input, out ColliderCastHit hit))
+        {
+            Entity hitEntity = hit.Entity;
+
+            if (entityManager.Exists(hitEntity) &&
+                entityManager.HasComponent<LocalTransform>(hitEntity))
+            {
+                if (!entityManager.HasComponent<PhysicsCollider>(hitEntity))
+                    return Entity.Null;
+
+                if (entityManager.HasComponent<Health>(hitEntity))
+                {
+                    Health hitHealth = entityManager.GetComponentData<Health>(hitEntity);
+                    if (hitHealth.currentHealth <= 0)
+                        return Entity.Null;
+                }
+
+                sphereCollider.Dispose();
+                return hitEntity;
+            }
+        }
+
+        sphereCollider.Dispose();
+        return Entity.Null;
+    }
+
 
 
     /// <summary>
-    /// Retrieves a clicked-on Entity in the scene Collision (if any).
+    /// Retrieves a clicked-on Entity in the scene (if any) through a Ray cast.
     /// </summary>
-    // IDEA: Either convert to SphereCast or add a secondary larger collider used exclusively for selection
     private Entity ClickRayCastForEntity(EntityManager entityManager)
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
@@ -312,6 +380,21 @@ public class UnitSelectionManager : MonoBehaviour
             if (entityManager.Exists(hitEntity) &&
                 entityManager.HasComponent<LocalTransform>(hitEntity))
             {
+                // CollisionWorld can be one rebuild behind; ignore stale hits.
+                if (!entityManager.HasComponent<PhysicsCollider>(hitEntity))
+                {
+                    return Entity.Null;
+                }
+
+                if (entityManager.HasComponent<Health>(hitEntity))
+                {
+                    Health hitHealth = entityManager.GetComponentData<Health>(hitEntity);
+                    if (hitHealth.currentHealth <= 0)
+                    {
+                        return Entity.Null;
+                    }
+                }
+
                 return hitEntity;
             }
         }

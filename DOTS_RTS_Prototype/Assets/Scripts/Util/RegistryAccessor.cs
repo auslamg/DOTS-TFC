@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Utility class for accessing ScripableObject registry entries.
 /// </summary>
+[BurstCompile]
 public static class RegistryAccessor
 {
     /// <summary>
@@ -17,19 +18,6 @@ public static class RegistryAccessor
     in AnimationKey animationKey)
     {
         AnimationKey searchKey = animationKey;
-        if (animationKey.name == "Orc_Walk" || animationKey.name == "Orc_Idle")
-        {
-            Debug.Log("ORC SEARCHED");
-        }
-        if (animationKey.name == "Soldier_Shoot")
-        {
-            Debug.Log("SOLDIER SEARCHED");
-        }
-
-        if (searchKey.name == "")
-        {
-            searchKey.name = "None";
-        }
 
         ref BlobArray<AnimationData> animationDataArray = ref animationDataBlobArrayRef.Value;
 
@@ -46,10 +34,6 @@ public static class RegistryAccessor
             //Element found
             if (comparisonResult == 0)
             {
-                if (animationKey.name == "Orc_Walk" || animationKey.name == "Orc_Idle")
-                {
-                    Debug.Log("ORC RETRIEVED");
-                }
                 return ref animationDataArray[middleIndex];
             }
 
