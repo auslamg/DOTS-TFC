@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using System.Linq;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,9 +17,7 @@ using UnityEditor;
 /// </remarks>
 class EntityPrefabsRegistryAuthoring : MonoBehaviour
 {
-    public GameObject shootLightPrefabGameObject;
-
-    public GameObject[] gameObjectPrefabs;
+    public PrefabRegistrySO prefabRegistrySO;
 
     public static EntityPrefabsRegistryAuthoring Instance { get; private set; }
 
@@ -54,15 +54,20 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        //Smart initizalize to avoid null reference exceptions in case the user forgets to set the array in the inspector. 
-        GameObject[] prefabsArray = authoring.gameObjectPrefabs ?? Array.Empty<GameObject>();
-        //Sort items for binary search optimization.
-        Array.Sort(prefabsArray, (a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
+        if (authoring.prefabRegistrySO.VerifyConstruction())
+        {
+            Debug.Log($"Baking prefab entries into entity references: {authoring.prefabRegistrySO.entityReferenceKeySet.Count}");
+        }
+
+        //Sort items for binary search optimization
+        GameObject[] prefabsArray = authoring.prefabRegistrySO.prefabGOs
+            .OrderBy((GameObject go) => go.name)
+            .ToArray();
 
         //Ensure prefab names are unique to avoid issues with the registry.
         HashSet<string> usedPrefabNames = new HashSet<string>(StringComparer.Ordinal);
 
-        DynamicBuffer<EntityReference> entityRefsBuffer = AddBuffer<EntityReference>(entity);
+        DynamicBuffer<EntityPrefab> entityRefsBuffer = AddBuffer<EntityPrefab>(entity);
         entityRefsBuffer.EnsureCapacity(prefabsArray.Length);
 
         //Add each prefab in the serialized list to the buffer.
@@ -83,11 +88,13 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
                 continue;
             }
 
+            Debug.Log($"EntitiesReferencesBaker: Added Entity Prefab '{entityPrefab.name}' .");
+
             // Add prefab reference to buffer
             Entity prefabEntity = GetPrefabEntity(entityPrefab);
-            entityRefsBuffer.Add(new EntityReference
+            entityRefsBuffer.Add(new EntityPrefab
             {
-                entityRefKey = new EntityReferenceKey
+                entityRefKey = new EntityPrefabKey
                 {
                     name = entityPrefab.name,
                 },
@@ -97,7 +104,7 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 
         AddComponent(entity, new EntityPrefabsRegistry
         {
-            shootLightPrefabEntity = GetPrefabEntity(authoring.shootLightPrefabGameObject),
+            holder = 1
         });
     }
 }
@@ -111,30 +118,30 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 /// </remarks>
 public struct EntityPrefabsRegistry : IComponentData
 {
-    public Entity shootLightPrefabEntity;
+    public int holder;
 }
 
-public struct EntityReference : IBufferElementData
+public struct EntityPrefab : IBufferElementData
 {
-    public EntityReferenceKey entityRefKey;
+    public EntityPrefabKey entityRefKey;
     public Entity prefabEntity;
 }
 
 /// <summary>
-/// Unique identifier for a <see cref="EntityReference"/> struct, obtained from the prefab name.
+/// Unique identifier for a <see cref="EntityPrefab"/> struct, obtained from the prefab name.
 /// </summary>
-public struct EntityReferenceKey : IEquatable<EntityReferenceKey>, IComparable<EntityReferenceKey>, IComparable<IEntityPrefabMappable>
+public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityPrefabKey>, IComparable<IEntityPrefabMappable>
 {
     public FixedString64Bytes name;
-    public bool Equals(EntityReferenceKey other)
+    public bool Equals(EntityPrefabKey other)
     {
         return name.Equals(other.name);
     }
     public override bool Equals(object obj)
     {
-        return obj is EntityReferenceKey other && Equals(other);
+        return obj is EntityPrefabKey other && Equals(other);
     }
-    public int CompareTo(EntityReferenceKey other)
+    public int CompareTo(EntityPrefabKey other)
     {
         int cmp = name.CompareTo(other.name);
         return cmp;
@@ -156,8 +163,8 @@ public struct EntityReferenceKey : IEquatable<EntityReferenceKey>, IComparable<E
         }
     }
 
-    public static bool operator ==(EntityReferenceKey left, EntityReferenceKey right) => left.Equals(right);
-    public static bool operator !=(EntityReferenceKey left, EntityReferenceKey right) => !left.Equals(right);
+    public static bool operator ==(EntityPrefabKey left, EntityPrefabKey right) => left.Equals(right);
+    public static bool operator !=(EntityPrefabKey left, EntityPrefabKey right) => !left.Equals(right);
     public override string ToString()
     {
         return $"{name}";

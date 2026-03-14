@@ -36,7 +36,7 @@ public partial struct ChangeAnimationJob : IJobEntity
         if (activeAnimation.activeAnimationKey != default)
         {
             ref AnimationData currentAnimData = 
-                ref RegistryAccessor.GetAnimationData(
+                ref DataLookup.GetAnimationData(
                     ref animationDataBlobArrayAssetReference,
                     activeAnimation.activeAnimationKey);
 
@@ -58,7 +58,7 @@ public partial struct ChangeAnimationJob : IJobEntity
 
             //Get and set first frame
             ref AnimationData newAnimData =
-                ref RegistryAccessor.GetAnimationData(
+                ref DataLookup.GetAnimationData(
                     ref animationDataBlobArrayAssetReference,
                     activeAnimation.activeAnimationKey);
 

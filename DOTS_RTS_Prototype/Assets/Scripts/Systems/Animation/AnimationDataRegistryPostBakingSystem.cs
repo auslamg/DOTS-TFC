@@ -49,7 +49,7 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
         // --- SORTED BLOB ARRAY LOGIC ---
         // Sort the AnimationDataSO list by AnimationKey
         AnimationDataSO[] sortedAnimations = animationRegistry.animationDataSOList
-            .OrderBy((AnimationDataSO a) => a.animationKey)
+            .OrderBy((AnimationDataSO so) => so.animationKey)
             .ToArray();
 
         // Build the BlobAssetReference that will store all animation data in a contiguous,

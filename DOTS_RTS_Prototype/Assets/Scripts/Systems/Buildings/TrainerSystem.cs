@@ -19,7 +19,7 @@ partial struct TrainerSystem : ISystem
     {
         UnitDataRegistry unitDataRegistry = SystemAPI.GetSingleton<UnitDataRegistry>();
         Entity entityReferencesRegistryEntity = SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>();
-        DynamicBuffer<EntityReference> entityReferencesBuffer = SystemAPI.GetBuffer<EntityReference>(entityReferencesRegistryEntity);
+        DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(entityReferencesRegistryEntity);
 
         EntityCommandBuffer ecb = SystemAPI
             .GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
@@ -70,7 +70,7 @@ partial struct TrainerSystem : ISystem
                 trainer.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;
 
                 //Retrieve UnitData from UnitKey
-                UnitData unitData = RegistryAccessor.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, trainer.ValueRO.activeUnitKey);
+                UnitData unitData = DataLookup.GetUnitData(ref unitDataRegistry.unitBlobArrayReference, trainer.ValueRO.activeUnitKey);
 
                 trainer.ValueRW.maxProgress = unitData.trainingTime;
             }
@@ -83,7 +83,7 @@ partial struct TrainerSystem : ISystem
 
                 // Retrieve UnitData from UnitKey
                 UnitKey unitKey = spawnUnitBuffer[0].unitKey;
-                EntityReferenceKey entityKey = new EntityReferenceKey
+                EntityPrefabKey entityKey = new EntityPrefabKey
                 {
                     name = unitKey.name
                 };
@@ -93,14 +93,7 @@ partial struct TrainerSystem : ISystem
                 trainer.ValueRW.onUnitQueueChange = true;
 
                 // Spawn unit
-                int unitRefIndex = RegistryAccessor.GetEntityReferenceIndex(ref entityReferencesBuffer, entityKey);
-                if (unitRefIndex < 0)
-                {
-                    Debug.LogError($"Cannot spawn unit '{unitKey.name}': no entity reference key found in registry.");
-                    continue;
-                }
-
-                Entity unitPrefab = entityReferencesBuffer[unitRefIndex].prefabEntity;
+                Entity unitPrefab = DataLookup.GetEntityPrefab(ref entityReferencesBuffer, entityKey);
 
                 if (!state.EntityManager.Exists(unitPrefab) ||
                     !state.EntityManager.HasComponent<Prefab>(unitPrefab))
