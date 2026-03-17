@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3675422134712643673, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: buildingKeyName
+      value: BarracksTrainer
+      objectReference: {fileID: 0}
     - target: {fileID: 4161056274434388319, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -114,7 +118,7 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 69522af904082294c80f1b6092aec535, type: 3}
     - target: {fileID: 8194535671723489288, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
       propertyPath: m_Name
-      value: BarracksTrainer Variant
+      value: BarracksTrainer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

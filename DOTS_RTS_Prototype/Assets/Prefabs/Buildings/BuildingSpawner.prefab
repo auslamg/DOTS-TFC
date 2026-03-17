@@ -14,7 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_Name
-      value: SpawnerBuilding Variant
+      value: BuildingSpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 5378865474685698317, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: buildingKeyName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5378865474685698317, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: buildingKeyType
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6045726449787784604, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: factionID

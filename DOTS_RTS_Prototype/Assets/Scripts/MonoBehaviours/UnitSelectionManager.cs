@@ -91,8 +91,6 @@ public class UnitSelectionManager : MonoBehaviour
                 entityManager.SetComponentData(entityArray[i], selected);
             }
 
-
-
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;

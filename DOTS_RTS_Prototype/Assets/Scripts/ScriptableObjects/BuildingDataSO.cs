@@ -6,6 +6,8 @@ using UnityEngine;
 public class BuildingDataSO : ScriptableObject
 {
     public BuildingType buildingType;
+    public GameObject prefabGO;
+    public float minDistanceToSimilar;
 
     [SerializeField, HideInInspector]
     private BuildingKey cachedKey;

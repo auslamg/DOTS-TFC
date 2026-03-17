@@ -23,7 +23,8 @@ class BuildingDataSOHolderBaker : Baker<BuildingDataSOHolderAuthoring>
         {
             buildingKey = new BuildingKey{
                 name = authoring.buildingKeyName
-            }
+            },
+            buildingKeyType = authoring.buildingKeyType
         });
     }
 
@@ -35,4 +36,6 @@ class BuildingDataSOHolderBaker : Baker<BuildingDataSOHolderAuthoring>
 public struct BuildingDataSOHolder : IComponentData
 {
     public BuildingKey buildingKey;
+    public BuildingType buildingKeyType;
+
 }

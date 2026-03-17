@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2690996201501620553, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: buildingKeyName
+      value: GuardTower
+      objectReference: {fileID: 0}
     - target: {fileID: 3451697533046765647, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_LocalScale.x
       value: 1

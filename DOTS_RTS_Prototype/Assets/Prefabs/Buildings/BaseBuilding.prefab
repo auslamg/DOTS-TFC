@@ -114,8 +114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6dbb5287eaf6f74a91124ae49cf2bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSOHolderAuthoring
-  buildingKeyName: EnemySpawner
-  buildingKeyType: 3
+  buildingKeyName: 
+  buildingKeyType: 0
 --- !u!114 &6859261061538670796
 MonoBehaviour:
   m_ObjectHideFlags: 0

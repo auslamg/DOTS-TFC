@@ -40,6 +40,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2093386676417124486, guid: d17d200263b01324fa0356adfddb3266, type: 3}
+      propertyPath: buildingKeyName
+      value: OfficeBigSpawner
+      objectReference: {fileID: 0}
     - target: {fileID: 2682782512832782552, guid: d17d200263b01324fa0356adfddb3266, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.70633
@@ -86,7 +90,7 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 67de39e608656494685cc08c4d424f84, type: 3}
     - target: {fileID: 6896236044339843287, guid: d17d200263b01324fa0356adfddb3266, type: 3}
       propertyPath: m_Name
-      value: OfficeBigSpawner Variant
+      value: OfficeBigSpawner
       objectReference: {fileID: 0}
     - target: {fileID: 8442284967757188572, guid: d17d200263b01324fa0356adfddb3266, type: 3}
       propertyPath: m_Size.x

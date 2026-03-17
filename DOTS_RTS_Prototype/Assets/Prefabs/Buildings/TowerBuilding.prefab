@@ -43,6 +43,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TowerBuilding
       objectReference: {fileID: 0}
+    - target: {fileID: 5378865474685698317, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: buildingKeyType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9
