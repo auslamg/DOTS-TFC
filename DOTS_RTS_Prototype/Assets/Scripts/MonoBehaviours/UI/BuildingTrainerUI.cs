@@ -15,9 +15,9 @@ public class BuildingTrainerUI : MonoBehaviour
     [SerializeField] private Button trainingButtonTemplate;
     [SerializeField] private Sprite placeholderTrainButtonImage;
     [Header("Production queue")]
-    [SerializeField] private Image progressBarImage;
     [SerializeField] private RectTransform productionQueueContainer;
-    [SerializeField] private RectTransform productionQueueTemplate;
+    [SerializeField] private Button productionQueueButtonTemplate;
+    [SerializeField] private Image progressBarImage;
     //REVIEW: May use two different images. Implement if so
     /* [SerializeField] private Sprite placeholderProductionQueueImage; */
 
@@ -37,7 +37,7 @@ public class BuildingTrainerUI : MonoBehaviour
             entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
         }); */
         trainingButtonTemplate.gameObject.SetActive(false);
-        productionQueueTemplate.gameObject.SetActive(false);
+        productionQueueButtonTemplate.gameObject.SetActive(false);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -76,7 +76,6 @@ public class BuildingTrainerUI : MonoBehaviour
         {
             trainerEntity = entityArray[0];
             Show();
-            UpdateProgressBarVisual();
             UpdateBuildingUI();
         }
         else
@@ -107,6 +106,7 @@ public class BuildingTrainerUI : MonoBehaviour
 
     void UpdateBuildingUI()
     {
+        UpdateProgressBarVisual();
         UpdateUnitRosterButtons();
         UpdateUnitQueueVisual();
     }
@@ -140,7 +140,6 @@ public class BuildingTrainerUI : MonoBehaviour
 
             unitTrainButton.gameObject.SetActive(true);
         }
-
     }
 
     private void AddTrainingButtonListener(TrainableEntry queuedUnit, Button unitTrainButton)
@@ -159,29 +158,76 @@ public class BuildingTrainerUI : MonoBehaviour
 
     private void UpdateUnitQueueVisual()
     {
+        Debug.Log($"Running foreach on UpdateUnitQueueVisual()");
         foreach (Transform child in productionQueueContainer)
         {
-            if (child == productionQueueTemplate)
+            if (child.gameObject == productionQueueButtonTemplate.gameObject)
             {
                 continue;
             }
             else
             {
+                child.gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
                 Destroy(child.gameObject);
             }
         }
+        Debug.Log($"Finished foreach on UpdateUnitQueueVisual()");
 
         DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
                 entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: true);
 
-        foreach (QueuedUnitBuffer queuedUnit in trainerQueueBuffer)
+        for (int queueIndex = 0; queueIndex < trainerQueueBuffer.Length; queueIndex++)
         {
-            RectTransform unitQueueRectTransform = Instantiate(productionQueueTemplate, parent: productionQueueContainer);
+            QueuedUnitBuffer queuedUnit = trainerQueueBuffer[queueIndex];
+            Button unitQueueButton = Instantiate(productionQueueButtonTemplate, parent: productionQueueContainer);
             UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
 
-            SetUnitCard(unitDataSO, unitQueueRectTransform.gameObject);
-            unitQueueRectTransform.gameObject.SetActive(true);
+            SetUnitCard(unitDataSO, unitQueueButton.gameObject);
+
+            AddQueueButtonListener(queueIndex, unitQueueButton);
+
+            unitQueueButton.gameObject.SetActive(true);
         }
+    }
+
+    private void AddQueueButtonListener(
+        int queueIndex,
+        Button unitQueueButton)
+    {
+        unitQueueButton.onClick.RemoveAllListeners();
+        unitQueueButton.onClick.AddListener(() =>
+        {
+            if (trainerEntity == Entity.Null || !entityManager.Exists(trainerEntity))
+            {
+                return;
+            }
+
+            DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
+                entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: false);
+
+            //Removes unit from buffer
+            if (queueIndex >= 0 && queueIndex < trainerQueueBuffer.Length)
+            {
+                trainerQueueBuffer.RemoveAt(queueIndex);
+            }
+
+            //Reset progress if the unit currently training is cancelled
+            if (queueIndex == 0)
+            {
+                SetProgressToZero();
+            }
+
+            UpdateProgressBarVisual();
+            UpdateUnitQueueVisual();
+        });
+    }
+
+    private void SetProgressToZero()
+    {
+        Trainer trainer = entityManager.GetComponentData<Trainer>(trainerEntity);
+
+        trainer.currentProgress = 0;
+        entityManager.SetComponentData<Trainer>(trainerEntity, trainer);
     }
 
     private void SetUnitCard(UnitDataSO unitDataSO, GameObject uiElement)
