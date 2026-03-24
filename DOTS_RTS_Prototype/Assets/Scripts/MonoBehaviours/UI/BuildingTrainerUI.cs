@@ -48,7 +48,7 @@ public class BuildingTrainerUI : MonoBehaviour
         UnitSelectionManager.Instance.OnSelectionChange += UnitSelectionManager_OnSelectionChange;
         DOTSEventManager.Instance.OnTrainerUnitQueueChange += DOTSEventManager_OnUnitQueueChange;
 
-        Hide();
+        SetVisible(false);
     }
 
     private void DOTSEventManager_OnUnitQueueChange(object sender, EventArgs e)
@@ -75,13 +75,13 @@ public class BuildingTrainerUI : MonoBehaviour
         if (entityArray.Length > 0)
         {
             trainerEntity = entityArray[0];
-            Show();
+            SetVisible(true);
             UpdateBuildingUI();
         }
         else
         {
             trainerEntity = Entity.Null;
-            Hide();
+            SetVisible(false);
         }
     }
 
@@ -244,15 +244,8 @@ public class BuildingTrainerUI : MonoBehaviour
         }
     }
 
-    private void Show()
+    private void SetVisible(bool value)
     {
-        gameObject.SetActive(true);
+        gameObject.SetActive(value);
     }
-
-    private void Hide()
-    {
-        gameObject.SetActive(false);
-    }
-
-
 }

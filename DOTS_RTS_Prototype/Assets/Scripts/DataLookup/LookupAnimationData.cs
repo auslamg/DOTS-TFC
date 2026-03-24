@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Provides lookup utilities for retrieving <see cref="AnimationData"/> records by key.
 /// </summary>
+[BurstCompile]
 public class LookupAnimationData
 {
     /// <summary>

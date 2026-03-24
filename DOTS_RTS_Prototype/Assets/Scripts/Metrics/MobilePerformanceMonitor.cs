@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class MobilePerformanceMonitor : MonoBehaviour
 {
+    [SerializeField] int fontSize = 24;
+
     // FPS tracking
     float fps;
     float avgFps;
@@ -31,7 +33,6 @@ public class MobilePerformanceMonitor : MonoBehaviour
             "Job System Active Threads"
         );
 
-        PrintDeviceSpecs();
     }
 
     void Update()
@@ -64,45 +65,37 @@ public class MobilePerformanceMonitor : MonoBehaviour
             ? (int)jobThreadRecorder.LastValue
             : 0;
 
-        GUILayout.BeginArea(new Rect(20, 20, 400, 400));
+        GUIStyle style = new GUIStyle(GUI.skin.label);
+        style.fontSize = fontSize;
 
-        GUILayout.Label($"FPS: {fps:F1}");
-        GUILayout.Label($"Avg FPS (10s): {avgFps:F1}");
+        GUILayout.BeginArea(new Rect(20, 20, 800, 800));
+
+        GUILayout.Label($"FPS: {fps:F1}", style);
+        GUILayout.Label($"Avg FPS (10s): {avgFps:F1}", style);
 
         GUILayout.Space(10);
 
-        GUILayout.Label($"Job Threads: {activeThreads}/{maxWorkerThreads}");
+        GUILayout.Label($"Job Threads: {activeThreads}/{maxWorkerThreads}", style);
 
         GUILayout.Space(10);
 
-        GUILayout.Label($"CPU: {SystemInfo.processorType}");
-        GUILayout.Label($"CPU Cores: {SystemInfo.processorCount}");
+        GUILayout.Label($"CPU: {SystemInfo.processorType}", style);
+        GUILayout.Label($"CPU Cores: {SystemInfo.processorCount}", style);
 
         GUILayout.Space(5);
 
-        GUILayout.Label($"GPU: {SystemInfo.graphicsDeviceName}");
-        GUILayout.Label($"GPU Memory: {SystemInfo.graphicsMemorySize} MB");
+        GUILayout.Label($"GPU: {SystemInfo.graphicsDeviceName}", style);
+        GUILayout.Label($"GPU Memory: {SystemInfo.graphicsMemorySize} MB", style);
 
         GUILayout.Space(5);
 
-        GUILayout.Label($"GPU Frame Time: {gpuFrameTime:F2} ms");
+        GUILayout.Label($"GPU Frame Time: {gpuFrameTime:F2} ms", style);
 
         GUILayout.Space(10);
 
-        GUILayout.Label($"Device: {SystemInfo.deviceModel}");
+        GUILayout.Label($"Device: {SystemInfo.deviceModel}", style);
 
         GUILayout.EndArea();
-    }
-
-    void PrintDeviceSpecs()
-    {
-        Debug.Log("=== DEVICE SPECS ===");
-        Debug.Log($"Device Model: {SystemInfo.deviceModel}");
-        Debug.Log($"CPU: {SystemInfo.processorType}");
-        Debug.Log($"CPU Cores: {SystemInfo.processorCount}");
-        Debug.Log($"GPU: {SystemInfo.graphicsDeviceName}");
-        Debug.Log($"GPU VRAM: {SystemInfo.graphicsMemorySize} MB");
-        Debug.Log($"Worker Threads: {maxWorkerThreads}");
     }
 
     void OnDisable()

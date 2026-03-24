@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
@@ -20,11 +21,33 @@ public class BuildingPlacementManager : MonoBehaviour
     [SerializeField]
     private BuildingDataSO buildingDataSO;
 
-    /// <summary>
-    /// Serialized identifier used to look up the ECS prefab for the selected building.
-    /// </summary>
+    public BuildingDataSO ActiveBuildingDataSO
+    {
+        get => buildingDataSO;
+        set
+        {
+            buildingDataSO = value;
+
+            if (ghostPrefab != null)
+            {
+                Destroy(ghostPrefab.gameObject);
+            }
+
+            if (!buildingDataSO.IsNone())
+            {
+                ghostPrefab = Instantiate(buildingDataSO.buildingGhostPrefab);
+                foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())
+                {
+                    mesh.material = GameAssets.Instance.ghostMaterial;
+                }
+            }
+
+            OnActiveBuildingDataChange?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     [SerializeField]
-    private string buildingKey;
+    private GameObject ghostPrefab;
 
     /// <summary>
     /// Multiplier applied to the building collider extents when checking for overlaps.
@@ -34,14 +57,7 @@ public class BuildingPlacementManager : MonoBehaviour
     [Range(1, 3)]
     private float placingExtentsOffset = 1.1f;
 
-
-    /// <summary>
-    /// Converts the serialized building key string into the struct format used by ECS lookups.
-    /// </summary>
-    EntityPrefabKey buildingKeyStruct => new EntityPrefabKey
-    {
-        name = this.buildingKey
-    };
+    public event EventHandler OnActiveBuildingDataChange;
 
     /// <summary>
     /// Gets the current mouse position projected into world space.
@@ -75,11 +91,24 @@ public class BuildingPlacementManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (ghostPrefab != null)
+        {
+            ghostPrefab.transform.position = mouseWorldPosition;
+        }
         // Ignore placement clicks while the cursor is interacting with UI.
         if (EventSystem.current.IsPointerOverGameObject())
         {
+
             return;
         }
+
+        if (ActiveBuildingDataSO.IsNone())
+        {
+
+            return;
+        }
+
+
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -88,20 +117,27 @@ public class BuildingPlacementManager : MonoBehaviour
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
                 // Create the prefab lookup key expected by the ECS data layer.
+                // Retrieve key from active buildingData
                 EntityPrefabKey buildingKey = new EntityPrefabKey
                 {
-                    name = this.buildingKey
+                    name = ActiveBuildingDataSO.name
                 };
 
-                Debug.Log($"Placing buildings: {buildingKey.name}");
+                /* Debug.Log($"Placing buildings: {buildingKey.name}"); */
 
                 Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
                 entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(mouseWorldPosition));
             }
             else
             {
-                Debug.Log($"Cannot place building: {buildingKey} at {mouseWorldPosition}");
+                /* Debug.Log($"Cannot place building: {buildingKey} at {mouseWorldPosition}"); */
             }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            //On left click set no active building
+            ActiveBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
         }
 
     }
@@ -116,6 +152,10 @@ public class BuildingPlacementManager : MonoBehaviour
     /// </returns>
     private bool CanPlaceBuilding()
     {
+        if (buildingDataSO.IsNone())
+        {
+            return false;
+        }
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
@@ -128,7 +168,6 @@ public class BuildingPlacementManager : MonoBehaviour
             CollidesWith = 1u << GameAssets.BUILDINGS_LAYER,
             GroupIndex = 0
         };
-
 
         BoxCollider boxCollider = buildingDataSO.prefabGO.GetComponent<BoxCollider>();
         float colliderOffsetMultiplier = placingExtentsOffset >= 1 ? placingExtentsOffset : 1;

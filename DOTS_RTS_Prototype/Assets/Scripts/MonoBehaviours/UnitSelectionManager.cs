@@ -61,13 +61,17 @@ public class UnitSelectionManager : MonoBehaviour
     /// </summary>
     void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        if (!BuildingPlacementManager.Instance.ActiveBuildingDataSO.IsNone())
+        {
+            return;
+        }
         //TODO: This disables selection if ANY GameObject is in front of the mouse. Refactor to only disable if pointer is over UI.
         if (Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current.IsPointerOverGameObject())
-            {
-                return;
-            }
             selectionStartMousePosition = Input.mousePosition;
             OnSelectionAreaStart?.Invoke(this, EventArgs.Empty);
         }

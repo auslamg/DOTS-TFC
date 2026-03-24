@@ -10,7 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
-  m_Name: EnemySpawner
+  m_Name: BarracksTrainer
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingName: EnemySpawner
-  buildingType: 3
+  buildingType: 2
+  prefabGO: {fileID: 1132093315813226233, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
+  minDistanceToSimilar: 0
+  isBuildable: 1
+  imageCard: {fileID: 21300000, guid: 52e75afc67cb28d49a06a0a1fc191cb5, type: 3}
+  buildingGhostPrefab: {fileID: 0}

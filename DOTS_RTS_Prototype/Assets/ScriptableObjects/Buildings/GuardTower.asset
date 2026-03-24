@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
   m_Name: GuardTower
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingName: Tower
   buildingType: 1
+  prefabGO: {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
+  minDistanceToSimilar: 10
+  isBuildable: 1
+  imageCard: {fileID: 21300000, guid: 251009f30697ae940904ab5c27e31833, type: 3}
+  buildingGhostPrefab: {fileID: 0}

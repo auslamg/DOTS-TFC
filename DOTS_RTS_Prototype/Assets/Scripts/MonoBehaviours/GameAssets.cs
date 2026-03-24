@@ -2,8 +2,16 @@ using UnityEngine;
 
 public class GameAssets : MonoBehaviour
 {
+    [Header("Physics layers")]
     public const int UNITS_LAYER = 6;
     public const int BUILDINGS_LAYER = 7;
+
+    [Header("Registries")]
+    public UnitDataRegistrySO unitRegistrySO;
+    public BuildingDataRegistrySO buildingDataRegistrySO;
+
+    [Header("Materials")]
+    public Material ghostMaterial;
 
     public static GameAssets Instance { get; private set; }
 
@@ -24,6 +32,5 @@ public class GameAssets : MonoBehaviour
             Destroy(this);
         }
     }
-
-    public UnitDataRegistrySO unitRegistrySO;
+    
 }

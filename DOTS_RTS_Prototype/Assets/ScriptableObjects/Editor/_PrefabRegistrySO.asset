@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: _PrefabRegistrySO
   m_EditorClassIdentifier: Assembly-CSharp::PrefabRegistrySO
   prefabGOs:
+  - {fileID: 1132093315813226233, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
   - {fileID: 454266321647419357, guid: 56827c1c68aa95d4f9411a79bd768b24, type: 3}
+  - {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
   - {fileID: 4211631314389968475, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
   - {fileID: 8260496261795234366, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
   - {fileID: 5485309095185869559, guid: 2e0724fa45e84774d83a6d59348e18cb, type: 3}
   - {fileID: 8260496261795234366, guid: 3da17acd04463f442863a5ba8258ff6c, type: 3}
-  - {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}

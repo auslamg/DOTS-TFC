@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
   m_Name: None
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingName: 
   buildingType: 0
+  prefabGO: {fileID: 0}
+  minDistanceToSimilar: 0
+  isBuildable: 1
+  imageCard: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  buildingGhostPrefab: {fileID: 0}

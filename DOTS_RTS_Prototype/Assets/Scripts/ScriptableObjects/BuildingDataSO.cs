@@ -8,6 +8,9 @@ public class BuildingDataSO : ScriptableObject
     public BuildingType buildingType;
     public GameObject prefabGO;
     public float minDistanceToSimilar;
+    public bool isBuildable;
+    public Sprite imageCard;
+    public GameObject buildingGhostPrefab;
 
     [SerializeField, HideInInspector]
     private BuildingKey cachedKey;
@@ -19,6 +22,11 @@ public class BuildingDataSO : ScriptableObject
         {
             name = this.name
         };
+    }
+
+    public bool IsNone()
+    {
+        return this.buildingType == BuildingType.None;
     }
 }
 

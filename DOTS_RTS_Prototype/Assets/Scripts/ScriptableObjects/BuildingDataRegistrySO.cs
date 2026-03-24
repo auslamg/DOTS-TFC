@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Buildings/BuildingDataRegistrySO")]
 public class BuildingDataRegistrySO : ScriptableObject
 {
+    [HideInInspector] public BuildingDataSO none;
     [SerializeField] public List<BuildingDataSO> buildingDataSOList;
     private Dictionary<BuildingKey, BuildingDataSO> buildingDataDictionary;
 
@@ -23,6 +24,10 @@ public class BuildingDataRegistrySO : ScriptableObject
             {
                 Debug.LogWarning($"Duplicate BuildingKey found: {so.buildingKey}", this);
                 continue;
+            }
+            if (so.buildingType == BuildingType.None && none == null)
+            {
+                none = so;
             }
 
             buildingDataDictionary.Add(so.buildingKey, so);

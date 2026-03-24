@@ -59,6 +59,9 @@ Aesthetic/UX addons
     - OnTargetSelect: cross-swords / crosshair
     - OnKillUnit: skull / crossbones
 - UI: Change selected gizmo for buildings
+- UI: Add a UIStateMachine / UI manager to switch out different UIs
+- UI: Add a SelectedUI to display selected elements
+- UI: Building ghosts should display valid placement in real time by changing colors
 
 Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
