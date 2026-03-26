@@ -17,4 +17,4 @@ MonoBehaviour:
   minDistanceToSimilar: 0
   isBuildable: 0
   imageCard: {fileID: 0}
-  buildingGhostPrefab: {fileID: 0}
+  buildingGhostPrefab: {fileID: 2196663088357963898, guid: 9abfbe4aa047f4a4d84f98c736fc89ed, type: 3}

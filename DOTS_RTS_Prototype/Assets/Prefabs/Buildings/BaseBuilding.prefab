@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6859261061538670796}
   - component: {fileID: 1463579074596513361}
   - component: {fileID: 5429281740077753419}
+  - component: {fileID: -1655735249098964032}
   m_Layer: 7
   m_Name: BaseBuilding
   m_TagString: Untagged
@@ -157,6 +158,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SelectedAuthoring
   selectedGizmoGameObject: {fileID: 8345116682796728310}
   displayScale: 6
+--- !u!114 &-1655735249098964032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584623067842398556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b9eb47c043913c41948c31c856cca63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverOnGroupDeathAuthoring
+  groupTags:
+  - {fileID: 11400000, guid: 2305ef0aaa7eb31439a1f7820227db45, type: 2}
 --- !u!1 &1343468011627384270
 GameObject:
   m_ObjectHideFlags: 0

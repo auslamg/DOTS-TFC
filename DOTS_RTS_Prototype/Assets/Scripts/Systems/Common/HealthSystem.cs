@@ -13,15 +13,16 @@ partial struct HealthSystem : ISystem
         /* new EntityCommandBuffer(Allocator.Temp); */
 
         foreach ((
-            RefRO<Health> unitHealth,
+            RefRW<Health> health,
             Entity entity)
                 in SystemAPI.Query<
-                RefRO<Health>>().
+                RefRW<Health>>().
                 WithEntityAccess())
         {
-            if (unitHealth.ValueRO.currentHealth <= 0)
+            if (health.ValueRO.currentHealth <= 0)
             {
                 //Dead unit
+                health.ValueRW.onDeath = true;
                 entityCommandBuffer.DestroyEntity(entity);
 
                 //[Deprecated]

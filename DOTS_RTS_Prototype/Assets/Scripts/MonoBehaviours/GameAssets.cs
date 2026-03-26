@@ -11,7 +11,15 @@ public class GameAssets : MonoBehaviour
     public BuildingDataRegistrySO buildingDataRegistrySO;
 
     [Header("Materials")]
-    public Material ghostMaterial;
+    public Material validGhostMaterial;
+    public Material invalidGhostMaterial;
+
+
+    [Header("Faction IDs")]
+    public const int NONE_FACTION = 0;
+
+    public const int PLAYER_FACTION = 1;
+    public const int ENEMY_FACTION = 8;
 
     public static GameAssets Instance { get; private set; }
 

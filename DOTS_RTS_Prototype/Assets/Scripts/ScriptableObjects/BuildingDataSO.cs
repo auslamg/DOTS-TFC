@@ -78,5 +78,6 @@ public enum BuildingType
     Tower,
     Trainer,
     Spawner,
-    Production
+    Production,
+    Fort
 }

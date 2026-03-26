@@ -51,6 +51,7 @@ public partial struct ResetHealthEventsJob : IJobEntity
     public void Execute(ref Health health)
     {
         health.onHealthChanged = false;
+        health.onDeath = false;
     }
 }
 

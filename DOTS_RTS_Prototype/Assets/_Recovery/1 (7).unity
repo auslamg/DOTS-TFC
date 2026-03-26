@@ -233,24 +233,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6614d8300982b804dbc5247a60c05a52, type: 3}
---- !u!1 &402391840 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
-  m_PrefabInstance: {fileID: 2035960361}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &402391850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 402391840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adc1ef87776ed2e438cbac4f6f1ed95e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FortAuthoring
-  gameOverMessage: 
 --- !u!1001 &659237204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,10 +717,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 402391850}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
 --- !u!1001 &392956830959976357
 PrefabInstance:

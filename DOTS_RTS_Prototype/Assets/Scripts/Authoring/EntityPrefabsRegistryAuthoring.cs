@@ -88,8 +88,6 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
                 continue;
             }
 
-            Debug.Log($"EntitiesReferencesBaker: Added Entity Prefab '{entityPrefab.name}' .");
-
             // Add prefab reference to buffer
             Entity prefabEntity = GetPrefabEntity(entityPrefab);
             entityRefsBuffer.Add(new EntityPrefab

@@ -38,7 +38,7 @@ public class BuildingPlacementManager : MonoBehaviour
                 ghostPrefab = Instantiate(buildingDataSO.buildingGhostPrefab);
                 foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())
                 {
-                    mesh.material = GameAssets.Instance.ghostMaterial;
+                    mesh.material = GameAssets.Instance.validGhostMaterial;
                 }
             }
 

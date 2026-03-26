@@ -52,4 +52,5 @@ public struct Health : IComponentData
     /// Custom events are reset at the end of each frame in ResetEventSystem.
     /// </remarks>
     public bool onHealthChanged;
+    public bool onDeath;
 }

@@ -79,8 +79,8 @@ partial struct FindTargetSystem : ISystem
                                 //Valid target with valid faction
                                 Faction targetFaction = SystemAPI.GetComponent<Faction>(distanceHit.Entity);
                                 if (faction.ValueRO.factionID != targetFaction.factionID &&
-                                    faction.ValueRO.factionID != 0 &&
-                                    targetFaction.factionID != 0)
+                                    faction.ValueRO.factionID != GameAssets.NONE_FACTION &&
+                                    targetFaction.factionID != GameAssets.NONE_FACTION)
                                 {
                                     //Closest target logic
                                     if (closestTargetEntity == Entity.Null)
