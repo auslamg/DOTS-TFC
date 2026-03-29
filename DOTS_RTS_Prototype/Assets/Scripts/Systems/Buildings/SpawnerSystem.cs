@@ -7,8 +7,14 @@ using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Periodically spawns configured prefabs while enforcing nearby ally population caps.
+/// </summary>
 partial struct SpawnerSystem : ISystem
 {
+    /// <summary>
+    /// Requires prefab registry data before runtime spawning starts.
+    /// </summary>
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
@@ -16,6 +22,9 @@ partial struct SpawnerSystem : ISystem
     }
 
 
+    /// <summary>
+    /// Ticks spawn timers, scans local occupancy, and instantiates new units when allowed.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -38,7 +47,7 @@ partial struct SpawnerSystem : ISystem
                 RefRW<Spawner>>())
         {
             //IDEA: Refactor into corroutines
-            //Timer
+            // Spawn interval timer
             spawner.ValueRW.spawnPhaseTime -= SystemAPI.Time.DeltaTime;
             if (spawner.ValueRW.spawnPhaseTime <= 0)
             {

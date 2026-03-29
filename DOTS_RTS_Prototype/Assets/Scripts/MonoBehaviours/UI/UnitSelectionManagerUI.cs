@@ -1,12 +1,33 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Renders and updates the drag-selection rectangle used by <see cref="UnitSelectionManager"/>.
+/// </summary>
+/// <remarks>
+/// This component listens to selection start/end events, toggles rectangle visibility,
+/// and continuously updates anchored position/size while dragging.
+/// </remarks>
 public class UnitSelectionManagerUI : MonoBehaviour
 {
-    [SerializeField] private RectTransform selectionAreaRectTransform;
-    [SerializeField] private Canvas canvas;
+    /// <summary>
+    /// UI rectangle used to visualize the current selection area.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("RectTransform used to display the drag-selection rectangle.")]
+    private RectTransform selectionAreaRectTransform;
+
+    /// <summary>
+    /// Canvas used to convert world-independent selection rect values into UI space.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Canvas containing the selection rectangle, used for scale conversion.")]
+    private Canvas canvas;
 
 
+    /// <summary>
+    /// Subscribes to selection events and initializes rectangle as hidden.
+    /// </summary>
     void Start()
     {
         UnitSelectionManager.Instance.OnSelectionAreaStart += UnitSelectionManager_OnSelectionAreaStart;
@@ -15,6 +36,9 @@ public class UnitSelectionManagerUI : MonoBehaviour
         selectionAreaRectTransform.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Updates selection rectangle while it is visible.
+    /// </summary>
     void Update()
     {
         //Updates the visual constantly when active
@@ -27,6 +51,8 @@ public class UnitSelectionManagerUI : MonoBehaviour
     /// <summary>
     /// Event subscriber to OnSelectionAreaStart to show and update the visual on event Invoke.
     /// </summary>
+    /// <param name="sender">Unused event sender.</param>
+    /// <param name="e">Unused event payload.</param>
     private void UnitSelectionManager_OnSelectionAreaStart(object sender, EventArgs e)
     {
         selectionAreaRectTransform.gameObject.SetActive(true);
@@ -34,9 +60,11 @@ public class UnitSelectionManagerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Event subscriber to OnSelectionAreaStart to hide the visual on event Invoke.
-    /// Updating the visual is not neccesary since it isn't visible.
+    /// Event subscriber to OnSelectionAreaEnd to hide the visual on event invoke.
+    /// Updating the visual is not necessary since it is hidden.
     /// </summary>
+    /// <param name="sender">Unused event sender.</param>
+    /// <param name="e">Unused event payload.</param>
     private void UnitSelectionManager_OnSelectionAreaEnd(object sender, EventArgs e)
     {
         selectionAreaRectTransform.gameObject.SetActive(false);

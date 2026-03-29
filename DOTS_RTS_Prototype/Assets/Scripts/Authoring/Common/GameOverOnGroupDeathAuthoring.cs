@@ -8,6 +8,11 @@ using UnityEngine;
 /// </summary>
 public class GameOverOnGroupDeathAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Critical group tags this entity contributes to for group-based loss conditions.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Critical group tags used for group-based game-over conditions.")]
     public List<CriticalEntityGroupSO> groupTags = new List<CriticalEntityGroupSO>();
 }
 
@@ -53,10 +58,19 @@ class GameOverOnGroupDeathBaker : Baker<GameOverOnGroupDeathAuthoring>
 /// </summary>
 public struct GameOverOnGroupDeath : IComponentData, IEnableableComponent
 {
+    /// <summary>
+    /// Tracks whether this entity has already been registered in runtime loss-condition state.
+    /// </summary>
     public bool registered;
 }
 
+/// <summary>
+/// Buffer element storing one critical group tag used by group-death game over logic.
+/// </summary>
 public struct GameOverOnGroupDeathTag : IBufferElementData
 {
+    /// <summary>
+    /// Group name value.
+    /// </summary>
     public FixedString64Bytes value;
 }

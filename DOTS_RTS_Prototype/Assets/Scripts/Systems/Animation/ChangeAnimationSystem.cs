@@ -4,14 +4,23 @@ using Unity.Rendering;
 using UnityEngine;
 
 [UpdateBefore(typeof(ActiveAnimationSystem))]
+/// <summary>
+/// Commits requested animation state changes before frame progression runs.
+/// </summary>
 partial struct ChangeAnimationSystem : ISystem
 {
+    /// <summary>
+    /// Ensures the animation registry exists before animation changes are processed.
+    /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<AnimationDataRegistry>();
     }
 
+    /// <summary>
+    /// Schedules animation transition evaluation for entities with active animations.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -26,10 +35,16 @@ partial struct ChangeAnimationSystem : ISystem
 }
 
 [BurstCompile]
+/// <summary>
+/// Selects and applies a new clip when the next animation differs and current clip is interruptible.
+/// </summary>
 public partial struct ChangeAnimationJob : IJobEntity
 {
     public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;
 
+    /// <summary>
+    /// Resets playback state and writes the first frame mesh for the newly activated clip.
+    /// </summary>
     public void Execute(ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
         bool currentIsBusy = false;

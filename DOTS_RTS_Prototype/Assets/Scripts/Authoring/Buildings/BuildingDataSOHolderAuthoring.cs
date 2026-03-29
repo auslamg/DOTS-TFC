@@ -7,7 +7,17 @@ using UnityEngine;
 /// </summary>
 public class BuildingDataSOHolderAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Name portion of the <see cref="BuildingKey"/> used for lookup.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Name portion of the BuildingKey used for building data lookup.")]
     public string buildingKeyName;
+    /// <summary>
+    /// Building type metadata paired with <see cref="buildingKeyName"/>.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Building type metadata paired with the building key name.")]
     public BuildingType buildingKeyType;
 }
 
@@ -35,7 +45,13 @@ class BuildingDataSOHolderBaker : Baker<BuildingDataSOHolderAuthoring>
 /// </summary>
 public struct BuildingDataSOHolder : IComponentData
 {
+    /// <summary>
+    /// Lookup key used to resolve a building entry in runtime registries.
+    /// </summary>
     public BuildingKey buildingKey;
+    /// <summary>
+    /// Building type metadata paired with the lookup key.
+    /// </summary>
     public BuildingType buildingKeyType;
 
 }

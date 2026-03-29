@@ -10,23 +10,31 @@ using UnityEditor;
 #endif
 
 /// <summary>
-/// Managed component for the <see cref="EntityPrefabsRegistry"/> unmanaged component.
+/// Authoring component that bakes data into <see cref="EntityPrefabsRegistry"/>.
 /// </summary>
 /// <remarks>
-/// The component is a Singleton.
+/// Behaves as a scene singleton.
 /// </remarks>
 class EntityPrefabsRegistryAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Source scriptable object containing the prefab list used to build the registry.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Source scriptable object containing prefab GameObjects for the entity prefab registry.")]
     public PrefabRegistrySO prefabRegistrySO;
 
+    /// <summary>
+    /// Scene singleton instance for managed-side access.
+    /// </summary>
     public static EntityPrefabsRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -108,20 +116,31 @@ class EntityPrefabsRegistryBaker : Baker<EntityPrefabsRegistryAuthoring>
 }
 
 /// <summary>
-/// Used for passing down references to entity prefabs.
-/// Must set values for all fields on instantiation.
+/// Singleton component that provides access to baked entity prefab references.
 /// </summary>
 /// <remarks>
-/// The component is a Singleton, which should be obtained through <see cref="SystemAPI.GetSingleton()"/>.
+/// Access this component through <see cref="SystemAPI.GetSingleton()"/>.
 /// </remarks>
 public struct EntityPrefabsRegistry : IComponentData
 {
+    /// <summary>
+    /// Placeholder value used as singleton marker data.
+    /// </summary>
     public int holder;
 }
 
+/// <summary>
+/// Buffer entry that maps a prefab key to its baked prefab entity.
+/// </summary>
 public struct EntityPrefab : IBufferElementData
 {
+    /// <summary>
+    /// Key used to look up the prefab entity.
+    /// </summary>
     public EntityPrefabKey entityRefKey;
+    /// <summary>
+    /// Baked prefab entity reference.
+    /// </summary>
     public Entity prefabEntity;
 }
 
@@ -130,6 +149,9 @@ public struct EntityPrefab : IBufferElementData
 /// </summary>
 public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityPrefabKey>, IComparable<IEntityPrefabMappable>
 {
+    /// <summary>
+    /// Name-based key used to identify a prefab entry.
+    /// </summary>
     public FixedString64Bytes name;
     public bool Equals(EntityPrefabKey other)
     {
@@ -169,7 +191,13 @@ public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityP
     }
 }
 
+/// <summary>
+/// Interface for types that can expose an <see cref="EntityPrefabKey"/> comparable key.
+/// </summary>
 public interface IEntityPrefabMappable
 {
+    /// <summary>
+    /// Retrieves the key used for prefab registry comparisons and lookups.
+    /// </summary>
     FixedString64Bytes GetKey();
 }

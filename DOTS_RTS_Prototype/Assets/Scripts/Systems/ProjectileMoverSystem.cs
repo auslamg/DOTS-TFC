@@ -3,8 +3,15 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+
+/// <summary>
+/// Moves active projectile entities toward their current targets and resolves impact effects.
+/// </summary>
 partial struct ProjectileMoverSystem : ISystem
 {
+    /// <summary>
+    /// Updates projectile movement, impact detection, and impact side effects.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -29,6 +36,7 @@ partial struct ProjectileMoverSystem : ISystem
             }
             else
             {
+                // Resolve target hit point: transform shootable offset from local to world space
                 LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
                 Shootable targetShootable = SystemAPI.GetComponent<Shootable>(targetter.ValueRO.targetEntity);
                 float3 targetPosition = targetLocalTransform.TransformPoint(targetShootable.hitPointPosition);
@@ -37,7 +45,7 @@ partial struct ProjectileMoverSystem : ISystem
                 //Position previous to moving, used for calculating if the projectile overshot the target
                 float distanceBeforeSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
-                //Caclculate move direction
+                // Calculate move direction
                 float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
                 moveDirection = math.normalize(moveDirection);
 

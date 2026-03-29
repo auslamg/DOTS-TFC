@@ -6,8 +6,14 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Schedules movement simulation for units based on their current target positions.
+/// </summary>
 partial struct UnitMoverSystem : ISystem
 {
+    /// <summary>
+    /// Schedules the movement job that updates velocity, facing, and movement state.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -16,35 +22,6 @@ partial struct UnitMoverSystem : ISystem
             deltaTime = SystemAPI.Time.DeltaTime
         };
         unitMoverJob.ScheduleParallel();
-
-        //[Deprecated]
-        // Single-thread alternative.
-        /* 
-        foreach ((
-            RefRW<LocalTransform> localTransform,
-            RefRO<UnitMover> unitMover,
-            RefRW<PhysicsVelocity> physicsVelocity)
-               in SystemAPI.Query<
-                RefRW<LocalTransform>,
-                RefRO<UnitMover>,
-                RefRW<PhysicsVelocity>>())
-        {
-            //Desired normalized move direction based on positional difference
-            float3 moveDirection = unitMover.ValueRO.targetPosition - localTransform.ValueRO.Position;
-            moveDirection = math.normalize(moveDirection);
-
-            //Rotate unit towards move direction
-            localTransform.ValueRW.Rotation =
-                        math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), SystemAPI.Time.DeltaTime * unitMover.ValueRO.rotationSpeed);
-
-            //Apply linear velocity and clamp angular (safety measure for constraint failures)
-            physicsVelocity.ValueRW.Linear = moveDirection * unitMover.ValueRO.moveSpeed;
-            physicsVelocity.ValueRW.Angular = float3.zero;
-
-            //Transform movement alternative:
-            //localTransform.ValueRW.Position += moveDirection * unitMover.ValueRO.value * SystemAPI.Time.DeltaTime;
-        }
-         */
     }
 }
 
@@ -56,6 +33,10 @@ public partial struct UnitMoverJob : IJobEntity
 {
     //Set on struct construction
     public float deltaTime;
+
+    /// <summary>
+    /// Moves a unit toward its target and stops movement when the reach threshold is satisfied.
+    /// </summary>
     public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
     {
         //Desired normalized move direction based on positional difference

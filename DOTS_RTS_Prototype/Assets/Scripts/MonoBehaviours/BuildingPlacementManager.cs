@@ -19,6 +19,7 @@ public class BuildingPlacementManager : MonoBehaviour
     /// Scriptable object containing prefab and placement rules for the current building type.
     /// </summary>
     [SerializeField]
+    [Tooltip("Currently selected building definition used for ghost preview and placement rules.")]
     private BuildingDataSO buildingDataSO;
 
     public BuildingDataSO ActiveBuildingDataSO
@@ -46,7 +47,11 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Runtime ghost preview object displayed at the current mouse world position.
+    /// </summary>
     [SerializeField]
+    [Tooltip("Runtime ghost preview object shown while placing buildings.")]
     private GameObject ghostPrefab;
 
     /// <summary>
@@ -55,12 +60,16 @@ public class BuildingPlacementManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Range(1, 3)]
+    [Tooltip("Multiplier applied to collider extents when validating building overlap.")]
     private float placingExtentsOffset = 1.1f;
 
+    /// <summary>
+    /// Raised when <see cref="ActiveBuildingDataSO"/> changes.
+    /// </summary>
     public event EventHandler OnActiveBuildingDataChange;
 
     /// <summary>
-    /// Gets the current mouse position projected into world space.
+    /// Retrieves the current mouse position projected into world space.
     /// </summary>
     private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
 
@@ -70,12 +79,11 @@ public class BuildingPlacementManager : MonoBehaviour
     public static BuildingPlacementManager Instance { get; private set; }
 
     /// <summary>
-    /// Awake() : MonoBehaviour
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -87,8 +95,9 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
-
-    // Update is called once per frame
+    /// <summary>
+    /// Updates building ghost position and handles left/right-click placement controls.
+    /// </summary>
     void Update()
     {
         if (ghostPrefab != null)

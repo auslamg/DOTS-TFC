@@ -5,14 +5,27 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Handles ranged attack movement, aiming, cooldown timing, and projectile spawning.
+/// </summary>
+/// <remarks>
+/// The update runs in two passes: first pass handles movement and facing for movable shooters,
+/// second pass applies cooldown logic and spawns projectiles for valid firing states.
+/// </remarks>
 partial struct ShootAttackSystem : ISystem
 {
+    /// <summary>
+    /// Requires the prefab registry singleton before shooting can run.
+    /// </summary>
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntityPrefabsRegistry>();
     }
 
+    /// <summary>
+    /// Updates aiming state and spawns projectiles once firing conditions are met.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -20,7 +33,7 @@ partial struct ShootAttackSystem : ISystem
         DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
-        //Logic for MOVING shooters
+        // Pass 1: Movement and aiming for units that can move toward their target
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
@@ -62,6 +75,7 @@ partial struct ShootAttackSystem : ISystem
             }
         }
 
+        // Pass 2: Cooldown timing and projectile spawning for all valid shooters
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<ShootAttack> shootAttack,
@@ -93,7 +107,7 @@ partial struct ShootAttackSystem : ISystem
                 
                 {
                     //IDEA: Refactor into corroutines
-                    //Timer
+                    // Attack cooldown timer
                     shootAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (shootAttack.ValueRO.attackPhaseTime <= 0f)
                     {

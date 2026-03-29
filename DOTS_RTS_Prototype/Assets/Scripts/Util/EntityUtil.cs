@@ -12,12 +12,16 @@ using UnityEngine;
 public static class EntityUtil
 {
     /// <summary>
-    /// Validates a that an Entity exists.
+    /// Validates that an entity exists and is not pending removal.
     /// </summary>
     /// <remarks>
-    /// The method validates an entity checking if it actually exists and if it's queued for removal (by checking if it contains a LocalTransform component). If any of both conditions fail, returns false.
-    /// This must be used in place of plain <see cref="EntityManager.Exists(Entity)"/>, since entities queued for removal returns true in said method.
+    /// Checks both entity existence and persistence by verifying the presence of a <see cref="LocalTransform"/> component,
+    /// which is removed when an entity is queued for destruction. Use in place of plain <see cref="EntityManager.Exists(Entity)"/>,
+    /// since that returns <c>true</c> for entities pending removal.
     /// </remarks>
+    /// <param name="em">The entity manager used to query existence and component data.</param>
+    /// <param name="entity">The entity to validate.</param>
+    /// <returns><c>true</c> if the entity exists and has a <see cref="LocalTransform"/> component; otherwise <c>false</c>.</returns>
     public static bool ExistsAndPersists(ref EntityManager em, ref Entity entity)
     {
         if (entity == Entity.Null)
@@ -36,12 +40,16 @@ public static class EntityUtil
     }
 
     /// <summary>
-    /// Validates a that an Entity exists.
+    /// Validates that an entity exists and is not pending removal.
     /// </summary>
     /// <remarks>
-    /// The method validates an entity checking if it actually exists and if it's queued for removal (by checking if it contains a LocalTransform component). If any of both conditions fail, returns false.
-    /// This must be used in place of plain <see cref="EntityManager.Exists(Entity)"/>, since entities queued for removal returns true in said method.
+    /// Checks both entity existence and persistence by verifying the presence of a <see cref="LocalTransform"/> component,
+    /// which is removed when an entity is queued for destruction. Use in place of plain <see cref="EntityManager.Exists(Entity)"/>,
+    /// since that returns <c>true</c> for entities pending removal.
     /// </remarks>
+    /// <param name="state">The system state providing access to the entity manager.</param>
+    /// <param name="entity">The entity to validate.</param>
+    /// <returns><c>true</c> if the entity exists and has a <see cref="LocalTransform"/> component; otherwise <c>false</c>.</returns>
     [BurstCompile]
     public static bool ExistsAndPersists(ref SystemState state, in Entity entity)
     {
@@ -62,8 +70,10 @@ public static class EntityUtil
     }
 
     /// <summary>
-    /// Gets the CollisionWorld for an EntityManager, used for physics queries. 
+    /// Retrieves the <see cref="CollisionWorld"/> from the physics world singleton for use in physics queries.
     /// </summary>
+    /// <param name="em">The entity manager used to resolve the <see cref="PhysicsWorldSingleton"/>.</param>
+    /// <returns>The <see cref="CollisionWorld"/> from the current <see cref="PhysicsWorldSingleton"/>.</returns>
     public static CollisionWorld GetCollisionWorld(this EntityManager em)
     {
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>().Build(em);

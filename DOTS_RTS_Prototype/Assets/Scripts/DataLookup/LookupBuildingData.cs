@@ -3,13 +3,13 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Provides lookup utilities for retrieving <see cref="BuildingData"/> records by key.
+/// Provides binary-search utilities for retrieving <see cref="BuildingData"/> entries by key.
 /// </summary>
 [BurstCompile]
 public class LookupBuildingData
 {
     /// <summary>
-    /// Gets the <see cref="BuildingData"/> entry in the registry blob array.
+    /// Retrieves a <see cref="BuildingData"/> entry from the registry blob array.
     /// </summary>
     /// <param name="buildingDataBlobArrayRef">Blob array reference containing building data entries sorted by key.</param>
     /// <param name="buildingKey">Key used to find the desired building entry.</param>
@@ -43,7 +43,7 @@ public class LookupBuildingData
             {
                 leftIndex = middleIndex + 1;
             }
-            //Cut the the upper half out
+            //Cut the upper half out
             else
             {
                 rightIndex = middleIndex - 1;

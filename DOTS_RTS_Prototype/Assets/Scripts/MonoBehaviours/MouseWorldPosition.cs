@@ -1,17 +1,33 @@
 using UnityEngine;
 
+/// <summary>
+/// Provides mouse-to-world projection helpers for gameplay interactions.
+/// </summary>
+/// <remarks>
+/// Supports two projection modes:
+/// - Flat plane projection for fast RTS-style terrain.
+/// - Physics raycast projection for complex terrain.
+/// </remarks>
 public class MouseWorldPosition : MonoBehaviour
 {
+    /// <summary>
+    /// Global singleton access to mouse world-position services.
+    /// </summary>
     public static MouseWorldPosition Instance { get; private set; }
-    [SerializeField] private bool usePhysics = false;
 
     /// <summary>
-    /// Awake() : MonoBehaviour
-    /// Used for singleton logic.
+    /// Chooses projection mode: physics raycast when true, flat plane when false.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("When enabled, uses Physics.Raycast; when disabled, projects to a flat Y=0 plane.")]
+    private bool usePhysics = false;
+
+    /// <summary>
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -24,7 +40,7 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Update() : MonoBehaviour
+    /// Debug hook that logs the current mouse world position when pressing A.
     /// </summary>
     void Update()
     {
@@ -35,18 +51,21 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns raycasted clicked point of ground.
-    /// Relies on usePhysics bool.
+    /// Returns the mouse world position using the currently selected projection mode.
     /// </summary>
+    /// <returns>Projected mouse world position, or <see cref="Vector3.zero"/> when projection fails.</returns>
     public Vector3 GetPosition()
     {
         return usePhysics ? GetPositionPhysics() : GetPositionFlat();
     }
 
     /// <summary>
-    /// Returns raycasted clicked point of ground.
-    /// Uses a math plane instead of real physics for optimization and to avoid DOTS-Physics conflicts. Preferable with flat, even terrain.
+    /// Returns mouse world position projected onto a mathematical flat ground plane.
     /// </summary>
+    /// <remarks>
+    /// Uses a plane intersection instead of physics for performance and to avoid DOTS/Physics overlap concerns.
+    /// </remarks>
+    /// <returns>Projected mouse world position, or <see cref="Vector3.zero"/> when projection fails.</returns>
     public Vector3 GetPositionFlat()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -62,9 +81,9 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns raycasted clicked point of ground.
-    /// Uses physics collisioning raycast to detect complex terrain. Must set a "ground" layerMask.
+    /// Returns mouse world position using a physics raycast against scene colliders.
     /// </summary>
+    /// <returns>Raycast hit point, or <see cref="Vector3.zero"/> when no collider is hit.</returns>
     public Vector3 GetPositionPhysics()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);

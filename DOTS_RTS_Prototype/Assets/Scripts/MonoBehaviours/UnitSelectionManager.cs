@@ -9,41 +9,94 @@ using UnityEngine.EventSystems;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
+/// <summary>
+/// Handles RTS-style unit selection and command dispatch (move/attack/rally) for selected entities.
+/// </summary>
+/// <remarks>
+/// This manager supports box selection, single-click selection, right-click move/attack commands,
+/// and formation position generation for multi-unit movement.
+/// </remarks>
 public class UnitSelectionManager : MonoBehaviour
 {
+    /// <summary>
+    /// Global singleton access to unit selection behavior.
+    /// </summary>
     public static UnitSelectionManager Instance { get; private set; }
 
+    /// <summary>
+    /// Raised when drag-selection starts.
+    /// </summary>
     public event EventHandler OnSelectionAreaStart;
+
+    /// <summary>
+    /// Raised when drag-selection ends.
+    /// </summary>
     public event EventHandler OnSelectionAreaEnd;
+
+    /// <summary>
+    /// Raised whenever selected entities change.
+    /// </summary>
     public event EventHandler OnSelectionChange;
 
 
+    /// <summary>
+    /// Mouse position where the current drag-selection started.
+    /// </summary>
     private Vector2 selectionStartMousePosition;
 
+    /// <summary>
+    /// Current mouse position projected into world space.
+    /// </summary>
     private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
 
 
     [Header("SphereCast parameters")]
-    [SerializeField] private float sphereCastColliderRadius = 1.5f;
+    /// <summary>
+    /// Radius used by single-click sphere cast selection.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Radius used by single-click sphere cast when selecting entities.")]
+    private float sphereCastColliderRadius = 1.5f;
 
 
     [Header("Line formation parameters")]
-    [SerializeField] private float unitOffset = 1.6f;
+    /// <summary>
+    /// Horizontal spacing used by line-formation calculations.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Spacing used between units when line formation is enabled.")]
+    private float unitOffset = 1.6f;
 
     [Header("Ring formation parameters")]
-    [SerializeField] private float ringOffset = 1.6f;
-    [SerializeField] private int centerUnits = 3;
-    [SerializeField] private int unitsPerRing = 3;
+    /// <summary>
+    /// Radius step used between rings in circle formation.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Radius increment used between rings in circle formation.")]
+    private float ringOffset = 1.6f;
+
+    /// <summary>
+    /// Number of units reserved for the center ring.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Number of units placed in the center group before outer rings are filled.")]
+    private int centerUnits = 3;
+
+    /// <summary>
+    /// Additional slots added per ring as ring index increases.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Additional unit slots added for each subsequent ring in circle formation.")]
+    private int unitsPerRing = 3;
 
 
 
     /// <summary>
-    /// Awake() : MonoBehaviour
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -56,8 +109,7 @@ public class UnitSelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Update() : MonoBehaviour
-    /// //TODO: Document extensively
+    /// Handles drag-select and right-click command input each frame.
     /// </summary>
     void Update()
     {
@@ -170,6 +222,10 @@ public class UnitSelectionManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates rally offsets for selected trainers based on the current mouse position.
+    /// </summary>
+    /// <param name="entityManager">Entity manager used to query and update trainer data.</param>
     private void SetRallyPositionOffset(EntityManager entityManager)
     {
         // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
@@ -211,7 +267,7 @@ public class UnitSelectionManager : MonoBehaviour
         NativeArray<Faction> factionArray = query.ToComponentDataArray<Faction>(Allocator.Temp);
         NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
 
-        //Get faction for targetted unit
+        //Get faction for targeted unit
         Faction targetedFaction = entityManager.GetComponentData<Faction>(hitEntity);
 
         for (int i = 0; i < manualTargetArray.Length; i++)
@@ -230,11 +286,9 @@ public class UnitSelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the movement destination for all UnitMover/MoveOverride Units selected
+    /// Sets movement destinations for selected units and clears manual targets.
     /// </summary>
-    /// <remarks>
-    /// 
-    /// </remarks>
+    /// <param name="entityManager">Entity manager used to query and update unit command data.</param>
     private void SetDestinationOnSelectedUnits(EntityManager entityManager)
     {
         Vector3 targetPosition = mouseWorldPosition;
@@ -289,6 +343,8 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Retrieves a clicked-on Entity in the scene (if any) through a SphereCollider cast.
     /// </summary>
+    /// <param name="entityManager">Entity manager used to validate and read hit entities.</param>
+    /// <returns>Hit entity when valid; otherwise <see cref="Entity.Null"/>.</returns>
     private unsafe Entity ClickSphereCastForEntity(EntityManager entityManager)
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
@@ -354,11 +410,13 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Retrieves a clicked-on Entity in the scene (if any) through a Ray cast.
     /// </summary>
+    /// <param name="entityManager">Entity manager used to validate and read hit entities.</param>
+    /// <returns>Hit entity when valid; otherwise <see cref="Entity.Null"/>.</returns>
     private Entity ClickRayCastForEntity(EntityManager entityManager)
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
-        //Build raycast from mouse position in appropiate layers
+        //Build raycast from mouse position in appropriate layers
         UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastInput raycastInput = new RaycastInput
         {
@@ -404,6 +462,8 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Calculates the average position of all LocalTransform components given.
     /// </summary>
+    /// <param name="localTransformArray">Transforms to average.</param>
+    /// <returns>Average position projected onto XZ plane.</returns>
     private static float3 AveragePositionXZ(NativeArray<LocalTransform> localTransformArray)
     {
         if (localTransformArray.Length == 0)
@@ -424,6 +484,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Calculates the box-select feature's SelectionAreaRectangle.
     /// </summary>
+    /// <returns>Current screen-space drag-selection rectangle.</returns>
     public Rect GetSelectionAreaRect()
     {
         Vector2 selectionEndMousePosition = Input.mousePosition;
@@ -446,9 +507,13 @@ public class UnitSelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the array of individual movement positions for each UnitMober component of a given size.
+    /// Calculates individual movement positions for each selected unit in a formation of the requested size.
     ///TODO: Implement additional formations like Line, Square and Wedge.
     /// </summary>
+    /// <param name="startPosition">Average start position of selected entities.</param>
+    /// <param name="targetPosition">Command target position.</param>
+    /// <param name="positionCount">Number of movement slots to generate.</param>
+    /// <returns>Array of destination positions for each selected entity.</returns>
     private NativeArray<float3> GenerateFormationPositionsArray(float3 startPosition, float3 targetPosition, int positionCount)
     {
         NativeArray<float3> positionArray = new NativeArray<float3>(positionCount, Allocator.Temp);
@@ -471,6 +536,11 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Calculates the array of individual movement positions in a Line formation.
     /// </summary>
+    /// <param name="positionArray">Destination output array.</param>
+    /// <param name="startPosition">Average start position of selected entities.</param>
+    /// <param name="targetPosition">Command target position.</param>
+    /// <param name="positionCount">Number of movement slots to fill.</param>
+    /// <returns>Destination array populated with line-formation positions.</returns>
     private NativeArray<float3> CalculateLineFormation(NativeArray<float3> positionArray, float3 startPosition, float3 targetPosition, int positionCount)
     {
         float offest = unitOffset;
@@ -498,7 +568,7 @@ public class UnitSelectionManager : MonoBehaviour
             positionArray[positionIndex] = currentTargetPosition;
             positionIndex++;
 
-            //FIX: Refactor into no break use
+            //TODO: Refactor to avoid break usage.
             if (positionIndex >= positionCount)
             {
                 break;
@@ -509,8 +579,12 @@ public class UnitSelectionManager : MonoBehaviour
 
 
     /// <summary>
-    /// Calculates the array of individual movement positions in a Cricle formation.
+    /// Calculates the array of individual movement positions in a Circle formation.
     /// </summary>
+    /// <param name="positionArray">Destination output array.</param>
+    /// <param name="targetPosition">Command target position.</param>
+    /// <param name="positionCount">Number of movement slots to fill.</param>
+    /// <returns>Destination array populated with circle-formation positions.</returns>
     private NativeArray<float3> CalculateCircleFormation(NativeArray<float3> positionArray, float3 targetPosition, int positionCount)
     {
         float ringRadius = ringOffset;
@@ -530,7 +604,7 @@ public class UnitSelectionManager : MonoBehaviour
                 positionArray[positionIndex] = currentTargetPosition;
                 positionIndex++;
 
-                //FIX: Refactor into no break use
+                //TODO: Refactor to avoid break usage.
                 if (positionIndex >= positionCount)
                 {
                     break;

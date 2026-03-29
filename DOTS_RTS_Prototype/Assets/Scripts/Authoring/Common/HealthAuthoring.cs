@@ -8,10 +8,14 @@ class HealthAuthoring : MonoBehaviour
     /// <summary>
     /// Current health points. The entity dies if the value goes 0 or below.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Current health points for this entity.")]
     public int currentHealth;
     /// <summary>
-    /// Maximum health points. Determins the maximum and default value of <c>currentHealth</c>.
+    /// Maximum health points. Determines the maximum and default value of <c>currentHealth</c>.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum health points for this entity.")]
     public int maxHealth;
 }
 
@@ -42,7 +46,7 @@ public struct Health : IComponentData
     /// </summary>
     public int currentHealth;
     /// <summary>
-    /// Maximum health points. Determins the maximum and default value of <c>currentHealth</c>.
+    /// Maximum health points. Determines the maximum and default value of <c>currentHealth</c>.
     /// </summary>
     public int maxHealth;
     /// <summary>
@@ -52,5 +56,8 @@ public struct Health : IComponentData
     /// Custom events are reset at the end of each frame in ResetEventSystem.
     /// </remarks>
     public bool onHealthChanged;
+    /// <summary>
+    /// Event-bool triggered when health reaches zero or below.
+    /// </summary>
     public bool onDeath;
 }

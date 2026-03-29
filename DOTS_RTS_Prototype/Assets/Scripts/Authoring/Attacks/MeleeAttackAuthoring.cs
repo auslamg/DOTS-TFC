@@ -7,17 +7,23 @@ using UnityEngine;
 class MeleeAttackAuthoring : MonoBehaviour
 {
     /// <summary>
-    /// Time span between attacks.
+    /// Time interval between attacks.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between melee attacks.")]
     public float attackFrequency;
     /// <summary>
-    /// Maximum distance for attacks.
+    /// Maximum attack range.
     /// </summary>
     //TODO: Rename to attackRange
+    [SerializeField]
+    [Tooltip("Maximum distance at which melee attacks can be performed.")]
     public float attackDistance;
     /// <summary>
     /// Base damage dealt with each attack.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Base damage dealt by each melee attack.")]
     public int damageAmount;
 }
 
@@ -52,11 +58,11 @@ public struct MeleeAttack : IComponentData
     /// </summary>
     public float attackPhaseTime;
     /// <summary>
-    /// Time span between attacks.
+    /// Time interval between attacks.
     /// </summary>
     public float attackFrequency;
     /// <summary>
-    /// Maximum distance for attacks.
+    /// Maximum attack range.
     /// </summary>
     //TODO: Rename to attackRange
 

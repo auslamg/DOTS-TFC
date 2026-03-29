@@ -13,10 +13,14 @@ class ProjectileAuthoring : MonoBehaviour
     /// <summary>
     /// The movement speed of the projectile.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Movement speed of the projectile.")]
     public float speed;
     /// <summary>
     /// The damage dealt to the target on contact.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Damage dealt by the projectile on contact.")]
     public int damageAmount;
 }
 

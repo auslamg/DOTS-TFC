@@ -5,11 +5,17 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Advances active animation clips and updates mesh frames on animated entities.
+/// </summary>
 partial struct ActiveAnimationSystem : ISystem
 {
     [ReadOnly] public ComponentLookup<Parent> parentComponentLookup;
     [ReadOnly] public ComponentLookup<UnitAnimations> unitAnimationsComponentLookup;
 
+    /// <summary>
+    /// Initializes component lookups required by the animation update job.
+    /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -18,6 +24,9 @@ partial struct ActiveAnimationSystem : ISystem
         unitAnimationsComponentLookup = state.GetComponentLookup<UnitAnimations>(true);
     }
 
+    /// <summary>
+    /// Updates lookup caches and schedules frame progression for all active animations.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -37,6 +46,9 @@ partial struct ActiveAnimationSystem : ISystem
 }
 
 [BurstCompile]
+/// <summary>
+/// Applies per-entity animation timing and writes the current frame mesh to rendering data.
+/// </summary>
 public partial struct ActiveAnimationJob : IJobEntity
 {
     public float deltaTime;
@@ -44,6 +56,9 @@ public partial struct ActiveAnimationJob : IJobEntity
     [ReadOnly] public ComponentLookup<Parent> parentComponentLookup;
     [ReadOnly] public ComponentLookup<UnitAnimations> unitAnimationsComponentLookup;
 
+    /// <summary>
+    /// Advances frame timers, loops clip playback, and resolves uninterruptible state transitions.
+    /// </summary>
     public void Execute(Entity entity, ref ActiveAnimation activeAnimation, ref MaterialMeshInfo materialMeshInfo)
     {
         //Cached AnimDataBlobArrayAsset reference index pointer for readability

@@ -3,8 +3,14 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+/// <summary>
+/// Executes manual movement overrides and disables them once destination is reached.
+/// </summary>
 partial struct ManualMoveSystem : ISystem
 {
+    /// <summary>
+    /// Drives units toward manual target positions until the configured reach threshold is met.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

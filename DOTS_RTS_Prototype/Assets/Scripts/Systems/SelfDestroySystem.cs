@@ -1,8 +1,14 @@
 using Unity.Burst;
 using Unity.Entities;
 
+/// <summary>
+/// Destroys entities once their <see cref="SelfDestroy.delay"/> timer expires.
+/// </summary>
 partial struct SelfDestroySystem : ISystem
 {
+    /// <summary>
+    /// Decrements self-destroy timers and queues expired entities for destruction.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

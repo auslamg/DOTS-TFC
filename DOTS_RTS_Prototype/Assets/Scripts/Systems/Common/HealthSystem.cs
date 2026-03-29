@@ -2,8 +2,14 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
+/// <summary>
+/// Applies entity death when health reaches zero and queues structural destruction.
+/// </summary>
 partial struct HealthSystem : ISystem
 {
+    /// <summary>
+    /// Marks death events and schedules entity destruction through an end-simulation command buffer.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

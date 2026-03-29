@@ -8,6 +8,11 @@ using UnityEngine;
 //TODO: Implement owners with ID's as Data
 public class UnitAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Owning player/faction identifier for this unit.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Owning player or faction identifier for this unit.")]
     public int ownerID;
 }
 
@@ -54,6 +59,12 @@ class UnitBaker : Baker<UnitAuthoring>
 /// </summary>
 public struct Unit : IComponentData
 {
+    /// <summary>
+    /// Owning player/faction identifier for this unit.
+    /// </summary>
     public int ownerID;
+    /// <summary>
+    /// Radius-like collider offset used by proximity calculations.
+    /// </summary>
     public float colliderOffsetRadius;
 }

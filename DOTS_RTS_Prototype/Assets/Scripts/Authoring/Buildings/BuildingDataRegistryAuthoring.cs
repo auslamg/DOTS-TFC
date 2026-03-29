@@ -7,23 +7,31 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Managed component for the <see cref="BuildingDataRegistry"/> unmanaged component.
+/// Authoring component that bakes data into <see cref="BuildingDataRegistry"/>.
 /// </summary>
 /// <remarks>
-/// The component is a Singleton.
+/// Behaves as a scene singleton.
 /// </remarks>
 class BuildingDataRegistryAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Source scriptable object containing all building definitions.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Scriptable object containing all building definitions for the registry.")]
     public BuildingDataRegistrySO buildingRegistrySO;
 
+    /// <summary>
+    /// Scene singleton instance for managed-side access.
+    /// </summary>
     public static BuildingDataRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -38,7 +46,7 @@ class BuildingDataRegistryAuthoring : MonoBehaviour
 
 /// <summary>
 /// Baker for the <see cref="BuildingDataRegistry"/> unmanaged component.
-/// Includes a blob building process for internal blob data.
+/// Builds blob data used for runtime building lookups.
 /// </summary>
 class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
 {
@@ -97,7 +105,7 @@ class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
 
 
 /// <summary>
-/// Contains all <see cref="BuildingData"/> baked from each <see cref="BuildingDataSO"/> in the <see cref="BuildingDataRegistrySO"/>.
+/// Singleton component containing all <see cref="BuildingData"/> entries baked from <see cref="BuildingDataRegistrySO"/>.
 /// </summary>
 public struct BuildingDataRegistry : IComponentData
 {
@@ -112,6 +120,12 @@ public struct BuildingDataRegistry : IComponentData
 /// </summary>
 public struct BuildingData
 {
+    /// <summary>
+    /// Unique key for this building data entry.
+    /// </summary>
     public BuildingKey buildingKey;
+    /// <summary>
+    /// Category/type metadata for this building.
+    /// </summary>
     public BuildingType buildingType;
 }

@@ -9,8 +9,18 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.BakingSystem)]
 [UpdateInGroup(typeof(PostBakingSystemGroup))]
 // IDEA: Require matching queries for update
+/// <summary>
+/// Builds the runtime animation registry blob from baked frame metadata.
+/// </summary>
+/// <remarks>
+/// The system collects mesh IDs from baked frame entities, sorts animation entries by key,
+/// and writes a contiguous blob so runtime systems can perform fast Burst-friendly lookups.
+/// </remarks>
 partial struct AnimationDataRegistryPostBakingSystem : ISystem
 {
+    /// <summary>
+    /// Rebuilds the animation data blob and stores it in the animation registry singleton.
+    /// </summary>
     public void OnUpdate(ref SystemState state)
     {
         //Temporary Dictionary for AnimationKey :: MeshID (int) employed for animation mesh queries

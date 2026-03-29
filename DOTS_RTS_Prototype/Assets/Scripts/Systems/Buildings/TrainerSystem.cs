@@ -4,8 +4,19 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Processes trainer queues and spawns trained units once progress timers complete.
+/// </summary>
+/// <remarks>
+/// The flow is split into queue ingestion and queue execution. Ingestion converts incoming
+/// requests into buffer entries, then execution advances training progress for the head item,
+/// spawns the trained unit, and dequeues it.
+/// </remarks>
 partial struct TrainerSystem : ISystem
 {
+    /// <summary>
+    /// Requires registries and end-simulation command buffer access for deferred spawning.
+    /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -14,6 +25,9 @@ partial struct TrainerSystem : ISystem
         state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
     }
 
+    /// <summary>
+    /// Ingests training requests, advances active training timers, and spawns completed units.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -26,6 +40,7 @@ partial struct TrainerSystem : ISystem
             .CreateCommandBuffer(state.WorldUnmanaged);
 
 
+        // Queue ingestion: convert incoming training requests into buffer entries
         foreach ((
             RefRW<Trainer> trainer,
             RefRO<TrainUnitRequest> queuedUnit,
@@ -46,6 +61,7 @@ partial struct TrainerSystem : ISystem
             trainer.ValueRW.onUnitQueueChange = true;
         }
 
+        // Queue execution: advance training timer for head item, spawn unit on completion, and dequeue
         foreach ((
             RefRO<LocalTransform> localTransform,
             RefRW<Trainer> trainer,
@@ -75,7 +91,7 @@ partial struct TrainerSystem : ISystem
                 trainer.ValueRW.maxProgress = unitData.trainingTime;
             }
 
-            // Progress timer
+            // Training progress timer
             trainer.ValueRW.currentProgress += SystemAPI.Time.DeltaTime;
             if (trainer.ValueRO.currentProgress >= trainer.ValueRO.maxProgress)
             {

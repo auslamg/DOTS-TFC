@@ -7,12 +7,18 @@ using Unity.Transforms;
 using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+/// <summary>
+/// Orients world-space health bars toward the camera and updates fill visuals on health changes.
+/// </summary>
 partial struct HealthBarSystem : ISystem
 {
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
     [ReadOnly] public ComponentLookup<Health> healthComponentLookup;
     [ReadOnly] public ComponentLookup<PostTransformMatrix> postTransformMatrixComponentLookup;
 
+    /// <summary>
+    /// Initializes lookups needed by the health bar update job.
+    /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -21,6 +27,9 @@ partial struct HealthBarSystem : ISystem
         postTransformMatrixComponentLookup = state.GetComponentLookup<PostTransformMatrix>();
     }
 
+    /// <summary>
+    /// Refreshes lookup caches, reads camera orientation, and schedules health bar updates.
+    /// </summary>
     //[BurstCompile] //Disabled due to camera access
     public void OnUpdate(ref SystemState state)
     {
@@ -77,12 +86,19 @@ partial struct HealthBarSystem : ISystem
 }
 
 [BurstCompile]
+/// <summary>
+/// Updates per-entity health bar orientation, visibility, and fill scaling.
+/// </summary>
 public partial struct HealthBarJob : IJobEntity
 {
     [NativeDisableParallelForRestriction] public ComponentLookup<LocalTransform> localTransformComponentLookup;
     [ReadOnly] public ComponentLookup<Health> healthComponentLookup;
     [NativeDisableParallelForRestriction] public ComponentLookup<PostTransformMatrix> postTransformMatrixComponentLookup;
     public float3 cameraForward;
+
+    /// <summary>
+    /// Applies facing and health-driven scale updates for one health bar entity.
+    /// </summary>
     public void Execute(in HealthBar healthBar, Entity entity)
     {
         RefRW<LocalTransform> localTransform = localTransformComponentLookup.GetRefRW(entity);

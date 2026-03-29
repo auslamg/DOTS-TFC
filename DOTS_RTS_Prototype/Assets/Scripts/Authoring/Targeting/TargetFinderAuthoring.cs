@@ -6,16 +6,22 @@ using UnityEngine;
 class TargetFinderAuthoring : MonoBehaviour
 {
     /// <summary>
-    /// Time span between scans.
+    /// Time interval between scans.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between automatic target scans.")]
     public float scanFrequency;
     /// <summary>
-    /// Maximum distance for acquiring targets.
+    /// Maximum range for acquiring targets.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum range used when scanning for targets.")]
     public float targetRange;
     /// <summary>
     /// Minimum distance between targets to consider swapping to the closest one.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Minimum distance improvement required before swapping to a closer target.")]
     public float swapTargetMinDistance;
 }
 
@@ -50,11 +56,11 @@ public struct TargetFinder : IComponentData
     /// </summary>
     public float scanPhaseTime;
     /// <summary>
-    /// Time span between scans.
+    /// Time interval between scans.
     /// </summary>
     public float scanFrequency;
     /// <summary>
-    /// Maximum distance for acquiring targets.
+    /// Maximum range for acquiring targets.
     /// </summary>
     public float targetRange;
     /// <summary>

@@ -5,9 +5,13 @@ using UnityEngine;
 /// <summary>
 /// Managed component for the <see cref="Building"/> unmanaged component.
 /// </summary>
-//TODO: Implement owners with ID's as Data
 public class BuildingAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Owning player/faction identifier for this building.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Owning player or faction identifier for this building.")]
     public int ownerID;
 }
 
@@ -54,6 +58,12 @@ class BuildingBaker : Baker<BuildingAuthoring>
 /// </summary>
 public struct Building : IComponentData
 {
+    /// <summary>
+    /// Owning player/faction identifier for this building.
+    /// </summary>
     public int ownerID;
+    /// <summary>
+    /// Radius-like collider offset used by proximity calculations.
+    /// </summary>
     public float colliderOffsetRadius;
 }

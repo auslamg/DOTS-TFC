@@ -3,8 +3,14 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+/// <summary>
+/// Drops automatic targets when they remain outside threshold range for long enough.
+/// </summary>
 partial struct LoseTargetSystem : ISystem
 {
+    /// <summary>
+    /// Ticks lose-target timers and clears automatic targets when distance checks fail.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -36,7 +42,7 @@ partial struct LoseTargetSystem : ISystem
                 else
                 {
                     //IDEA: Refactor into corroutines
-                    //Timer
+                    // Lose-target delay timer
                     loseTarget.ValueRW.attemptPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (loseTarget.ValueRO.attemptPhaseTime <= 0)
                     {

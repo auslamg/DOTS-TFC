@@ -3,13 +3,13 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Provides lookup utilities for retrieving <see cref="AnimationData"/> records by key.
+/// Provides binary-search utilities for retrieving <see cref="AnimationData"/> entries by key.
 /// </summary>
 [BurstCompile]
 public class LookupAnimationData
 {
     /// <summary>
-    /// Gets the <see cref="AnimationData"/> entry in the registry blob array.
+    /// Retrieves an <see cref="AnimationData"/> entry from the registry blob array.
     /// </summary>
     /// <param name="animationDataBlobArrayRef">Blob array reference containing animation data entries sorted by key.</param>
     /// <param name="animationKey">Key used to find the desired animation entry.</param>
@@ -45,7 +45,7 @@ public class LookupAnimationData
             {
                 leftIndex = middleIndex + 1;
             }
-            //Cut the the upper half out
+            //Cut the upper half out
             else
             {
                 rightIndex = middleIndex - 1;

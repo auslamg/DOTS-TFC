@@ -7,23 +7,31 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// Managed component for the <see cref="UnitDataRegistry"/> unmanaged component.
+/// Authoring component that bakes data into <see cref="UnitDataRegistry"/>.
 /// </summary>
 /// <remarks>
-/// The component is a Singleton.
+/// Behaves as a scene singleton.
 /// </remarks>
 class UnitDataRegistryAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Source scriptable object containing all unit definitions.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Scriptable object containing all unit definitions for the registry.")]
     public UnitDataRegistrySO unitRegistrySO;
 
+    /// <summary>
+    /// Scene singleton instance for managed-side access.
+    /// </summary>
     public static UnitDataRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -38,7 +46,7 @@ class UnitDataRegistryAuthoring : MonoBehaviour
 
 /// <summary>
 /// Baker for the <see cref="UnitDataRegistry"/> unmanaged component.
-/// Includes a blob building process for internal blob data.
+/// Builds blob data used for runtime unit lookups.
 /// </summary>
 class UnitDataRegistryBaker : Baker<UnitDataRegistryAuthoring>
 {
@@ -96,7 +104,7 @@ class UnitDataRegistryBaker : Baker<UnitDataRegistryAuthoring>
 
 
 /// <summary>
-/// Contains all <see cref="UnitData"/> baked from each <see cref="UnitDataSO"/> in the <see cref="UnitDataRegistrySO"/>.
+/// Singleton component containing all <see cref="UnitData"/> entries baked from <see cref="UnitDataRegistrySO"/>.
 /// </summary>
 public struct UnitDataRegistry : IComponentData
 {
@@ -111,7 +119,16 @@ public struct UnitDataRegistry : IComponentData
 /// </summary>
 public struct UnitData
 {
+    /// <summary>
+    /// Unique key for this unit data entry.
+    /// </summary>
     public UnitKey unitKey;
+    /// <summary>
+    /// Category/type metadata for this unit.
+    /// </summary>
     public UnitType unitType;
+    /// <summary>
+    /// Time required to train this unit in trainer systems.
+    /// </summary>
     public float trainingTime;
 }

@@ -12,31 +12,47 @@ using System.IO;
 /// </summary>
 public class SkinnedMeshBaker : EditorWindow
 {
+    private static readonly GUIContent SourceObjectLabel = new GUIContent("Source Object", "Root GameObject containing the SkinnedMeshRenderer to bake.");
+    private static readonly GUIContent ClipLabel = new GUIContent("Animation Clip", "AnimationClip sampled during baking.");
+    private static readonly GUIContent OutputNameLabel = new GUIContent("Output Name", "Base name used for generated mesh assets and prefabs.");
+    private static readonly GUIContent FpsLabel = new GUIContent("FPS", "Sampling rate used to bake the animation. Higher values generate more frames.");
+    private static readonly GUIContent OutputPathLabel = new GUIContent("Output Path", "Project-relative Assets folder where baked meshes and prefabs are saved.");
+
     /// <summary>
     /// Root GameObject that contains the SkinnedMeshRenderer to bake.
     /// </summary>
-    [SerializeField] GameObject sourceObject;
+    [SerializeField]
+    [Tooltip("Root GameObject containing the SkinnedMeshRenderer to bake.")]
+    GameObject sourceObject;
 
     /// <summary>
     /// AnimationClip to sample when baking.
     /// </summary>
-    [SerializeField] AnimationClip clip;
+    [SerializeField]
+    [Tooltip("Animation clip sampled during baking.")]
+    AnimationClip clip;
 
     /// <summary>
     /// Base name for the generated Mesh assets.
     /// </summary>
-    [SerializeField] string outputName;
+    [SerializeField]
+    [Tooltip("Base name used for generated mesh assets and prefabs.")]
+    string outputName;
 
     /// <summary>
     /// Sampling rate for the bake process.
     /// Higher values increase fidelity but also produce more assets.
     /// </summary>
-    [SerializeField] int framesPerSecond = 10;
+    [SerializeField]
+    [Tooltip("Sampling rate used to bake the animation. Higher values generate more frames.")]
+    int framesPerSecond = 10;
 
     /// <summary>
     /// Folder under the Assets directory where baked meshes are stored.
     /// </summary>
-    [SerializeField] string outputPath = "Assets/BakedMeshes";
+    [SerializeField]
+    [Tooltip("Project-relative Assets folder where baked meshes and prefabs are saved.")]
+    string outputPath = "Assets/BakedMeshes";
 
     /// <summary>
     /// Adds a menu item that opens the bake window.
@@ -53,11 +69,11 @@ public class SkinnedMeshBaker : EditorWindow
     void OnGUI()
     {
         // Inputs for source, clip, and output configuration.
-        sourceObject = (GameObject)EditorGUILayout.ObjectField("Source Object", sourceObject, typeof(GameObject), true);
-        clip = (AnimationClip)EditorGUILayout.ObjectField("Animation Clip", clip, typeof(AnimationClip), false);
-        outputName = EditorGUILayout.TextField("Output Name", outputName);
-        framesPerSecond = EditorGUILayout.IntField("FPS", framesPerSecond);
-        outputPath = EditorGUILayout.TextField("Output Path", outputPath);
+        sourceObject = (GameObject)EditorGUILayout.ObjectField(SourceObjectLabel, sourceObject, typeof(GameObject), true);
+        clip = (AnimationClip)EditorGUILayout.ObjectField(ClipLabel, clip, typeof(AnimationClip), false);
+        outputName = EditorGUILayout.TextField(OutputNameLabel, outputName);
+        framesPerSecond = EditorGUILayout.IntField(FpsLabel, framesPerSecond);
+        outputPath = EditorGUILayout.TextField(OutputPathLabel, outputPath);
 
         // Disable the bake button unless we have the minimal required inputs.
         GUI.enabled = sourceObject && clip;

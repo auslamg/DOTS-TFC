@@ -8,10 +8,14 @@ class SelectedAuthoring : MonoBehaviour
     /// <summary>
     /// Reference to the selected entity's selection gizmo.
     /// </summary>
+    [SerializeField]
+    [Tooltip("GameObject used as the selection gizmo for this entity.")]
     public GameObject selectedGizmoGameObject;
     /// <summary>
     /// Display scale for the selected entity's selection gizmo when selected.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Scale applied to the selection gizmo when this entity is selected.")]
     public float displayScale;
 }
 
@@ -36,6 +40,9 @@ class SelectedBaker : Baker<SelectedAuthoring>
 }
 
 
+/// <summary>
+/// Selection state component used by selection and gizmo display systems.
+/// </summary>
 public struct Selected : IComponentData, IEnableableComponent
 {
     /// <summary>

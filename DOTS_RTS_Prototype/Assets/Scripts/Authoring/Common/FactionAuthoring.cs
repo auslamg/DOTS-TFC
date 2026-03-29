@@ -11,6 +11,8 @@ class FactionAuthoring : MonoBehaviour
     /// <summary>
     /// Faction identifier number.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Faction identifier assigned to this entity.")]
     public uint factionID;
 }
 

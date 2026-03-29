@@ -11,26 +11,38 @@ class SpawnerAuthoring : MonoBehaviour
     /// <summary>
     /// Key for the entity to be spawned.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Prefab key of the entity that this spawner should spawn.")]
     public string spawnedEntityKey;
     /// <summary>
-    /// Time span between spawns.
+    /// Time interval between spawns.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between spawn attempts.")]
     public float spawnFrequency;
     /// <summary>
     /// Minimum distance from the LocalTransform center for spawn offset.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Minimum spawn offset distance from the spawner center.")]
     public float minDistance;
     /// <summary>
     /// Maximum distance from the LocalTransform center for spawn offset.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum spawn offset distance from the spawner center.")]
     public float maxDistance;
     /// <summary>
     /// Maximum value for nearby scanned enemies to keep spawning more.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum number of nearby entities allowed before spawns are blocked.")]
     public int nearbyEntityCap;
     /// <summary>
     /// Radius for scanning around for nearby enemies in order to check if the cap was reached.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Scan radius used to count nearby entities for spawn cap checks.")]
     public float nearbyEntityScanRadius;
 }
 
@@ -72,7 +84,7 @@ public struct Spawner : IComponentData
     /// </summary>
     public float spawnPhaseTime;
     /// <summary>
-    /// Time span between spawns.
+    /// Time interval between spawns.
     /// </summary>
     public float spawnFrequency;
     /// <summary>

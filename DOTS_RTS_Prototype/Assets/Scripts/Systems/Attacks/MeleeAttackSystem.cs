@@ -7,8 +7,14 @@ using Unity.Transforms;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
+/// <summary>
+/// Handles melee target chasing and timed melee damage application.
+/// </summary>
 partial struct MeleeAttackSystem : ISystem
 {
+    /// <summary>
+    /// Moves units into melee range and applies damage when attack cooldowns expire.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -89,7 +95,7 @@ partial struct MeleeAttackSystem : ISystem
 
                     //TODO: Extract into AttackLoop() method or corroutine
                     //IDEA: Refactor into corroutines
-                    //Timer
+                    // Attack cooldown timer
                     meleeAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (meleeAttack.ValueRO.attackPhaseTime <= 0)
                     {

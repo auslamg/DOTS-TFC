@@ -9,25 +9,36 @@ class RandomWalkAuthoring : MonoBehaviour
     /// <summary>
     /// Current desired position to move the Entity to.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Current desired destination for random walk movement.")]
     public float3 targetPostion;
     /// <summary>
     /// Center point for generating the random walking destinations.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Origin point used as center for random destination generation.")]
     public float3 originPointPosition;
     /// <summary>
     /// Minimum distance from the origin point for randomly generated destinations.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Minimum distance from origin when generating random destinations.")]
     public float minDistance;
     /// <summary>
     /// Maximum distance from the origin point for randomly generated destinations.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum distance from origin when generating random destinations.")]
     public float maxDistance;
     /// <summary>
-    /// Seed number employed to generate positions. The "randomly" generated positions will be entirely deterministic based on the seed given.
+    /// Seed value used to generate deterministic random destinations.
     /// </summary>
-    /// /// <remarks>
-    /// If the entity isn't given a specific seed, it will generate a new one based on its Entity index. The Entity index is unique to each concurrently existing entity, but .If the same entity types appear at the exact same order, determinism still applies.
+    /// <remarks>
+    /// If no seed is provided, a value derived from the entity index is used.
+    /// Results remain deterministic as long as entity creation order is deterministic.
     /// </remarks>
+    [SerializeField]
+    [Tooltip("Seed used for deterministic random destination generation. Use 0 to auto-generate from entity index.")]
     public uint randomSeed;
 }
 

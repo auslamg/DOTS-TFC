@@ -8,6 +8,11 @@ using UnityEngine;
 /// </summary>
 public class GameOverOnDeathAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Message shown when this entity's death triggers game over.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Message shown when this entity's death triggers game over.")]
     public string gameOverMessage;
 }
 
@@ -31,5 +36,8 @@ class GameOverOnDeathBaker : Baker<GameOverOnDeathAuthoring>
 /// </summary>
 public struct GameOverOnDeath : IComponentData, IEnableableComponent
 {
+    /// <summary>
+    /// Message shown when this entity's death triggers game over.
+    /// </summary>
     public FixedString64Bytes gameOverMessage;
 }

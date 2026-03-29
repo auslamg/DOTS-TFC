@@ -7,7 +7,11 @@ using UnityEngine.Rendering;
 /// </summary>
 class ActiveAnimationAuthoring : MonoBehaviour
 {
-    //TODO: Refactor. Undocumented. 
+    /// <summary>
+    /// Animation requested at spawn time (and used as next requested animation state).
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key requested at spawn and used as the next animation state.")]
     public AnimationKey nextAnimationKey;
 }
 
@@ -41,8 +45,12 @@ public struct ActiveAnimation : IComponentData
     /// Indicates the state of the current frame iteration.
     /// </summary>
     public float framePhaseTime;
-    //TODO: Refactor. Undocumented. 
+    /// <summary>
+    /// Animation currently being sampled to resolve frame mesh indices.
+    /// </summary>
     public AnimationKey activeAnimationKey;
-    //TODO: Refactor. Undocumented. 
+    /// <summary>
+    /// Next requested animation key to transition into.
+    /// </summary>
     public AnimationKey nextAnimationKey;
 }

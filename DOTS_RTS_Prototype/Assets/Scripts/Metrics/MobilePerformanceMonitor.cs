@@ -3,11 +3,14 @@ using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Profiling;
 using System.Collections.Generic;
 
+/// <summary>
+/// Renders an on-screen performance overlay showing FPS, rolling average, job thread usage, and GPU frame time.
+/// </summary>
 public class MobilePerformanceMonitor : MonoBehaviour
 {
+    [Tooltip("Font size used for all on-screen performance labels.")]
     [SerializeField] int fontSize = 24;
 
-    // FPS tracking
     float fps;
     float avgFps;
 
@@ -15,32 +18,34 @@ public class MobilePerformanceMonitor : MonoBehaviour
     Queue<float> frameTimes = new Queue<float>();
     float frameTimeSum = 0f;
 
-    // Job system
     int maxWorkerThreads;
     ProfilerRecorder jobThreadRecorder;
 
-    // GPU timing
     FrameTiming[] frameTimings = new FrameTiming[1];
     double gpuFrameTime;
 
+    /// <summary>
+    /// Caches worker thread count and starts the job thread profiler recorder.
+    /// </summary>
     void Start()
     {
         maxWorkerThreads = JobsUtility.JobWorkerCount;
 
-        // Track active job threads
         jobThreadRecorder = ProfilerRecorder.StartNew(
             ProfilerCategory.Internal,
             "Job System Active Threads"
         );
-
     }
 
+    /// <summary>
+    /// Samples instantaneous FPS, maintains the rolling average window, and captures GPU frame timing.
+    /// </summary>
     void Update()
     {
         float dt = Time.deltaTime;
         fps = 1f / dt;
 
-        // ---- Rolling 10 second average ----
+        // Rolling average over the last AvgWindow seconds
         frameTimes.Enqueue(dt);
         frameTimeSum += dt;
 
@@ -51,7 +56,7 @@ public class MobilePerformanceMonitor : MonoBehaviour
 
         avgFps = frameTimes.Count / frameTimeSum;
 
-        // ---- GPU Frame Timing ----
+        // GPU frame timing
         FrameTimingManager.CaptureFrameTimings();
         uint count = FrameTimingManager.GetLatestTimings(1, frameTimings);
 
@@ -59,6 +64,9 @@ public class MobilePerformanceMonitor : MonoBehaviour
             gpuFrameTime = frameTimings[0].gpuFrameTime;
     }
 
+    /// <summary>
+    /// Draws the performance overlay using immediate-mode GUI.
+    /// </summary>
     void OnGUI()
     {
         int activeThreads = jobThreadRecorder.Valid
@@ -98,6 +106,9 @@ public class MobilePerformanceMonitor : MonoBehaviour
         GUILayout.EndArea();
     }
 
+    /// <summary>
+    /// Releases the profiler recorder when the component is disabled.
+    /// </summary>
     void OnDisable()
     {
         jobThreadRecorder.Dispose();

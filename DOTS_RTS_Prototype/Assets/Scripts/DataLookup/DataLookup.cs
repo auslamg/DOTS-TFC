@@ -7,17 +7,17 @@ using UnityEngine;
 /// Centralized facade for data lookup helpers used by ECS systems.
 /// </summary>
 /// <remarks>
-/// Delegates lookups to specialized classes so call sites can use a single entry point.
+/// Delegates binary-search lookups to specialized helpers through a single entry point.
 /// </remarks>
 [BurstCompile]
 public static class DataLookup
 {
     /// <summary>
-    /// Gets an <see cref="AnimationData"/> record from a sorted animation blob array.
+    /// Retrieves an <see cref="AnimationData"/> entry from a sorted animation blob array.
     /// </summary>
-    /// <param name="animationDataBlobArrayRef">Blob array reference containing animation registry data.</param>
-    /// <param name="animationKey">Key used to locate the animation data record.</param>
-    /// <returns>A reference to the matching <see cref="AnimationData"/> record.</returns>
+    /// <param name="animationDataBlobArrayRef">Blob array reference containing animation registry entries sorted by key.</param>
+    /// <param name="animationKey">Key used to locate the animation entry.</param>
+    /// <returns>A reference to the matching <see cref="AnimationData"/> entry.</returns>
     [BurstCompile]
     public static ref AnimationData GetAnimationData(
         ref BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayRef,
@@ -29,11 +29,11 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Gets a <see cref="UnitData"/> record from a sorted unit blob array.
+    /// Retrieves a <see cref="UnitData"/> entry from a sorted unit blob array.
     /// </summary>
-    /// <param name="unitDataBlobArrayRef">Blob array reference containing unit registry data.</param>
-    /// <param name="unitKey">Key used to locate the unit data record.</param>
-    /// <returns>A reference to the matching <see cref="UnitData"/> record.</returns>
+    /// <param name="unitDataBlobArrayRef">Blob array reference containing unit registry entries sorted by key.</param>
+    /// <param name="unitKey">Key used to locate the unit entry.</param>
+    /// <returns>A reference to the matching <see cref="UnitData"/> entry.</returns>
     [BurstCompile]
     public static ref UnitData GetUnitData(
         ref BlobAssetReference<BlobArray<UnitData>> unitDataBlobArrayRef,
@@ -45,11 +45,11 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Gets a <see cref="BuildingData"/> record from a sorted building blob array.
+    /// Retrieves a <see cref="BuildingData"/> entry from a sorted building blob array.
     /// </summary>
-    /// <param name="buildingDataBlobArrayRef">Blob array reference containing building registry data.</param>
-    /// <param name="buildingKey">Key used to locate the building data record.</param>
-    /// <returns>A reference to the matching <see cref="BuildingData"/> record.</returns>
+    /// <param name="buildingDataBlobArrayRef">Blob array reference containing building registry entries sorted by key.</param>
+    /// <param name="buildingKey">Key used to locate the building entry.</param>
+    /// <returns>A reference to the matching <see cref="BuildingData"/> entry.</returns>
     [BurstCompile]
     public static ref BuildingData GetBuildingData(
         ref BlobAssetReference<BlobArray<BuildingData>> buildingDataBlobArrayRef,
@@ -61,7 +61,7 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Gets an entity prefab from the supplied entity prefab buffer.
+    /// Retrieves an entity prefab from the supplied entity prefab buffer.
     /// </summary>
     /// <param name="entityReferencesBuffer">Sorted dynamic buffer of entity prefab mappings.</param>
     /// <param name="entityKey">Key used to locate the prefab entity.</param>
@@ -76,7 +76,7 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Attempts to get an entity prefab from the supplied entity prefab buffer.
+    /// Attempts to retrieve an entity prefab from the supplied entity prefab buffer.
     /// </summary>
     /// <param name="entityReferencesBuffer">Sorted dynamic buffer of entity prefab mappings.</param>
     /// <param name="entityKey">Key used to locate the prefab entity.</param>
@@ -94,7 +94,7 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Attempts to fetch an entity prefab from the default world using managed APIs.
+    /// Attempts to retrieve an entity prefab from the default world using managed APIs.
     /// </summary>
     /// <param name="entityKey">Key used to locate the prefab entity.</param>
     /// <param name="prefabEntity">When this method returns, contains the matched entity or <see cref="Entity.Null"/>.</param>
@@ -109,7 +109,7 @@ public static class DataLookup
     }
 
     /// <summary>
-    /// Fetches an entity prefab from the default world using managed APIs.
+    /// Retrieves an entity prefab from the default world using managed APIs.
     /// </summary>
     /// <param name="entityKey">Key used to locate the prefab entity.</param>
     /// <returns>The matched prefab entity, or <see cref="Entity.Null"/> when not found.</returns>

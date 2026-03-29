@@ -3,8 +3,14 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+/// <summary>
+/// Assigns roaming destinations and drives wandering units when manual control is disabled.
+/// </summary>
 partial struct RandomWalkSystem : ISystem
 {
+    /// <summary>
+    /// Picks new random patrol targets on arrival and forwards movement intents to UnitMover.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

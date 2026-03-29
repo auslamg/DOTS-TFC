@@ -3,8 +3,14 @@ using Unity.Entities;
 
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup), OrderFirst = true)]
+/// <summary>
+/// Dispatches game-over and critical-entity events based on tracked faction deaths.
+/// </summary>
 partial struct GameOverOnDeathSystem : ISystem
 {
+    /// <summary>
+    /// Monitors critical entities and raises managed events for game-over and critical tracking.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

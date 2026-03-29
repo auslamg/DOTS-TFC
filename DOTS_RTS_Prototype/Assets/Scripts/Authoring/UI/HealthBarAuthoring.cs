@@ -7,8 +7,17 @@ using UnityEngine;
 /// </summary>
 class HealthBarAuthoring : MonoBehaviour
 {
-    //TODO: Document
+    /// <summary>
+    /// Child object that renders the fill visuals of the bar.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("GameObject that renders the fill portion of the health bar.")]
     public GameObject visualBarGameObject;
+    /// <summary>
+    /// Entity whose health values are represented by this bar.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("GameObject converted to the entity whose Health drives this bar.")]
     public GameObject healthGameObject;
 }
 
@@ -33,6 +42,12 @@ class HealthBarBaker : Baker<HealthBarAuthoring>
 /// </summary>
 public struct HealthBar : IComponentData
 {
+    /// <summary>
+    /// Entity rendering the fill visuals of the health bar.
+    /// </summary>
     public Entity visualBarEntity;
+    /// <summary>
+    /// Entity whose health values drive this health bar.
+    /// </summary>
     public Entity healthEntity;
 }

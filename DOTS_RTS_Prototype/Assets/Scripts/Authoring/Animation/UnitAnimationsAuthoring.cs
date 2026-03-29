@@ -3,17 +3,44 @@ using UnityEngine;
 /// <summary>
 /// Managed component for the <see cref="UnitAnimations"/> unmanaged component.
 /// </summary>
-//TODO: Refactor EXTENSIVELY
 class UnitAnimationsAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Fallback animation key used when no specific state key is selected.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Fallback animation key used when no specific animation state is selected.")]
     public string noneAnimationKey;
+    /// <summary>
+    /// Animation key used while the unit is idle.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key used while the unit is idle.")]
     public string idleAnimationKey;
+    /// <summary>
+    /// Animation key used while the unit is moving.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key used while the unit is moving.")]
     public string walkAnimationKey;
+    /// <summary>
+    /// Animation key used while performing melee attacks.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key used while performing melee attacks.")]
     public string meleeAttackAnimationKey;
+    /// <summary>
+    /// Animation key used while firing projectiles.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key used while firing projectiles.")]
     public string shootAnimationKey;
+    /// <summary>
+    /// Animation key used while aiming at a target.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Animation key used while aiming at a target.")]
     public string aimAnimationKey;
-    //TODO: Bake bool playFull for custom animations
-
 }
 
 /// <summary>
@@ -64,10 +91,28 @@ class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
 /// //REVIEW: Rename into HumanoidAnimations if other non-humanoid unit types are implemented
 public struct UnitAnimations : IComponentData
 {
+    /// <summary>
+    /// Fallback animation key used when no specific state key is selected.
+    /// </summary>
     public AnimationKey noneAnimationKey;
+    /// <summary>
+    /// Animation key used while the unit is idle.
+    /// </summary>
     public AnimationKey idleAnimationKey;
+    /// <summary>
+    /// Animation key used while the unit is moving.
+    /// </summary>
     public AnimationKey walkAnimationKey;
+    /// <summary>
+    /// Animation key used while firing projectiles.
+    /// </summary>
     public AnimationKey shootAnimationKey;
+    /// <summary>
+    /// Animation key used while aiming at a target.
+    /// </summary>
     public AnimationKey aimAnimationKey;
+    /// <summary>
+    /// Animation key used while performing melee attacks.
+    /// </summary>
     public AnimationKey meleeAttackAnimationKey;
 }

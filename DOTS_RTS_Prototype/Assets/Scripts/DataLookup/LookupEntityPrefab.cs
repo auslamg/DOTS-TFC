@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Provides lookup and fetch utilities for <see cref="EntityPrefab"/> mappings.
+/// Provides binary-search lookup utilities for <see cref="EntityPrefab"/> mappings.
 /// </summary>
 [BurstCompile]
 public class LookupEntityPrefab
@@ -43,7 +43,7 @@ public class LookupEntityPrefab
             {
                 leftIndex = middleIndex + 1;
             }
-            //Cut the the upper half out
+            //Cut the upper half out
             else
             {
                 rightIndex = middleIndex - 1;
@@ -55,7 +55,7 @@ public class LookupEntityPrefab
     }
 
     /// <summary>
-    /// Gets the index of an <see cref="EntityPrefab"/> entry in a sorted registry buffer.
+    /// Retrieves the index of an <see cref="EntityPrefab"/> entry in a sorted registry buffer.
     /// </summary>
     /// <param name="entityRefBuffer">Sorted dynamic buffer of entity prefab mappings.</param>
     /// <param name="entityKey">Key used to locate the prefab mapping.</param>
@@ -85,7 +85,7 @@ public class LookupEntityPrefab
             {
                 leftIndex = middleIndex + 1;
             }
-            //Cut the the upper half out
+            //Cut the upper half out
             else
             {
                 rightIndex = middleIndex - 1;
@@ -119,7 +119,7 @@ public class LookupEntityPrefab
     }
     
     /// <summary>
-    /// Retrieves a prefab entity from a provided registry buffer.
+    /// Retrieves a prefab entity from the provided registry buffer.
     /// </summary>
     /// <param name="entityReferencesBuffer">Sorted dynamic buffer of entity prefab mappings.</param>
     /// <param name="entityKey">Key used to locate the prefab mapping.</param>
@@ -135,11 +135,11 @@ public class LookupEntityPrefab
     }
 
     /// <summary>
-    /// Attempts to fetch a prefab entity from the default world's singleton registry.
+    /// Attempts to retrieve a prefab entity from the default world's singleton registry.
     /// </summary>
     /// <param name="entityKey">Key used to locate the prefab mapping.</param>
     /// <param name="prefabEntity">When this method returns, contains the prefab entity or <see cref="Entity.Null"/>.</param>
-    /// <returns><see langword="true"/> if a prefab entity was fetched; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if a prefab entity was found; otherwise, <see langword="false"/>.</returns>
     public static bool TryFetchEntityPrefab(
         in EntityPrefabKey entityKey,
         out Entity prefabEntity)
@@ -165,7 +165,7 @@ public class LookupEntityPrefab
     }
 
     /// <summary>
-    /// Fetches a prefab entity from the default world's singleton registry.
+    /// Retrieves a prefab entity from the default world's singleton registry.
     /// </summary>
     /// <param name="entityKey">Key used to locate the prefab mapping.</param>
     /// <returns>The matched prefab entity, or <see cref="Entity.Null"/> when unavailable.</returns>

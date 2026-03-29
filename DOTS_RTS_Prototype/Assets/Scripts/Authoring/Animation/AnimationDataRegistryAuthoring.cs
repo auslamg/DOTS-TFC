@@ -7,25 +7,43 @@ using Unity.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 /// <summary>
-/// Managed component for the <see cref="AnimationDataRegistry"/> unmanaged component.
+/// Authoring component that bakes data into <see cref="AnimationDataRegistry"/>.
 /// </summary>
 /// <remarks>
-/// The component is a Singleton.
+/// Behaves as a scene singleton.
 /// </remarks>
 class AnimationDataRegistryAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Source scriptable object containing all animation definitions and frame meshes.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Scriptable object containing all animation definitions and frame meshes.")]
     public AnimationDataRegistrySO animationDataRegistrySO;
+    /// <summary>
+    /// Default material used to register baked animation frame meshes.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Default material used when registering baked animation frame meshes.")]
     public Material defaultMaterial; //Used exclusively to avoid submesh with no material warning (unity bug since there is no submesh)
+    /// <summary>
+    /// Optional secondary material used when a mesh has multiple submeshes.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Optional second material used when an animation mesh has multiple submeshes.")]
     public Material secondMaterial; //Used when mesh has two materials
 
+    /// <summary>
+    /// Scene singleton instance for managed-side access.
+    /// </summary>
     public static AnimationDataRegistryAuthoring Instance { get; private set; }
 
     /// <summary>
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -131,7 +149,13 @@ class AnimationDataRegistryBaker : Baker<AnimationDataRegistryAuthoring>
 /// </summary>
 public struct AnimationFrameMetadata : IComponentData
 {
+    /// <summary>
+    /// Animation key that owns this frame mesh entry.
+    /// </summary>
     public AnimationKey animationKey;
+    /// <summary>
+    /// Frame index within the animation mesh array.
+    /// </summary>
     public int meshIndex;
 }
 
@@ -141,11 +165,14 @@ public struct AnimationFrameMetadata : IComponentData
 /// </summary>
 public struct AnimationRegistrySOReference : IComponentData
 {
+    /// <summary>
+    /// Managed reference to the source animation registry SO for post-baking processing.
+    /// </summary>
     public UnityObjectRef<AnimationDataRegistrySO> registry;
 }
 
 /// <summary>
-/// Contains the entirety of the animation data baked from the <see cref="AnimationDataRegistrySO"/> for one full animation. Built during PostBaking process.
+/// Singleton component containing animation data baked from <see cref="AnimationDataRegistrySO"/> during post-baking.
 /// </summary>
 public struct AnimationDataRegistry : IComponentData
 {
@@ -160,12 +187,21 @@ public struct AnimationDataRegistry : IComponentData
 /// </summary>
 public struct AnimationData
 {
+    /// <summary>
+    /// Unique key for this animation entry.
+    /// </summary>
     public AnimationKey animationKey;
+    /// <summary>
+    /// High-level animation category.
+    /// </summary>
     public AnimationType animationType;
+    /// <summary>
+    /// Whether this animation must finish before being interrupted.
+    /// </summary>
     [MarshalAs(UnmanagedType.U1)]
     public bool playFull;
     /// <summary>
-    /// Time span for each frame change.
+    /// Time interval for each frame change.
     /// Animations are meant to follow a strictly linear frame-rate dictated by this value.
     /// </summary>
     public float frameFrequency;
@@ -174,10 +210,13 @@ public struct AnimationData
     /// </summary>
     public int frameCount;
     /// <summary>
-    /// Blob array of each animation fram ID.
+    /// Blob array of each animation frame mesh ID.
     /// </summary>
     public BlobArray<int> frameMeshIdIndex;
 
+    /// <summary>
+    /// Returns whether this animation should be treated as uninterruptible.
+    /// </summary>
     public bool IsUninterruptible()
     {
         if (playFull) return true;

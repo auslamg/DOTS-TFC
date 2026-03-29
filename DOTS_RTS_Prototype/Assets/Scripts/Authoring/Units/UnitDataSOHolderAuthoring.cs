@@ -7,7 +7,17 @@ using UnityEngine;
 /// </summary>
 public class UnitDataSOHolderAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Name portion of the <see cref="UnitKey"/> used for lookup.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Name portion of the UnitKey used for unit data lookup.")]
     public string unitKeyName;
+    /// <summary>
+    /// Unit type metadata paired with <see cref="unitKeyName"/>.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Unit type metadata paired with the unit key name.")]
     public UnitType unitKeyType;
 }
 
@@ -34,5 +44,8 @@ class UnitDataSOHolderBaker : Baker<UnitDataSOHolderAuthoring>
 /// </summary>
 public struct UnitDataSOHolder : IComponentData
 {
+    /// <summary>
+    /// Lookup key used to resolve a unit entry in runtime registries.
+    /// </summary>
     public UnitKey unitKey;
 }

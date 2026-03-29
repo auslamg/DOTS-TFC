@@ -4,10 +4,13 @@ using Unity.Transforms;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [UpdateBefore(typeof(ResetEventSystem))]
+/// <summary>
+/// Updates unit selection gizmo visibility based on one-frame selection events.
+/// </summary>
 partial struct SelectedVisualSystem : ISystem
 {
     /// <summary>
-    /// Update() : MonoBehaviour
+    /// Applies selection and deselection visual state to each selected gizmo.
     /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)

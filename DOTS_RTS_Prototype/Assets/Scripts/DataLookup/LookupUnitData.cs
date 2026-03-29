@@ -3,13 +3,13 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Provides lookup utilities for retrieving <see cref="UnitData"/> records by key.
+/// Provides binary-search utilities for retrieving <see cref="UnitData"/> entries by key.
 /// </summary>
 [BurstCompile]
 public class LookupUnitData
 {
     /// <summary>
-    /// Gets the <see cref="UnitData"/> entry in the registry blob array.
+    /// Retrieves a <see cref="UnitData"/> entry from the registry blob array.
     /// </summary>
     /// <param name="unitDataBlobArrayRef">Blob array reference containing unit data entries sorted by key.</param>
     /// <param name="unitKey">Key used to find the desired unit entry.</param>
@@ -43,7 +43,7 @@ public class LookupUnitData
             {
                 leftIndex = middleIndex + 1;
             }
-            //Cut the the upper half out
+            //Cut the upper half out
             else
             {
                 rightIndex = middleIndex - 1;

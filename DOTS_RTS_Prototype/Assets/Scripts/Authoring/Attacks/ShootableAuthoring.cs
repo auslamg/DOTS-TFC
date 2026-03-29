@@ -14,6 +14,8 @@ class ShootableAuthoring : MonoBehaviour
     /// <remarks>
     /// The transform is converted to local space from global space during baking process.
     /// </remarks>
+    [SerializeField]
+    [Tooltip("Transform used as the local-space projectile hit point on this target.")]
     public Transform hitPointTransform;
 }
 

@@ -8,6 +8,8 @@ class SelfDestroyAuthoring : MonoBehaviour
     /// <summary>
     /// Time delay in seconds before object self-destruction.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Delay in seconds before this entity is destroyed.")]
     public float delay;
 }
 
@@ -26,6 +28,9 @@ class SelfDestroyBaker : Baker<SelfDestroyAuthoring>
     }
 }
 
+/// <summary>
+/// Used by entities that should be destroyed after a delay.
+/// </summary>
 public struct SelfDestroy : IComponentData
 {
     /// <summary>

@@ -17,6 +17,9 @@ partial struct ResetTargetSystem : ISystem
     private ComponentLookup<LocalTransform> localTransformLookup;
     private EntityStorageInfoLookup esiLookup;
 
+    /// <summary>
+    /// Initializes lookup caches used to validate target entity persistence.
+    /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -24,6 +27,9 @@ partial struct ResetTargetSystem : ISystem
         esiLookup = state.GetEntityStorageInfoLookup();
     }
 
+    /// <summary>
+    /// Refreshes lookups and schedules target cleanup jobs for automatic and manual targets.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -45,10 +51,17 @@ partial struct ResetTargetSystem : ISystem
 }
 
 [BurstCompile]
+/// <summary>
+/// Clears <see cref="Targetter.targetEntity"/> when the referenced entity no longer persists.
+/// </summary>
 public partial struct ResetTargetterJob : IJobEntity
 {
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
     [ReadOnly] public EntityStorageInfoLookup entityStorageInfoLookup;
+
+    /// <summary>
+    /// Validates a targetter reference and resets it to <see cref="Entity.Null"/> when invalid.
+    /// </summary>
     public void Execute(ref Targetter targetter)
     {
         if (targetter.targetEntity != Entity.Null)
@@ -63,10 +76,17 @@ public partial struct ResetTargetterJob : IJobEntity
 }
 
 [BurstCompile]
+/// <summary>
+/// Clears <see cref="ManualTarget.targetEntity"/> when the referenced entity no longer persists.
+/// </summary>
 public partial struct ResetManualTargetJob : IJobEntity
 {
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
     [ReadOnly] public EntityStorageInfoLookup entityStorageInfoLookup;
+
+    /// <summary>
+    /// Validates a manual target reference and resets it to <see cref="Entity.Null"/> when invalid.
+    /// </summary>
     public void Execute(ref ManualTarget manualTarget)
     {
         if (manualTarget.targetEntity != Entity.Null)

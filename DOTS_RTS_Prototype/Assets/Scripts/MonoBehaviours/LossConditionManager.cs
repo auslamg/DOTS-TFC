@@ -36,11 +36,11 @@ public class LossConditionManager : MonoBehaviour
     public static LossConditionManager Instance { get; private set; }
 
     /// <summary>
-    /// Used for singleton logic.
+    /// Initializes singleton instance state.
     /// </summary>
     void Awake()
     {
-        //Singleton logic
+        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;

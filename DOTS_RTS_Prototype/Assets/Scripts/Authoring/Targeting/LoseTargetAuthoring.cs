@@ -6,14 +6,16 @@ using UnityEngine;
 class LoseTargetAuthoring : MonoBehaviour
 {
     /// <summary>
-    /// Minimum distance difference to target to consider losing it.
+    /// Minimum distance threshold to consider losing the current target.
     /// </summary>
     [SerializeField]
-    [Tooltip("Minimum distance difference to target to consider losing it.")]
+    [Tooltip("Minimum distance threshold to consider losing the current target.")]
     public float thresholdDistance;
     /// <summary>
-    /// Time span between attempts.
+    /// Time interval between lose-target checks.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between attempts to drop the current target.")]
     public float attemptFrequency;
 }
 
@@ -43,7 +45,7 @@ class LoseTargetBaker : Baker<LoseTargetAuthoring>
 public struct LoseTarget : IComponentData
 {
     /// <summary>
-    /// Minimum distance to the target to consider losing it.
+    /// Minimum distance threshold to consider losing the current target.
     /// </summary>
     public float thresholdDistance;
     /// <summary>
@@ -51,7 +53,7 @@ public struct LoseTarget : IComponentData
     /// </summary>
     public float attemptPhaseTime;
     /// <summary>
-    /// Time span between attempts.
+    /// Time interval between lose-target checks.
     /// </summary>
     public float attemptFrequency;
 }

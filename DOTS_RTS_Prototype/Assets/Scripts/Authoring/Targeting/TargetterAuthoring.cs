@@ -6,11 +6,13 @@ using UnityEngine;
 class TargetterAuthoring : MonoBehaviour
 {
     /// <summary>
-    /// Targetted GameObject baked to an Entity.
+    /// Targeted GameObject baked to an Entity.
     /// </summary>
     /// <remarks>
     /// Entities with this component will usually have their own means for acquiring targets, so this field is mainly for testing purposes.
     /// </remarks>
+    [SerializeField]
+    [Tooltip("Optional test target GameObject converted to the initial target entity.")]
     public GameObject testTargetGameObject;
 
 }
@@ -36,7 +38,7 @@ class TargetterBaker : Baker<TargetterAuthoring>
 public struct Targetter : IComponentData
 {
     /// <summary>
-    /// Targetted entity.
+    /// Targeted entity.
     /// </summary>
     public Entity targetEntity;
 }

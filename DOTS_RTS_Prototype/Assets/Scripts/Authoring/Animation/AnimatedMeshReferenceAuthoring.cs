@@ -8,6 +8,8 @@ class AnimatedMeshReferenceAuthoring : MonoBehaviour
     /// <summary>
     /// Pointer to the Entity that holds the animated mesh.
     /// </summary>
+    [SerializeField]
+    [Tooltip("GameObject that becomes the entity holding the animated mesh.")]
     public GameObject animatedMeshGameObject;
 }
 

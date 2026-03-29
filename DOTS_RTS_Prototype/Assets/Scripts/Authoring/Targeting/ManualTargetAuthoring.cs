@@ -32,7 +32,7 @@ class ManualTargetBaker : Baker<ManualTargetAuthoring>
 public struct ManualTarget : IComponentData
 {
     /// <summary>
-    /// Targetted entity.
+    /// Targeted entity.
     /// </summary>
     public Entity targetEntity;
 }

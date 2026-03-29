@@ -9,22 +9,32 @@ class ShootAttackAuthoring : MonoBehaviour
     /// <summary>
     /// Key for the projectile entity to be spawned.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Prefab key used to spawn the projectile entity.")]
     public string projectilePrefabKey = "Bullet";
     /// <summary>
     /// Key for the entity to be spawned on shoot.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Prefab key used for the optional effect/entity spawned when shooting.")]
     public string onShootSpawnedEntityKey = "ShootLight";
     /// <summary>
-    /// Time span between attacks.
+    /// Time interval between attacks.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between shoot attacks.")]
     public float attackFrequency;
     /// <summary>
-    /// Maximum distance for attacks.
+    /// Maximum attack range.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Maximum distance at which shoot attacks can be performed.")]
     public float attackDistance;
     /// <summary>
     /// Base damage dealt with each attack.
     /// </summary>
+    [SerializeField]
+    [Tooltip("Base damage passed to each spawned projectile.")]
     public int damageAmount;
     /// <summary>
     /// Spawn position for the projectile shot.
@@ -32,6 +42,8 @@ class ShootAttackAuthoring : MonoBehaviour
     /// <remarks>
     /// The transform is converted to local space from global space during baking process.
     /// </remarks>
+    [SerializeField]
+    [Tooltip("Transform used as the local-space spawn point for projectiles.")]
     public Transform projectileSpawnPointTransform;
 }
 
@@ -84,11 +96,11 @@ public struct ShootAttack : IComponentData
     /// </summary>
     public float attackPhaseTime;
     /// <summary>
-    /// Time span between attacks.
+    /// Time interval between attacks.
     /// </summary>
     public float attackFrequency;
     /// <summary>
-    /// Maximum distance for attacks.
+    /// Maximum attack range.
     /// </summary>
     public float attackDistance;
     /// <summary>

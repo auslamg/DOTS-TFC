@@ -6,8 +6,14 @@ using Unity.Transforms;
 using UnityEngine;
 
 
+/// <summary>
+/// Development-only system used to validate ECS query behavior during local testing.
+/// </summary>
 partial struct TestingSystem : ISystem
 {
+    /// <summary>
+    /// Entry point for optional test routines kept disabled by default.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {

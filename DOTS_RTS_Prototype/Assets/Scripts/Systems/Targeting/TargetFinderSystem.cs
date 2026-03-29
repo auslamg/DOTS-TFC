@@ -6,9 +6,19 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Scans for valid enemy targets and assigns the best candidate to each targetter.
+/// </summary>
+/// <remarks>
+/// Manual targets take priority. Automatic scans run on a timer and use overlap queries,
+/// faction filtering, and closest-distance checks to pick target swaps.
+/// </remarks>
 partial struct FindTargetSystem : ISystem
 {
     //TODO: //BUG: Target changes even if there is already an alive target
+    /// <summary>
+    /// Performs timed target acquisition using physics overlap queries and faction checks.
+    /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -32,18 +42,19 @@ partial struct FindTargetSystem : ISystem
                 RefRO<ManualTarget>>())
         {
             //IDEA: Refactor into corroutines
-            //Timer
+            // Target scan interval timer
             targetFinder.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
             if (targetFinder.ValueRO.scanPhaseTime <= 0)
             {
                 targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
 
+                // Manual targets take priority over automatic scan results
                 if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
                 {
                     //There's a manual target, don't try to find a new one
                     targetter.ValueRW.targetEntity = manualTarget.ValueRO.targetEntity;
                 }
-                else //Find a new target
+                else // No manual target — run overlap query and select closest valid enemy
                 {
                     distanceHitList.Clear();
                     //CollisionFilter for physics query (OverlapSphere)
