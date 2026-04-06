@@ -109,7 +109,6 @@ partial struct SpawnerSystem : ISystem
                 {
                     originPointPosition = localTransform.ValueRO.Position,
                     targetPostion = localTransform.ValueRO.Position,
-                    //TODO: Refactor into reference to EntitiesReference (through query)
                     minDistance = spawner.ValueRO.minDistance,
                     maxDistance = spawner.ValueRO.maxDistance,
                     random = new Unity.Mathematics.Random((uint)entity.Index)

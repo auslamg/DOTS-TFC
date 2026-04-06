@@ -13,9 +13,8 @@ using UnityEngine;
 /// Manual targets take priority. Automatic scans run on a timer and use overlap queries,
 /// faction filtering, and closest-distance checks to pick target swaps.
 /// </remarks>
-partial struct FindTargetSystem : ISystem
+partial struct TargetFinderSystem : ISystem
 {
-    //TODO: //BUG: Target changes even if there is already an alive target
     /// <summary>
     /// Performs timed target acquisition using physics overlap queries and faction checks.
     /// </summary>

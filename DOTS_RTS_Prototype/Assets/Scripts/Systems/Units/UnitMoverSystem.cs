@@ -17,11 +17,35 @@ partial struct UnitMoverSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        StartTargetPositionJob startTargetPositionJob = new StartTargetPositionJob {};
+        startTargetPositionJob.ScheduleParallel();
+
         UnitMoverJob unitMoverJob = new UnitMoverJob
         {
             deltaTime = SystemAPI.Time.DeltaTime
         };
         unitMoverJob.ScheduleParallel();
+    }
+}
+
+/// <summary>
+/// Resets unit target position if there is none after spawning to avoid the unit going to the default value (0,0,0) 
+/// </summary>
+[BurstCompile]
+public partial struct StartTargetPositionJob : IJobEntity
+{
+    public void Execute(in LocalTransform localTransform, ref UnitMover unitMover)
+    {
+        if (unitMover.hasStartedTargetPosition)
+        {
+            return;
+        }
+        unitMover.hasStartedTargetPosition = true;
+
+        if (math.lengthsq(unitMover.targetPosition) == 0f)
+        {
+            unitMover.targetPosition = localTransform.Position;
+        }
     }
 }
 

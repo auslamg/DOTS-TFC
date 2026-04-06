@@ -47,7 +47,6 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="Targetter"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
 /// </remarks>
 public struct TargetFinder : IComponentData
 {

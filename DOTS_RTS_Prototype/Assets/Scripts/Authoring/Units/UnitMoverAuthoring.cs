@@ -39,7 +39,8 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
             moveSpeed = authoring.moveSpeed,
             rotationSpeed = authoring.rotationSpeed,
             targetReachedDistanceSquared = authoring.targetReachedDistanceSquared,
-            targetPosition = authoring.transform.position
+            targetPosition = authoring.transform.position,
+            hasStartedTargetPosition = false
         });
     }
 }
@@ -49,7 +50,6 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="Unit"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(Unit))]
 /// </remarks>
 public struct UnitMover : IComponentData
 {
@@ -73,5 +73,9 @@ public struct UnitMover : IComponentData
     /// Determines whether the entity is currently moving. //TODO: Use for FSM
     /// </summary>
     public bool isMoving;
+    /// <summary>
+    /// Determines whether the entity's target has been reset from 0,0,0 after spawning.
+    /// </summary>
+    public bool hasStartedTargetPosition;
 }
 

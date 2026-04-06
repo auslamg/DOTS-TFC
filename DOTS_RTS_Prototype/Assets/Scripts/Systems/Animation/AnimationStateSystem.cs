@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+
 [UpdateAfter(typeof(ShootAttackSystem))]
 /// <summary>
 /// Resolves high-level gameplay state into requested animation keys.
