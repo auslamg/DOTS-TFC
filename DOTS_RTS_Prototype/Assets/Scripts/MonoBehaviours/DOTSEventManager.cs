@@ -83,6 +83,15 @@ public class DOTSEventManager : MonoBehaviour
     {
         OnCriticalDestruction?.Invoke(this, new EntityEventArgs(firingEntity));
     }
+    
+    /// <summary>
+    /// Emits a game-over event with the supplied display message.
+    /// </summary>
+    /// <param name="msg">Message shown by game-over UI consumers.</param>
+    public void TriggerOnGameOver(FixedString64Bytes msg)
+    {
+        OnGameOver?.Invoke(this, new MsgEventArgs(msg));
+    }
 
     /// <summary>
     /// Emits a game-over event with the supplied display message.
@@ -131,5 +140,14 @@ public class MsgEventArgs : EventArgs
     public MsgEventArgs(string msg)
     {
         this.msg = msg;
+    }
+
+    /// <summary>
+    /// Creates event args for a message-based event.
+    /// </summary>
+    /// <param name="msg">Message payload.</param>
+    public MsgEventArgs(FixedString64Bytes msg)
+    {
+        this.msg = msg.ToString();
     }
 }

@@ -1,4 +1,3 @@
-using Unity.Burst;
 using Unity.Entities;
 
 
@@ -11,7 +10,6 @@ partial struct GameOverOnDeathSystem : ISystem
     /// <summary>
     /// Monitors critical entities and raises managed events for game-over and critical tracking.
     /// </summary>
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         // If single criticals are killed, game over
@@ -30,8 +28,7 @@ partial struct GameOverOnDeathSystem : ISystem
             {
                 if (health.ValueRO.onDeath)
                 {
-                    string msg = gameOverOnDeath.ValueRO.gameOverMessage.ToString();
-                    DOTSEventManager.Instance.TriggerOnGameOver(msg);
+                    DOTSEventManager.Instance.TriggerOnGameOver(gameOverOnDeath.ValueRO.gameOverMessage);
                 }
             }
         }

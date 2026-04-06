@@ -369,39 +369,38 @@ public class UnitSelectionManager : MonoBehaviour
             GroupIndex = 0
         };
 
-        BlobAssetReference<Collider> sphereCollider = SphereCollider.Create(sphereGeometry, filter);
-
-        ColliderCastInput input = new ColliderCastInput
+        using (BlobAssetReference<Collider> sphereCollider = SphereCollider.Create(sphereGeometry, filter))
         {
-            Collider = (Collider*)sphereCollider.GetUnsafePtr(),
-            Orientation = quaternion.identity,
-            Start = start,
-            End = end
-        };
-
-        if (collisionWorld.CastCollider(input, out ColliderCastHit hit))
-        {
-            Entity hitEntity = hit.Entity;
-
-            if (entityManager.Exists(hitEntity) &&
-                entityManager.HasComponent<LocalTransform>(hitEntity))
+            ColliderCastInput input = new ColliderCastInput
             {
-                if (!entityManager.HasComponent<PhysicsCollider>(hitEntity))
-                    return Entity.Null;
+                Collider = (Collider*)sphereCollider.GetUnsafePtr(),
+                Orientation = quaternion.identity,
+                Start = start,
+                End = end
+            };
 
-                if (entityManager.HasComponent<Health>(hitEntity))
+            if (collisionWorld.CastCollider(input, out ColliderCastHit hit))
+            {
+                Entity hitEntity = hit.Entity;
+
+                if (entityManager.Exists(hitEntity) &&
+                    entityManager.HasComponent<LocalTransform>(hitEntity))
                 {
-                    Health hitHealth = entityManager.GetComponentData<Health>(hitEntity);
-                    if (hitHealth.currentHealth <= 0)
+                    if (!entityManager.HasComponent<PhysicsCollider>(hitEntity))
                         return Entity.Null;
-                }
 
-                sphereCollider.Dispose();
-                return hitEntity;
+                    if (entityManager.HasComponent<Health>(hitEntity))
+                    {
+                        Health hitHealth = entityManager.GetComponentData<Health>(hitEntity);
+                        if (hitHealth.currentHealth <= 0)
+                            return Entity.Null;
+                    }
+
+                    return hitEntity;
+                }
             }
         }
 
-        sphereCollider.Dispose();
         return Entity.Null;
     }
 

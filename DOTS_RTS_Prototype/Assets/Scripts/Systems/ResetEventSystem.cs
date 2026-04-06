@@ -10,17 +10,28 @@ using Unity.Jobs;
 /// </summary>
 partial struct ResetEventSystem : ISystem
 {
+    /// <summary>
+    /// Job handles for the parallel reset jobs. This array is allocated once and reused across updates.
+    /// </summary>
     private NativeArray<JobHandle> jobHandleArray;
 
     /// <summary>
-    /// Allocates the fixed-size job handle array used to combine reset job dependencies.
+    /// Entities that fired a trainer unit queue change event during this frame.
+    /// This list is reused and cleared on every update.
+    /// </summary>
+    private NativeList<Entity> onTrainerUnitQueueChangeFiringEntities;
+
+
+    /// <summary>
+    /// Allocates the persistent native collections used to combine reset job dependencies and reset trainer unit queues.
     /// </summary>
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         jobHandleArray = new NativeArray<JobHandle>(4, Allocator.Persistent);
+        onTrainerUnitQueueChangeFiringEntities = new NativeList<Entity>(Allocator.Persistent);
     }
-    
+
     /// <summary>
     /// Schedules all event reset jobs and triggers managed trainer queue notifications.
     /// </summary>
@@ -33,17 +44,27 @@ partial struct ResetEventSystem : ISystem
         jobHandleArray[3] = new ResetShootAttackEventsJob().ScheduleParallel(state.Dependency);
 
         // Complete trainer-event job synchronously to collect changed entities before managed dispatch
-        NativeList<Entity> onTrainerUnitQueueChangeFiredEntities = new NativeList<Entity>(Allocator.TempJob);
+        onTrainerUnitQueueChangeFiringEntities.Clear();
         new ResetTrainerEventsJob
         {
-            onUnitQueueChangeFiredEntities = onTrainerUnitQueueChangeFiredEntities.AsParallelWriter(),
+            onUnitQueueChangeFiringEntities = onTrainerUnitQueueChangeFiringEntities.AsParallelWriter(),
         }.ScheduleParallel(state.Dependency).Complete();
 
         //REVIEW: Managed code so no Burst, although the code on this method is fairly costless (there's only Job schedulling)
-        DOTSEventManager.Instance.TriggerOnTrainerUnitQueueChange(onTrainerUnitQueueChangeFiredEntities);
+        DOTSEventManager.Instance.TriggerOnTrainerUnitQueueChange(onTrainerUnitQueueChangeFiringEntities);
 
         // Combine all parallel job handles so downstream systems wait on all reset jobs
         state.Dependency = JobHandle.CombineDependencies(jobHandleArray);
+    }
+
+    /// <summary>
+    /// Deallocates the persistent native collections allocated in <see cref="OnCreate(ref SystemState)"/>.
+    /// </summary>
+    [BurstCompile]
+    public void OnDestroy(ref SystemState state)
+    {
+        jobHandleArray.Dispose();
+        onTrainerUnitQueueChangeFiringEntities.Dispose();
     }
 
 }
@@ -116,7 +137,7 @@ public partial struct ResetShootAttackEventsJob : IJobEntity
 /// </summary>
 public partial struct ResetTrainerEventsJob : IJobEntity
 {
-    public NativeList<Entity>.ParallelWriter onUnitQueueChangeFiredEntities;
+    public NativeList<Entity>.ParallelWriter onUnitQueueChangeFiringEntities;
 
     /// <summary>
     /// Enqueues trainer entities that changed queue state before resetting their event flag.
@@ -125,7 +146,7 @@ public partial struct ResetTrainerEventsJob : IJobEntity
     {
         if (trainer.onUnitQueueChange)
         {
-            onUnitQueueChangeFiredEntities.AddNoResize(entity);
+            onUnitQueueChangeFiringEntities.AddNoResize(entity);
         }
         trainer.onUnitQueueChange = false;
     }

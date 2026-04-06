@@ -109,10 +109,32 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
                     }
                 }
 
+                // Dispose the previous blob reference before replacing it to avoid leaking persistent memory.
+                if (animationDataRegistry.ValueRW.animationDataBlobArrayReference.IsCreated)
+                {
+                    animationDataRegistry.ValueRW.animationDataBlobArrayReference.Dispose();
+                }
+
                 //Build BlobAssetReference
                 animationDataRegistry.ValueRW.animationDataBlobArrayReference =
                     blobBuilder.CreateBlobAssetReference<BlobArray<AnimationData>>(Allocator.Persistent);
             }
         }
     }
+
+    /* /// <summary>
+    /// Releases the animation blob asset when the system is destroyed.
+    /// </summary>
+    public void OnDestroy(ref SystemState state)
+    {
+        if (SystemAPI.HasSingleton<AnimationDataRegistry>())
+        {
+            RefRW<AnimationDataRegistry> animationDataRegistry = SystemAPI.GetSingletonRW<AnimationDataRegistry>();
+            if (animationDataRegistry.ValueRW.animationDataBlobArrayReference.IsCreated)
+            {
+                animationDataRegistry.ValueRW.animationDataBlobArrayReference.Dispose();
+            }
+        }
+    } */
+    
 }

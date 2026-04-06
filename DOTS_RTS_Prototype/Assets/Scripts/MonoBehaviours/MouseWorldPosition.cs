@@ -23,6 +23,13 @@ public class MouseWorldPosition : MonoBehaviour
     private bool usePhysics = false;
 
     /// <summary>
+    /// Key used to log the current mouse world position.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Key used to log the current mouse world position.")]
+    private KeyCode debugKey = KeyCode.M;
+
+    /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
     void Awake()
@@ -40,11 +47,11 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Debug hook that logs the current mouse world position when pressing A.
+    /// Debug hook that logs the current mouse world position when pressing the debug key.
     /// </summary>
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(debugKey))
         {
             Debug.Log(GetPosition());
         }

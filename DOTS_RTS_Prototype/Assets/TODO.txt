@@ -1,3 +1,7 @@
+===================================================================================
+//TODO
+===================================================================================
+
 Optimize render resolution
 - LOOK INTO: https://www.youtube.com/shorts/eYke6tpAdws
 - LOOK INTO: Touch up RP assets > lights > Shadow Resolution & Shadow Atlas Resolution for fx optimization
@@ -48,7 +52,6 @@ Document
         Add key to BuildingDataSOHolder component
 
 
-- DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
 
 Aesthetic/UX addons
 - FEATURE/FIX: Right click on friendly unit = move (click layer priorities)
@@ -69,10 +72,15 @@ Gameplay features
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
 - FEATURE: Buildings
 
+Performance/data features
+- FEATURE: Texture Atlas pre-runtime calculation
+- IDEA: Implement Dictionary style Map for AnimationDataRegistry (reduce runtime magnitude from O(log n) to O(1) at the expense of a slower initial bake)
+
+
 AI features
-- FEATURE: FSM bot enemy
+- FEATURE: FSM bot enemy? Check for DOTS compatibility
 - FEATURE: FlowField pathfinding (requires grid)
-- FEATURE: Non-seeking, calculated projectiles
+- FEATURE: Non-seeking, calculated projectiles (Catapult style?)
 - FIX: Building colliders dont disappear on destruction, being clickable and making units float
 
 - GDD: Full targetting behaviour
@@ -82,35 +90,44 @@ AI features
 
 Refactors
 - REFACTOR: Change ALL Instantiate references to EntityCommandBuffer pattern
-- REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components
-- REFACTOR: Remove commented obsolete code from the animation baking authoring file
-- REFACTOR: Change unit selector method for single unit for spherecast OR increase selection hitboxes
+- REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components (Investigate)
 - REFACTOR: >= consistency in timer code blocks
-- REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
-- REFACTOR: Extract unit values into scriptable objects (maybe UnitBuilder(Health, Attacks, etc.))
 - REFACTOR: FSM for animation states
 - REFACTOR: Standardize jobs schedulling and lookups
 - REFACTOR: Rename Walk animatiobs to Move
 - REFACTOR: Rename Hostile animations to appropiate enemy name
 - REFACTOR: "Frequency" variables in struct timers should be "peiod" or "interval"
-- REFACTOR: Parametrize EnemySpawner and rename to EntitySpawner (change SO)
-- REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those
-- RENAME: Barracks scripts to Trainer
-- REFACTOR: Implement Dictionary style Map for AnimationDataRegistry
+- REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those during entity baking
 - REFACTOR/FIX: Validate non-nullity in all baker key fields
 
 
+===================================================================================
+//FIXED
+===================================================================================
 
 FIXED: Refactor unit turn speed source
 FIXED: ZOMBIE CANT FIND TARGET
 FIXED: Fix unit selection rect scaling with screen size
 FIXED: Could not find singleton oftype EntitiesReference
 
+
+===================================================================================
+//DONE
+===================================================================================
+
+//REVIEW:
+ DOCUMENT: Make all summary comments visible in SerializeFields + Tooltips (Copilot might do this real good)
+
 DONE: DOCUMENT: (Animation baking extensively)
 
-
+DONE: REFACTOR: ShootLightSpawner to OnShootSpawner (parametrize prefab)
 DONE: REFACTOR: Rename MoveOverride to ManualMove
 DONE: REFACTOR: Rename TargetOverride to ManualTarget
 DONE: REFACTOR: Remove "Authoring" from all baker signatures
 DONE: REFACTOR: Animation system into dictionary values rather than enums (see documentation)
+DONE: REFACTOR: Change unit selector method for single unit for spherecast OR increase selection hitboxes
+DONE: REFACTOR: Remove commented obsolete code from the animation baking authoring file
+DONE: REFACTOR: Parametrize EnemySpawner and rename to Spawner (change SO)
+DONE: RENAME: Barracks scripts to Trainer
+
 

@@ -103,7 +103,6 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private void SetBuildingCard(BuildingDataSO buildingDataSO, RectTransform buildingButton)
     {
         Image image = buildingButton.transform.GetChild(2).GetComponent<Image>();
-        Debug.Log($"Image: {image.gameObject.name}");
         if (buildingDataSO != null && buildingDataSO.imageCard != null)
         {
             image.sprite = buildingDataSO.imageCard;

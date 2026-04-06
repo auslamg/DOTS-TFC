@@ -21,8 +21,15 @@ public class EntityOnPress : MonoBehaviour
     /// Prefab key used to resolve which entity to spawn on key press.
     /// </summary>
     [SerializeField]
-    [Tooltip("Entity prefab key to spawn when pressing E.")]
+    [Tooltip("Prefab key used to resolve which entity to spawn on key press.")]
     private string entity;
+
+    /// <summary>
+    /// Key used to instance an entity prefab.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Key used to instance an entity prefab.")]
+    private KeyCode key = KeyCode.I;
 
     /// <summary>
     /// Initializes singleton instance state.
@@ -50,7 +57,7 @@ public class EntityOnPress : MonoBehaviour
         {
             return;
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(key))
         {
             Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;

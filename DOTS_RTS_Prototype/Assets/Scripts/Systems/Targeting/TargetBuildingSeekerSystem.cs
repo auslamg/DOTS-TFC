@@ -53,8 +53,6 @@ partial struct TargetBuildingSeekerSystem : ISystem
                 {
                     return;
                 }
- 
-                Debug.Log("Giving a try");
 
                 //Get a building if there is no target, but set it as soft target so units prevail over buildings
                 Entity targetBuildingEntity = Entity.Null;
@@ -80,8 +78,6 @@ partial struct TargetBuildingSeekerSystem : ISystem
 
                 if (EntityUtil.ExistsAndPersists(ref state, targetBuildingEntity))
                 {
-                    Debug.Log($"Success: Target is + {targetBuildingEntity}");
-
                     targetter.ValueRW.targetEntity = targetBuildingEntity;
                 }
             }

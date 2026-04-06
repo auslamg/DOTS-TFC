@@ -33,6 +33,7 @@ To open and work with this Unity DOTS project, ensure you have the following ins
 - **2D Sprite** (`com.unity.2d.sprite`)
 - **Visual Studio IDE** (`com.unity.ide.visualstudio`)
 - **Input System** (`com.unity.inputsystem`)
+- **Cinemachine** (`com.unity.cinemachine`)
 - **Physics** (`com.unity.physics`)
 - **Universal Render Pipeline** (`com.unity.render-pipelines.universal`)
 - **A supported C# IDE** (Visual Studio or Visual Studio Code, both with Unity support/extensions)
