@@ -138,6 +138,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2786192522205238460, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2786192522205238460, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2786192522205238460, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3705344212020068456, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_LocalScale.x
       value: 8
@@ -178,6 +190,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4461606056213719054, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: displayScale
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 5114271408651382707, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: gameOverMessage
       value: You lost your fort!
@@ -200,7 +216,7 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 19d86961dae3cd447b1d8176deafd8e9, type: 3}
     - target: {fileID: 9128407762969953561, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Name
-      value: HQFort Variant
+      value: HQFort
       objectReference: {fileID: 0}
     - target: {fileID: 9128407762969953561, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_IsActive

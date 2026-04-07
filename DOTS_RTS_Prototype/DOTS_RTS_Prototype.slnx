@@ -9,12 +9,12 @@
   <Project Path="Unity.ScriptableBuildPipeline.Editor.csproj" />
   <Project Path="Unity.Mathematics.csproj" />
   <Project Path="Unity.Timeline.Editor.csproj" />
+  <Project Path="Unity.Cinemachine.Editor.csproj" />
   <Project Path="Unity.Multiplayer.Center.Editor.csproj" />
   <Project Path="Unity.RenderPipelines.Core.Editor.csproj" />
-  <Project Path="Unity.Collections.csproj" />
   <Project Path="UnityEngine.UI.csproj" />
   <Project Path="Unity.RenderPipelines.Universal.2D.Runtime.csproj" />
-  <Project Path="Unity.Cinemachine.Editor.csproj" />
+  <Project Path="Unity.Collections.csproj" />
   <Project Path="Unity.Entities.UI.Editor.csproj" />
   <Project Path="Unity.VisualScripting.Core.Editor.csproj" />
   <Project Path="Unity.RenderPipelines.Universal.Editor.csproj" />
@@ -42,8 +42,8 @@
   <Project Path="Unity.Cinemachine.csproj" />
   <Project Path="Unity.VisualScripting.Flow.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
-  <Project Path="Unity.Entities.Hybrid.csproj" />
   <Project Path="Unity.Splines.Editor.csproj" />
+  <Project Path="Unity.Entities.Hybrid.csproj" />
   <Project Path="Unity.PerformanceTesting.csproj" />
   <Project Path="Unity.Scenes.Editor.csproj" />
   <Project Path="Unity.TextMeshPro.csproj" />
@@ -74,8 +74,8 @@
   <Project Path="Unity.Entities.UI.csproj" />
   <Project Path="Unity.ScriptableBuildPipeline.csproj" />
   <Project Path="Unity.Transforms.csproj" />
-  <Project Path="Unity.Entities.Build.csproj" />
   <Project Path="Unity.Settings.Editor.csproj" />
+  <Project Path="Unity.Entities.Build.csproj" />
   <Project Path="Unity.InputSystem.TestFramework.csproj" />
   <Project Path="Unity.ShaderGraph.Utilities.csproj" />
   <Project Path="Unity.Numerics.Memory.csproj" />

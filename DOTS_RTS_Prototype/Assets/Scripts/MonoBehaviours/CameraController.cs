@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Speed at which the camera rotates around its vertical axis.")]
-    float cameraRotationSpeed = 200f;
+    float cameraRotationSpeed = 1f;
 
     [Header("Zoom Settings")]
 
@@ -36,7 +36,7 @@ public class CameraController : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Maximum field of view angle when zooming out.")]
-    float maximumFOV = 120f;  
+    float maximumFOV = 70f;
 
     /// <summary>
     /// Amount of zoom applied per input step.
@@ -50,7 +50,7 @@ public class CameraController : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Rate at which the camera transitions to the target zoom level.")]
-    float zoomSmoothingMultiplier = 10;
+    float zoomSmoothingMultiplier = 100;
 
     /// <summary>
     /// Desired field of view the camera moves toward when zooming.
@@ -70,12 +70,6 @@ public class CameraController : MonoBehaviour
     void Awake()
     {
         targetFOV = cinemachineCamera.Lens.FieldOfView;
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
     }
 
     // Update is called once per frame
@@ -118,18 +112,19 @@ public class CameraController : MonoBehaviour
             rotationTotal -= 1;
         }
 
-        transform.eulerAngles += new Vector3(0, rotationTotal, 0);
+        transform.eulerAngles += new Vector3(0, rotationTotal * cameraRotationSpeed, 0);
 
         if (Input.mouseScrollDelta.y > 0)
         {
-            targetFOV -= zoomStepMultiplier / 100 * cinemachineCamera.Lens.FieldOfView;
+            targetFOV -= zoomStepMultiplier / 10 * cinemachineCamera.Lens.FieldOfView;
         }
         if (Input.mouseScrollDelta.y < 0)
         {
-            targetFOV += zoomStepMultiplier / 100 * cinemachineCamera.Lens.FieldOfView;
+            targetFOV += zoomStepMultiplier / 10 * cinemachineCamera.Lens.FieldOfView;
         }
 
         targetFOV = Mathf.Clamp(targetFOV, minimumFOV, maximumFOV);
-        cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, zoomSmoothingMultiplier);
+        cinemachineCamera.Lens.FieldOfView =
+            Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, 10 / zoomSmoothingMultiplier);
     }
 }

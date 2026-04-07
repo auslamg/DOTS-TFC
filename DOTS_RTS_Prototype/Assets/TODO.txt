@@ -89,6 +89,7 @@ AI features
 - FEATURE/FIX: Make two options more moveAttack rallypoint and normal only move rallypoint for trainers
 
 Refactors
+- REFACTOR: Rename entities at runtime for identification ease (state.EntityManager.SetName)
 - REFACTOR: Change ALL Instantiate references to EntityCommandBuffer pattern
 - REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components (Investigate)
 - REFACTOR: >= consistency in timer code blocks

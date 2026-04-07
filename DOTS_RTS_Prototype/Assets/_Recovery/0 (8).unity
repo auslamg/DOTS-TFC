@@ -428,11 +428,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   cameraMovementSpeed: 30
-  cameraRotationSpeed: 1
+  cameraRotationSpeed: 200
   minimumFOV: 10
-  maximumFOV: 70
+  maximumFOV: 80
   zoomStepMultiplier: 10
-  zoomSmoothingMultiplier: 100
+  zoomSmoothingMultiplier: 0.1
   cinemachineCamera: {fileID: 265048877}
 --- !u!1 &265048874
 GameObject:
@@ -1347,53 +1347,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 741653507}
   m_CullTransparentMesh: 1
---- !u!1 &742358624
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 742358626}
-  - component: {fileID: 742358625}
-  m_Layer: 0
-  m_Name: GridDebugDisplay
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &742358625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742358624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c4ec428f29a1d4947b4c146427379c08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GridDebugDisplay
-  gridCellGizmo: {fileID: 6013024706166131494, guid: 3c4c166ae9e40b546ae1342544573b18, type: 3}
-  baseCell: {fileID: 21300000, guid: a7a081ef6630e6f4188623e89edac3ef, type: 3}
-  arrowCell: {fileID: 21300000, guid: 743936f389548734cb690489329168a2, type: 3}
---- !u!4 &742358626
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742358624}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &756119792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3711,4 +3664,3 @@ SceneRoots:
   - {fileID: 454706161}
   - {fileID: 194887623}
   - {fileID: 265048878}
-  - {fileID: 742358626}

@@ -354,53 +354,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1549479452}
   m_SourcePrefab: {fileID: 100100000, guid: e3931b55f1193054e90110f4da9a9a98, type: 3}
---- !u!1 &782850308
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 782850310}
-  - component: {fileID: 782850309}
-  m_Layer: 0
-  m_Name: GridData
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &782850309
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 782850308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5052407974d30bf47a56537c3f16cfcb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GridAuthoring
-  width: 20
-  height: 20
-  gridCellSize: 5
---- !u!4 &782850310
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 782850308}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1169035817
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,7 +751,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 782850310}
   - {fileID: 1663743517}
   - {fileID: 1169035819}
   - {fileID: 273407868}

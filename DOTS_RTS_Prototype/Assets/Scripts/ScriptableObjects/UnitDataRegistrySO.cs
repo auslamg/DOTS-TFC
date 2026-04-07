@@ -43,14 +43,17 @@ public class UnitDataRegistrySO : ScriptableObject
         {
             if (unitDictionary.ContainsKey(so.unitKey))
             {
-                Debug.LogWarning($"Duplicate UnitKey found: {so.unitKey}", this);
+                if (so.unitKey.name != "")
+                {
+                    Debug.LogWarning($"Duplicate UnitKey found: {so.unitKey}", this);
+                }
                 continue;
             }
 
             unitDictionary.Add(so.unitKey, so);
             /* Debug.Log($"Added unit: {so.unitKey}"); */
         }
-        
+
         unitDataSOList = unitDataSOList.OrderBy((UnitDataSO so) => so.name).ToHashSet().ToList();
     }
 
@@ -60,7 +63,7 @@ public class UnitDataRegistrySO : ScriptableObject
     /// <returns><see langword="true"/> when cache and list counts match; otherwise <see langword="false"/>.</returns>
     private bool IsVerified()
     {
-        return 
+        return
             unitDictionary != null &&
             unitDictionary.Count == unitDataSOList.Count;
     }

@@ -5,10 +5,6 @@ using Unity.Entities;
 using UnityEngine;
 using System.Linq;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 /// <summary>
 /// Authoring component that bakes data into <see cref="EntityPrefabsRegistry"/>.
 /// </summary>

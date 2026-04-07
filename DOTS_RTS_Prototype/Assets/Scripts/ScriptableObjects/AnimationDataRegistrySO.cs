@@ -23,7 +23,7 @@ public class AnimationDataRegistrySO : ScriptableObject
     /// Runtime dictionary for fast key-based lookups.
     /// </summary>
     private Dictionary<AnimationKey, AnimationDataSO> animationDataDictionary;
-    
+
     /// <summary>
     /// Rebuilds cached lookup structures when the asset is loaded.
     /// </summary>
@@ -43,7 +43,10 @@ public class AnimationDataRegistrySO : ScriptableObject
         {
             if (animationDataDictionary.ContainsKey(so.animationKey))
             {
-                Debug.LogWarning($"Duplicate AnimationKey found: {so.animationKey}", this);
+                if (so.animationKey.name != "")
+                {
+                    Debug.LogWarning($"Duplicate AnimationKey found: {so.animationKey}", this);
+                }
                 continue;
             }
 
