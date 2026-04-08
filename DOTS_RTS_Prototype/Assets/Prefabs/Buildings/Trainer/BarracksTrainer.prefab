@@ -12,6 +12,14 @@ PrefabInstance:
       propertyPath: trainRosterSO
       value: 
       objectReference: {fileID: 11400000, guid: e467df75b927fdf498ca4ac07f2b4589, type: 2}
+    - target: {fileID: 760477281581822970, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 760477281581822970, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.y
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 808295635798214663, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4

@@ -30,7 +30,7 @@ partial struct SelectedVisualSystem : ISystem
             {
                 // Sets gizmo to default scale to make it visible
                 RefRW<LocalTransform> gizmoLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(selected.ValueRO.selectedGizmoEntity);
-                gizmoLocalTransform.ValueRW.Scale = selected.ValueRO.displayScale;
+                gizmoLocalTransform.ValueRW.Scale = 1 ;
             }
         }
     }
