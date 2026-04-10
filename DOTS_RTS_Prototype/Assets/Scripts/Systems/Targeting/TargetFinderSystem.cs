@@ -22,8 +22,7 @@ partial struct TargetFinderSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Register CollisionWorld for physics queries
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
 
         //Used for registering all available targets
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists

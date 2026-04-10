@@ -18,6 +18,10 @@ public class GameAssets : MonoBehaviour
     /// Layer index used by building entities.
     /// </summary>
     public const int BUILDINGS_LAYER = 7;
+    /// <summary>
+    /// Layer index used by building entities.
+    /// </summary>
+    public const int OBSTRUCTION_LAYER = 9;
 
     [Header("Registries")]
     /// <summary>

@@ -168,7 +168,6 @@ public class BuildingPlacementManager : MonoBehaviour
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
-        PhysicsWorldSingleton physicsWorldSingleton = entityQuery.GetSingleton<PhysicsWorldSingleton>();
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
         CollisionFilter filter = new CollisionFilter

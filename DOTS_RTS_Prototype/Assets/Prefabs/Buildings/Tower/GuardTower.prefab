@@ -116,6 +116,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: GuardTower
       objectReference: {fileID: 0}
+    - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Size.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Size.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Size.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Center.y
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8997649689348835859, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Mesh
       value: 

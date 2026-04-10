@@ -132,6 +132,18 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 69522af904082294c80f1b6092aec535, type: 3}
+    - target: {fileID: 7942662710000113244, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7942662710000113244, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.z
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7942662710000113244, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Center.y
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8194535671723489288, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
       propertyPath: m_Name
       value: BarracksTrainer

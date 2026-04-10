@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using UnityEngine;
 
 /// <summary>
@@ -13,6 +14,7 @@ using UnityEngine;
 /// </remarks>
 partial struct GridSystem : ISystem
 {
+    public const int WALL_COST = byte.MaxValue;
     private int2 targetGridPosition;
     /// <summary>
     /// Executes grid display initialization once the grid data registry is available.
@@ -140,6 +142,45 @@ partial struct GridSystem : ISystem
             }
         }
 
+        //TEST: Testing walls
+        /* gridCellArray[CoordsToIndex(5,3, gridData.width)].ValueRW.stepCost = WALL_COST;
+        gridCellArray[CoordsToIndex(5,4, gridData.width)].ValueRW.stepCost = WALL_COST;
+        gridCellArray[CoordsToIndex(5,5, gridData.width)].ValueRW.stepCost = WALL_COST;
+        gridCellArray[CoordsToIndex(6,3, gridData.width)].ValueRW.stepCost = WALL_COST;
+        gridCellArray[CoordsToIndex(6,4, gridData.width)].ValueRW.stepCost = WALL_COST;
+        gridCellArray[CoordsToIndex(6,5, gridData.width)].ValueRW.stepCost = WALL_COST; */
+
+        // TODO: This can probably be optimized to not run every frame, only on update events
+        // Wall detection
+        {
+            CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
+
+            NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
+            var collisionFilter = new CollisionFilter
+            {
+                BelongsTo = ~0u,
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                GroupIndex = 0
+            };
+
+            for (int x = 0; x < gridData.width; x++)
+            {
+                for (int y = 0; y < gridData.height; y++)
+                {
+                    if (collisionWorld.OverlapSphere(
+                        position: CoordsToWorldPositionCenter(x, y, gridData.gridCellSize),
+                        radius: gridData.gridCellSize / 2,
+                        ref distanceHitList,
+                        collisionFilter
+                        ))
+                    {
+                        int index = CoordsToIndex(x, y, gridData.width);
+                        gridCellArray[index].ValueRW.stepCost = WALL_COST;
+                    }
+                }
+            }
+        }
+
         using (NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp))
         {
             RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetGridPosition, gridData.width)];
@@ -150,10 +191,15 @@ partial struct GridSystem : ISystem
             {
                 // Retrieve the next cell from the open queue and find all cells adjacent to it.
                 RefRW<GridCell> currGridCell = gridCellOpenQueue.Dequeue();
-                using NativeList<RefRW<GridCell>> neighbouringCellsList = 
+                using NativeList<RefRW<GridCell>> neighbouringCellsList =
                     GetNeighbouringCellsRecursive(currGridCell, gridData, gridCellArray);
                 foreach (RefRW<GridCell> neighbourCell in neighbouringCellsList)
                 {
+                    // If wall, skip
+                    if (neighbourCell.ValueRO.stepCost == WALL_COST)
+                    {
+                        continue;
+                    }
                     // If a new best path is discovered through the cell, update it's data and recurse.
                     byte newBestCost = (byte)(currGridCell.ValueRO.bestPathCost + neighbourCell.ValueRO.stepCost);
                     if (newBestCost < neighbourCell.ValueRO.bestPathCost)
@@ -352,11 +398,25 @@ partial struct GridSystem : ISystem
     }
 
     /// <summary>
-    /// Calculates the world position of the given grid cell.
+    /// Calculates the world position of the given grid cell's origin corner.
     /// </summary>
-    public static Vector3 CalculateWorldPosition(int x, int y, float cellSize)
+    public static Vector3 CoordsToWorldPositionCorner(int x, int y, float cellSize)
     {
-        return new Vector3(x * cellSize, 0.1f, y * cellSize);
+        return new Vector3(
+            x: x * cellSize,
+            y: 0.1f,
+            z: y * cellSize);
+    }
+
+    /// <summary>
+    /// Calculates the world position of the given grid cell's center point.
+    /// </summary>
+    public static Vector3 CoordsToWorldPositionCenter(int x, int y, float cellSize)
+    {
+        return new Vector3(
+            x: x * cellSize + cellSize / 2,
+            y: 0.1f,
+            z: y * cellSize + cellSize / 2);
     }
 
     /// <summary>

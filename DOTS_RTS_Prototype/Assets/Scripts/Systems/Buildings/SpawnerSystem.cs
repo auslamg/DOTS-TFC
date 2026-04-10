@@ -32,8 +32,7 @@ partial struct SpawnerSystem : ISystem
         DynamicBuffer<EntityPrefab> entityReferencesBuffer = SystemAPI.GetBuffer<EntityPrefab>(
             SystemAPI.GetSingletonEntity<EntityPrefabsRegistry>());
 
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
+        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
 
         EntityCommandBuffer ecb =

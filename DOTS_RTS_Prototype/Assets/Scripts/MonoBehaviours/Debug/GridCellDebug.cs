@@ -16,7 +16,7 @@ public class GridCellDebug : MonoBehaviour
         visual = gameObject.transform.GetChild(0);
 
         //Adjust world position based on cell size
-        transform.position = GridSystem.CalculateWorldPosition(x, y, cellSize);
+        transform.position = GridSystem.CoordsToWorldPositionCorner(x, y, cellSize);
 
         //Adjust visual scale based on cell size
         visual.localScale = new Vector3(cellSize, cellSize, cellSize) * 0.5f;

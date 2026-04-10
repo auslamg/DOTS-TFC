@@ -206,6 +206,22 @@ PrefabInstance:
       propertyPath: gameOverMessage
       value: You lost your fort!
       objectReference: {fileID: 0}
+    - target: {fileID: 6067405504591206418, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067405504591206418, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.y
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067405504591206418, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.z
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6067405504591206418, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Center.y
+      value: 4.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6271732944173002472, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -217,6 +233,22 @@ PrefabInstance:
     - target: {fileID: 6867551900802531096, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_LocalPosition.y
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002051918158244685, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.x
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002051918158244685, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.y
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002051918158244685, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.z
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7002051918158244685, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Center.y
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 7318829041034116626, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Mesh

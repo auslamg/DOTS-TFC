@@ -84,15 +84,23 @@ public class GridDebugDisplay : MonoBehaviour
         }
         else
         {
-            cellDebug.SetSprite(arrowCell);
-            cellDebug.SetColor(Color.white);
+            if (cell.stepCost == WALL_COST)
+            {
+                cellDebug.SetSprite(baseCell);
+                cellDebug.SetColor(Color.red);
+            }
+            else
+            {
+                cellDebug.SetSprite(arrowCell);
+                cellDebug.SetColor(Color.white);
 
-            cellDebug.SetSpriteRotation(Quaternion.LookRotation(
-                new Vector3(
-                    cell.pathingVector.x,
-                    0,
-                    cell.pathingVector.y),
-                Vector3.up));
+                cellDebug.SetSpriteRotation(Quaternion.LookRotation(
+                    new Vector3(
+                        cell.pathingVector.x,
+                        0,
+                        cell.pathingVector.y),
+                    Vector3.up));
+            }            
         }
     }
 
