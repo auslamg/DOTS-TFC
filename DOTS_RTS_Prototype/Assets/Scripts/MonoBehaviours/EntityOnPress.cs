@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 /// <remarks>
 /// Intended for quick in-editor testing. Press <c>E</c> to spawn the prefab
-/// resolved from <see cref="entity"/> through the entity prefab registry.
+/// resolved from <see cref="entityKey"/> through the entity prefab registry.
 /// </remarks>
 public class EntityOnPress : MonoBehaviour
 {
@@ -22,14 +22,14 @@ public class EntityOnPress : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Prefab key used to resolve which entity to spawn on key press.")]
-    private string entity;
+    private string entityKey;
 
     /// <summary>
     /// Key used to instance an entity prefab.
     /// </summary>
     [SerializeField]
     [Tooltip("Key used to instance an entity prefab.")]
-    private KeyCode key = KeyCode.I;
+    private KeyCode hotkey = KeyCode.I;
 
     /// <summary>
     /// Initializes singleton instance state.
@@ -57,14 +57,14 @@ public class EntityOnPress : MonoBehaviour
         {
             return;
         }
-        if (Input.GetKeyDown(key))
+        if (Input.GetKeyDown(hotkey))
         {
             Vector3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
             EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             EntityPrefabKey entity = new EntityPrefabKey
             {
-                name = this.entity
+                name = this.entityKey
             };
 
             Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(entity));
