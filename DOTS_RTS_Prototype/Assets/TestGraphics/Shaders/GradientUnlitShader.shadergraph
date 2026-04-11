@@ -572,8 +572,8 @@
     "m_ObjectId": "028533a80b51452ebb065d7ddccf60f6",
     "m_Title": "Gradient calculation",
     "m_Position": {
-        "x": -2181.000244140625,
-        "y": 267.0
+        "x": -2181.0,
+        "y": 266.99993896484377
     }
 }
 
@@ -994,8 +994,8 @@
     "m_ObjectId": "39b9c6bfa2e84e6f8b7816b9539b89df",
     "m_Title": "Base Map",
     "m_Position": {
-        "x": -1692.0001220703125,
-        "y": -385.9999084472656
+        "x": -1692.0,
+        "y": -386.00006103515627
     }
 }
 
@@ -2077,7 +2077,7 @@
     "m_ObjectId": "966ffc598f724e61999e295ceeeb3183",
     "m_Title": "Gradient colors",
     "m_Position": {
-        "x": -1256.0001220703125,
+        "x": -1256.0,
         "y": 162.0
     }
 }
@@ -2450,7 +2450,7 @@
     "m_ObjectId": "be2c88e76ae944c98b0b85def56d6a17",
     "m_Title": "Gradient curve",
     "m_Position": {
-        "x": -1512.0001220703125,
+        "x": -1512.0,
         "y": 162.0
     }
 }
@@ -3001,8 +3001,8 @@
     "m_ObjectId": "ef9a5bef1fbe457ba54945891e01a0ea",
     "m_Title": "Y world axis",
     "m_Position": {
-        "x": -2572.000244140625,
-        "y": 255.00001525878907
+        "x": -2572.0,
+        "y": 255.00006103515626
     }
 }
 
