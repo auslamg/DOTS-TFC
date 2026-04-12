@@ -13,6 +13,7 @@ Repository
 - Check ScriptableObject persistency
 
 Document
+- DOCUMENT: Camera pinch bug: releasing both touches in quick succesion counts as a super-fast drag
 - ANIMATION ADDITION PROCESS:
     UnitAnimationsAuthoring definition
     AnimationDataSO AnimationType definition
@@ -65,6 +66,8 @@ Aesthetic/UX addons
 - UI: Add a UIStateMachine / UI manager to switch out different UIs
 - UI: Add a SelectedUI to display selected elements
 - UI: Building ghosts should display valid placement in real time by changing colors
+- UI: TODO/IMPORTANT Add a OS selector that distinguishes between Win/Android and activates respective components (Camera controller, selector, etc.)
+- FIX: Camera pinch bug: releasing both touches in quick succesion counts as a super-fast drag
 
 Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
@@ -100,6 +103,7 @@ Refactors
 - REFACTOR: "Frequency" variables in struct timers should be "peiod" or "interval"
 - REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those during entity baking
 - REFACTOR/FIX: Validate non-nullity in all baker key fields
+- REFACTOR: //TODO Replace component/system timer fields by Timer common struct {float max, float curr}.
 
 
 ===================================================================================

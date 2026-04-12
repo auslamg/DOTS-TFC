@@ -73,7 +73,7 @@ public class MouseWorldPosition : MonoBehaviour
     /// Uses a plane intersection instead of physics for performance and to avoid DOTS/Physics overlap concerns.
     /// </remarks>
     /// <returns>Projected mouse world position, or <see cref="Vector3.zero"/> when projection fails.</returns>
-    public Vector3 GetPositionFlat()
+    private Vector3 GetPositionFlat()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, Vector3.zero);
@@ -91,7 +91,7 @@ public class MouseWorldPosition : MonoBehaviour
     /// Returns mouse world position using a physics raycast against scene colliders.
     /// </summary>
     /// <returns>Raycast hit point, or <see cref="Vector3.zero"/> when no collider is hit.</returns>
-    public Vector3 GetPositionPhysics()
+    private Vector3 GetPositionPhysics()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 

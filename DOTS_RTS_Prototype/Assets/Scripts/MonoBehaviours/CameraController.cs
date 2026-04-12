@@ -1,6 +1,7 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
+//TODO: Document
 /// <summary>
 /// Handles camera movement, rotation, and zoom.
 /// </summary>
@@ -75,6 +76,26 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        HandleKeyboardCameraMovement();
+        HandleKeyboardCameraRotation();
+        HandleMouseWheelCameraZoom();
+    }
+
+    private void HandleKeyboardCameraMovement()
+    {
+        Vector2 horizontalMoveDirection = GetMoveInput();
+
+        Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
+        Transform cameraTransform = Camera.main.transform;
+        moveDirection = cameraTransform.forward * moveDirection.z + cameraTransform.right * moveDirection.x;
+        moveDirection.y = 0;
+        moveDirection.Normalize();
+
+        transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+    }
+
+    private static Vector2 GetMoveInput()
+    {
         Vector2 horizontalMoveDirection = Vector2.zero;
         if (Input.GetKey(KeyCode.W))
         {
@@ -92,16 +113,12 @@ public class CameraController : MonoBehaviour
         {
             horizontalMoveDirection.x -= 1;
         }
-        horizontalMoveDirection.Normalize();
 
-        Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
-        Transform cameraTransform = Camera.main.transform;
-        moveDirection = cameraTransform.forward * moveDirection.z + cameraTransform.right * moveDirection.x;
-        moveDirection.y = 0;
-        moveDirection.Normalize();
+        return horizontalMoveDirection;
+    }
 
-        transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
-
+    private void HandleKeyboardCameraRotation()
+    {
         float rotationTotal = 0;
         if (Input.GetKey(KeyCode.Q))
         {
@@ -113,7 +130,10 @@ public class CameraController : MonoBehaviour
         }
 
         transform.eulerAngles += new Vector3(0, rotationTotal * cameraRotationSpeed, 0);
+    }
 
+    private void HandleMouseWheelCameraZoom()
+    {
         if (Input.mouseScrollDelta.y > 0)
         {
             targetFOV -= zoomStepMultiplier / 10 * cinemachineCamera.Lens.FieldOfView;
