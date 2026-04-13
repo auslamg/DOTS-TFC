@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Handles camera movement, rotation, and zoom.
 /// </summary>
-public class CameraController : MonoBehaviour
+public class PCCameraController : MonoBehaviour
 {
     [Header("Camera Settings")]
 
@@ -144,6 +144,7 @@ public class CameraController : MonoBehaviour
         }
 
         targetFOV = Mathf.Clamp(targetFOV, minimumFOV, maximumFOV);
+        // Smoothing
         cinemachineCamera.Lens.FieldOfView =
             Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, 10 / zoomSmoothingMultiplier);
     }

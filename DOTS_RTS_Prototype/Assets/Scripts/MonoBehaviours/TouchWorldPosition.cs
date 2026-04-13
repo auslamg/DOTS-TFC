@@ -97,6 +97,24 @@ public class TouchWorldPosition : MonoBehaviour
         {
             return Vector3.zero;
         }
+    }
 
+    // TODO: Document
+    /// <summary>
+    /// Returns touch world position using a physics raycast against scene colliders.
+    /// </summary>
+    /// <returns>Raycast hit point, or <see cref="Vector3.zero"/> when no collider is hit.</returns>
+    public Vector3 GetPointPosition(Vector2 screenPoint)
+    {
+        Ray touchCameraRay = Camera.main.ScreenPointToRay(screenPoint);
+        Plane plane = new Plane(Vector3.up, Vector3.zero);
+        if (plane.Raycast(touchCameraRay, out float distance))
+        {
+            return touchCameraRay.GetPoint(distance);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 }
