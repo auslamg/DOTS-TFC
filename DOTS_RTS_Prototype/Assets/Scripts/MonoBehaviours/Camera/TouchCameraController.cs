@@ -164,7 +164,6 @@ public class TouchCameraController : MonoBehaviour
             Vector3 currentTouchWorldPosition = TouchWorldPosition.Instance.GetPosition(0);
             if (Input.GetTouch(0).phase == TouchPhase.Began || previousTouchCount != 1)
             {
-                Debug.Log($"Setting center from TouchDrag{true}");
                 dragStartWorldPosition = currentTouchWorldPosition;
                 totalDragVector = Vector3.zero;
                 inertialMovementVector = Vector2.zero;
@@ -199,11 +198,6 @@ public class TouchCameraController : MonoBehaviour
         // Apply movement 
         Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
         transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
-
-        if (moveDirection.magnitude > 10)
-        {
-            Debug.Log("Great movement from TouchDrag");
-        }
     }
 
     /// <summary>
@@ -272,7 +266,6 @@ public class TouchCameraController : MonoBehaviour
                 previousTouchCount != 2 &&
                 previousTouchCount != 1)
             {
-                Debug.Log($"Setting center from PinchDrag{true}");
                 dragStartWorldPosition = currentAvgWorldPosition;
                 totalDragVector = Vector3.zero;
                 inertialMovementVector = Vector2.zero;
@@ -291,11 +284,6 @@ public class TouchCameraController : MonoBehaviour
             transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
 
             DebounceTouchDrag();
-
-            if (moveDirection.magnitude > 10)
-            {
-                Debug.Log("Great movement from PinchDrag");
-            }
         }
 
         

@@ -49,7 +49,10 @@ public class BuildingDataRegistrySO : ScriptableObject
         {
             if (buildingDataDictionary.ContainsKey(so.buildingKey))
             {
-                Debug.LogWarning($"Duplicate BuildingKey found: {so.buildingKey}", this);
+                if (so.buildingKey.name != "")
+                {
+                    Debug.LogWarning($"Duplicate BuildingKey found: {so.buildingKey}", this);
+                }
                 continue;
             }
             if (so.buildingType == BuildingType.None && none == null)
