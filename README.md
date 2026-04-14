@@ -157,10 +157,10 @@ This layout is optimized for DOTS debugging and data-oriented scalable developme
 
 - **Scene + Game view visibility** for quick iteration and playtesting  
 - **Hierarchy + Entity hierarchy (adaptive)** at the lefmost part of the screen
-- **Inspector (Authoring / Runtime switch)** at the rightmost part of the screen
+- **Inspector (Authoring + Runtime switch) and Components tab** at the rightmost part of the screen
 - **Dedicated ScriptableObject and Prefab Project windows** at the center, right of the Scene/Game view
-- Balanced panel arrangement for working with ECS systems and runtime behavior  
-
+- **Console + Systems + Archetypes** at the bottom center
+- **Project assets** at the bottom left part of the screen
 
 ## Viewing the Game on an Android Device (Unity Remote)
 
