@@ -166,8 +166,7 @@ public class BuildingPlacementManager : MonoBehaviour
             return false;
         }
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PhysicsWorldSingleton));
+        
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
         CollisionFilter filter = new CollisionFilter

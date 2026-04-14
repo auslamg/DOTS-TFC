@@ -1,4 +1,5 @@
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -12,13 +13,77 @@ using UnityEngine;
 partial struct UnitMoverSystem : ISystem
 {
     /// <summary>
+    /// Job handles for the parallel reset jobs. This array is allocated once and reused across updates.
+    /// </summary>
+    private NativeArray<JobHandle> jobHandleArray;
+
+    /// <summary>
+    /// Requires the grid data registry singleton before this system can run.
+    /// </summary>
+    [BurstCompile]
+    private void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<GridData>();
+        jobHandleArray = new NativeArray<JobHandle>(1, Allocator.Persistent);
+
+    }
+
+    /// <summary>
     /// Schedules the movement job that updates velocity, facing, and movement state.
     /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        StartTargetPositionJob startTargetPositionJob = new StartTargetPositionJob {};
-        startTargetPositionJob.ScheduleParallel();
+        jobHandleArray[0] = new StartTargetPositionJob { }.ScheduleParallel(state.Dependency);
+
+
+        state.Dependency = JobHandle.CombineDependencies(jobHandleArray);
+        jobHandleArray[0].Complete();
+
+        GridData gridData = SystemAPI.GetSingleton<GridData>();
+
+        foreach ((
+            RefRO<LocalTransform> localTransform,
+            RefRW<FlowFieldFollower> flowFieldFollower,
+            EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled,
+            RefRW<UnitMover> unitMover)
+                in SystemAPI.Query<
+                RefRO<LocalTransform>,
+                RefRW<FlowFieldFollower>,
+                EnabledRefRW<FlowFieldFollower>,
+                RefRW<UnitMover>>())
+        {
+            // Retrieve current grid cell's pathing vector and convert it to world space
+            int2 gridPosition = GridSystem.WorldPositionToCoords(localTransform.ValueRO.Position, gridData.gridCellSize);
+            int currentCellIndex = GridSystem.CoordsToIndex(gridPosition, gridData.width);
+            Entity currentCell = gridData.gridMap.gridCellEntityArray[currentCellIndex];
+            GridCell gridCell = SystemAPI.GetComponent<GridCell>(currentCell);
+            float3 worldMovementVector = GridSystem.GridVectorToWorldSpace(gridCell.pathingVector);
+
+            if (GridSystem.IsWall(gridCell))
+            {
+                worldMovementVector = flowFieldFollower.ValueRO.lastMoveVector;
+            }
+            else
+            {
+                flowFieldFollower.ValueRW.lastMoveVector = worldMovementVector;
+            }
+
+
+            unitMover.ValueRW.targetPosition =
+                GridSystem.CoordsToWorldPositionCenter(gridPosition, gridData.gridCellSize) +
+                worldMovementVector * gridData.gridCellSize * 2;
+
+            // FIX: This method sucks lor large unit formations, since the outermost units keep walking to unreachable targets
+            // Detect if the target has reached its destination
+            if (math.distance(localTransform.ValueRO.Position, flowFieldFollower.ValueRO.targetPosition) < gridData.gridCellSize * 1.5f)
+            {
+                Debug.Log("Stopped unit");
+                unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                flowFieldFollowerEnabled.ValueRW = false;
+            }
+
+        }
 
         UnitMoverJob unitMoverJob = new UnitMoverJob
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// Authoring component that bakes data into <see cref="GridData"/>.
+/// Authoring component that bakes data into <see cref="GridDataParameters"/>.
 /// </summary>
 /// <remarks>
 /// Behaves as a scene singleton.
@@ -57,14 +57,14 @@ class GridAuthoring : MonoBehaviour
 }
 
 /// <summary>
-/// Baker for the <see cref="GridData"/> unmanaged component.
+/// Baker for the <see cref="GridDataParameters"/> unmanaged component.
 /// </summary>
 class GridBaker : Baker<GridAuthoring>
 {
     public override void Bake(GridAuthoring authoring)
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new GridData
+        AddComponent(entity, new GridDataParameters
         {
             width = authoring.width,
             height = authoring.height,
@@ -81,7 +81,7 @@ class GridBaker : Baker<GridAuthoring>
 /// The grid settings are authored in the scene and baked into this singleton component for runtime systems.
 /// Access this component through <see cref="SystemAPI.GetSingleton()"/>.
 /// </remarks>
-public struct GridData : IComponentData
+public struct GridDataParameters : IComponentData
 {
     /// <summary>
     /// Grid width in cells.

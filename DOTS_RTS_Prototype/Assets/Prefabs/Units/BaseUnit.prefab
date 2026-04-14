@@ -211,6 +211,8 @@ GameObject:
   - component: {fileID: 56818754141239383}
   - component: {fileID: 4299751784424829594}
   - component: {fileID: -8969996158608910852}
+  - component: {fileID: -7570847429946315173}
+  - component: {fileID: -2611101858865699950}
   - component: {fileID: 5529214234308960562}
   - component: {fileID: -8038847630424215430}
   - component: {fileID: -2479219367038610689}
@@ -377,6 +379,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac1fcc7652849ac408ebfd05776e15d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveOverrideAuthoring
+--- !u!114 &-7570847429946315173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6033555a6dba3224097e00654c664588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlowFieldFollowerAuthoring
+--- !u!114 &-2611101858865699950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72aafc4335ec66b4b9d8d0d6edcf2b94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlowFieldPathRequestAuthoring
 --- !u!114 &5529214234308960562
 MonoBehaviour:
   m_ObjectHideFlags: 0

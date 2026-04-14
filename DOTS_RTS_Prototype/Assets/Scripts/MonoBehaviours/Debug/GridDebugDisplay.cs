@@ -38,7 +38,7 @@ public class GridDebugDisplay : MonoBehaviour
         }
     }
 
-    public void InitializeGrid(GridDataRegistry gridData)
+    public void InitializeGrid(GridData gridData)
     {
         gridCellsArray = new GridCellDebug[gridData.width, gridData.height];
         for (int x = 0; x < gridData.width; x++)
@@ -57,7 +57,7 @@ public class GridDebugDisplay : MonoBehaviour
 
     //TODO: Use jobs for this, and don't update every frame
 
-    public void UpdateGridVisual(GridDataRegistry gridData)
+    public void UpdateGridVisual(GridData gridData)
     {
         for (int x = 0; x < gridData.width; x++)
         {

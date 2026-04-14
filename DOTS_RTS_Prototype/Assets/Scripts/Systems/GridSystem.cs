@@ -3,42 +3,51 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Transforms;
 using UnityEngine;
 
 /// <summary>
 /// Manages the runtime grid instance and exposes cell interaction for debug visualization.
 /// </summary>
 /// <remarks>
-/// Grid creation is deferred until the first update frame because the baked <see cref="GridData"/> singleton
+/// Grid creation is deferred until the first update frame because the baked <see cref="GridDataParameters"/> singleton
 /// may not be available yet during conversion and editor bake execution.
 /// </remarks>
 partial struct GridSystem : ISystem
 {
     public const int WALL_COST = byte.MaxValue;
-    private int2 targetGridPosition;
+
     /// <summary>
     /// Executes grid display initialization once the grid data registry is available.
     /// </summary>
+    /// <remarks>
+    /// This runs after the first successful update since it requires post-bake components, unavailabla before OnUpdate.
+    /// Otherwise, this logic would run inside OnCreate.
+    /// </remarks>
     private void OnLateCreate(ref SystemState state)
     {
-        GridDataRegistry gridDataRegistry = SystemAPI.GetComponent<GridDataRegistry>(state.SystemHandle);
+        GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
 
-        GridDebugDisplay.Instance?.InitializeGrid(gridDataRegistry);
-        GridDebugDisplay.Instance?.UpdateGridVisual(gridDataRegistry);
+        GridDebugDisplay.Instance?.InitializeGrid(gridData);
+        GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
     }
 
     /// <summary>
     /// Creates the runtime grid and stores the generated grid metadata on the system entity.
     /// </summary>
+    /// <remarks>
+    /// This runs after the first successful update since it requires the baked <see cref="GridDataParameters"/> singleton, unavailabla before OnUpdate.
+    /// Otherwise, this logic would run inside OnCreate.
+    /// </remarks>
     /// <returns>True if the grid was created this frame; otherwise false.</returns>
     private bool TryCreateGrid(ref SystemState state)
     {
-        if (!SystemAPI.TryGetSingleton(out GridData gridData))
+        if (!SystemAPI.TryGetSingleton(out GridDataParameters gridData))
         {
             return false;
         }
 
-        Entity gridDataEntity = SystemAPI.GetSingletonEntity<GridData>();
+        Entity gridDataEntity = SystemAPI.GetSingletonEntity<GridDataParameters>();
         state.EntityManager.DestroyEntity(gridDataEntity);
 
         int totalCount = gridData.width * gridData.height;
@@ -75,10 +84,10 @@ partial struct GridSystem : ISystem
 
         Debug.Log("World grid built successfully");
 
-        state.EntityManager.AddComponent<GridDataRegistry>(state.SystemHandle);
+        state.EntityManager.AddComponent<GridData>(state.SystemHandle);
         state.EntityManager.SetComponentData(
             state.SystemHandle,
-            new GridDataRegistry
+            new GridData
             {
                 width = gridData.width,
                 height = gridData.height,
@@ -91,7 +100,7 @@ partial struct GridSystem : ISystem
     }
 
     /// <summary>
-    /// Creates the runtime grid when the baked <see cref="GridData"/> singleton appears,
+    /// Creates the runtime grid when the baked <see cref="GridDataParameters"/> singleton appears,
     /// then handles per-frame grid interaction and debug updates.
     /// </summary>
     public void OnUpdate(ref SystemState state)
@@ -101,132 +110,161 @@ partial struct GridSystem : ISystem
             OnLateCreate(ref state);
         }
 
-        if (!SystemAPI.HasComponent<GridDataRegistry>(state.SystemHandle))
+        // Grid creation validation: deferred Update
+        if (!SystemAPI.HasComponent<GridData>(state.SystemHandle))
         {
             return;
         }
 
-        GridDataRegistry gridData = SystemAPI.GetComponent<GridDataRegistry>(state.SystemHandle);
+        GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
 
         // ===============================================
-        //PATHING START
+        // PATHING START
         // ===============================================
 
-        NativeArray<RefRW<GridCell>> gridCellArray =
+        // Path requests
+        foreach ((
+            RefRW<FlowFieldPathRequest> flowFieldRequest,
+            EnabledRefRW<FlowFieldPathRequest> flowFieldRequestEnabled,
+            RefRW<FlowFieldFollower> flowFieldFollower,
+            EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled,
+            RefRW<UnitMover> unitMover)
+                in SystemAPI.Query<
+                RefRW<FlowFieldPathRequest>,
+                EnabledRefRW<FlowFieldPathRequest>,
+                RefRW<FlowFieldFollower>,
+                EnabledRefRW<FlowFieldFollower>,
+                RefRW<UnitMover>>().
+                WithPresent<FlowFieldFollower>())
+        {
+
+            int2 targetGridPosition = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
+
+            // Resolved request.
+            flowFieldRequestEnabled.ValueRW = false;
+            // Proceed with pathfinding
+            flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
+            flowFieldFollowerEnabled.ValueRW = true;
+
+            NativeArray<RefRW<GridCell>> gridCellArray =
             new NativeArray<RefRW<GridCell>>(gridData.width * gridData.height, Allocator.Temp);
 
-        // Set all pathing costs to default values.
-        for (int x = 0; x < gridData.width; x++)
-        {
-            for (int y = 0; y < gridData.height; y++)
-            {
-                int index = CoordsToIndex(x, y, gridData.width);
-                Entity cellEntity = gridData.gridMap.gridCellEntityArray[index];
-                RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(cellEntity);
-
-                gridCellArray[index] = gridCell;
-
-                gridCell.ValueRW.pathingVector = new Vector2(0, 1); // Safety measure for in-clipping spawns.
-                if (x == targetGridPosition.x &&
-                    y == targetGridPosition.y)
-                {
-                    // Cell is the target destination.
-                    gridCell.ValueRW.stepCost = 0;
-                    gridCell.ValueRW.bestPathCost = 0;
-                }
-                else
-                {
-                    gridCell.ValueRW.stepCost = 1;
-                    gridCell.ValueRW.bestPathCost = byte.MaxValue;
-                }
-            }
-        }
-
-        //TEST: Testing walls
-        /* gridCellArray[CoordsToIndex(5,3, gridData.width)].ValueRW.stepCost = WALL_COST;
-        gridCellArray[CoordsToIndex(5,4, gridData.width)].ValueRW.stepCost = WALL_COST;
-        gridCellArray[CoordsToIndex(5,5, gridData.width)].ValueRW.stepCost = WALL_COST;
-        gridCellArray[CoordsToIndex(6,3, gridData.width)].ValueRW.stepCost = WALL_COST;
-        gridCellArray[CoordsToIndex(6,4, gridData.width)].ValueRW.stepCost = WALL_COST;
-        gridCellArray[CoordsToIndex(6,5, gridData.width)].ValueRW.stepCost = WALL_COST; */
-
-        // TODO: This can probably be optimized to not run every frame, only on update events
-        // Wall detection
-        {
-            CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
-
-            NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
-            var collisionFilter = new CollisionFilter
-            {
-                BelongsTo = ~0u,
-                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
-                GroupIndex = 0
-            };
-
+            // Set all pathing costs to default values.
             for (int x = 0; x < gridData.width; x++)
             {
                 for (int y = 0; y < gridData.height; y++)
                 {
-                    if (collisionWorld.OverlapSphere(
-                        position: CoordsToWorldPositionCenter(x, y, gridData.gridCellSize),
-                        radius: gridData.gridCellSize / 2,
-                        ref distanceHitList,
-                        collisionFilter
-                        ))
+                    int index = CoordsToIndex(x, y, gridData.width);
+                    Entity cellEntity = gridData.gridMap.gridCellEntityArray[index];
+                    RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(cellEntity);
+
+                    gridCellArray[index] = gridCell;
+
+                    gridCell.ValueRW.pathingVector = new Vector2(0, 1); // Safety measure for in-clipping spawns.
+                    if (x == targetGridPosition.x &&
+                        y == targetGridPosition.y)
                     {
-                        int index = CoordsToIndex(x, y, gridData.width);
-                        gridCellArray[index].ValueRW.stepCost = WALL_COST;
+                        // Cell is the target destination.
+                        gridCell.ValueRW.stepCost = 0;
+                        gridCell.ValueRW.bestPathCost = 0;
+                    }
+                    else
+                    {
+                        gridCell.ValueRW.stepCost = 1;
+                        gridCell.ValueRW.bestPathCost = byte.MaxValue;
                     }
                 }
             }
-        }
 
-        using (NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp))
-        {
-            RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetGridPosition, gridData.width)];
-            gridCellOpenQueue.Enqueue(targetGridCell);
+            //TEST: Testing walls
+            /* gridCellArray[CoordsToIndex(5,3, gridData.width)].ValueRW.stepCost = WALL_COST;
+            gridCellArray[CoordsToIndex(5,4, gridData.width)].ValueRW.stepCost = WALL_COST;
+            gridCellArray[CoordsToIndex(5,5, gridData.width)].ValueRW.stepCost = WALL_COST;
+            gridCellArray[CoordsToIndex(6,3, gridData.width)].ValueRW.stepCost = WALL_COST;
+            gridCellArray[CoordsToIndex(6,4, gridData.width)].ValueRW.stepCost = WALL_COST;
+            gridCellArray[CoordsToIndex(6,5, gridData.width)].ValueRW.stepCost = WALL_COST; */
 
-            // Process all cells in the queue using breadth-first search for uniform cost pathfinding.
-            while (!gridCellOpenQueue.IsEmpty())
+            // TODO: This can probably be optimized to not run every frame, only on update events
+            // Wall detection
             {
-                // Retrieve the next cell from the open queue and find all cells adjacent to it.
-                RefRW<GridCell> currGridCell = gridCellOpenQueue.Dequeue();
-                using NativeList<RefRW<GridCell>> neighbouringCellsList =
-                    GetNeighbouringCellsRecursive(currGridCell, gridData, gridCellArray);
-                foreach (RefRW<GridCell> neighbourCell in neighbouringCellsList)
-                {
-                    // If wall, skip
-                    if (neighbourCell.ValueRO.stepCost == WALL_COST)
-                    {
-                        continue;
-                    }
-                    // If a new best path is discovered through the cell, update it's data and recurse.
-                    byte newBestCost = (byte)(currGridCell.ValueRO.bestPathCost + neighbourCell.ValueRO.stepCost);
-                    if (newBestCost < neighbourCell.ValueRO.bestPathCost)
-                    {
-                        // Update the neighbor's best known cost to reach the target and store the vector for path reconstruction.
-                        neighbourCell.ValueRW.bestPathCost = newBestCost;
-                        neighbourCell.ValueRW.pathingVector = CalculateVector(
-                            fromPosition: IndexToCoords(neighbourCell.ValueRO.index, gridData.width),
-                            toPosition: IndexToCoords(currGridCell.ValueRO.index, gridData.width)
-                        );
+                CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
 
-                        gridCellOpenQueue.Enqueue(neighbourCell);
+                NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
+                var collisionFilter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                    GroupIndex = 0
+                };
+
+                for (int x = 0; x < gridData.width; x++)
+                {
+                    for (int y = 0; y < gridData.height; y++)
+                    {
+                        if (collisionWorld.OverlapSphere(
+                            position: CoordsToWorldPositionCenter(x, y, gridData.gridCellSize),
+                            radius: gridData.gridCellSize / 2,
+                            ref distanceHitList,
+                            collisionFilter
+                            ))
+                        {
+                            int index = CoordsToIndex(x, y, gridData.width);
+                            gridCellArray[index].ValueRW.stepCost = WALL_COST;
+                        }
                     }
                 }
+                distanceHitList.Dispose();
             }
-            /* Debug.Log($"FLOWFIELD: Checked {10000-safety} cells"); */
 
-            gridCellArray.Dispose();
+            // FlowField Calculation.
+            using (NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp))
+            {
+                RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetGridPosition, gridData.width)];
+                gridCellOpenQueue.Enqueue(targetGridCell);
+
+                // Process all cells in the queue using breadth-first search for uniform cost pathfinding.
+                while (!gridCellOpenQueue.IsEmpty())
+                {
+                    // Retrieve the next cell from the open queue and find all cells adjacent to it.
+                    RefRW<GridCell> currGridCell = gridCellOpenQueue.Dequeue();
+                    using NativeList<RefRW<GridCell>> neighbouringCellsList =
+                        GetNeighbouringCellsRecursive(currGridCell, gridData, gridCellArray);
+                    foreach (RefRW<GridCell> neighbourCell in neighbouringCellsList)
+                    {
+                        // If wall, skip
+                        if (neighbourCell.ValueRO.stepCost == WALL_COST)
+                        {
+                            continue;
+                        }
+                        // If a new best path is discovered through the cell, update it's data and recurse.
+                        byte newBestCost = (byte)(currGridCell.ValueRO.bestPathCost + neighbourCell.ValueRO.stepCost);
+                        if (newBestCost < neighbourCell.ValueRO.bestPathCost)
+                        {
+                            // Update the neighbor's best known cost to reach the target and store the vector for path reconstruction.
+                            neighbourCell.ValueRW.bestPathCost = newBestCost;
+                            neighbourCell.ValueRW.pathingVector = CalculateVector(
+                                fromPosition: IndexToCoords(neighbourCell.ValueRO.index, gridData.width),
+                                toPosition: IndexToCoords(currGridCell.ValueRO.index, gridData.width)
+                            );
+
+                            gridCellOpenQueue.Enqueue(neighbourCell);
+                        }
+                    }
+                }
+                /* Debug.Log($"FLOWFIELD: Checked {10000-safety} cells"); */
+
+                gridCellArray.Dispose();
+            }
+
+            GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
+
         }
-
-        GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
 
         // TEST: Used for testing grid cell interaction.
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             float3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
-            int2 mouseGridPosition = CalculateGridPosition(mouseWorldPosition, gridData.gridCellSize);
+            int2 mouseGridPosition = WorldPositionToCoords(mouseWorldPosition, gridData.gridCellSize);
 
             if (ValidateGridPosition(mouseGridPosition, gridData))
             {
@@ -235,9 +273,21 @@ partial struct GridSystem : ISystem
                 RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(gridCellEntity);
                 /* gridCell.ValueRW.data = 1; */
                 Debug.Log($"Selected vector: {gridCell.ValueRO.pathingVector}");
-                targetGridPosition = mouseGridPosition;
 
                 GridDebugDisplay.Instance?.UpdateCellVisual(gridCell.ValueRO);
+
+                // Set unit targets
+                /* foreach (
+                    (RefRW<FlowFieldFollower> flowFieldFollower,
+                    EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled)
+                        in SystemAPI.Query<
+                        RefRW<FlowFieldFollower>,
+                        EnabledRefRW<FlowFieldFollower>>().
+                        WithPresent<FlowFieldFollower>())
+                {
+                    flowFieldFollower.ValueRW.targetPosition = mouseWorldPosition;
+                    flowFieldFollowerEnabled.ValueRW = true;
+                } */
             }
         }
     }
@@ -248,13 +298,13 @@ partial struct GridSystem : ISystem
     [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
-        RefRW<GridDataRegistry> gridSystemData = SystemAPI.GetComponentRW<GridDataRegistry>(state.SystemHandle);
+        RefRW<GridData> gridSystemData = SystemAPI.GetComponentRW<GridData>(state.SystemHandle);
         gridSystemData.ValueRW.gridMap.gridCellEntityArray.Dispose();
     }
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCells(
         RefRW<GridCell> gridCell,
-        GridDataRegistry gridData,
+        GridData gridData,
         NativeArray<RefRW<GridCell>> gridCellArray)
     {
         return GetNeighbouringCells(gridCell, gridData, gridCellArray, radius: 1);
@@ -262,7 +312,7 @@ partial struct GridSystem : ISystem
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCells(
         RefRW<GridCell> gridCell,
-        GridDataRegistry gridData,
+        GridData gridData,
         NativeArray<RefRW<GridCell>> gridCellArray,
         int radius)
     {
@@ -293,7 +343,7 @@ partial struct GridSystem : ISystem
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCellsRecursive(
         RefRW<GridCell> gridCell,
-        GridDataRegistry gridData,
+        GridData gridData,
         NativeArray<RefRW<GridCell>> gridCellArray)
     {
         return GetNeighbouringCellsRecursive(gridCell, gridData, gridCellArray, radius: 1);
@@ -301,7 +351,7 @@ partial struct GridSystem : ISystem
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCellsRecursive(
     RefRW<GridCell> startCell,
-    GridDataRegistry gridData,
+    GridData gridData,
     NativeArray<RefRW<GridCell>> gridCellArray,
     int radius)
     {
@@ -400,9 +450,9 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Calculates the world position of the given grid cell's origin corner.
     /// </summary>
-    public static Vector3 CoordsToWorldPositionCorner(int x, int y, float cellSize)
+    public static float3 CoordsToWorldPositionCorner(int x, int y, float cellSize)
     {
-        return new Vector3(
+        return new float3(
             x: x * cellSize,
             y: 0.1f,
             z: y * cellSize);
@@ -411,18 +461,29 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Calculates the world position of the given grid cell's center point.
     /// </summary>
-    public static Vector3 CoordsToWorldPositionCenter(int x, int y, float cellSize)
+    public static float3 CoordsToWorldPositionCenter(int x, int y, float cellSize)
     {
-        return new Vector3(
+        return new float3(
             x: x * cellSize + cellSize / 2,
             y: 0.1f,
             z: y * cellSize + cellSize / 2);
     }
 
     /// <summary>
+    /// Calculates the world position of the given grid cell's center point.
+    /// </summary>
+    public static float3 CoordsToWorldPositionCenter(int2 coords, float cellSize)
+    {
+        return new float3(
+            x: coords.x * cellSize + cellSize / 2,
+            y: 0.1f,
+            z: coords.y * cellSize + cellSize / 2);
+    }
+
+    /// <summary>
     /// Converts a world-space position into a grid coordinate.
     /// </summary>
-    public static int2 CalculateGridPosition(float3 worldPosition, float gridCellSize)
+    public static int2 WorldPositionToCoords(float3 worldPosition, float gridCellSize)
     {
         return new int2(
             (int)math.floor(worldPosition.x / gridCellSize),
@@ -433,7 +494,7 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Returns true when the supplied grid coordinates are inside the grid bounds.
     /// </summary>
-    public static bool ValidateGridPosition(int2 gridPosition, GridDataRegistry gridData)
+    public static bool ValidateGridPosition(int2 gridPosition, GridData gridData)
     {
         return
             gridPosition.x >= 0 &&
@@ -441,12 +502,28 @@ partial struct GridSystem : ISystem
             gridPosition.x < gridData.width &&
             gridPosition.y < gridData.height;
     }
+
+    /// <summary>
+    /// Returns true when the supplied grid coordinates are inside the grid bounds.
+    /// </summary>
+    public static float3 GridVectorToWorldSpace(float2 vector)
+    {
+        return new float3(vector.x, 0, vector.y);
+    }
+
+    /// <summary>
+    /// Returns true when the supplied grid cell represents a wall.
+    /// </summary>
+    public static bool IsWall(GridCell cell)
+    {
+        return cell.stepCost == WALL_COST;
+    }
 }
 
 /// <summary>
 /// Stores baked grid configuration and the runtime grid entity map for the system.
 /// </summary>
-public struct GridDataRegistry : IComponentData
+public struct GridData : IComponentData
 {
     /// <summary>Grid width in cells.</summary>
     public int width;

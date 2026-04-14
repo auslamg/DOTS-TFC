@@ -135,7 +135,9 @@ public class UnitSelectionManager : MonoBehaviour
 
             //TODO: Extract into DeselectAll() method
             //Query all entities with the Selected component to disable it
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<Selected>().Build(entityManager);
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+                WithAll<Selected>().
+                Build(entityManager);
 
             NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
             NativeArray<Selected> selectedArray = query.ToComponentDataArray<Selected>(Allocator.Temp);
@@ -229,10 +231,9 @@ public class UnitSelectionManager : MonoBehaviour
     private void SetRallyPositionOffset(EntityManager entityManager)
     {
         // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
-            Selected,
-            Trainer,
-            LocalTransform>().Build(entityManager);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Selected, Trainer, LocalTransform>().
+            Build(entityManager);
 
         // Register entities and components to modify in order to run Set on the original struct
         NativeArray<Trainer> trainerArray = query.ToComponentDataArray<Trainer>(Allocator.Temp);
@@ -256,10 +257,10 @@ public class UnitSelectionManager : MonoBehaviour
     private void SetTargetOnSelectedUnits(EntityManager entityManager, Entity hitEntity)
     {
         //Query all entities with the UnitMover and Selected components to set their target
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
-            Selected,
-            Faction>().
-            WithPresent<ManualTarget>().Build(entityManager);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Selected, Faction>().
+            WithPresent<ManualTarget>().
+            Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
@@ -295,11 +296,10 @@ public class UnitSelectionManager : MonoBehaviour
         targetPosition.y = 0f;
 
         //Query all entities with the UnitMover and Selected components to set their target
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<
-            UnitMover,
-            Selected,
-            LocalTransform>().
-            WithPresent<ManualMove, ManualTarget>().Build(entityManager);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Selected>().
+            WithPresent<ManualMove, ManualTarget, LocalTransform, FlowFieldPathRequest>().
+            Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
@@ -307,6 +307,7 @@ public class UnitSelectionManager : MonoBehaviour
         NativeArray<ManualMove> manualMoveArray = query.ToComponentDataArray<ManualMove>(Allocator.Temp);
         NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
+        NativeArray<FlowFieldPathRequest> flowFieldRequestArray = query.ToComponentDataArray<FlowFieldPathRequest>(Allocator.Temp);
 
         //Get average position of all entities queried to send it as start position to formation methods
         float3 avgPosition = float3.zero;
@@ -335,9 +336,16 @@ public class UnitSelectionManager : MonoBehaviour
 
             // Writing a new local array and copying values to the query is preferable since it reduces writing operations.
 
+            //New FlowFieldPathRequest values
+            FlowFieldPathRequest newFlowFieldPathRequest = flowFieldRequestArray[i];
+            newFlowFieldPathRequest.targetPosition = formationPositionsArray[i];
+            flowFieldRequestArray[i] = newFlowFieldPathRequest;
+            entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], true);
         }
-        query.CopyFromComponentDataArray(manualMoveArray); //Remove when implementing single-entity instructions
-        query.CopyFromComponentDataArray(manualTargetArray); //Remove when implementing single-entity instructions
+        // Copy to original fields since this is not using reference types but value types
+        query.CopyFromComponentDataArray(manualMoveArray); 
+        query.CopyFromComponentDataArray(manualTargetArray); 
+        query.CopyFromComponentDataArray(flowFieldRequestArray); 
     }
 
     /// <summary>

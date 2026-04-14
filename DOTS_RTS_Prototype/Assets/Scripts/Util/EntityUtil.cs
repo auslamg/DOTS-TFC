@@ -76,7 +76,9 @@ public static class EntityUtil
     /// <returns>The <see cref="CollisionWorld"/> from the current <see cref="PhysicsWorldSingleton"/>.</returns>
     public static CollisionWorld GetCollisionWorld(this EntityManager em)
     {
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>().Build(em);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<PhysicsWorldSingleton>().
+            Build(em);
 
         PhysicsWorldSingleton physiscsWorldSingleton = query.GetSingleton<PhysicsWorldSingleton>();
 
