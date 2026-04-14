@@ -65,8 +65,14 @@ public class GridDebugDisplay : MonoBehaviour
             {
                 // Retrieve the unmanaged data for this cell
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                int index = GridSystem.CoordsToIndex(x, y, gridData.width);
-                Entity cellEntity = gridData.gridMap.gridCellEntityArray[index];
+                int flowFieldIndex = gridData.nextFlowFieldIndex - 1;
+                if (flowFieldIndex <= 0)
+                {
+                    flowFieldIndex = 0;
+                } // FIX Use LoopCounter
+
+                int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
+                Entity cellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[cellIndex];
                 GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
 
                 UpdateCellVisual(cell);
@@ -100,7 +106,7 @@ public class GridDebugDisplay : MonoBehaviour
                         0,
                         cell.pathingVector.y),
                     Vector3.up));
-            }            
+            }
         }
     }
 

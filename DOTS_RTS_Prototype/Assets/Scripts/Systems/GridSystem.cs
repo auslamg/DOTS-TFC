@@ -16,6 +16,7 @@ using UnityEngine;
 partial struct GridSystem : ISystem
 {
     public const int WALL_COST = byte.MaxValue;
+    public const int FLOW_FIELD_MAP_COUNT = 100;
 
     /// <summary>
     /// Executes grid display initialization once the grid data registry is available.
@@ -54,32 +55,38 @@ partial struct GridSystem : ISystem
         Entity gridCellEntityTemplate = state.EntityManager.CreateEntity();
         state.EntityManager.AddComponent<GridCell>(gridCellEntityTemplate);
 
-        GridMap gridMap = new GridMap
+        NativeArray<GridMap> gridMapArray = new NativeArray<GridMap>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
+        for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
         {
-            gridCellEntityArray = new NativeArray<Entity>(totalCount, Allocator.Persistent)
-        };
-
-        state.EntityManager.Instantiate(gridCellEntityTemplate, gridMap.gridCellEntityArray);
-
-        Debug.Log("Building world grid");
-
-        for (int x = 0; x < gridData.width; x++)
-        {
-            for (int y = 0; y < gridData.height; y++)
+            GridMap gridMap = new GridMap
             {
-                int index = CoordsToIndex(x, y, gridData.width);
-                GridCell gridCell = new GridCell
+                gridCellEntityArray = new NativeArray<Entity>(totalCount, Allocator.Persistent)
+            };
+
+            state.EntityManager.Instantiate(gridCellEntityTemplate, gridMap.gridCellEntityArray);
+
+            Debug.Log("Building world grid");
+
+            for (int x = 0; x < gridData.width; x++)
+            {
+                for (int y = 0; y < gridData.height; y++)
                 {
-                    index = index,
-                    x = x,
-                    y = y,
-                };
+                    int index = CoordsToIndex(x, y, gridData.width);
+                    GridCell gridCell = new GridCell
+                    {
+                        index = index,
+                        x = x,
+                        y = y,
+                    };
 
-                Entity cellEntity = gridMap.gridCellEntityArray[index];
+                    Entity cellEntity = gridMap.gridCellEntityArray[index];
 
-                state.EntityManager.SetName(cellEntity, $"GridCell({x},{y})");
-                SystemAPI.SetComponent(cellEntity, gridCell);
+                    state.EntityManager.SetName(cellEntity, $"GridCell({x},{y})");
+                    SystemAPI.SetComponent(cellEntity, gridCell);
+                }
             }
+
+            gridMapArray[i] = gridMap;
         }
 
         Debug.Log("World grid built successfully");
@@ -92,8 +99,9 @@ partial struct GridSystem : ISystem
                 width = gridData.width,
                 height = gridData.height,
                 gridCellSize = gridData.gridCellSize,
-                gridMap = gridMap
+                gridMapArray = gridMapArray
             });
+
 
         gridData.isInitialized = true;
         return true;
@@ -140,9 +148,17 @@ partial struct GridSystem : ISystem
 
             int2 targetGridPosition = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
 
-            // Resolved request.
+            // Resolving request.
             flowFieldRequestEnabled.ValueRW = false;
+
+            int flowFieldIndex = gridData.nextFlowFieldIndex; // FIX Use LoopCounter
+            gridData.nextFlowFieldIndex = (gridData.nextFlowFieldIndex + 1) % FLOW_FIELD_MAP_COUNT; // FIX Use LoopCounter
+            SystemAPI.SetComponent(state.SystemHandle, gridData); // Data value overwrite
+
+            Debug.Log($"Consuming FlowField index: {flowFieldIndex}");
+
             // Proceed with pathfinding
+            flowFieldFollower.ValueRW.flowFieldIndex = flowFieldIndex;
             flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
             flowFieldFollowerEnabled.ValueRW = true;
 
@@ -155,7 +171,7 @@ partial struct GridSystem : ISystem
                 for (int y = 0; y < gridData.height; y++)
                 {
                     int index = CoordsToIndex(x, y, gridData.width);
-                    Entity cellEntity = gridData.gridMap.gridCellEntityArray[index];
+                    Entity cellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[index];
                     RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(cellEntity);
 
                     gridCellArray[index] = gridCell;
@@ -268,13 +284,12 @@ partial struct GridSystem : ISystem
 
             if (ValidateGridPosition(mouseGridPosition, gridData))
             {
-                int index = CoordsToIndex(mouseGridPosition.x, mouseGridPosition.y, gridData.width);
-                Entity gridCellEntity = gridData.gridMap.gridCellEntityArray[index];
+                /* int index = CoordsToIndex(mouseGridPosition.x, mouseGridPosition.y, gridData.width);
+                Entity gridCellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[index];
                 RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(gridCellEntity);
-                /* gridCell.ValueRW.data = 1; */
                 Debug.Log($"Selected vector: {gridCell.ValueRO.pathingVector}");
 
-                GridDebugDisplay.Instance?.UpdateCellVisual(gridCell.ValueRO);
+                GridDebugDisplay.Instance?.UpdateCellVisual(gridCell.ValueRO); */
 
                 // Set unit targets
                 /* foreach (
@@ -298,8 +313,13 @@ partial struct GridSystem : ISystem
     [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
-        RefRW<GridData> gridSystemData = SystemAPI.GetComponentRW<GridData>(state.SystemHandle);
-        gridSystemData.ValueRW.gridMap.gridCellEntityArray.Dispose();
+        RefRW<GridData> gridData = SystemAPI.GetComponentRW<GridData>(state.SystemHandle);
+
+        for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
+        {
+            gridData.ValueRW.gridMapArray[i].gridCellEntityArray.Dispose();
+        }
+        gridData.ValueRW.gridMapArray.Dispose();
     }
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCells(
@@ -535,7 +555,9 @@ public struct GridData : IComponentData
     public float gridCellSize;
 
     /// <summary>Entity lookup map for every created grid cell.</summary>
-    public GridMap gridMap;
+    public NativeArray<GridMap> gridMapArray;
+
+    public int nextFlowFieldIndex;
 }
 
 /// <summary>

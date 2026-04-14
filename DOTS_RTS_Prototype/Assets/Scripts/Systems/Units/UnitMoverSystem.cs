@@ -56,7 +56,7 @@ partial struct UnitMoverSystem : ISystem
             // Retrieve current grid cell's pathing vector and convert it to world space
             int2 gridPosition = GridSystem.WorldPositionToCoords(localTransform.ValueRO.Position, gridData.gridCellSize);
             int currentCellIndex = GridSystem.CoordsToIndex(gridPosition, gridData.width);
-            Entity currentCell = gridData.gridMap.gridCellEntityArray[currentCellIndex];
+            Entity currentCell = gridData.gridMapArray[flowFieldFollower.ValueRO.flowFieldIndex].gridCellEntityArray[currentCellIndex];
             GridCell gridCell = SystemAPI.GetComponent<GridCell>(currentCell);
             float3 worldMovementVector = GridSystem.GridVectorToWorldSpace(gridCell.pathingVector);
 

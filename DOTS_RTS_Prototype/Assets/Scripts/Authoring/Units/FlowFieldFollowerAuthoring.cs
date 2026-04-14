@@ -30,5 +30,6 @@ public struct FlowFieldFollower : IComponentData, IEnableableComponent
 {
     public float3 targetPosition;
     public float3 lastMoveVector;
+    public int flowFieldIndex;
 }
 
