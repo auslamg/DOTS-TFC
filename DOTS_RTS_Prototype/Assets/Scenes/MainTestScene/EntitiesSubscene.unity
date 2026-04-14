@@ -641,6 +641,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HQFort
       objectReference: {fileID: 0}
+    - target: {fileID: 4457291073713935486, guid: 099c487aa3645b54ba8fa1efe96936ef, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5139742705733411953, guid: 099c487aa3645b54ba8fa1efe96936ef, type: 3}
       propertyPath: m_LocalPosition.x
       value: -20

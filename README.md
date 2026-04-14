@@ -133,17 +133,114 @@ Useful beginner menu paths:
 - **Window > General > Inspector**: Restore inspector panel
 - **Edit > Preferences > External Tools**: Set script editor
 
+## Recommended Editor Layout
+
+To improve workflow and match the intended development setup for this project, it is recommended to use the provided custom Unity Editor layout.
+
+### Layout File Location
+
+The layout file is included in the repository at:
+DOTS\DOTS_RTS_Prototype\Layouts\DOTS_Dev_layout.wlt
+
+### How to Load the Layout in Unity
+
+1. Open the project in Unity.
+2. Go to the top-right corner of the Unity Editor.
+3. Click the **Layout** dropdown.
+4. Select **Load Layout...**.
+5. Navigate to: DOTS_RTS_Prototype/Layouts/
+6. Select **DOTS_Dev_layout.wlt**.
+
+### What This Layout Provides
+
+This layout is optimized for DOTS debugging and data-oriented scalable development:
+
+- **Scene + Game view visibility** for quick iteration and playtesting  
+- **Hierarchy + Entity hierarchy (adaptive)** at the lefmost part of the screen
+- **Inspector (Authoring / Runtime switch)** at the rightmost part of the screen
+- **Dedicated ScriptableObject and Prefab Project windows** at the center, right of the Scene/Game view
+- Balanced panel arrangement for working with ECS systems and runtime behavior  
+
+
+## Viewing the Game on an Android Device (Unity Remote)
+
+If you want to see and interact with the Game view directly on your Android phone while running the project in the Unity Editor, you can use **Unity Remote**.
+
+This is useful for testing touch input and getting a more realistic feel of gameplay without building the project every time.
+
+### Requirements
+
+- An Android device  
+- A USB cable  
+- The **Unity Remote 5** app installed from the Google Play Store  
+- USB debugging enabled on your Android device  
+
+### Step-by-Step Setup
+
+#### 1. Enable Developer Mode on Android
+1. Open **Settings > About Phone**.  
+2. Tap **Build Number** multiple times until Developer Mode is enabled.  
+3. Go to **Settings > Developer Options**.  
+4. Enable **USB Debugging**.  
+
+#### 2. Install Unity Remote
+1. On your Android device, install **Unity Remote 5** from the Play Store.  
+2. Open the app (it will wait for a connection).  
+
+#### 3. Connect Your Device
+1. Plug your Android device into your computer via USB.  
+2. If prompted on your phone, allow USB debugging access.  
+
+#### 4. Configure Unity Editor
+1. In Unity, go to **Edit > Project Settings > Editor**.  
+2. Find the **Unity Remote** section.  
+3. Set:
+   - **Device** → *Any Android Device*  
+   - **Resolution** → *Downsize* (recommended for performance)  
+   - **Joystick Source** → *Remote*  
+
+#### 5. Enter Play Mode
+1. Press the **Play** button in Unity.  
+2. The Game view will now stream to your Android device.  
+3. Touch input on your phone will be sent back to the Unity Editor.  
+
+### Notes and Limitations
+
+- Unity Remote streams compressed frames, so **visual quality and performance are reduced**.  
+- This is intended for **input testing**, not performance validation.  
+- Some rendering features (especially with DOTS/URP) may not appear exactly the same as in a full build.  
+- If the device does not connect:
+  - Ensure USB debugging is enabled  
+  - Try reconnecting the cable  
+  - Restart Unity and the app  
+
+### When to Use vs Build
+
+- Use **Unity Remote** for:
+  - Quick iteration  
+  - Touch input testing  
+  - UI interaction checks  
+
+- Use a **full Android build** for:
+  - Performance testing  
+  - Final visuals validation  
+  - Device-specific issues  
+
 ## Troubleshooting
 
 ### Compilation errors
 - Ensure all required packages are installed and updated in Package Manager.
+- If using *Any android device* in **Edit > Project Settings > Editor > Unity Remote > Device**, ensure an android device is plugged in and properly configured.
 - If errors persist, clear the **Library** folder and reimport the project.
 
 ### IDE does not recognize Unity code symbols
 - Ensure Unity has fully opened and the project has run at least once after opening.
 - This initialization may be needed each time the project is reopened.
 - **Visual Studio:** Regenerate project files if IntelliSense fails.
-- **Visual Studio Code:** Open **DOTS_RTS_Prototype\DOTS_RTS_Prototype.slnx** and wait for full load (commonly 2 to 4 minutes, sometimes longer on lower-end PCs or with many extensions).
+- **Visual Studio Code:** Open **DOTS_RTS_Prototype\DOTS_RTS_Prototype.slnx** and wait for full load (commonly 2 to 4 minutes, sometimes longer on lower-end PCs or when many extensions are installed).
+- Storing the project inside the C:/ drive might decrease loading times.
+- Multiple instances of the **.NET Host** task may cause trouble with IDE Unity code recognition. Ending them with the Task Manager will solve the issue.
+
 
 ## Disclaimer
 

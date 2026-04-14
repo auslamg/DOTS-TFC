@@ -55,6 +55,7 @@ partial struct GridSystem : ISystem
         Entity gridCellEntityTemplate = state.EntityManager.CreateEntity();
         state.EntityManager.AddComponent<GridCell>(gridCellEntityTemplate);
 
+        // TODO: Optimize
         NativeArray<GridMap> gridMapArray = new NativeArray<GridMap>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
         for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
         {
@@ -64,8 +65,6 @@ partial struct GridSystem : ISystem
             };
 
             state.EntityManager.Instantiate(gridCellEntityTemplate, gridMap.gridCellEntityArray);
-
-            Debug.Log("Building world grid");
 
             for (int x = 0; x < gridData.width; x++)
             {

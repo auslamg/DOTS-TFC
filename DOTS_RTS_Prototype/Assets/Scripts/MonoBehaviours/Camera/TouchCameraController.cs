@@ -355,8 +355,8 @@ public class TouchCameraController : MonoBehaviour
         Vector2 centerPrevPos = touch1PrevPos - touch0PrevPos;
 
         // Distance between touches
-        Vector2 prevTouchVector = (touch0PrevPos - touch1PrevPos);
-        Vector2 currentTouchVector = (touch0CurrentPos - touch1CurrentPos);
+        Vector2 prevTouchVector = touch0PrevPos - touch1PrevPos;
+        Vector2 currentTouchVector = touch0CurrentPos - touch1CurrentPos;
         float angle = Vector2.SignedAngle(prevTouchVector, currentTouchVector);
 
         // Difference = pinch amount
