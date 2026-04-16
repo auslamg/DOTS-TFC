@@ -88,7 +88,6 @@ class UnitAnimationsBaker : Baker<UnitAnimationsAuthoring>
 /// <summary>
 /// Contains the keys for the animations of a unit.
 /// </summary>
-/// //REVIEW: Rename into HumanoidAnimations if other non-humanoid unit types are implemented
 public struct UnitAnimations : IComponentData
 {
     /// <summary>

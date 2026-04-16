@@ -76,14 +76,12 @@ public partial struct ActiveAnimationJob : IJobEntity
         }
 
         //Time loop
-        //IDEA: Use corroutines
         activeAnimation.framePhaseTime += deltaTime;
         if (activeAnimation.framePhaseTime >= animData.frameFrequency)
         {
             activeAnimation.framePhaseTime -= animData.frameFrequency;
 
             //Animation loop
-            //IDEA: Use corroutines
             activeAnimation.currentFrame += 1;
             if (activeAnimation.currentFrame >= animData.frameCount)
             {

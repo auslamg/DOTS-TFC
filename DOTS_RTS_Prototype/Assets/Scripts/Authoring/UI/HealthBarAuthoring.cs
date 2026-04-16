@@ -1,7 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
 
-//REVIEW: healthbar can be refactored into being a base unit component or a bar component instead of extensive reference, sacrificing project clarity for performance.
 /// <summary>
 /// Managed component for the <see cref="HealthBar"/> unmanaged component.
 /// </summary>

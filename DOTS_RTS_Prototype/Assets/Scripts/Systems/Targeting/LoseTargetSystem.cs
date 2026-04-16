@@ -41,7 +41,6 @@ partial struct LoseTargetSystem : ISystem
                 }
                 else
                 {
-                    //IDEA: Refactor into corroutines
                     // Lose-target delay timer
                     loseTarget.ValueRW.attemptPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (loseTarget.ValueRO.attemptPhaseTime <= 0)

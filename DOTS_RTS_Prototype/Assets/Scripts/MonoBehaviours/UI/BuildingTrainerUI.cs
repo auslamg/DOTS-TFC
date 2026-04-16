@@ -66,10 +66,12 @@ public class BuildingTrainerUI : MonoBehaviour
     [SerializeField]
     [Tooltip("Progress bar image whose fill amount reflects current training progress.")]
     private Image progressBarImage;
+
     //REVIEW: May use two different images. Implement if so
     /* [SerializeField] private Sprite placeholderProductionQueueImage; */
 
     /* [SerializeField] private string spawnedEntityKey; */
+    
     /// <summary>
     /// Cached EntityManager used for reading and writing trainer ECS data.
     /// </summary>

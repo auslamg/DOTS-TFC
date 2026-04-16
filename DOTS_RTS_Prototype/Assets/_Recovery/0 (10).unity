@@ -1153,7 +1153,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 685637653}
-  - component: {fileID: 685637656}
   - component: {fileID: 685637655}
   - component: {fileID: 685637654}
   m_Layer: 0
@@ -1195,10 +1194,12 @@ MonoBehaviour:
   inertiaMaximumVelocity: 10
   inertiaThresholdMinDistance: 1.5
   inertiaFrictionFactor: 0.05
-  dragDebounceTime: 0.2
-  zoomStepMultiplier: 100
+  dragDebounceTime: 0.5
+  minimumFOV: 10
+  maximumFOV: 70
+  zoomStepMultiplier: 1
+  zoomSmoothingMultiplier: 1
   cinemachineCamera: {fileID: 265048877}
-  camHandler: {fileID: 0}
 --- !u!114 &685637655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1206,28 +1207,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 685637652}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd10b9ac8ec6ef249a993192edecd2dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   cameraMovementSpeed: 30
   cameraRotationSpeed: 1
-  zoomStepMultiplier: 100
-  cinemachineCamera: {fileID: 265048877}
-  camHandler: {fileID: 0}
---- !u!114 &685637656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685637652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9748b01f96906c49b467f0ff40df1c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraHandler
   minimumFOV: 10
   maximumFOV: 70
   zoomStepMultiplier: 10
@@ -3064,7 +3050,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1675474819
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -40,7 +40,6 @@ class LoseTargetBaker : Baker<LoseTargetAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="Targetter"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
 /// </remarks>
 public struct LoseTarget : IComponentData
 {

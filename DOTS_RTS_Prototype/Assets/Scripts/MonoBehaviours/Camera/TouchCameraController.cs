@@ -84,40 +84,14 @@ public class TouchCameraController : MonoBehaviour
     float dragDebounceTimeCountdown = 0.1f;
 
     [Header("Zoom Settings")]
-
-    /// <summary>
-    /// Minimum field of view angle (in degrees) when zooming in.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Minimum field of view angle when zooming in.")]
-    float minimumFOV = 10f;
-
-    /// <summary>
-    /// Maximum field of view angle (in degrees) when zooming out.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Maximum field of view angle when zooming out.")]
-    float maximumFOV = 70f;
-
+    
     /// <summary>
     /// Zoom sensitivity multiplier applied to the pinch distance delta per frame.
     /// </summary>
     [SerializeField]
     [Tooltip("Zoom sensitivity multiplier applied to the pinch distance delta per frame.")]
     float zoomStepMultiplier = 10f;
-
-    /// <summary>
-    /// Smoothing speed for field of view interpolation toward the target zoom level. Higher values result in faster zoom transitions.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Smoothing speed for field of view interpolation toward the target zoom level. Higher values result in faster zoom transitions.")]
-    float zoomSmoothingMultiplier = 100;
-
-    /// <summary>
-    /// Target field of view angle the camera is currently transitioning toward via smoothing.
-    /// </summary>
-    private float targetFOV;
-
+   
     [Header("References")]
 
     /// <summary>
@@ -127,11 +101,24 @@ public class TouchCameraController : MonoBehaviour
     [Tooltip("Cinemachine camera component used for controlling the view and focus.")]
     private CinemachineCamera cinemachineCamera;
 
+    [SerializeField]
+    private CameraHandler camHandler;
+
     /// <summary>
     /// Number of active touches detected in the previous frame.
     /// Used to detect touch transitions (e.g., from 1 to 2 fingers).
     /// </summary>
     private int previousTouchCount = 0;
+
+    void Awake()
+    {
+        camHandler = gameObject.GetComponent<CameraHandler>();
+
+        if (!camHandler.enabled || camHandler == null)
+        {
+            Debug.LogError("Camera controller could not find ZoomHandler component");
+        }
+    }
 
     /// <summary>
     /// Updates camera state based on current touch input every frame.
@@ -314,18 +301,9 @@ public class TouchCameraController : MonoBehaviour
         float currentZoomDistance = (touch0CurrentPos - touch1CurrentPos).magnitude;
 
         // Difference = pinch amount
-        float deltaZoom = currentZoomDistance - prevZoomDistance;
+        float deltaZoom = (currentZoomDistance - prevZoomDistance) * zoomStepMultiplier * Time.deltaTime;
 
-        // Initialize targetFOV if needed
-        if (targetFOV == 0f)
-            targetFOV = cinemachineCamera.Lens.FieldOfView;
-
-        // Adjust target FOV
-        targetFOV -= deltaZoom * zoomStepMultiplier * Time.deltaTime;
-        targetFOV = Mathf.Clamp(targetFOV, minimumFOV, maximumFOV);
-        // Smoothing
-        cinemachineCamera.Lens.FieldOfView =
-            Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, 10 / zoomSmoothingMultiplier);
+        camHandler.HandleZoom(deltaZoom);
 
         // Avoid input overlap
         DebounceTouchDrag();
@@ -347,20 +325,17 @@ public class TouchCameraController : MonoBehaviour
         // Positions in current frame
         Vector2 touch0CurrentPos = touch0.position;
         Vector2 touch1CurrentPos = touch1.position;
-        Vector2 centerCurrentPos = touch1CurrentPos - touch0CurrentPos;
 
         // Positions in previous frame
         Vector2 touch0PrevPos = touch0.position - touch0.deltaPosition;
         Vector2 touch1PrevPos = touch1.position - touch1.deltaPosition;
-        Vector2 centerPrevPos = touch1PrevPos - touch0PrevPos;
 
         // Distance between touches
         Vector2 prevTouchVector = touch0PrevPos - touch1PrevPos;
         Vector2 currentTouchVector = touch0CurrentPos - touch1CurrentPos;
-        float angle = Vector2.SignedAngle(prevTouchVector, currentTouchVector);
+        float deltaRotation = Vector2.SignedAngle(prevTouchVector, currentTouchVector) * cameraRotationSpeed;
 
-        // Difference = pinch amount
-        transform.eulerAngles += new Vector3(0, angle * cameraRotationSpeed, 0);
+        camHandler.HandleRotation(deltaRotation);
 
         // Avoid input overlap
         DebounceTouchDrag();

@@ -39,7 +39,6 @@ partial struct TargetFinderSystem : ISystem
                 RefRO<Faction>,
                 RefRO<ManualTarget>>())
         {
-            //IDEA: Refactor into corroutines
             // Target scan interval timer
             targetFinder.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
             if (targetFinder.ValueRO.scanPhaseTime <= 0)
@@ -81,7 +80,6 @@ partial struct TargetFinderSystem : ISystem
                     {
                         foreach (DistanceHit distanceHit in distanceHitList)
                         {
-                            //IDEA: Refactor into using owner IDs
                             //If an entity was hit
                             if (EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity) || SystemAPI.HasComponent<Faction>(distanceHit.Entity))
                             {

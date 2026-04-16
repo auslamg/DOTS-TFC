@@ -106,7 +106,6 @@ partial struct ShootAttackSystem : ISystem
                 }
                 
                 {
-                    //IDEA: Refactor into corroutines
                     // Attack cooldown timer
                     shootAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (shootAttack.ValueRO.attackPhaseTime <= 0f)

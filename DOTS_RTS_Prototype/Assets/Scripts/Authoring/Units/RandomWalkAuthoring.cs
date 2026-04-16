@@ -69,7 +69,6 @@ class RandomWalkBaker : Baker<RandomWalkAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="UnitMover"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(UnitMover))]
 /// </remarks>
 public struct RandomWalk : IComponentData
 {

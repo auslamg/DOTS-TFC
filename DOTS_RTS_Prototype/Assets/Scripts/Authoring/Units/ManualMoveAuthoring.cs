@@ -29,7 +29,6 @@ public class ManualMoveBaker : Baker<ManualMoveAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="UnitMover"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(UnitMover))]
 /// </remarks>
 public struct ManualMove : IComponentData, IEnableableComponent
 {

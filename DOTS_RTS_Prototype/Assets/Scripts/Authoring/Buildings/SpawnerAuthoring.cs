@@ -1,8 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
 
-//IDEA: Refactor into "EntitySpawner" with a set Prefab field
-
 /// <summary>
 /// Managed component for the <see cref="Spawner"/> unmanaged component.
 /// </summary>
@@ -69,7 +67,6 @@ class SpawnerBaker : Baker<SpawnerAuthoring>
     }
 }
 
-//IDEA: Refactor into "EntitySpawner" with a set Prefab field
 /// <summary>
 /// Used for enemy spawn points that generate enemies in a random position in a radius around the <c>LocalTransform</c> position.
 /// </summary>

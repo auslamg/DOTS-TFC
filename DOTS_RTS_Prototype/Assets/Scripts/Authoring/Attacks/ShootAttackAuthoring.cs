@@ -83,7 +83,6 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
 /// </summary>
 /// <remarks>
 /// Requires the <see cref="Targetter"/> component 
-/// //IDEA: Enforce implementation through [RequireComponent(typeof(Targetter))]
 /// </remarks>
 public struct ShootAttack : IComponentData
 {

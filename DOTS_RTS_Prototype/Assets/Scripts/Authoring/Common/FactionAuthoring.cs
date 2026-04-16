@@ -32,7 +32,7 @@ class FactionBaker : Baker<FactionAuthoring>
 }
 
 /// <summary>
-/// Used for unit ownership identification. //IDEA Use Unit.ownerID
+/// Used for unit ownership identification.
 /// </summary>
 public struct Faction : IComponentData
 {

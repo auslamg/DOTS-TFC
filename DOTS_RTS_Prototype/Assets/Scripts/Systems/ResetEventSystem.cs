@@ -66,8 +66,8 @@ partial struct ResetEventSystem : ISystem
         jobHandleArray.Dispose();
         onTrainerUnitQueueChangeFiringEntities.Dispose();
     }
-
 }
+
 [BurstCompile]
 [WithPresent(typeof(Selected))]
 /// <summary>

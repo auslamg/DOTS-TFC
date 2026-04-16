@@ -26,37 +26,12 @@ public class PCCameraController : MonoBehaviour
     [Header("Zoom Settings")]
 
     /// <summary>
-    /// Minimum field of view angle when zooming in.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Minimum field of view angle when zooming in.")]
-    float minimumFOV = 10f;
-
-    /// <summary>
-    /// Maximum field of view angle when zooming out.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Maximum field of view angle when zooming out.")]
-    float maximumFOV = 70f;
-
-    /// <summary>
     /// Amount of zoom applied per input step.
     /// </summary>
     [SerializeField]
     [Tooltip("Amount of zoom applied per input step.")]
     float zoomStepMultiplier = 10f;
-
-    /// <summary>
-    /// Rate at which the camera transitions to the target zoom level.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Rate at which the camera transitions to the target zoom level.")]
-    float zoomSmoothingMultiplier = 100;
-
-    /// <summary>
-    /// Desired field of view the camera moves toward when zooming.
-    /// </summary>
-    private float targetFOV;
+    
 
     [Header("References")]
 
@@ -67,10 +42,18 @@ public class PCCameraController : MonoBehaviour
     [Tooltip("Cinemachine camera used for controlling the view.")]
     private CinemachineCamera cinemachineCamera;
 
+    [SerializeField]
+    private CameraHandler camHandler;
+
 
     void Awake()
     {
-        targetFOV = cinemachineCamera.Lens.FieldOfView;
+        camHandler = gameObject.GetComponent<CameraHandler>();
+
+        if (!camHandler.enabled || camHandler == null)
+        {
+            Debug.LogError("Camera controller could not find ZoomHandler component");
+        }
     }
 
     // Update is called once per frame
@@ -117,35 +100,25 @@ public class PCCameraController : MonoBehaviour
         return horizontalMoveDirection;
     }
 
+    private void HandleMouseWheelCameraZoom()
+    {
+        float deltaZoom = Input.mouseScrollDelta.y * 10 * zoomStepMultiplier;
+
+        camHandler.HandleZoom(deltaZoom);
+    }
+
     private void HandleKeyboardCameraRotation()
     {
-        float rotationTotal = 0;
+        float deltaRotation = 0;
         if (Input.GetKey(KeyCode.Q))
         {
-            rotationTotal += 1;
+            deltaRotation += cameraRotationSpeed;
         }
         if (Input.GetKey(KeyCode.E))
         {
-            rotationTotal -= 1;
+            deltaRotation -= cameraRotationSpeed;
         }
 
-        transform.eulerAngles += new Vector3(0, rotationTotal * cameraRotationSpeed, 0);
-    }
-
-    private void HandleMouseWheelCameraZoom()
-    {
-        if (Input.mouseScrollDelta.y > 0)
-        {
-            targetFOV -= zoomStepMultiplier / 10 * cinemachineCamera.Lens.FieldOfView;
-        }
-        if (Input.mouseScrollDelta.y < 0)
-        {
-            targetFOV += zoomStepMultiplier / 10 * cinemachineCamera.Lens.FieldOfView;
-        }
-
-        targetFOV = Mathf.Clamp(targetFOV, minimumFOV, maximumFOV);
-        // Smoothing
-        cinemachineCamera.Lens.FieldOfView =
-            Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, 10 / zoomSmoothingMultiplier);
+        camHandler.HandleRotation(deltaRotation);
     }
 }

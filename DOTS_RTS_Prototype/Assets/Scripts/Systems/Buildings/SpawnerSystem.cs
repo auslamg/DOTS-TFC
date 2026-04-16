@@ -45,7 +45,6 @@ partial struct SpawnerSystem : ISystem
                 RefRO<LocalTransform>,
                 RefRW<Spawner>>())
         {
-            //IDEA: Refactor into corroutines
             // Spawn interval timer
             spawner.ValueRW.spawnPhaseTime -= SystemAPI.Time.DeltaTime;
             if (spawner.ValueRW.spawnPhaseTime <= 0)

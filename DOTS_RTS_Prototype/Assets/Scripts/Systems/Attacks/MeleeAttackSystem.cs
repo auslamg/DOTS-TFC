@@ -39,28 +39,10 @@ partial struct MeleeAttackSystem : ISystem
                 float distanceToTarget = math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position);
                 bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistance;
 
-                //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDINGS
-                //Note:
-                //This differs greatly from the tutorial.
-                //Real distance is calculated taking into account both target's and attacker's collider radius, obtained at baking Unit component.
-                //This is to avoid performance cost of RayCasts, which are a far superior order of magnitude in performance cost scaling.
-                //Might come at the inconvenienve of sucking for non-circular colliders, like BoxColliders or horizontal capsules.
+                //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDING ATTACKS
                 bool isTouchingTarget = false;
                 if (!isWithinAttackDistance)
                 {
-                    //Incomplete tutorial code. Requires external declarations
-                    /* NativeList<RaycastHit> raycastHitList = new NativeList<RaycastHit>(Allocator.Temp);
-                    float3 dirToTarget = targetLocalTransform.Position - localTransform.ValueRO.Position;
-                    dirToTarget = math.normalize(dirToTarget);
-                    float distanceExtraToTestRayCast = .4f;
-                    RaycastInput raycastInput = new RaycastInput
-                    {
-                        Start = localTransform.ValueRO.Position,
-                        End = localTransform.ValueRO.Position + dirToTarget * (unit.ValueRO.colliderOffsetRadius + distanceExtraToTestRayCast),
-                        Filter = CollisionFilter.Default
-                    };
-                    raycastHitList.Clear(); */
-
                     if (SystemAPI.HasComponent<Unit>(targetter.ValueRO.targetEntity))
                     {
                         Unit targetUnit = SystemAPI.GetComponent<Unit>(targetter.ValueRO.targetEntity);
@@ -94,7 +76,6 @@ partial struct MeleeAttackSystem : ISystem
                     unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
 
                     //TODO: Extract into AttackLoop() method or corroutine
-                    //IDEA: Refactor into corroutines
                     // Attack cooldown timer
                     meleeAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
                     if (meleeAttack.ValueRO.attackPhaseTime <= 0)
