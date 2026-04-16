@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e2cb75675117594fbd0a711f6a116aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttackAuthoring
-  attackFrequency: 0.5
+  attackInterval: 1.2
   attackDistance: 1
   damageAmount: 20
 --- !u!114 &3493804123175358293

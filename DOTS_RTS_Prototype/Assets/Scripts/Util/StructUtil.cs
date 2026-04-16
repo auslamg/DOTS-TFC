@@ -5,31 +5,66 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-/// <summary>
-/// Utility class for entities and their components.
-/// </summary>
-public static class StructUtil
+[BurstCompile]
+public struct LoopingTimer
 {
+    public float Time;
+    public float Interval;
 
+    public bool Tick(float delta)
+    {
+        Time -= delta;
+        if (Time <= 0)
+        {
+            Time = Interval;
+            return true;
+        }
+        else return false;
+    }
+
+    public void ClampUpdate(float delta)
+    {
+        if (Time == 0)
+        {
+            return;
+        }
+
+        Time -= delta;
+
+        if (Time < 0)
+        {
+            Time = 0;
+        }
+    }
+
+    public void Reset(bool readyToTick)
+    {
+        Time = readyToTick ? 0 : Interval;
+    }
 }
 
-[BurstCompile]
-public struct LoopCounter
+/* [BurstCompile]
+public struct LoopingCounter
 {
-    public int Value;
+    public int Step;
     public int Max;
 
     public int Tick()
     {
-        int current = Value;
+        int current = Step;
 
-        Value++;
-        if (Value >= Max)
-            Value = 0;
+        Step++;
+        if (Step >= Max)
+            Step = 0;
 
         return current;
     }
 
-    public int Next() => (Value + 1) >= Max ? 0 : (Value + 1);
-    public int Previous() => (Value - 1) < 0 ? Max - 1 : (Value - 1);
-}
+    public void Reset()
+    {
+        Step = 0;
+    }
+
+    public int Next() => (Step + 1) >= Max ? 0 : (Step + 1);
+    public int Previous() => (Step - 1) < 0 ? Max - 1 : (Step - 1);
+} */

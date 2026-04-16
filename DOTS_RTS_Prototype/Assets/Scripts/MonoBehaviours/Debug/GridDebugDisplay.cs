@@ -69,7 +69,7 @@ public class GridDebugDisplay : MonoBehaviour
                 if (flowFieldIndex <= 0)
                 {
                     flowFieldIndex = 0;
-                } // FIX Use LoopCounter
+                } // IDEA Use LoopCounter utility struct or similar
 
                 int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
                 Entity cellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[cellIndex];

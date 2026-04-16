@@ -74,14 +74,12 @@ partial struct MeleeAttackSystem : ISystem
                 {
                     //Target is close enough to attack
                     unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
-
-                    //TODO: Extract into AttackLoop() method or corroutine
+                    
                     // Attack cooldown timer
-                    meleeAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
-                    if (meleeAttack.ValueRO.attackPhaseTime <= 0)
+                    ref LoopingTimer attackTimer = ref meleeAttack.ValueRW.attackTimer;
+                    /* attackTimer.ClampUpdate(SystemAPI.Time.DeltaTime); */
+                    if (attackTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
-                        meleeAttack.ValueRW.attackPhaseTime = meleeAttack.ValueRO.attackFrequency;
-
                         //Damage target
                         RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                         targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;

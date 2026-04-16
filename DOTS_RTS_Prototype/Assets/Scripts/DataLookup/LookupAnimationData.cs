@@ -52,8 +52,11 @@ public class LookupAnimationData
             }
         }
 
-        LogErrorAnimationKeyNotFound(searchKey);
-        Debug.LogError("AnimationKey not found in AnimationData blob. Disable Burst for details.");
+        if (searchKey.name != "")
+        {
+            LogErrorAnimationKeyNotFound(searchKey);
+            Debug.LogError("AnimationKey not found in AnimationData blob. Disable Burst for details.");
+        }
         return ref animationDataArray[0];
     }
 

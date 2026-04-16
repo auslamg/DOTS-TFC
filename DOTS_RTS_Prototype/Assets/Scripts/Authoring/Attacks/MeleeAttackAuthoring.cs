@@ -7,15 +7,14 @@ using UnityEngine;
 class MeleeAttackAuthoring : MonoBehaviour
 {
     /// <summary>
-    /// Time interval between attacks.
+    /// Time interval between melee attacks.
     /// </summary>
     [SerializeField]
     [Tooltip("Time interval between melee attacks.")]
-    public float attackFrequency;
+    public float attackInterval;
     /// <summary>
-    /// Maximum attack range.
+    ///Maximum distance at which melee attacks can be performed.
     /// </summary>
-    //TODO: Rename to attackRange
     [SerializeField]
     [Tooltip("Maximum distance at which melee attacks can be performed.")]
     public float attackDistance;
@@ -37,7 +36,11 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new MeleeAttack
         {
-            attackFrequency = authoring.attackFrequency,
+            attackTimer = new LoopingTimer
+            {
+                Time = 0,
+                Interval = authoring.attackInterval
+            },
             attackDistance = authoring.attackDistance,
             damageAmount = authoring.damageAmount,
         });
@@ -53,18 +56,12 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
 public struct MeleeAttack : IComponentData
 {
     /// <summary>
-    /// Current time passed since the last attack.
+    /// Looping timer to execute attacks over time.
     /// </summary>
-    public float attackPhaseTime;
-    /// <summary>
-    /// Time interval between attacks.
-    /// </summary>
-    public float attackFrequency;
+    public LoopingTimer attackTimer;
     /// <summary>
     /// Maximum attack range.
     /// </summary>
-    //TODO: Rename to attackRange
-
     public float attackDistance;
     /// <summary>
     /// Base damage dealt with each attack.
