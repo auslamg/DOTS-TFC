@@ -95,9 +95,16 @@ public partial struct ActiveAnimationJob : IJobEntity
             RefRO<UnitAnimations> unitAnimations =
                 unitAnimationsComponentLookup.GetRefRO(parentComponentLookup[entity].Value);
 
-            //TODO: Refactor into "PlayFull tag" or something
-            //Note: Since this runs inside the animation clock, it will only trigger when trying to run the next frame. Therefore the duration of a PlayFull animation equals frameCount*frameFrequency.
-            if (activeAnimation.currentFrame == 0 &&
+            // TODO: Document why exactly this works as opposed to:
+            /* (activeAnimation.currentFrame == 0 && animData.IsUninterruptible()) */
+            // REVIEW: This might scale weird? Check with new animations
+            /// If not doing this, after finishing an uninterruptible animation the first frame of that animation will play for
+            /// a single game frame. This is probably because the logic would only run on the frame 0, therefore after the
+            /// animation had already started. On why it works well with animData.frameCount - 2, no idea, might just be
+            /// a coincidence that the only melee attack animation matches the idle animation pose loosely and this wasn't solved
+            if ((activeAnimation.currentFrame == animData.frameCount - 2 ||
+                    (activeAnimation.currentFrame == 0 &&
+                    animData.frameCount < 2)) &&
                 animData.IsUninterruptible())
             {
                 //Busy attacking

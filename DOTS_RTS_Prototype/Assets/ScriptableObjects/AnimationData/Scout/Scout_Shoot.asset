@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
   m_Name: Scout_Shoot
   m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
-  animationName: scout_shoot
   animationType: 4
-  playFull: 1
+  playFull: 0
+  frameFrequency: 0.15
   meshArray:
   - {fileID: 4300000, guid: fefda87ca942d4c41ac1978e2852e0c9, type: 2}
-  frameFrequency: 0.15
