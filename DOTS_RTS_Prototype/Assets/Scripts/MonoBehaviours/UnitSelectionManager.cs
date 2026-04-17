@@ -298,7 +298,7 @@ public class UnitSelectionManager : MonoBehaviour
         //Query all entities with the UnitMover and Selected components to set their target
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
             WithAll<Selected>().
-            WithPresent<ManualMove, ManualTarget, LocalTransform, StraightPathRequest, FlowFieldPathRequest, FlowFieldFollower>().
+            WithPresent<ManualMove, ManualTarget, LocalTransform, PathRequest, FlowFieldPathRequest, FlowFieldFollower>().
             Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
@@ -307,7 +307,7 @@ public class UnitSelectionManager : MonoBehaviour
         NativeArray<ManualMove> manualMoveArray = query.ToComponentDataArray<ManualMove>(Allocator.Temp);
         NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-        NativeArray<StraightPathRequest> pathRequestArray = query.ToComponentDataArray<StraightPathRequest>(Allocator.Temp);
+        NativeArray<PathRequest> pathRequestArray = query.ToComponentDataArray<PathRequest>(Allocator.Temp);
 
         //Get average position of all entities queried to send it as start position to formation methods
         float3 avgPosition = float3.zero;
@@ -331,14 +331,14 @@ public class UnitSelectionManager : MonoBehaviour
             entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
             //New PathRequest values
-            StraightPathRequest newdPathRequest = pathRequestArray[i];
+            PathRequest newdPathRequest = pathRequestArray[i];
             newdPathRequest.targetPosition = formationPositionsArray[i];
             pathRequestArray[i] = newdPathRequest;
 
             Debug.Log("Sending path request");
 
             // Enable path request to start pathing.
-            entityManager.SetComponentEnabled<StraightPathRequest>(entityArray[i], true);
+            entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
             // Disable FlowField initially, in case it's not necessary.
             entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], false);
             entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);

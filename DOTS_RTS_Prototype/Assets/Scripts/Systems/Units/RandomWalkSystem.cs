@@ -2,6 +2,8 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 /// <summary>
 /// Assigns roaming destinations and drives wandering units when manual control is disabled.
@@ -17,13 +19,19 @@ partial struct RandomWalkSystem : ISystem
         foreach ((
             RefRW<RandomWalk> randomWalk,
             RefRW<UnitMover> unitMover,
-            RefRO<LocalTransform> localTransform)
+            RefRO<LocalTransform> localTransform,
+            RefRW<PathRequest> pathRequest,
+            EnabledRefRW<PathRequest> pathRequestEnabled)
                 in SystemAPI.Query<
                 RefRW<RandomWalk>,
                 RefRW<UnitMover>,
-                RefRO<LocalTransform>>().
-                WithDisabled<ManualMove>())
+                RefRO<LocalTransform>,
+                RefRW<PathRequest>,
+                EnabledRefRW<PathRequest>>().
+                WithDisabled<ManualMove>().
+                WithPresent<PathRequest>())
         {
+            // REVIEW: This may not work in some specific map geometry
             float targetReachedDistanceSquared = unitMover.ValueRO.targetReachedDistanceSquared;
             if (math.distancesq(localTransform.ValueRO.Position, randomWalk.ValueRO.targetPostion) < targetReachedDistanceSquared)
             {
@@ -47,8 +55,9 @@ partial struct RandomWalkSystem : ISystem
                 //Too far, move closer
                 if (!unitMover.ValueRO.targetPosition.Equals(randomWalk.ValueRO.targetPostion))
                 {
-                    //Set target if not set
-                    unitMover.ValueRW.targetPosition = randomWalk.ValueRO.targetPostion;
+                    //Set target position if not set
+                    pathRequest.ValueRW.targetPosition = randomWalk.ValueRO.targetPostion;
+                    pathRequestEnabled.ValueRW = true;
                 }
             }
         }

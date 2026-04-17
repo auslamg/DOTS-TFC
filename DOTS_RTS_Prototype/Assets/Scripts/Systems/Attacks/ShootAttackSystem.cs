@@ -39,13 +39,18 @@ partial struct ShootAttackSystem : ISystem
             RefRW<ShootAttack> shootAttack,
             RefRO<Targetter> targetter,
             RefRW<UnitMover> unitMover,
+            RefRW<PathRequest> pathRequest,
+            EnabledRefRW<PathRequest> pathRequestEnabled,
             Entity entity)
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<ShootAttack>,
                 RefRO<Targetter>,
-                RefRW<UnitMover>>().
+                RefRW<UnitMover>,
+                RefRW<PathRequest>,
+                EnabledRefRW<PathRequest>>().
                 WithDisabled<ManualMove>().
+                WithPresent<PathRequest>().
                 WithEntityAccess())
         {
             //If there is no target, go for next entity
@@ -56,13 +61,15 @@ partial struct ShootAttackSystem : ISystem
                 //Target is too far, move closer
                 if (math.distance(localTransform.ValueRO.Position, targetLocalTransform.Position) > shootAttack.ValueRO.attackDistance)
                 {
-                    unitMover.ValueRW.targetPosition = targetLocalTransform.Position;
+                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position;
+                    pathRequestEnabled.ValueRW = true;
                     continue;
                 }
                 else
                 {
                     //Close enough, stop moving and attack
-                    unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                    pathRequest.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                    pathRequestEnabled.ValueRW = true;
 
                     float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
                     aimDirection = math.normalize(aimDirection);
@@ -112,7 +119,7 @@ partial struct ShootAttackSystem : ISystem
                     {
                         shootAttack.ValueRW.attackPhaseTime = shootAttack.ValueRO.attackFrequency;
 
-                        //Instant damage alternative
+                        //Instant damage no projectile alternative
                         /* RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.targetEntity);
                         int damageAmount = 3;
                         targetHealth.ValueRW.currentHealth -= damageAmount; */

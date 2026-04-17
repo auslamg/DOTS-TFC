@@ -22,15 +22,20 @@ partial struct MeleeAttackSystem : ISystem
             RefRO<LocalTransform> localTransform,
             RefRW<MeleeAttack> meleeAttack,
             RefRO<Targetter> targetter,
-            RefRW<UnitMover> unitMover,
+            RefRO<UnitMover> unitMover,
+            RefRW<PathRequest> pathRequest,
+            EnabledRefRW<PathRequest> pathRequestEnabled,
             RefRO<Unit> unit)
                 in SystemAPI.Query<
                 RefRO<LocalTransform>,
                 RefRW<MeleeAttack>,
                 RefRO<Targetter>,
-                RefRW<UnitMover>,
+                RefRO<UnitMover>,
+                RefRW<PathRequest>,
+                EnabledRefRW<PathRequest>,
                 RefRO<Unit>>().
-                WithDisabled<ManualMove>())
+                WithDisabled<ManualMove>().
+                WithPresent<PathRequest>())
         {
             if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
@@ -68,13 +73,15 @@ partial struct MeleeAttackSystem : ISystem
                 if (!isWithinAttackDistance && !isTouchingTarget)
                 {
                     //Target is too far to attack
-                    unitMover.ValueRW.targetPosition = targetLocalTransform.Position;
+                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position;
+                    pathRequestEnabled.ValueRW = true;
                 }
                 else
                 {
                     //Target is close enough to attack
-                    unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
-                    
+                    pathRequest.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                    pathRequestEnabled.ValueRW = true;
+
                     // Attack cooldown timer
                     ref LoopingTimer attackTimer = ref meleeAttack.ValueRW.attackTimer;
                     /* attackTimer.ClampUpdate(SystemAPI.Time.DeltaTime); */

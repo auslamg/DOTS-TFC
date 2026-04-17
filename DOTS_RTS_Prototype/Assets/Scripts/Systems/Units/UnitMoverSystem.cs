@@ -1,3 +1,4 @@
+using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -45,24 +46,27 @@ partial struct UnitMoverSystem : ISystem
 
         foreach ((
                 RefRO<LocalTransform> localTransform,
-                RefRW<StraightPathRequest> straightPathRequest,
-                EnabledRefRW<StraightPathRequest> straightPathRequestEnabled,
+                RefRW<UnitMover> unitMover,
+                RefRW<PathRequest> pathRequest,
+                EnabledRefRW<PathRequest> pathRequestEnabled,
                 RefRW<FlowFieldPathRequest> flowFieldPathRequest,
                 EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnabled,
-                RefRW<UnitMover> unitMover)
+                EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled)
                     in SystemAPI.Query<
                     RefRO<LocalTransform>,
-                    RefRW<StraightPathRequest>,
-                    EnabledRefRW<StraightPathRequest>,
+                    RefRW<UnitMover>,
+                    RefRW<PathRequest>,
+                    EnabledRefRW<PathRequest>,
                     RefRW<FlowFieldPathRequest>,
                     EnabledRefRW<FlowFieldPathRequest>,
-                    RefRW<UnitMover>>().
-                    WithPresent<FlowFieldPathRequest>())
+                    EnabledRefRW<FlowFieldFollower>>().
+                    WithPresent<FlowFieldPathRequest>().
+                    WithPresent<FlowFieldFollower>())
         {
             RaycastInput raycastInput = new RaycastInput
             {
                 Start = localTransform.ValueRO.Position,
-                End = straightPathRequest.ValueRO.targetPosition,
+                End = pathRequest.ValueRO.targetPosition,
                 Filter = new CollisionFilter
                 {
                     BelongsTo = ~0u,
@@ -73,16 +77,18 @@ partial struct UnitMoverSystem : ISystem
             if (!collisionWorld.CastRay(raycastInput))
             {
                 // Hit nothing.
-                unitMover.ValueRW.targetPosition = straightPathRequest.ValueRO.targetPosition;
+                unitMover.ValueRW.targetPosition = pathRequest.ValueRO.targetPosition;
+                flowFieldPathRequestEnabled.ValueRW = false;
+                flowFieldFollowerEnabled.ValueRW = false;
             }
             else
             {
                 // Obstructed path, requires navigation.
-                flowFieldPathRequest.ValueRW.targetPosition = straightPathRequest.ValueRO.targetPosition;
+                flowFieldPathRequest.ValueRW.targetPosition = pathRequest.ValueRO.targetPosition;
                 flowFieldPathRequestEnabled.ValueRW = true;
             }
 
-            straightPathRequestEnabled.ValueRW = false;
+            pathRequestEnabled.ValueRW = false;
         }
 
 
