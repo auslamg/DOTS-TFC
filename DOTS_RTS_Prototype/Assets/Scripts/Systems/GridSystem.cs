@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -63,6 +64,7 @@ partial struct GridSystem : ISystem
             {
                 gridCellEntityArray = new NativeArray<Entity>(totalCount, Allocator.Persistent)
             };
+            gridMap.isCalculated = false;
 
             state.EntityManager.Instantiate(gridCellEntityTemplate, gridMap.gridCellEntityArray);
 
@@ -145,10 +147,29 @@ partial struct GridSystem : ISystem
                 WithPresent<FlowFieldFollower>())
         {
 
-            int2 targetGridPosition = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
+            int2 targetCoords = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
 
             // Resolving request.
             flowFieldRequestEnabled.ValueRW = false;
+
+            // Fetch pre-existing matching FlowField if there is one.
+            bool existingPath = false;
+            for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
+            {
+                if (gridData.gridMapArray[i].targetCoords.Equals(targetCoords))
+                {
+                    flowFieldFollower.ValueRW.flowFieldIndex = i;
+                    flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
+                    flowFieldFollowerEnabled.ValueRW = true;
+
+                    existingPath = true;
+                    break;
+                }
+            }
+            if (existingPath)
+            {
+                continue;
+            }
 
             int flowFieldIndex = gridData.nextFlowFieldIndex; // FIX Use LoopCounter
             gridData.nextFlowFieldIndex = (gridData.nextFlowFieldIndex + 1) % FLOW_FIELD_MAP_COUNT; // FIX Use LoopCounter
@@ -176,8 +197,8 @@ partial struct GridSystem : ISystem
                     gridCellArray[index] = gridCell;
 
                     gridCell.ValueRW.pathingVector = new Vector2(0, 1); // Safety measure for in-clipping spawns.
-                    if (x == targetGridPosition.x &&
-                        y == targetGridPosition.y)
+                    if (x == targetCoords.x &&
+                        y == targetCoords.y)
                     {
                         // Cell is the target destination.
                         gridCell.ValueRW.stepCost = 0;
@@ -234,7 +255,7 @@ partial struct GridSystem : ISystem
             // FlowField Calculation.
             using (NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp))
             {
-                RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetGridPosition, gridData.width)];
+                RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetCoords, gridData.width)];
                 gridCellOpenQueue.Enqueue(targetGridCell);
 
                 // Process all cells in the queue using breadth-first search for uniform cost pathfinding.
@@ -270,20 +291,25 @@ partial struct GridSystem : ISystem
 
                 gridCellArray.Dispose();
             }
-
+             
+            GridMap gridMap = gridData.gridMapArray[flowFieldIndex];
+            gridMap.targetCoords = targetCoords;
+            gridMap.isCalculated = true;
+            gridData.gridMapArray[flowFieldIndex] = gridMap;
+            SystemAPI.SetComponent<GridData>(state.SystemHandle, gridData);
+            // Show debug visuals.
             GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
-
         }
 
         // TEST: Used for testing grid cell interaction.
         if (Input.GetMouseButtonDown(1))
         {
             float3 mouseWorldPosition = MouseWorldPosition.Instance.GetPosition();
-            int2 mouseGridPosition = WorldPositionToCoords(mouseWorldPosition, gridData.gridCellSize);
+            int2 mouseCoords = WorldPositionToCoords(mouseWorldPosition, gridData.gridCellSize);
 
-            if (ValidateGridPosition(mouseGridPosition, gridData))
+            if (ValidateCoords(mouseCoords, gridData))
             {
-                /* int index = CoordsToIndex(mouseGridPosition.x, mouseGridPosition.y, gridData.width);
+                /* int index = CoordsToIndex(mouseCoords.x, mouseCoords.y, gridData.width);
                 Entity gridCellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[index];
                 RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(gridCellEntity);
                 Debug.Log($"Selected vector: {gridCell.ValueRO.pathingVector}");
@@ -348,11 +374,11 @@ partial struct GridSystem : ISystem
                 if (x == 0 && y == 0) continue;
 
                 // Get position, if out of bounds skip.
-                int2 gridPosition = new int2(x0 + x, y0 + y);
-                if (!ValidateGridPosition(gridPosition, gridData)) continue;
+                int2 coords = new int2(x0 + x, y0 + y);
+                if (!ValidateCoords(coords, gridData)) continue;
 
                 // Get grid cell RefRW.
-                int index = CoordsToIndex(gridPosition, gridData.width);
+                int index = CoordsToIndex(coords, gridData.width);
                 neighbourList.Add(gridCellArray[index]);
             }
         }
@@ -402,7 +428,7 @@ partial struct GridSystem : ISystem
             {
                 int2 nextPos = currentPos + dir;
 
-                if (!ValidateGridPosition(nextPos, gridData)) continue;
+                if (!ValidateCoords(nextPos, gridData)) continue;
 
                 // Skip if already visited
                 int index = CoordsToIndex(nextPos, gridData.width);
@@ -451,9 +477,9 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Converts 2D grid coordinates to a flat array index.
     /// </summary>
-    public static int CoordsToIndex(int2 gridPosition, int width)
+    public static int CoordsToIndex(int2 coords, int width)
     {
-        return gridPosition.x + width * gridPosition.y;
+        return coords.x + width * coords.y;
     }
 
     /// <summary>
@@ -513,13 +539,13 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Returns true when the supplied grid coordinates are inside the grid bounds.
     /// </summary>
-    public static bool ValidateGridPosition(int2 gridPosition, GridData gridData)
+    public static bool ValidateCoords(int2 coords, GridData gridData)
     {
         return
-            gridPosition.x >= 0 &&
-            gridPosition.y >= 0 &&
-            gridPosition.x < gridData.width &&
-            gridPosition.y < gridData.height;
+            coords.x >= 0 &&
+            coords.y >= 0 &&
+            coords.x < gridData.width &&
+            coords.y < gridData.height;
     }
 
     /// <summary>
@@ -566,6 +592,11 @@ public struct GridMap : IComponentData
 {
     /// <summary>Flat entity array containing every grid cell.</summary>
     public NativeArray<Entity> gridCellEntityArray;
+    /// <summary>Target coordinates towards which the flow field is calculated.</summary>
+    public int2 targetCoords;
+    /// <summary>Wether the GridMap's flow field has been calculated.</summary>
+    public bool isCalculated;
+
 }
 
 /// <summary>

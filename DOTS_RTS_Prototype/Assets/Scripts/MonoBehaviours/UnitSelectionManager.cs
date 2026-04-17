@@ -298,7 +298,7 @@ public class UnitSelectionManager : MonoBehaviour
         //Query all entities with the UnitMover and Selected components to set their target
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
             WithAll<Selected>().
-            WithPresent<ManualMove, ManualTarget, LocalTransform, FlowFieldPathRequest>().
+            WithPresent<ManualMove, ManualTarget, LocalTransform, StraightPathRequest, FlowFieldPathRequest, FlowFieldFollower>().
             Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
@@ -307,7 +307,7 @@ public class UnitSelectionManager : MonoBehaviour
         NativeArray<ManualMove> manualMoveArray = query.ToComponentDataArray<ManualMove>(Allocator.Temp);
         NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-        NativeArray<FlowFieldPathRequest> flowFieldRequestArray = query.ToComponentDataArray<FlowFieldPathRequest>(Allocator.Temp);
+        NativeArray<StraightPathRequest> pathRequestArray = query.ToComponentDataArray<StraightPathRequest>(Allocator.Temp);
 
         //Get average position of all entities queried to send it as start position to formation methods
         float3 avgPosition = float3.zero;
@@ -330,22 +330,23 @@ public class UnitSelectionManager : MonoBehaviour
             manualTargetArray[i] = newManualTarget;
             entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
-            //[Deprecated]
-            // Single-entity instruction alternative.
-            /* entityManager.SetComponentData(entityArray[i], newUnitMover);  */
+            //New PathRequest values
+            StraightPathRequest newdPathRequest = pathRequestArray[i];
+            newdPathRequest.targetPosition = formationPositionsArray[i];
+            pathRequestArray[i] = newdPathRequest;
 
-            // Writing a new local array and copying values to the query is preferable since it reduces writing operations.
+            Debug.Log("Sending path request");
 
-            //New FlowFieldPathRequest values
-            FlowFieldPathRequest newFlowFieldPathRequest = flowFieldRequestArray[i];
-            newFlowFieldPathRequest.targetPosition = formationPositionsArray[i];
-            flowFieldRequestArray[i] = newFlowFieldPathRequest;
-            entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], true);
+            // Enable path request to start pathing.
+            entityManager.SetComponentEnabled<StraightPathRequest>(entityArray[i], true);
+            // Disable FlowField initially, in case it's not necessary.
+            entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], false);
+            entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);
         }
         // Copy to original fields since this is not using reference types but value types
-        query.CopyFromComponentDataArray(manualMoveArray); 
-        query.CopyFromComponentDataArray(manualTargetArray); 
-        query.CopyFromComponentDataArray(flowFieldRequestArray); 
+        query.CopyFromComponentDataArray(manualMoveArray);
+        query.CopyFromComponentDataArray(manualTargetArray);
+        query.CopyFromComponentDataArray(pathRequestArray);
     }
 
     /// <summary>

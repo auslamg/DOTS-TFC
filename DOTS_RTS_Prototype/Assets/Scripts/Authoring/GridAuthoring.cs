@@ -63,7 +63,7 @@ class GridBaker : Baker<GridAuthoring>
 {
     public override void Bake(GridAuthoring authoring)
     {
-        Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+        Entity entity = GetEntity(TransformUsageFlags.WorldSpace);
         AddComponent(entity, new GridDataParameters
         {
             width = authoring.width,

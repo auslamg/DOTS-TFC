@@ -104,6 +104,9 @@ Refactors
 - REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those during entity baking
 - REFACTOR/FIX: Validate non-nullity in all baker key fields
 - REFACTOR: //TODO Replace component/system timer fields by Timer common struct {float max, float curr}.
+- REFACTOR/OPTIMIZE: Pathfinding time complexity / scalability.
+    - IDEA: Add Leaders-Followers optimization to Pathing system: FlowField request should save input coordinate (pre-formation calculation) and group it with other entities with the same coordinate. Select a leader and calculate the FlowField once, then through straight path requests relocate positions to calculated formation.
+    - IDEA: Make buildings only constructible in a certain radius around a Fort building. Therefore, navigation is only necesary in those radiuses and smaller grids are only added around those. General "baked-in" map navigation would not need to be recalculated during runtime.
 
 
 ===================================================================================

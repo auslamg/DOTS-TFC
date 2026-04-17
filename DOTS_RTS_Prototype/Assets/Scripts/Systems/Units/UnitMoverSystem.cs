@@ -34,13 +34,57 @@ partial struct UnitMoverSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        jobHandleArray[0] = new StartTargetPositionJob { }.ScheduleParallel(state.Dependency);
-
+        jobHandleArray[0] = new StartTargetPositionJob().ScheduleParallel(state.Dependency);
 
         state.Dependency = JobHandle.CombineDependencies(jobHandleArray);
         jobHandleArray[0].Complete();
 
         GridData gridData = SystemAPI.GetSingleton<GridData>();
+
+        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
+
+        foreach ((
+                RefRO<LocalTransform> localTransform,
+                RefRW<StraightPathRequest> straightPathRequest,
+                EnabledRefRW<StraightPathRequest> straightPathRequestEnabled,
+                RefRW<FlowFieldPathRequest> flowFieldPathRequest,
+                EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnabled,
+                RefRW<UnitMover> unitMover)
+                    in SystemAPI.Query<
+                    RefRO<LocalTransform>,
+                    RefRW<StraightPathRequest>,
+                    EnabledRefRW<StraightPathRequest>,
+                    RefRW<FlowFieldPathRequest>,
+                    EnabledRefRW<FlowFieldPathRequest>,
+                    RefRW<UnitMover>>().
+                    WithPresent<FlowFieldPathRequest>())
+        {
+            RaycastInput raycastInput = new RaycastInput
+            {
+                Start = localTransform.ValueRO.Position,
+                End = straightPathRequest.ValueRO.targetPosition,
+                Filter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                    GroupIndex = 0
+                }
+            };
+            if (!collisionWorld.CastRay(raycastInput))
+            {
+                // Hit nothing.
+                unitMover.ValueRW.targetPosition = straightPathRequest.ValueRO.targetPosition;
+            }
+            else
+            {
+                // Obstructed path, requires navigation.
+                flowFieldPathRequest.ValueRW.targetPosition = straightPathRequest.ValueRO.targetPosition;
+                flowFieldPathRequestEnabled.ValueRW = true;
+            }
+
+            straightPathRequestEnabled.ValueRW = false;
+        }
+
 
         foreach ((
             RefRO<LocalTransform> localTransform,
@@ -74,7 +118,6 @@ partial struct UnitMoverSystem : ISystem
                 GridSystem.CoordsToWorldPositionCenter(gridPosition, gridData.gridCellSize) +
                 worldMovementVector * gridData.gridCellSize * 2;
 
-            // FIX: This method sucks lor large unit formations, since the outermost units keep walking to unreachable targets
             // Detect if the target has reached its destination
             if (math.distance(localTransform.ValueRO.Position, flowFieldFollower.ValueRO.targetPosition) < gridData.gridCellSize * 1.5f)
             {
@@ -83,13 +126,30 @@ partial struct UnitMoverSystem : ISystem
                 flowFieldFollowerEnabled.ValueRW = false;
             }
 
+            RaycastInput raycastInput = new RaycastInput
+            {
+                Start = localTransform.ValueRO.Position,
+                End = flowFieldFollower.ValueRO.targetPosition,
+                Filter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                    GroupIndex = 0
+                }
+            };
+            if (!collisionWorld.CastRay(raycastInput))
+            {
+                // Hit nothing.
+                unitMover.ValueRW.targetPosition = flowFieldFollower.ValueRO.targetPosition;
+                flowFieldFollowerEnabled.ValueRW = false;
+            }
         }
 
-        UnitMoverJob unitMoverJob = new UnitMoverJob
+        MoveUnitJob moveUnitJob = new MoveUnitJob
         {
             deltaTime = SystemAPI.Time.DeltaTime
         };
-        unitMoverJob.ScheduleParallel();
+        moveUnitJob.ScheduleParallel();
     }
 }
 
@@ -118,7 +178,7 @@ public partial struct StartTargetPositionJob : IJobEntity
 /// Moves a unit towards its target position and adjusts the rotation to match the movement direction.
 /// </summary>
 [BurstCompile]
-public partial struct UnitMoverJob : IJobEntity
+public partial struct MoveUnitJob : IJobEntity
 {
     //Set on struct construction
     public float deltaTime;
