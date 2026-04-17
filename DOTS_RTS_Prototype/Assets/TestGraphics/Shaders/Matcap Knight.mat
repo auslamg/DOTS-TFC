@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Matcap Marksman
+  m_Name: Matcap Knight
   m_Shader: {fileID: -6465566751694194690, guid: 83897529c35d06d4e9ee2c93d7f1322a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Base_Map:
-        m_Texture: {fileID: 2800000, guid: ae4dc2b5c85c4d9448b852407bb8ed34, type: 3}
+        m_Texture: {fileID: 2800000, guid: 17cdf5652aabb5e4783d379a974a24f0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -117,7 +117,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _MatCap_Strength: 0.5
+    - _MatCap_Strength: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
