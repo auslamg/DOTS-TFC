@@ -298,7 +298,7 @@ public class UnitSelectionManager : MonoBehaviour
         //Query all entities with the UnitMover and Selected components to set their target
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
             WithAll<Selected>().
-            WithPresent<ManualMove, ManualTarget, LocalTransform, PathRequest, FlowFieldPathRequest, FlowFieldFollower>().
+            WithPresent<ManualMove, ManualTarget, LocalTransform, PathRequest, FlowFieldRequest, FlowFieldFollower>().
             Build(entityManager);
 
         //Register entities and components to modify in order to run Set on the original struct
@@ -340,7 +340,7 @@ public class UnitSelectionManager : MonoBehaviour
             // Enable path request to start pathing.
             entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
             // Disable FlowField initially, in case it's not necessary.
-            entityManager.SetComponentEnabled<FlowFieldPathRequest>(entityArray[i], false);
+            entityManager.SetComponentEnabled<FlowFieldRequest>(entityArray[i], false);
             entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);
         }
         // Copy to original fields since this is not using reference types but value types

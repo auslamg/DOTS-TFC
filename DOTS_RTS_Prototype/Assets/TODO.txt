@@ -109,6 +109,9 @@ Refactors
 - REFACTOR/OPTIMIZE: Pathfinding time complexity / scalability.
     - IDEA: Add Leaders-Followers optimization to Pathing system: FlowField request should save input coordinate (pre-formation calculation) and group it with other entities with the same coordinate. Select a leader and calculate the FlowField once, then through straight path requests relocate positions to calculated formation.
     - IDEA: Make buildings only constructible in a certain radius around a Fort building. Therefore, navigation is only necesary in those radiuses and smaller grids are only added around those. General "baked-in" map navigation would not need to be recalculated during runtime.
+    - IDEA: Make all ordered units navigate to a single center click position and save a secondary post-formation position that should only be navigated to when reachable in a straight line. If not reachable, move as far as possible in the relative direction to the order position.
+    - IDEA: Instead of overlapping every single cell for obstruction detection, make ONE single overlap and then grow the overlaps in flood fills around the detected models
+    - IDEA: Instead of overlapping every single cell for obstruction detection, divide the grid in chunks and realize a dichotomic occupied cell physics query (where 64x64 is checked, if true, 4 * 32x32, until size is 1x1)
 
 
 ===================================================================================

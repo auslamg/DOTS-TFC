@@ -246,7 +246,6 @@ public class BuildingTrainerUI : MonoBehaviour
     /// </summary>
     private void UpdateUnitQueueVisual()
     {
-        Debug.Log($"Running foreach on UpdateUnitQueueVisual()");
         foreach (Transform child in productionQueueContainer)
         {
             if (child.gameObject == productionQueueButtonTemplate.gameObject)
@@ -259,7 +258,6 @@ public class BuildingTrainerUI : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
-        Debug.Log($"Finished foreach on UpdateUnitQueueVisual()");
 
         DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
                 entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: true);

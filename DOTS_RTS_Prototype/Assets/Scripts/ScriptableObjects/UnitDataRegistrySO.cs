@@ -38,7 +38,7 @@ public class UnitDataRegistrySO : ScriptableObject
     private void Construct()
     {
         unitDictionary = new Dictionary<UnitKey, UnitDataSO>();
-
+        
         foreach (UnitDataSO so in unitDataSOList)
         {
             if (unitDictionary.ContainsKey(so.unitKey))

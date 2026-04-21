@@ -577,8 +577,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5052407974d30bf47a56537c3f16cfcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridAuthoring
-  width: 32
-  height: 32
+  width: 20
+  height: 20
   gridCellSize: 5
 --- !u!4 &782850310
 Transform:

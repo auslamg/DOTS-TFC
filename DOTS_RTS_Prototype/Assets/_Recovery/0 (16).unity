@@ -2025,6 +2025,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Marksman (Test Unit Model)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 1a8bb3f1a539efc4f9b34bf7652af22d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3210198933764129298, guid: 1a8bb3f1a539efc4f9b34bf7652af22d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -2267,6 +2271,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ae1c180b23332a242a7f46fb91a2f75e, type: 3}
       propertyPath: m_Name
       value: Footman (Test Unit Model)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ae1c180b23332a242a7f46fb91a2f75e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3657,7 +3665,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c68c3805741e1b14b9c523e866dd3926, type: 3}
       propertyPath: m_Name
-      value: SuperLP_Knight
+      value: Knight (Test Unit Model)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c68c3805741e1b14b9c523e866dd3926, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3027896407205900740, guid: c68c3805741e1b14b9c523e866dd3926, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
