@@ -29,24 +29,20 @@ partial struct LoseTargetSystem : ISystem
             {
                 //No target, reset timer
 
-                loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
+                loseTarget.ValueRW.attemptCooldownTimer.Reset(readyToTick: false);
             }
             else
             {
                 if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
                 {
-                    //There's a manual target, don't lose it
-
-                    loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
+                    //There's a manual target, don't lose it. Reset timer.
+                    loseTarget.ValueRW.attemptCooldownTimer.Reset(readyToTick: false);
                 }
                 else
                 {
                     // Lose-target delay timer
-                    loseTarget.ValueRW.attemptPhaseTime -= SystemAPI.Time.DeltaTime;
-                    if (loseTarget.ValueRO.attemptPhaseTime <= 0)
+                    if (loseTarget.ValueRW.attemptCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
-                        loseTarget.ValueRW.attemptPhaseTime = loseTarget.ValueRO.attemptFrequency;
-
                         //Check if the target is far enough to attempt losing it
                         LocalTransform targetLocalTransform = SystemAPI.GetComponent<LocalTransform>(targetter.ValueRO.targetEntity);
                         float targetDistance = math.distance(LocalTransform.ValueRO.Position, targetLocalTransform.Position);

@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5320d3555fca3a843abfc396b5808e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FindTargetAuthoring
-  scanFrequency: 1.5
+  scanInterval: 1.5
   targetRange: 20
   swapTargetMinDistance: 2
 --- !u!114 &-2479219367038610689
@@ -469,7 +469,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoseTargetAuthoring
   thresholdDistance: 20
-  attemptFrequency: 7
+  attemptInterval: 7
 --- !u!114 &4611505598139493670
 MonoBehaviour:
   m_ObjectHideFlags: 0

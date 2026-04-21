@@ -46,11 +46,8 @@ partial struct SpawnerSystem : ISystem
                 RefRW<Spawner>>())
         {
             // Spawn interval timer
-            spawner.ValueRW.spawnPhaseTime -= SystemAPI.Time.DeltaTime;
-            if (spawner.ValueRW.spawnPhaseTime <= 0)
+            if (spawner.ValueRW.spawnCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
             {
-                spawner.ValueRW.spawnPhaseTime = spawner.ValueRW.spawnFrequency;
-
                 //Retrieve prefab entity from EntityReferenceKey
                 Entity prefabEntity = DataLookup.GetEntityPrefab(ref entityReferencesBuffer, spawner.ValueRO.spawnedEntityKey);
 

@@ -23,7 +23,7 @@ class ShootAttackAuthoring : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Time interval between shoot attacks.")]
-    public float attackFrequency;
+    public float attackInterval;
     /// <summary>
     /// Maximum attack range.
     /// </summary>
@@ -61,7 +61,10 @@ class ShootAttackBaker : Baker<ShootAttackAuthoring>
             {
                 name = authoring.projectilePrefabKey
             },
-            attackFrequency = authoring.attackFrequency,
+            attackCooldownTimer = new LoopingTimer
+            {
+                Interval = authoring.attackInterval
+            },
             attackDistance = authoring.attackDistance,
             damageAmount = authoring.damageAmount,
             projectileSpawnPointLocalPosition = authoring.projectileSpawnPointTransform.localPosition,
@@ -91,13 +94,9 @@ public struct ShootAttack : IComponentData
     /// </summary>
     public EntityPrefabKey projectilePrefabKey;
     /// <summary>
-    /// Current time passed since the last attack.
+    /// Looping timer to wait between attacks.
     /// </summary>
-    public float attackPhaseTime;
-    /// <summary>
-    /// Time interval between attacks.
-    /// </summary>
-    public float attackFrequency;
+    public LoopingTimer attackCooldownTimer;
     /// <summary>
     /// Maximum attack range.
     /// </summary>

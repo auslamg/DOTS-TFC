@@ -65,14 +65,36 @@ public class GridDebugDisplay : MonoBehaviour
             {
                 // Retrieve the unmanaged data for this cell
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                int flowFieldIndex = gridData.nextFlowFieldIndex - 1;
-                if (flowFieldIndex <= 0)
+                int latestFlowFieldIndex = gridData.nextFlowFieldIndex - 1;
+                if (latestFlowFieldIndex <= 0)
                 {
-                    flowFieldIndex = 0;
+                    latestFlowFieldIndex = 0;
                 } // IDEA Use LoopCounter utility struct or similar
 
                 int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
-                Entity cellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[cellIndex];
+                Entity cellEntity = gridData.flowFieldArray[latestFlowFieldIndex].gridCellEntityArray[cellIndex];
+                GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
+
+                UpdateCellVisual(cell);
+            }
+        }
+    }
+
+    public void UpdateGridVisual(GridData gridData, int flowFieldIndex)
+    {
+        for (int x = 0; x < gridData.width; x++)
+        {
+            for (int y = 0; y < gridData.height; y++)
+            {
+                // Retrieve the unmanaged data for this cell
+                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                if (flowFieldIndex <= 0)
+                {
+                    flowFieldIndex = 0;
+                }
+
+                int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
+                Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[cellIndex];
                 GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
 
                 UpdateCellVisual(cell);
@@ -90,7 +112,7 @@ public class GridDebugDisplay : MonoBehaviour
         }
         else
         {
-            if (cell.stepCost == WALL_COST)
+            if (cell.stepCost == OBSTRUCTED_COST)
             {
                 cellDebug.SetSprite(baseCell);
                 cellDebug.SetColor(Color.red);

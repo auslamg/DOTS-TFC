@@ -114,11 +114,8 @@ partial struct ShootAttackSystem : ISystem
                 
                 {
                     // Attack cooldown timer
-                    shootAttack.ValueRW.attackPhaseTime -= SystemAPI.Time.DeltaTime;
-                    if (shootAttack.ValueRO.attackPhaseTime <= 0f)
+                    if (shootAttack.ValueRW.attackCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
-                        shootAttack.ValueRW.attackPhaseTime = shootAttack.ValueRO.attackFrequency;
-
                         //Instant damage no projectile alternative
                         /* RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(target.ValueRO.targetEntity);
                         int damageAmount = 3;

@@ -19,9 +19,13 @@ public class GameAssets : MonoBehaviour
     /// </summary>
     public const int BUILDINGS_LAYER = 7;
     /// <summary>
-    /// Layer index used by building entities.
+    /// Layer index used by pathfinding obstructed tile markers.
     /// </summary>
     public const int OBSTRUCTION_LAYER = 9;
+    /// <summary>
+    /// Layer index used by pathfinding unwalkable tile markers.
+    /// </summary>
+    public const int WEIGHTED_LAYER = 10;
 
     [Header("Registries")]
     /// <summary>

@@ -83,9 +83,7 @@ partial struct MeleeAttackSystem : ISystem
                     pathRequestEnabled.ValueRW = true;
 
                     // Attack cooldown timer
-                    ref LoopingTimer attackTimer = ref meleeAttack.ValueRW.attackTimer;
-                    /* attackTimer.ClampUpdate(SystemAPI.Time.DeltaTime); */
-                    if (attackTimer.Tick(SystemAPI.Time.DeltaTime))
+                    if (meleeAttack.ValueRW.attackCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
                         //Damage target
                         RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);

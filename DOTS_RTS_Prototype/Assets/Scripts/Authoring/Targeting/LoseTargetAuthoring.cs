@@ -16,7 +16,7 @@ class LoseTargetAuthoring : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Time interval between attempts to drop the current target.")]
-    public float attemptFrequency;
+    public float attemptInterval;
 }
 
 /// <summary>
@@ -30,8 +30,11 @@ class LoseTargetBaker : Baker<LoseTargetAuthoring>
         AddComponent(entity, new LoseTarget
         {
             thresholdDistance = authoring.thresholdDistance,
-            attemptFrequency = authoring.attemptFrequency
-        });   
+            attemptCooldownTimer = new LoopingTimer
+            {
+                Interval = authoring.attemptInterval,
+            }
+        });
     }
 }
 
@@ -48,11 +51,7 @@ public struct LoseTarget : IComponentData
     /// </summary>
     public float thresholdDistance;
     /// <summary>
-    /// Current time passed since the last attempt.
+    /// Looping timer to wait between loss attempts.
     /// </summary>
-    public float attemptPhaseTime;
-    /// <summary>
-    /// Time interval between lose-target checks.
-    /// </summary>
-    public float attemptFrequency;
+    public LoopingTimer attemptCooldownTimer;
 }

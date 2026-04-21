@@ -126,10 +126,15 @@ partial struct TrainerSystem : ISystem
                 spawnedTransform.Position = localTransform.ValueRO.Position + trainer.ValueRO.spawnPointOffset;
                 ecb.SetComponent(spawnedUnitEntity, spawnedTransform);
 
-                // Set unit destination to RallyPosition.
-                UnitMover unitMover = state.EntityManager.GetComponentData<UnitMover>(unitPrefab);
+                // Set unit destination to RallyPosition. // IDEA: Do this only if the target position is reachable 
+                PathRequest pathRequest = state.EntityManager.GetComponentData<PathRequest>(unitPrefab);
+                pathRequest.targetPosition = localTransform.ValueRO.Position + trainer.ValueRO.rallyPositionOffset;
+                ecb.SetComponent(spawnedUnitEntity, pathRequest);
+                ecb.SetComponentEnabled<PathRequest>(spawnedUnitEntity, true);
+
+                /* UnitMover unitMover = state.EntityManager.GetComponentData<UnitMover>(unitPrefab);
                 unitMover.targetPosition = localTransform.ValueRO.Position + trainer.ValueRO.rallyPositionOffset;
-                ecb.SetComponent(spawnedUnitEntity, unitMover);
+                ecb.SetComponent(spawnedUnitEntity, unitMover); */
             }
         }
     }

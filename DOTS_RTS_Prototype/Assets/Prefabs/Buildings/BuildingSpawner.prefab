@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnerAuthoring
   spawnedEntityKey: Hostile
-  spawnFrequency: 4
+  spawnInterval: 4
   minDistance: 2
   maxDistance: 5
   nearbyEntityCap: 10

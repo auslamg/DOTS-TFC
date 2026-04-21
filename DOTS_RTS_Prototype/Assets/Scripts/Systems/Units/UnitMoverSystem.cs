@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using static GridSystem;
 
 /// <summary>
 /// Schedules movement simulation for units based on their current target positions.
@@ -30,6 +31,20 @@ partial struct UnitMoverSystem : ISystem
     }
 
     /// <summary>
+    /// Returns true when the supplied grid cell represents an obstructed cell.
+    /// </summary> //TODO Implement
+    /* public static bool IsPathable(ref SystemState state, float3 worldPosition, int flowFieldIndex, GridData gridData)
+    {
+        int2 coords = WorldPositionToCoords(worldPosition, gridData.gridCellSize);
+        int cellIndex = CoordsToIndex(coords, gridData.width);
+        Entity cell = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[cellIndex];
+
+        GridCell gridCell;
+
+        return ValidateCoords(coords, gridData) && gridCell.bestPathCost < UNPATHABLE_COST; // && this cell.bestPathCost < UNPATHABLE_COST
+    } */
+
+    /// <summary>
     /// Schedules the movement job that updates velocity, facing, and movement state.
     /// </summary>
     [BurstCompile]
@@ -51,7 +66,8 @@ partial struct UnitMoverSystem : ISystem
                 EnabledRefRW<PathRequest> pathRequestEnabled,
                 RefRW<FlowFieldPathRequest> flowFieldPathRequest,
                 EnabledRefRW<FlowFieldPathRequest> flowFieldPathRequestEnabled,
-                EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled)
+                EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled,
+                Entity entity)
                     in SystemAPI.Query<
                     RefRO<LocalTransform>,
                     RefRW<UnitMover>,
@@ -61,8 +77,10 @@ partial struct UnitMoverSystem : ISystem
                     EnabledRefRW<FlowFieldPathRequest>,
                     EnabledRefRW<FlowFieldFollower>>().
                     WithPresent<FlowFieldPathRequest>().
-                    WithPresent<FlowFieldFollower>())
+                    WithPresent<FlowFieldFollower>().
+                    WithEntityAccess())
         {
+            //Check if a straight path to  target is available. If not, request navigation.
             RaycastInput raycastInput = new RaycastInput
             {
                 Start = localTransform.ValueRO.Position,
@@ -74,18 +92,51 @@ partial struct UnitMoverSystem : ISystem
                     GroupIndex = 0
                 }
             };
+            // Hit nothing.
             if (!collisionWorld.CastRay(raycastInput))
             {
-                // Hit nothing.
+                Debug.Log("Pathfinding: Moving straight");
                 unitMover.ValueRW.targetPosition = pathRequest.ValueRO.targetPosition;
                 flowFieldPathRequestEnabled.ValueRW = false;
                 flowFieldFollowerEnabled.ValueRW = false;
             }
+            // Obstructed path, might require navigation.
             else
             {
-                // Obstructed path, requires navigation.
-                flowFieldPathRequest.ValueRW.targetPosition = pathRequest.ValueRO.targetPosition;
-                flowFieldPathRequestEnabled.ValueRW = true;
+                // FIX This causes a bug where currently attacking units cannot be moved
+                if (SystemAPI.HasComponent<ManualMove>(entity))
+                {
+                    SystemAPI.SetComponentEnabled<ManualMove>(entity, false);
+                }
+
+                // Walkable AND pathable, ask for navigation
+                if (GridSystem.IsWalkable(pathRequest.ValueRO.targetPosition, gridData))
+                {
+                    Debug.Log("Pathfinding: Navigating to WALKABLE");
+                    flowFieldPathRequest.ValueRW.targetPosition = pathRequest.ValueRO.targetPosition;
+                    flowFieldPathRequestEnabled.ValueRW = true;
+                }
+                // Unwalkable position, simply don't navigate.
+                else
+                {
+                    Debug.Log("Pathfinding: NOT WALKABLE");
+                    unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                    flowFieldPathRequestEnabled.ValueRW = false;
+                    flowFieldFollowerEnabled.ValueRW = false;
+                }
+
+                /// [Deprecated]: Unreachable path calculation. Rather than doing all this complex calculations,
+                /// units just check wether the current cell has been written to or not.
+                /* if (FlowFieldExists(unitMover.ValueRW.targetPosition, gridData, out FlowField flowField))
+                {
+                    if (!IsPathable(pathRequest.ValueRW.targetPosition, flowField, gridData, ref state))
+                    {
+                        Debug.LogError("Pathfinding: UNREACHABLE");
+                        unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                        flowFieldPathRequestEnabled.ValueRW = false;
+                        flowFieldFollowerEnabled.ValueRW = false;
+                    }
+                } */
             }
 
             pathRequestEnabled.ValueRW = false;
@@ -106,11 +157,12 @@ partial struct UnitMoverSystem : ISystem
             // Retrieve current grid cell's pathing vector and convert it to world space
             int2 gridPosition = GridSystem.WorldPositionToCoords(localTransform.ValueRO.Position, gridData.gridCellSize);
             int currentCellIndex = GridSystem.CoordsToIndex(gridPosition, gridData.width);
-            Entity currentCell = gridData.gridMapArray[flowFieldFollower.ValueRO.flowFieldIndex].gridCellEntityArray[currentCellIndex];
+            Entity currentCell = gridData.flowFieldArray[flowFieldFollower.ValueRO.flowFieldIndex].gridCellEntityArray[currentCellIndex];
             GridCell gridCell = SystemAPI.GetComponent<GridCell>(currentCell);
             float3 worldMovementVector = GridSystem.GridVectorToWorldSpace(gridCell.pathingVector);
 
-            if (GridSystem.IsWall(gridCell))
+            // If inside a wall, use the previous cell's vector. Else, read cell vector.
+            if (GridSystem.IsObstructed(gridCell))
             {
                 worldMovementVector = flowFieldFollower.ValueRO.lastMoveVector;
             }
@@ -119,12 +171,21 @@ partial struct UnitMoverSystem : ISystem
                 flowFieldFollower.ValueRW.lastMoveVector = worldMovementVector;
             }
 
+            // No path was found, stop movement.
+            if (!GridSystem.IsPathable(gridCell) &&
+                !GridSystem.IsObstructed(gridCell))
+            {
+                Debug.Log("Pathfinding: UNREACHABLE");
+                worldMovementVector = float3.zero;
+                unitMover.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                continue;
+            }
 
             unitMover.ValueRW.targetPosition =
                 GridSystem.CoordsToWorldPositionCenter(gridPosition, gridData.gridCellSize) +
                 worldMovementVector * gridData.gridCellSize * 2;
 
-            // Detect if the target has reached its destination
+            // Detect if the unit has reached its destination
             if (math.distance(localTransform.ValueRO.Position, flowFieldFollower.ValueRO.targetPosition) < gridData.gridCellSize * 1.5f)
             {
                 Debug.Log("Stopped unit");
@@ -132,6 +193,7 @@ partial struct UnitMoverSystem : ISystem
                 flowFieldFollowerEnabled.ValueRW = false;
             }
 
+            //Check if a straight path to  target is available.
             RaycastInput raycastInput = new RaycastInput
             {
                 Start = localTransform.ValueRO.Position,
@@ -145,7 +207,7 @@ partial struct UnitMoverSystem : ISystem
             };
             if (!collisionWorld.CastRay(raycastInput))
             {
-                // Hit nothing.
+                // Hit nothing. Take a straight path
                 unitMover.ValueRW.targetPosition = flowFieldFollower.ValueRO.targetPosition;
                 flowFieldFollowerEnabled.ValueRW = false;
             }

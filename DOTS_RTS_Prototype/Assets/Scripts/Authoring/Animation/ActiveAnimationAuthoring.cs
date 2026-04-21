@@ -46,6 +46,10 @@ public struct ActiveAnimation : IComponentData
     /// </summary>
     public float framePhaseTime;
     /// <summary>
+    /// Looping timer to wait between frame changes.
+    /// </summary>
+    public DynamicTimer frameChangeTimer;
+    /// <summary>
     /// Animation currently being sampled to resolve frame mesh indices.
     /// </summary>
     public AnimationKey activeAnimationKey;

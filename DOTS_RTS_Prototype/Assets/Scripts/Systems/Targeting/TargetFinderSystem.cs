@@ -40,11 +40,8 @@ partial struct TargetFinderSystem : ISystem
                 RefRO<ManualTarget>>())
         {
             // Target scan interval timer
-            targetFinder.ValueRW.scanPhaseTime -= SystemAPI.Time.DeltaTime;
-            if (targetFinder.ValueRO.scanPhaseTime <= 0)
+            if (targetFinder.ValueRW.scanCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
             {
-                targetFinder.ValueRW.scanPhaseTime = targetFinder.ValueRO.scanFrequency;
-
                 // Manual targets take priority over automatic scan results
                 if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
                 {

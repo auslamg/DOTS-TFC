@@ -16,7 +16,9 @@ using UnityEngine;
 /// </remarks>
 partial struct GridSystem : ISystem
 {
-    public const int WALL_COST = byte.MaxValue;
+    public const int UNPATHABLE_COST = int.MaxValue;
+    public const int OBSTRUCTED_COST = byte.MaxValue;
+    public const int WEIGHTED_COST = 50;
     public const int FLOW_FIELD_MAP_COUNT = 100;
 
     /// <summary>
@@ -57,16 +59,16 @@ partial struct GridSystem : ISystem
         state.EntityManager.AddComponent<GridCell>(gridCellEntityTemplate);
 
         // TODO: Optimize
-        NativeArray<GridMap> gridMapArray = new NativeArray<GridMap>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
+        NativeArray<FlowField> flowFieldArray = new NativeArray<FlowField>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
         for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
         {
-            GridMap gridMap = new GridMap
+            FlowField flowField = new FlowField
             {
                 gridCellEntityArray = new NativeArray<Entity>(totalCount, Allocator.Persistent)
             };
-            gridMap.isCalculated = false;
+            flowField.isCalculated = false;
 
-            state.EntityManager.Instantiate(gridCellEntityTemplate, gridMap.gridCellEntityArray);
+            state.EntityManager.Instantiate(gridCellEntityTemplate, flowField.gridCellEntityArray);
 
             for (int x = 0; x < gridData.width; x++)
             {
@@ -80,14 +82,14 @@ partial struct GridSystem : ISystem
                         y = y,
                     };
 
-                    Entity cellEntity = gridMap.gridCellEntityArray[index];
+                    Entity cellEntity = flowField.gridCellEntityArray[index];
 
                     state.EntityManager.SetName(cellEntity, $"GridCell({x},{y})");
                     SystemAPI.SetComponent(cellEntity, gridCell);
                 }
             }
 
-            gridMapArray[i] = gridMap;
+            flowFieldArray[i] = flowField;
         }
 
         Debug.Log("World grid built successfully");
@@ -100,7 +102,8 @@ partial struct GridSystem : ISystem
                 width = gridData.width,
                 height = gridData.height,
                 gridCellSize = gridData.gridCellSize,
-                gridMapArray = gridMapArray
+                flowFieldArray = flowFieldArray,
+                costMap = new NativeArray<byte>(totalCount, Allocator.Persistent)
             });
 
 
@@ -156,11 +159,13 @@ partial struct GridSystem : ISystem
             bool existingPath = false;
             for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
             {
-                if (gridData.gridMapArray[i].targetCoords.Equals(targetCoords))
+                if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
                 {
                     flowFieldFollower.ValueRW.flowFieldIndex = i;
                     flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
                     flowFieldFollowerEnabled.ValueRW = true;
+
+                    GridDebugDisplay.Instance?.UpdateGridVisual(gridData, i);
 
                     existingPath = true;
                     break;
@@ -173,9 +178,6 @@ partial struct GridSystem : ISystem
 
             int flowFieldIndex = gridData.nextFlowFieldIndex; // FIX Use LoopCounter
             gridData.nextFlowFieldIndex = (gridData.nextFlowFieldIndex + 1) % FLOW_FIELD_MAP_COUNT; // FIX Use LoopCounter
-            SystemAPI.SetComponent(state.SystemHandle, gridData); // Data value overwrite
-
-            Debug.Log($"Consuming FlowField index: {flowFieldIndex}");
 
             // Proceed with pathfinding
             flowFieldFollower.ValueRW.flowFieldIndex = flowFieldIndex;
@@ -191,7 +193,7 @@ partial struct GridSystem : ISystem
                 for (int y = 0; y < gridData.height; y++)
                 {
                     int index = CoordsToIndex(x, y, gridData.width);
-                    Entity cellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[index];
+                    Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[index];
                     RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(cellEntity);
 
                     gridCellArray[index] = gridCell;
@@ -207,29 +209,34 @@ partial struct GridSystem : ISystem
                     else
                     {
                         gridCell.ValueRW.stepCost = 1;
-                        gridCell.ValueRW.bestPathCost = byte.MaxValue;
+                        gridCell.ValueRW.bestPathCost = int.MaxValue;
                     }
                 }
             }
 
-            //TEST: Testing walls
-            /* gridCellArray[CoordsToIndex(5,3, gridData.width)].ValueRW.stepCost = WALL_COST;
-            gridCellArray[CoordsToIndex(5,4, gridData.width)].ValueRW.stepCost = WALL_COST;
-            gridCellArray[CoordsToIndex(5,5, gridData.width)].ValueRW.stepCost = WALL_COST;
-            gridCellArray[CoordsToIndex(6,3, gridData.width)].ValueRW.stepCost = WALL_COST;
-            gridCellArray[CoordsToIndex(6,4, gridData.width)].ValueRW.stepCost = WALL_COST;
-            gridCellArray[CoordsToIndex(6,5, gridData.width)].ValueRW.stepCost = WALL_COST; */
+            //TEST: Testing obstructions
+            /* gridCellArray[CoordsToIndex(5,3, gridData.width)].ValueRW.stepCost = OBSTR_COST;
+            gridCellArray[CoordsToIndex(5,4, gridData.width)].ValueRW.stepCost = OBSTR_COST;
+            gridCellArray[CoordsToIndex(5,5, gridData.width)].ValueRW.stepCost = OBSTR_COST;
+            gridCellArray[CoordsToIndex(6,3, gridData.width)].ValueRW.stepCost = OBSTR_COST;
+            gridCellArray[CoordsToIndex(6,4, gridData.width)].ValueRW.stepCost = OBSTR_COST;
+            gridCellArray[CoordsToIndex(6,5, gridData.width)].ValueRW.stepCost = OBSTR_COST; */
 
-            // TODO: This can probably be optimized to not run every frame, only on update events
-            // Wall detection
+            // Obstructed cell detection
             {
                 CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
 
                 NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp);
-                var collisionFilter = new CollisionFilter
+                var obstructedCollisionFilter = new CollisionFilter
                 {
                     BelongsTo = ~0u,
                     CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                    GroupIndex = 0
+                };
+                var weightedCollisionFilter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.WEIGHTED_LAYER,
                     GroupIndex = 0
                 };
 
@@ -237,15 +244,30 @@ partial struct GridSystem : ISystem
                 {
                     for (int y = 0; y < gridData.height; y++)
                     {
+                        // If detecting an obstructed cell, set its cost.
                         if (collisionWorld.OverlapSphere(
                             position: CoordsToWorldPositionCenter(x, y, gridData.gridCellSize),
                             radius: gridData.gridCellSize / 2,
                             ref distanceHitList,
-                            collisionFilter
+                            obstructedCollisionFilter
                             ))
                         {
                             int index = CoordsToIndex(x, y, gridData.width);
-                            gridCellArray[index].ValueRW.stepCost = WALL_COST;
+                            gridCellArray[index].ValueRW.stepCost = OBSTRUCTED_COST;
+                            gridData.costMap[index] = OBSTRUCTED_COST;
+                        }
+
+                        // If detecting a weighted cell, set its cost.
+                        if (collisionWorld.OverlapSphere(
+                            position: CoordsToWorldPositionCenter(x, y, gridData.gridCellSize),
+                            radius: gridData.gridCellSize / 2,
+                            ref distanceHitList,
+                            weightedCollisionFilter
+                            ))
+                        {
+                            int index = CoordsToIndex(x, y, gridData.width);
+                            gridCellArray[index].ValueRW.stepCost = WEIGHTED_COST;
+                            gridData.costMap[index] = WEIGHTED_COST;
                         }
                     }
                 }
@@ -258,6 +280,7 @@ partial struct GridSystem : ISystem
                 RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetCoords, gridData.width)];
                 gridCellOpenQueue.Enqueue(targetGridCell);
 
+                //TODO: Document logic extensively
                 // Process all cells in the queue using breadth-first search for uniform cost pathfinding.
                 while (!gridCellOpenQueue.IsEmpty())
                 {
@@ -267,16 +290,16 @@ partial struct GridSystem : ISystem
                         GetNeighbouringCellsRecursive(currGridCell, gridData, gridCellArray);
                     foreach (RefRW<GridCell> neighbourCell in neighbouringCellsList)
                     {
-                        // If wall, skip
-                        if (neighbourCell.ValueRO.stepCost == WALL_COST)
+                        // If obstructed cell, skip
+                        if (neighbourCell.ValueRO.stepCost == OBSTRUCTED_COST)
                         {
                             continue;
                         }
                         // If a new best path is discovered through the cell, update it's data and recurse.
-                        byte newBestCost = (byte)(currGridCell.ValueRO.bestPathCost + neighbourCell.ValueRO.stepCost);
+                        int newBestCost = (currGridCell.ValueRO.bestPathCost + neighbourCell.ValueRO.stepCost);
                         if (newBestCost < neighbourCell.ValueRO.bestPathCost)
                         {
-                            // Update the neighbor's best known cost to reach the target and store the vector for path reconstruction.
+                            // Update the cell's best known cost to reach the target and store the vector for path reconstruction.
                             neighbourCell.ValueRW.bestPathCost = newBestCost;
                             neighbourCell.ValueRW.pathingVector = CalculateVector(
                                 fromPosition: IndexToCoords(neighbourCell.ValueRO.index, gridData.width),
@@ -291,11 +314,13 @@ partial struct GridSystem : ISystem
 
                 gridCellArray.Dispose();
             }
-             
-            GridMap gridMap = gridData.gridMapArray[flowFieldIndex];
-            gridMap.targetCoords = targetCoords;
-            gridMap.isCalculated = true;
-            gridData.gridMapArray[flowFieldIndex] = gridMap;
+
+            FlowField flowField = gridData.flowFieldArray[flowFieldIndex];
+            flowField.targetCoords = targetCoords;
+            flowField.isCalculated = true;
+            gridData.flowFieldArray[flowFieldIndex] = flowField;
+
+            // IMPORTANT: set data value (non-reference type).
             SystemAPI.SetComponent<GridData>(state.SystemHandle, gridData);
             // Show debug visuals.
             GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
@@ -310,7 +335,7 @@ partial struct GridSystem : ISystem
             if (ValidateCoords(mouseCoords, gridData))
             {
                 /* int index = CoordsToIndex(mouseCoords.x, mouseCoords.y, gridData.width);
-                Entity gridCellEntity = gridData.gridMapArray[flowFieldIndex].gridCellEntityArray[index];
+                Entity gridCellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[index];
                 RefRW<GridCell> gridCell = SystemAPI.GetComponentRW<GridCell>(gridCellEntity);
                 Debug.Log($"Selected vector: {gridCell.ValueRO.pathingVector}");
 
@@ -342,9 +367,10 @@ partial struct GridSystem : ISystem
 
         for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
         {
-            gridData.ValueRW.gridMapArray[i].gridCellEntityArray.Dispose();
+            gridData.ValueRW.flowFieldArray[i].gridCellEntityArray.Dispose();
         }
-        gridData.ValueRW.gridMapArray.Dispose();
+        gridData.ValueRW.flowFieldArray.Dispose();
+        gridData.ValueRW.costMap.Dispose();
     }
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCells(
@@ -407,14 +433,14 @@ partial struct GridSystem : ISystem
         // Direction priority
         int2[] directions = new int2[]
         {
-        new int2(0, 1),   // Up
-        new int2(1, 0),   // Right
-        new int2(0, -1),  // Down
-        new int2(-1, 0),  // Left
-        new int2(1, 1),   // TopRight
-        new int2(1, -1),  // BotRight
-        new int2(-1, -1), // BotLeft
-        new int2(-1, 1),  // TopLeft
+            new int2(0, 1),   // Up
+            new int2(1, 0),   // Right
+            new int2(0, -1),  // Down
+            new int2(-1, 0),  // Left
+            new int2(1, 1),   // TopRight
+            new int2(1, -1),  // BotRight
+            new int2(-1, -1), // BotLeft
+            new int2(-1, 1),  // TopLeft
         };
 
         // Track visited to avoid duplicates
@@ -557,12 +583,93 @@ partial struct GridSystem : ISystem
     }
 
     /// <summary>
-    /// Returns true when the supplied grid cell represents a wall.
+    /// Returns true when the supplied grid cell represents an obstructed cell.
     /// </summary>
-    public static bool IsWall(GridCell cell)
+    public static bool IsObstructed(GridCell cell)
     {
-        return cell.stepCost == WALL_COST;
+        return cell.stepCost == OBSTRUCTED_COST;
     }
+
+    /// <summary>
+    /// Returns true when the grid cell in the coordinates represents an obstructed cell.
+    /// </summary>
+    public static bool IsObstructed(int2 coords, GridData gridData)
+    {
+        int index = CoordsToIndex(coords, gridData.width);
+        return gridData.costMap[index] == OBSTRUCTED_COST;
+    }
+
+    /// <summary>
+    /// Returns true when the supplied grid cell represents a walkable cell.
+    /// </summary>
+    public static bool IsWalkable(float3 worldPosition, GridData gridData)
+    {
+        int2 coords = WorldPositionToCoords(worldPosition, gridData.gridCellSize);
+        return ValidateCoords(coords, gridData) && !IsObstructed(coords, gridData);
+    }
+
+    /// <summary>
+    /// Returns true when the supplied grid cell can reach its target destination.
+    /// </summary>
+    public static bool IsPathable(GridCell cell)
+    {
+        return cell.bestPathCost < UNPATHABLE_COST;
+    }
+
+    /// <summary>
+    /// Returns true when the supplied grid cell represents an obstructed cell.
+    /// </summary>
+    public static bool IsPathable(float3 currentPosition, FlowField flowfield, GridData gridData, ref SystemState state)
+    {
+        Entity e = GetCurrentCellEntity(currentPosition, flowfield, gridData);
+
+        return IsPathable(state.EntityManager.GetComponentData<GridCell>(e));
+    }
+
+    public static Entity GetCurrentCellEntity(float3 currentPosition, FlowField flowfield, GridData gridData)
+    {
+        int2 coords = WorldPositionToCoords(currentPosition, gridData.gridCellSize);
+        int cellIndex = CoordsToIndex(coords, gridData.width);
+
+        return flowfield.gridCellEntityArray[cellIndex];
+    }
+
+    public static bool FlowFieldExists(int2 targetCoords, GridData gridData, out FlowField flowField)
+    {
+        for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
+        {
+            if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
+            {
+                flowField = gridData.flowFieldArray[i];
+                return true;
+            }
+        }
+        flowField = default;
+        return false;
+    }
+
+    public static bool FlowFieldExists(float3 targetPosition, GridData gridData, out FlowField flowField)
+    {
+        int2 targetCoords = WorldPositionToCoords(targetPosition, gridData.gridCellSize);
+        return FlowFieldExists(targetCoords, gridData, out flowField);
+    }
+
+
+    /* for (int i = 0; i<FLOW_FIELD_MAP_COUNT; i++)
+            {
+                if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
+                {
+                    flowFieldFollower.ValueRW.flowFieldIndex = i;
+                    flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
+                    flowFieldFollowerEnabled.ValueRW = true;
+
+                    GridDebugDisplay.Instance?.UpdateGridVisual(gridData, i);
+
+    existingPath = true;
+                    break;
+                }
+            } */
+
 }
 
 /// <summary>
@@ -572,31 +679,29 @@ public struct GridData : IComponentData
 {
     /// <summary>Grid width in cells.</summary>
     public int width;
-
     /// <summary>Grid height in cells.</summary>
     public int height;
-
     /// <summary>Size of a single grid cell in world units.</summary>
     public float gridCellSize;
-
     /// <summary>Entity lookup map for every created grid cell.</summary>
-    public NativeArray<GridMap> gridMapArray;
-
+    public NativeArray<FlowField> flowFieldArray;
+    /// <summary>Next index to fill in <see cref="flowFieldArray"/> when calculating a new FlowField.</summary>
     public int nextFlowFieldIndex;
+    /// <summary>Map for every grid's cost.</summary>
+    public NativeArray<byte> costMap;
 }
 
 /// <summary>
 /// Holds the runtime entity mapping for spawned grid cells.
 /// </summary>
-public struct GridMap : IComponentData
+public struct FlowField : IComponentData
 {
     /// <summary>Flat entity array containing every grid cell.</summary>
     public NativeArray<Entity> gridCellEntityArray;
     /// <summary>Target coordinates towards which the flow field is calculated.</summary>
     public int2 targetCoords;
-    /// <summary>Wether the GridMap's flow field has been calculated.</summary>
+    /// <summary>Wether the flow field has been calculated.</summary>
     public bool isCalculated;
-
 }
 
 /// <summary>
@@ -616,7 +721,7 @@ public struct GridCell : IComponentData
     public byte stepCost;
 
     /// <summary>Cached best cost for pathing calculations.</summary>
-    public byte bestPathCost;
+    public int bestPathCost;
 
     /// <summary>Direction vector to the next cell on a path.</summary>
     public float2 pathingVector;

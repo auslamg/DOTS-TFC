@@ -17,7 +17,7 @@ class SpawnerAuthoring : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Time interval between spawn attempts.")]
-    public float spawnFrequency;
+    public float spawnInterval;
     /// <summary>
     /// Minimum distance from the LocalTransform center for spawn offset.
     /// </summary>
@@ -58,7 +58,10 @@ class SpawnerBaker : Baker<SpawnerAuthoring>
             {
                 name = authoring.spawnedEntityKey
             },
-            spawnFrequency = authoring.spawnFrequency,
+            spawnCooldownTimer = new LoopingTimer
+            {
+                Interval = authoring.spawnInterval  
+            },
             minDistance = authoring.minDistance,
             maxDistance = authoring.maxDistance,
             nearbyEntityCap = authoring.nearbyEntityCap,
@@ -77,13 +80,9 @@ public struct Spawner : IComponentData
     /// </summary>
     public EntityPrefabKey spawnedEntityKey;
     /// <summary>
-    /// Remaining time before next spawn.
+    /// Looping timer to wait between unit spawns.
     /// </summary>
-    public float spawnPhaseTime;
-    /// <summary>
-    /// Time interval between spawns.
-    /// </summary>
-    public float spawnFrequency;
+    public LoopingTimer spawnCooldownTimer;
     /// <summary>
     /// Minimum distance from the LocalTransform center for spawn offset.
     /// </summary>

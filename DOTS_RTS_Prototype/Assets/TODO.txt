@@ -68,6 +68,8 @@ Aesthetic/UX addons
 - UI: Building ghosts should display valid placement in real time by changing colors
 - UI: TODO/IMPORTANT Add a OS selector that distinguishes between Win/Android and activates respective components (Camera controller, selector, etc.)
 - FIX: Camera pinch bug: releasing both touches in quick succesion counts as a super-fast drag
+- FEATURE: Seyying trainer rally point to an unreachable/ unwalkable position shouldn't be allowed
+
 
 Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.

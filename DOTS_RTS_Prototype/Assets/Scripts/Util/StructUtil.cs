@@ -22,24 +22,42 @@ public struct LoopingTimer
         else return false;
     }
 
-    public void ClampUpdate(float delta)
+    public bool IsTicking()
     {
-        if (Time == 0)
-        {
-            return;
-        }
-
-        Time -= delta;
-
-        if (Time < 0)
-        {
-            Time = 0;
-        }
+        return Time == Interval;
     }
 
     public void Reset(bool readyToTick)
     {
         Time = readyToTick ? 0 : Interval;
+    }
+}
+
+[BurstCompile]
+public struct DynamicTimer
+{
+    public float Time;
+    public bool IsTicking;
+
+    public bool Tick(float delta, float interval)
+    {
+        Time += delta;
+        if (Time >= interval)
+        {
+            Time = 0;
+            IsTicking = true;
+            return true;
+        }
+        else
+        {
+            IsTicking = false;
+            return false;
+        }
+    }
+
+    public void Reset(bool readyToTick)
+    {
+        Time = 0;
     }
 }
 

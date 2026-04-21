@@ -218,7 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
   projectilePrefabKey: Bullet
   onShootSpawnedEntityKey: ShootLight
-  attackFrequency: 0.4
+  attackInterval: 0.4
   attackDistance: 18
   damageAmount: 7
   projectileSpawnPointTransform: {fileID: 5785980750958341896}

@@ -36,7 +36,7 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new MeleeAttack
         {
-            attackTimer = new LoopingTimer
+            attackCooldownTimer = new LoopingTimer
             {
                 Time = 0,
                 Interval = authoring.attackInterval
@@ -56,9 +56,9 @@ class MeleeAttackBaker : Baker<MeleeAttackAuthoring>
 public struct MeleeAttack : IComponentData
 {
     /// <summary>
-    /// Looping timer to execute attacks over time.
+    /// Looping timer to wait between attacks.
     /// </summary>
-    public LoopingTimer attackTimer;
+    public LoopingTimer attackCooldownTimer;
     /// <summary>
     /// Maximum attack range.
     /// </summary>

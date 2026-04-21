@@ -41,7 +41,7 @@ partial struct TargetBuildingSeekerSystem : ISystem
                 RefRO<TargetBuildingSeeker>,
                 RefRO<ManualTarget>>())
         {
-            if (targetFinder.ValueRO.scanPhaseTime == targetFinder.ValueRO.scanFrequency)
+            if (targetFinder.ValueRO.scanCooldownTimer.IsTicking())
             {
                 if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
                 {

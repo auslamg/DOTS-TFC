@@ -10,7 +10,7 @@ class TargetFinderAuthoring : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Time interval between automatic target scans.")]
-    public float scanFrequency;
+    public float scanInterval;
     /// <summary>
     /// Maximum range for acquiring targets.
     /// </summary>
@@ -36,7 +36,10 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
         AddComponent(entity, new TargetFinder
         {
             targetRange = authoring.targetRange,
-            scanFrequency = authoring.scanFrequency,
+            scanCooldownTimer = new LoopingTimer
+            {
+                Interval = authoring.scanInterval
+            },
             swapTargetMinDistance = authoring.swapTargetMinDistance
         });
     }
@@ -51,13 +54,9 @@ class TargetFinderBaker : Baker<TargetFinderAuthoring>
 public struct TargetFinder : IComponentData
 {
     /// <summary>
-    /// Current time passed since the last scan.
+    /// Looping timer to wait between target scans.
     /// </summary>
-    public float scanPhaseTime;
-    /// <summary>
-    /// Time interval between scans.
-    /// </summary>
-    public float scanFrequency;
+    public LoopingTimer scanCooldownTimer;
     /// <summary>
     /// Maximum range for acquiring targets.
     /// </summary>
