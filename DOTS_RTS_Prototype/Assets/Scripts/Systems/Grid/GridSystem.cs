@@ -22,6 +22,7 @@ partial struct GridSystem : ISystem
     public const int OBSTRUCTED_COST = byte.MaxValue;
     public const int WEIGHTED_COST = 50;
     public const int FLOW_FIELD_MAP_COUNT = 100;
+    public const int CHUNK_MAX_SIZE = 8;
     public ComponentLookup<GridCell> gridCellComponentLookup;
 
 
@@ -71,83 +72,156 @@ partial struct GridSystem : ISystem
     [BurstCompile]
     private bool TryCreateGrid(ref SystemState state)
     {
-        if (!SystemAPI.TryGetSingleton(out GridDataParameters gridData))
+        if (!SystemAPI.TryGetSingleton(out GridDataParameters gridParams))
         {
             return false;
         }
 
-        // Get baked parameters and destroy its temporary container.
+        // Get baked grid parameters and destroy its temporary container.
         Entity gridDataEntity = SystemAPI.GetSingletonEntity<GridDataParameters>();
         state.EntityManager.DestroyEntity(gridDataEntity);
 
-        // Make a gridCell template for instantiation.
-        int totalCellCount = gridData.width * gridData.height;
-        Entity gridCellEntityTemplate = state.EntityManager.CreateEntity();
-        state.EntityManager.AddComponent<GridCell>(gridCellEntityTemplate);
+        // Generate flow fields.
+        GenerateFlowFields(ref state, gridParams,
+            out int totalCellCount,
+            out NativeArray<FlowField> flowFieldArray,
+            out NativeList<Entity> globalGridCellList);
 
-        // TODO: Optimize
-        NativeArray<FlowField> flowFieldArray =
-            new NativeArray<FlowField>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
-        NativeList<Entity> globalGridCellList =
-            new NativeList<Entity>(totalCellCount * FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
+        // Generate chunk grid.
+        GenerateGridChunks(ref state, gridParams, 
+            out NativeArray<GridChunk> chunkArray);
 
-        // Generate required empty flowfields.
-        for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
-        {
-            FlowField flowField = new FlowField
-            {
-                gridCellEntityArray = new NativeArray<Entity>(totalCellCount, Allocator.Persistent)
-            };
-            flowField.isCalculated = false;
-
-            // Generate required empty grid cells inside flowfields.
-            state.EntityManager.Instantiate(gridCellEntityTemplate, flowField.gridCellEntityArray);
-            globalGridCellList.AddRange(flowField.gridCellEntityArray);
-
-            // Set base data for each cell inside each flowfield.
-            for (int x = 0; x < gridData.width; x++)
-            {
-                for (int y = 0; y < gridData.height; y++)
-                {
-                    int index = CoordsToIndex(x, y, gridData.width);
-                    GridCell gridCell = new GridCell
-                    {
-                        flowFieldIndex = i,
-                        index = index,
-                        x = x,
-                        y = y,
-                    };
-
-                    Entity cellEntity = flowField.gridCellEntityArray[index];
-
-                    state.EntityManager.SetName(cellEntity, $"GridCell-{x},{y}");
-                    SystemAPI.SetComponent(cellEntity, gridCell);
-                }
-            }
-
-            flowFieldArray[i] = flowField;
-        }
-
-        Debug.Log("World grid built successfully");
-
+        // Create component with generated data.
         state.EntityManager.AddComponent<GridData>(state.SystemHandle);
         state.EntityManager.SetComponentData(
             state.SystemHandle,
             new GridData
             {
-                width = gridData.width,
-                height = gridData.height,
-                gridCellSize = gridData.gridCellSize,
+                width = gridParams.width,
+                height = gridParams.height,
+                gridCellSize = gridParams.gridCellSize,
                 flowFieldArray = flowFieldArray,
                 pathingCostMap = new NativeArray<byte>(totalCellCount, Allocator.Persistent),
+                chunkArray = chunkArray,
                 globalGridCellIndexedArray = globalGridCellList.ToArray(Allocator.Persistent)
             });
 
         globalGridCellList.Dispose();
         gridCellComponentLookup = SystemAPI.GetComponentLookup<GridCell>(isReadOnly: false);
 
-        gridData.isInitialized = true;
+        gridParams.isInitialized = true;
         return true;
+    }
+
+    [BurstCompile]
+    private void GenerateFlowFields(
+        ref SystemState state,
+        GridDataParameters gridParams,
+        out int totalCellCount, 
+        out NativeArray<FlowField> flowFieldArray, 
+        out NativeList<Entity> globalGridCellEntityList)
+    {
+        // Make a grid cell template for instantiation.
+        Entity gridCellEntityTemplate = state.EntityManager.CreateEntity();
+        state.EntityManager.AddComponent<GridCell>(gridCellEntityTemplate);
+
+        // Calculate total cell count for allocation size.
+        totalCellCount = gridParams.width * gridParams.height;
+
+        // Allocate collections.
+        flowFieldArray = new NativeArray<FlowField>(FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
+        globalGridCellEntityList = new NativeList<Entity>(totalCellCount * FLOW_FIELD_MAP_COUNT, Allocator.Persistent);
+
+        // Generate required empty flowfields.
+        {
+            for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
+            {
+                FlowField flowField = new FlowField
+                {
+                    gridCellEntityArray = new NativeArray<Entity>(totalCellCount, Allocator.Persistent)
+                };
+                flowField.isCalculated = false;
+
+                // Generate required empty grid cell entities inside flowfields.
+                state.EntityManager.Instantiate(gridCellEntityTemplate, flowField.gridCellEntityArray);
+                globalGridCellEntityList.AddRange(flowField.gridCellEntityArray);
+
+                // Set base data for each cell inside each flowfield.
+                for (int x = 0; x < gridParams.width; x++)
+                {
+                    for (int y = 0; y < gridParams.height; y++)
+                    {
+                        int index = CoordsToIndex(x, y, gridParams.width);
+                        GridCell gridCell = new GridCell
+                        {
+                            flowFieldIndex = i,
+                            index = index,
+                            x = x,
+                            y = y,
+                            bestPathCost = byte.MaxValue
+                        };
+
+                        Entity cellEntity = flowField.gridCellEntityArray[index];
+
+                        state.EntityManager.SetName(cellEntity, $"GridCell-{x},{y}");
+                        SystemAPI.SetComponent(cellEntity, gridCell);
+                    }
+                }
+
+                flowFieldArray[i] = flowField;
+            }
+        }
+
+        Debug.Log("World flow grid built successfully");
+    }
+
+    [BurstCompile]
+    private void GenerateGridChunks(
+        ref SystemState state,
+        GridDataParameters gridParams,
+        out NativeArray<GridChunk> chunkArray)
+    {
+        // Create grid chunk template for instantiation.
+        Entity gridChunkEntityTemplate = state.EntityManager.CreateEntity();
+        state.EntityManager.AddComponent<GridChunk>(gridChunkEntityTemplate);
+
+        // Calculate total grid chunk count for allocation size.
+        int gridChunkColumns = GridChunkDims(gridParams.width);
+        int gridChunkRows = GridChunkDims(gridParams.height);
+        int totalChunkCount = gridChunkColumns * gridChunkRows;
+
+        // Allocate collections.
+        var chunkEntityArray = new NativeArray<Entity>(totalChunkCount, Allocator.Persistent);
+        chunkArray = new NativeArray<GridChunk>(totalChunkCount, Allocator.Persistent);
+
+        // Generate initial empty chunks.
+        state.EntityManager.Instantiate(gridChunkEntityTemplate, chunkEntityArray);
+
+        // Set base data for each grid chunk.
+        {
+            for (int x = 0; x < gridChunkColumns; x++)
+            {
+                for (int y = 0; y < gridChunkRows; y++)
+                {
+                    int index = ChunkCoordsToIndex(x, y, gridParams.width, CHUNK_MAX_SIZE);
+                    GridChunk gridChunk = new GridChunk
+                    {
+                        index = index,
+                        cx = x,
+                        cy = y,
+                        visited = false
+                    };
+
+                    Entity chunkEntity = chunkEntityArray[index];
+                    state.EntityManager.SetName(chunkEntity, $"GridChunk-{CHUNK_MAX_SIZE}x-{x},{y}");
+                    SystemAPI.SetComponent(chunkEntity, gridChunk);
+
+                    chunkArray[index] = gridChunk;
+                }
+            }
+        }
+
+        Debug.Log("World chunk grid built successfully");
     }
 
     /// <summary>
@@ -230,7 +304,7 @@ partial struct GridSystem : ISystem
 
             // Set all pathing costs to default values.
             {
-                InitializeGridJob initializeGridJob = new InitializeGridJob
+                InitializeFlowFieldJob initializeGridJob = new InitializeFlowFieldJob
                 {
                     flowFieldIndex = flowFieldIndex,
                     targetCoords = targetCoords
@@ -359,6 +433,7 @@ partial struct GridSystem : ISystem
         gridData.ValueRW.flowFieldArray.Dispose();
         gridData.ValueRW.pathingCostMap.Dispose();
         gridData.ValueRW.globalGridCellIndexedArray.Dispose();
+        gridData.ValueRW.chunkArray.Dispose();
     }
 
     public static NativeList<RefRW<GridCell>> GetNeighbouringCells(
@@ -483,11 +558,30 @@ partial struct GridSystem : ISystem
     }
 
     /// <summary>
+    /// Converts a world space length into chunk grid space.
+    /// </summary>a
+    /// <remarks> 
+    /// Used for calculating the original chunk grid size.
+    /// </remarks>
+    private static int GridChunkDims(int worldSpaceSize)
+    {
+        return (int)Mathf.Ceil((float)worldSpaceSize / (float)CHUNK_MAX_SIZE);
+    }
+
+    /// <summary>
     /// Converts 2D grid coordinates to a flat array index.
     /// </summary>
     public static int CoordsToIndex(int x, int y, int width)
     {
         return x + width * y;
+    }
+
+    /// <summary>
+    /// Converts 2D grid coordinates to a flat array index.
+    /// </summary>
+    public static int ChunkCoordsToIndex(int x, int y, int width, int chunkSize)
+    {
+        return x + width / chunkSize * y;
     }
 
     /// <summary>
@@ -511,7 +605,7 @@ partial struct GridSystem : ISystem
     /// <summary>
     /// Converts 2D parameters in a specific <see cref="FlowField"/> into a global index. Used for accesing <see cref="GridData.globalGridCellIndexedArray"/> since nested native collections are unavailable inside jobs.
     /// </summary>
-    public static int GetGlobalIndex(int2 coords, int flowFieldIndex, int width, int height)
+    public static int GetGlobalCellIndex(int2 coords, int flowFieldIndex, int width, int height)
     {
         int totalCount = width * height;
         return totalCount * flowFieldIndex + CoordsToIndex(coords, width);
@@ -537,6 +631,18 @@ partial struct GridSystem : ISystem
             x: x * cellSize + cellSize / 2,
             y: 0.1f,
             z: y * cellSize + cellSize / 2);
+    }
+
+    /// <summary>
+    /// Calculates the world position of the given grid chunk's center point.
+    /// </summary>
+    public static float3 CoordsToWorldPositionCenter(int cx, int cy, float cellSize, int chunkSize)
+    {
+        float worldChunkSize = cellSize * chunkSize;
+        return new float3(
+            x: cx * worldChunkSize + worldChunkSize / 2,
+            y: 0.1f,
+            z: cy * worldChunkSize + worldChunkSize / 2);
     }
 
     /// <summary>
@@ -711,7 +817,7 @@ partial struct GridSystem : ISystem
 }
 
 [BurstCompile]
-public partial struct InitializeGridJob : IJobEntity
+public partial struct InitializeFlowFieldJob : IJobEntity
 {
     [ReadOnly] public int flowFieldIndex;
     [ReadOnly] public int2 targetCoords;
@@ -826,6 +932,9 @@ public struct GridData : IComponentData
     /// <summary>Map for every grid's flow field cost.</summary>
     public NativeArray<byte> pathingCostMap;
 
+    /// <summary>Entity lookup map for every created grid cell.</summary>
+    public NativeArray<GridChunk> chunkArray;
+
     /// <summary>Index for every existing grid cell from every single <see cref="FlowField"/>.</summary>
     public NativeArray<Entity> globalGridCellIndexedArray;
 
@@ -878,23 +987,18 @@ public struct GridCell : IComponentData
 /// </summary>
 public struct GridChunk : IComponentData
 {
-    
-    /// <summary>Flow field index that identifies which <see cref="FlowField"/> the cell belongs to.</summary>
-    public int flowFieldIndex;
-
     /// <summary>Cell unique index for collection identification.</summary>
     public int index;
-    public int2 originCoords;
+
+    /// <summary>Chunk grid X coordinate.</summary>
+    public int cx;
+
+    /// <summary>Chunk grid Y coordinate.</summary>
+    public int cy;
 
     /// <summary>Dimension size of chunk (64x64 Chunk => 64 squareSize).</summary>
-    public int squareSize;
+    public int size;
 
-    public bool occluded;
-    public bool viewed;
-
-    /// <summary>Cached best cost for pathing calculations.</summary>
-    public int bestPathCost;
-
-    /// <summary>Direction vector to the next cell on a path.</summary>
-    public float2 pathingVector;
+    public bool obstructed;
+    public bool visited;
 }

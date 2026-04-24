@@ -9,12 +9,17 @@ public class GridDebugDisplay : MonoBehaviour
     [SerializeField]
     private Transform gridCellGizmo;
     [SerializeField]
+    private Transform gridChunkGizmo;
+    [SerializeField]
     private Sprite baseCell;
+    [SerializeField]
+    private Sprite baseChunk;
     [SerializeField]
     private Sprite arrowCell;
 
     private bool isInitialized = false;
     private GridCellDebug[,] gridCellsArray;
+    private GridChunkDebug[,] gridChunksArray;
 
     /// <summary>
     /// Scene singleton instance for managed-side access.
@@ -46,17 +51,32 @@ public class GridDebugDisplay : MonoBehaviour
             for (int y = 0; y < gridData.height; y++)
             {
                 Transform cellGizmo = Instantiate(gridCellGizmo, this.gameObject.transform);
+                cellGizmo.name = $"CellGizmo-{x},{y}";
                 GridCellDebug cell = cellGizmo.GetComponent<GridCellDebug>();
                 cell.Initialize(x, y, gridData.gridCellSize);
 
                 gridCellsArray[x, y] = cell;
             }
         }
+
+        gridChunksArray = new GridChunkDebug[gridData.width / CHUNK_MAX_SIZE, gridData.height / CHUNK_MAX_SIZE];
+        for (int cx = 0; cx < gridData.width / CHUNK_MAX_SIZE; cx++)
+        {
+            for (int cy = 0; cy < gridData.width / CHUNK_MAX_SIZE; cy++)
+            {
+                Transform chunkGizmo = Instantiate(gridChunkGizmo, this.gameObject.transform);
+                chunkGizmo.name = $"ChunkGizmo-{cx},{cy}";
+                GridChunkDebug chunk = chunkGizmo.GetComponent<GridChunkDebug>();
+                chunk.Initialize(cx, cy, gridData.gridCellSize, CHUNK_MAX_SIZE);
+
+                gridChunksArray[cx, cy] = chunk;
+            }
+        }
+
         isInitialized = true;
     }
 
-    //TODO: Use jobs for this, and don't update every frame
-
+    //IDEA: Use jobs for this (maybe)
     public void UpdateGridVisual(GridData gridData)
     {
         for (int x = 0; x < gridData.width; x++)
@@ -76,6 +96,20 @@ public class GridDebugDisplay : MonoBehaviour
                 GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
 
                 UpdateCellVisual(cell);
+            }
+        }
+
+        for (int x = 0; x < gridData.width / CHUNK_MAX_SIZE; x++)
+        {
+            for (int y = 0; y < gridData.height / CHUNK_MAX_SIZE; y++)
+            {
+                // Retrieve the unmanaged data for this cell
+                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                
+                int chunkIndex = GridSystem.ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
+                GridChunk gridChunk = gridData.chunkArray[chunkIndex];
+
+                UpdateChunkVisual(gridChunk);
             }
         }
     }
@@ -100,15 +134,29 @@ public class GridDebugDisplay : MonoBehaviour
                 UpdateCellVisual(cell);
             }
         }
+
+        for (int x = 0; x < gridData.width / CHUNK_MAX_SIZE; x++)
+        {
+            for (int y = 0; y < gridData.height / CHUNK_MAX_SIZE; y++)
+            {
+                // Retrieve the unmanaged data for this cell
+                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+                int chunkIndex = GridSystem.ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
+                GridChunk gridChunk = gridData.chunkArray[chunkIndex];
+
+                UpdateChunkVisual(gridChunk);
+            }
+        }
     }
 
     public void UpdateCellVisual(GridCell cell)
     {
         GridCellDebug cellDebug = gridCellsArray[cell.x, cell.y];
-        if (cell.stepCost == 0) // Target
+        if (cell.stepCost == 0 && cell.bestPathCost == 0) // Target
         {
             cellDebug.SetSprite(baseCell);
-            cellDebug.SetColor(Color.yellow);
+            cellDebug.SetColor(new Color(1, 1, 0, 1));
         }
         else
         {
@@ -120,7 +168,7 @@ public class GridDebugDisplay : MonoBehaviour
             else
             {
                 cellDebug.SetSprite(arrowCell);
-                cellDebug.SetColor(Color.white);
+                cellDebug.SetColor(new Color(1, 1, 1, .25f));
 
                 cellDebug.SetSpriteRotation(Quaternion.LookRotation(
                     new Vector3(
@@ -128,6 +176,27 @@ public class GridDebugDisplay : MonoBehaviour
                         0,
                         cell.pathingVector.y),
                     Vector3.up));
+            }
+        }
+    }
+
+    public void UpdateChunkVisual(GridChunk chunk)
+    {
+        GridChunkDebug chunkDebug = gridChunksArray[chunk.cx, chunk.cy];
+        if (chunk.obstructed) // Target
+        {
+            chunkDebug.SetSprite(baseChunk);
+            chunkDebug.SetColor(Color.red);
+        }
+        else
+        {
+            if (chunk.visited)
+            {
+                chunkDebug.SetColor(new Color(0, 1, 0, .25f));
+            }
+            else
+            {
+                chunkDebug.SetColor(new Color(0, .5f, 1, .25f));
             }
         }
     }

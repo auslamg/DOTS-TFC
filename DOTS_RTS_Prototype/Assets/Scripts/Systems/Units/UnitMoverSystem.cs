@@ -318,7 +318,7 @@ public partial struct FollowFlowFieldJob : IJobEntity
 
         // Retrieve current grid cell's pathing vector and convert it to world space
         int2 coords = GridSystem.WorldPositionToCoords(localTransform.Position, gridCellSize);
-        int globalCellIndex = GridSystem.GetGlobalIndex(coords, flowFieldFollower.flowFieldIndex, gridWidth, gridHeight);
+        int globalCellIndex = GridSystem.GetGlobalCellIndex(coords, flowFieldFollower.flowFieldIndex, gridWidth, gridHeight);
         Entity currentCell = globalGridCellIndexedArray[globalCellIndex];
         GridCell gridCell = gridCellComponentLookup[currentCell];
         float3 worldMovementVector = GridSystem.GridVectorToWorldSpace(gridCell.pathingVector);
