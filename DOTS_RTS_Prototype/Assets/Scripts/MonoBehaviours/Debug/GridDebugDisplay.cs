@@ -3,6 +3,7 @@ using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 using static GridSystem;
+using static GridUtil;
 
 public class GridDebugDisplay : MonoBehaviour
 {
@@ -91,7 +92,7 @@ public class GridDebugDisplay : MonoBehaviour
                     latestFlowFieldIndex = 0;
                 } // IDEA Use LoopCounter utility struct or similar
 
-                int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
+                int cellIndex = CoordsToIndex(x, y, gridData.width);
                 Entity cellEntity = gridData.flowFieldArray[latestFlowFieldIndex].gridCellEntityArray[cellIndex];
                 GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
 
@@ -105,8 +106,8 @@ public class GridDebugDisplay : MonoBehaviour
             {
                 // Retrieve the unmanaged data for this cell
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                
-                int chunkIndex = GridSystem.ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
+
+                int chunkIndex = ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
                 GridChunk gridChunk = gridData.chunkArray[chunkIndex];
 
                 UpdateChunkVisual(gridChunk);
@@ -127,7 +128,7 @@ public class GridDebugDisplay : MonoBehaviour
                     flowFieldIndex = 0;
                 }
 
-                int cellIndex = GridSystem.CoordsToIndex(x, y, gridData.width);
+                int cellIndex = CoordsToIndex(x, y, gridData.width);
                 Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[cellIndex];
                 GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
 
@@ -142,7 +143,7 @@ public class GridDebugDisplay : MonoBehaviour
                 // Retrieve the unmanaged data for this cell
                 EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-                int chunkIndex = GridSystem.ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
+                int chunkIndex = ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
                 GridChunk gridChunk = gridData.chunkArray[chunkIndex];
 
                 UpdateChunkVisual(gridChunk);
@@ -165,17 +166,22 @@ public class GridDebugDisplay : MonoBehaviour
                 cellDebug.SetSprite(baseCell);
                 cellDebug.SetColor(Color.red);
             }
-            else
+            else if (!cell.flowVector.Equals(Vector2.zero))
             {
                 cellDebug.SetSprite(arrowCell);
                 cellDebug.SetColor(new Color(1, 1, 1, .25f));
 
                 cellDebug.SetSpriteRotation(Quaternion.LookRotation(
                     new Vector3(
-                        cell.pathingVector.x,
+                        cell.flowVector.x,
                         0,
-                        cell.pathingVector.y),
+                        cell.flowVector.y),
                     Vector3.up));
+            }
+            else
+            {
+                cellDebug.SetSprite(baseCell);
+                cellDebug.SetColor(new Color(1, 1, 1, .25f));
             }
         }
     }
@@ -196,14 +202,8 @@ public class GridDebugDisplay : MonoBehaviour
             }
             else
             {
-                chunkDebug.SetColor(new Color(0, .5f, 1, .25f));
+                chunkDebug.SetColor(new Color(1, 1, 1, .25f));
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

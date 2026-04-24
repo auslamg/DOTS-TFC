@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-using static GridSystem;
+using static GridUtil;
 
 /// <summary>
 /// System responsible for scheduling and managing unit movement simulation jobs.
@@ -217,7 +217,7 @@ public partial struct PathRequestJob : IJobEntity
                 manualMoveComponentLookup.SetComponentEnabled(entity, false);
             }
 
-            if (GridSystem.IsWalkable(pathRequest.targetPosition, gridWidth, gridHeight, gridCellSize, pathingCostMap))
+            if (IsWalkable(pathRequest.targetPosition, gridWidth, gridHeight, gridCellSize, pathingCostMap))
             {
                 // Walkable: ask for navigation.
                 // Unit mover will check if it's unreachable.
@@ -317,14 +317,14 @@ public partial struct FollowFlowFieldJob : IJobEntity
         FlowFieldFollower flowFieldFollower = flowFieldFollowerComponentLookup[entity];
 
         // Retrieve current grid cell's pathing vector and convert it to world space
-        int2 coords = GridSystem.WorldPositionToCoords(localTransform.Position, gridCellSize);
-        int globalCellIndex = GridSystem.GetGlobalCellIndex(coords, flowFieldFollower.flowFieldIndex, gridWidth, gridHeight);
+        int2 coords = WorldPositionToCoords(localTransform.Position, gridCellSize);
+        int globalCellIndex = GetGlobalCellIndex(coords, flowFieldFollower.flowFieldIndex, gridWidth, gridHeight);
         Entity currentCell = globalGridCellIndexedArray[globalCellIndex];
         GridCell gridCell = gridCellComponentLookup[currentCell];
-        float3 worldMovementVector = GridSystem.GridVectorToWorldSpace(gridCell.pathingVector);
+        float3 worldMovementVector = GridVectorToWorldSpace(gridCell.flowVector);
 
         // If inside a wall, use the previous cell's vector. Else, read cell vector.
-        if (GridSystem.IsObstructed(gridCell))
+        if (IsObstructed(gridCell))
         {
             worldMovementVector = flowFieldFollowerComponentLookup[entity].lastMoveVector;
         }
@@ -334,8 +334,8 @@ public partial struct FollowFlowFieldJob : IJobEntity
         }
 
         // No path was found, stop movement.
-        if (!GridSystem.IsPathable(gridCell) &&
-            !GridSystem.IsObstructed(gridCell))
+        if (!IsPathable(gridCell) &&
+            !IsObstructed(gridCell))
         {
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
             unitMover.targetPosition = localTransform.Position;
@@ -343,7 +343,7 @@ public partial struct FollowFlowFieldJob : IJobEntity
         }
 
         unitMover.targetPosition =
-            GridSystem.CoordsToWorldPositionCenter(coords, gridCellSize) +
+            CoordsToWorldPositionCenter(coords, gridCellSize) +
             worldMovementVector * gridCellSize * 2;
 
         // Detect if the unit has reached its destination.

@@ -1,6 +1,7 @@
 using System;
 using Unity.Mathematics;
 using UnityEngine;
+using static GridUtil;
 
 public class GridChunkDebug : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class GridChunkDebug : MonoBehaviour
         visual = gameObject.transform.GetChild(0);
 
         //Adjust world position based on cell size
-        transform.position = GridSystem.CoordsToWorldPositionCorner(x, y, cellSize * chunkSize);
+        transform.position = CoordsToWorldPositionCorner(x, y, cellSize * chunkSize);
         visual.transform.position = visual.transform.position + new Vector3(-cellSize / 2, 0.2f, -cellSize / 2);
 
         //Adjust visual scale based on cell size

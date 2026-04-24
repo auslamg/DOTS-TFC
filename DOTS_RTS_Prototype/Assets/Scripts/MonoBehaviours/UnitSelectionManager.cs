@@ -331,9 +331,9 @@ public class UnitSelectionManager : MonoBehaviour
             entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
             //New PathRequest values
-            PathRequest newdPathRequest = pathRequestArray[i];
-            newdPathRequest.targetPosition = formationPositionsArray[i];
-            pathRequestArray[i] = newdPathRequest;
+            PathRequest newPathRequest = pathRequestArray[i];
+            newPathRequest.targetPosition = formationPositionsArray[i];
+            pathRequestArray[i] = newPathRequest;
 
             Debug.Log("Sending path request");
 
