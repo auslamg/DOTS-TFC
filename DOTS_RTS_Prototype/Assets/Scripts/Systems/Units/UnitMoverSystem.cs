@@ -10,25 +10,34 @@ using UnityEngine;
 using static GridSystem;
 
 /// <summary>
-/// Schedules movement simulation for units based on their current target positions.
+/// System responsible for scheduling and managing unit movement simulation jobs.
 /// </summary>
 partial struct UnitMoverSystem : ISystem
 {
     /// <summary>
-    /// Job handles for the parallel reset jobs. This array is allocated once and reused across updates.
+    /// Job handle array for parallel jobs. Allocated once and disposed on system destroy.
     /// </summary>
     private NativeArray<JobHandle> jobHandleArray;
 
+    /// <summary>Component lookup for <see cref="PathRequest"/> components. Used to access and modify pathfinding requests on entities.</summary>
     public ComponentLookup<PathRequest> pathRequestComponentLookup;
+
+    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to access and modify flow field navigation state on entities.</summary>
     public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
+
+    /// <summary>Component lookup for <see cref="FlowFieldRequest"/> components. Used to access and modify flow field navigation requests on entities.</summary>
     public ComponentLookup<FlowFieldRequest> flowFieldRequestComponentLookup;
+
+    /// <summary>Component lookup for <see cref="ManualMove"/> components. Used to access and modify manual movement state on entities.</summary>
     public ComponentLookup<ManualMove> manualMoveComponentLookup;
+
+    /// <summary>Component lookup for <see cref="GridCell"/> components. Used to access grid cell data for navigation and pathfinding.</summary>
     public ComponentLookup<GridCell> gridCellComponentLookup;
 
-
     /// <summary>
-    /// Requires the grid data registry singleton before this system can run.
+    /// Called when the system is created. Registers required singletons and initializes component lookups and persistent arrays.
     /// </summary>
+    /// <param name="state">The system state for initialization.</param>
     [BurstCompile]
     private void OnCreate(ref SystemState state)
     {
@@ -43,10 +52,10 @@ partial struct UnitMoverSystem : ISystem
         gridCellComponentLookup = SystemAPI.GetComponentLookup<GridCell>(isReadOnly: false);
     }
 
-
     /// <summary>
-    /// Schedules the movement job that updates velocity, facing, and movement state.
+    /// Schedules all movement jobs for units: initializes target positions, handles pathfinding, checks for direct paths, follows flow fields, and applies movement and rotation.
     /// </summary>
+    /// <param name="state">The system state for update.</param>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -99,7 +108,7 @@ partial struct UnitMoverSystem : ISystem
             gridCellSize = gridData.gridCellSize
         };
         followFlowFieldJob.ScheduleParallel();
-        
+
         // Apply final calculated movement on units.
         MoveUnitJob moveUnitJob = new MoveUnitJob
         {
@@ -108,6 +117,10 @@ partial struct UnitMoverSystem : ISystem
         moveUnitJob.ScheduleParallel();
     }
 
+    /// <summary>
+    /// Called when the system is destroyed. Disposes persistent native arrays to prevent memory leaks.
+    /// </summary>
+    /// <param name="state">The system state for destruction.</param>
     [BurstCompile]
     private void OnDestroy(ref SystemState state)
     {
@@ -116,7 +129,7 @@ partial struct UnitMoverSystem : ISystem
 }
 
 /// <summary>
-/// Resets unit target position if there is none after spawning to avoid the unit going to the default value (0,0,0). 
+/// Job that ensures a unit's target position is initialized after spawning. Prevents units from moving to (0,0,0) by default.
 /// </summary>
 [BurstCompile]
 public partial struct InitializeTargetPositionJob : IJobEntity
@@ -137,30 +150,33 @@ public partial struct InitializeTargetPositionJob : IJobEntity
 }
 
 /// <summary>
-/// Manages unit pathfinding requests.
+/// Job that manages unit pathfinding requests. Handles raycast checks for direct paths and requests flow field navigation if needed.
 /// </summary>
 [BurstCompile]
 [WithAll(typeof(PathRequest))]
 public partial struct PathRequestJob : IJobEntity
 {
+
+    /// <summary>Component lookup for <see cref="PathRequest"/> components. Used to access pathfinding requests on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<PathRequest> pathRequestComponentLookup;
+    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to enable/disable flow field navigation on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
+    /// <summary>Component lookup for <see cref="FlowFieldRequest"/> components. Used to request flow field navigation for entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldRequest> flowFieldRequestComponentLookup;
+    /// <summary>Component lookup for <see cref="ManualMove"/> components. Used to disable manual movement when pathfinding is required.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<ManualMove> manualMoveComponentLookup;
 
-    /// <summary>Cell pathing cost map inside <see cref="GridData"/>.</summary>
+    /// <summary>Cell pathing cost map from <see cref="GridData"/>. Used to check walkability of target positions.</summary>
     [ReadOnly] public NativeArray<byte> pathingCostMap;
 
-    /// <summary>Used for physics queries.</summary>
+    /// <summary>Collision world for physics raycasts to check for obstructions.</summary>
     [ReadOnly] public CollisionWorld collisionWorld;
 
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid width from <see cref="GridData"/> (number of cells in X direction).</summary>
     [ReadOnly] public int gridWidth;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid height from <see cref="GridData"/> (number of cells in Y direction).</summary>
     [ReadOnly] public int gridHeight;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid cell size from <see cref="GridData"/> (world units per cell).</summary>
     [ReadOnly] public float gridCellSize;
 
 
@@ -172,7 +188,7 @@ public partial struct PathRequestJob : IJobEntity
         // Lookup local fetch for readability.
         PathRequest pathRequest = pathRequestComponentLookup[entity];
 
-        //Check if a straight path to  target is available. If not, request navigation.
+        // Check if a straight path to target is available. If not, request navigation.
         RaycastInput raycastInput = new RaycastInput
         {
             Start = localTransform.Position,
@@ -203,7 +219,7 @@ public partial struct PathRequestJob : IJobEntity
 
             if (GridSystem.IsWalkable(pathRequest.targetPosition, gridWidth, gridHeight, gridCellSize, pathingCostMap))
             {
-                // Walkable ask for navigation.
+                // Walkable: ask for navigation.
                 // Unit mover will check if it's unreachable.
                 var flowFieldRequest = flowFieldRequestComponentLookup[entity];
                 flowFieldRequest.targetPosition = pathRequest.targetPosition;
@@ -218,8 +234,8 @@ public partial struct PathRequestJob : IJobEntity
                 flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
                 flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
             }
-            /// [Deprecated]: Unreachable path calculation. Rather than doing all this complex calculations,
-            /// units just check wether the current cell has been written to or not.
+            // [Deprecated]: Unreachable path calculation. Rather than doing all this complex calculation,
+            // units just check whether the current cell has been written to or not.
             /* if (FlowFieldExists(unitMover.ValueRW.targetPosition, gridData, out FlowField flowField))
             {
                 if (!IsPathable(pathRequest.ValueRW.targetPosition, flowField, gridData, ref state))
@@ -236,14 +252,17 @@ public partial struct PathRequestJob : IJobEntity
     }
 }
 
+/// <summary>
+/// Job that checks if a straight path to the target is available for units with <see cref="FlowFieldFollower"/>. If so, disables navigation and moves directly.
+/// </summary>
 [BurstCompile]
 [WithAll(typeof(FlowFieldFollower))]
 public partial struct CheckStraightPathJob : IJobEntity
 {
-
+    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to enable/disable flow field navigation on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
 
-    /// <summary>Used for physics queries.</summary>
+    /// <summary>Collision world for physics raycasts to check for obstructions.</summary>
     [ReadOnly] public CollisionWorld collisionWorld;
     public void Execute(in LocalTransform localTransform, ref UnitMover unitMover, Entity entity)
     {
@@ -272,23 +291,25 @@ public partial struct CheckStraightPathJob : IJobEntity
 }
 
 /// <summary>
-/// Moves a unit towards its target position and adjusts the rotation to match the movement direction.
+/// Job that moves a unit towards its target position using flow field navigation. Updates the target position and disables navigation if the destination is reached or blocked.
 /// </summary>
 [BurstCompile]
 [WithAll(typeof(FlowFieldFollower))]
 public partial struct FollowFlowFieldJob : IJobEntity
 {
+
+    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to access and update navigation state.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
+    /// <summary>Component lookup for <see cref="GridCell"/> components. Used to read grid cell navigation data.</summary>
     [ReadOnly] public ComponentLookup<GridCell> gridCellComponentLookup;
+    /// <summary>Array of all grid cell entities indexed globally for fast lookup.</summary>
     [ReadOnly] public NativeArray<Entity> globalGridCellIndexedArray;
 
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid width from <see cref="GridData"/> (number of cells in X direction).</summary>
     [ReadOnly] public int gridWidth;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid height from <see cref="GridData"/> (number of cells in Y direction).</summary>
     [ReadOnly] public int gridHeight;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
+    /// <summary>Grid cell size from <see cref="GridData"/> (world units per cell).</summary>
     [ReadOnly] public float gridCellSize;
 
     public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, Entity entity)
@@ -330,36 +351,35 @@ public partial struct FollowFlowFieldJob : IJobEntity
         {
             Debug.Log("Stopped unit");
             unitMover.targetPosition = localTransform.Position;
-            flowFieldFollowerComponentLookup.SetComponentEnabled(entity,false);
+            flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
         }
 
-        // Overrite original lookup values.
+        // Overwrite original lookup values.
         flowFieldFollowerComponentLookup[entity] = flowFieldFollower;
     }
 }
 
 
 /// <summary>
-/// Moves a unit towards its target position and adjusts the rotation to match the movement direction.
+/// Job that moves a unit towards its target position and rotates it to face the movement direction. Applies velocity and stops movement when the target is reached.
 /// </summary>
 [BurstCompile]
 public partial struct MoveUnitJob : IJobEntity
 {
-    //Set on struct construction
+    /// <summary>
+    /// Delta time for movement calculations.
+    /// </summary>
     [ReadOnly] public float deltaTime;
 
-    /// <summary>
-    /// Moves a unit toward its target and stops movement when the reach threshold is satisfied.
-    /// </summary>
     public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
     {
-        //Desired normalized move direction based on positional difference
+        // Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
 
-        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; //REVIEW: Take in account for melee atacks
+        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; // REVIEW: Take into account for melee attacks
         if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
-            //Reached target
+            // Reached target
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;
             unitMover.isMoving = false;
@@ -370,16 +390,16 @@ public partial struct MoveUnitJob : IJobEntity
 
         moveDirection = math.normalize(moveDirection);
 
-        //Rotate unit towards move direction
+        // Rotate unit towards move direction
         localTransform.Rotation =
-                    math.slerp(localTransform.Rotation, quaternion.LookRotation(moveDirection, math.up()), deltaTime * unitMover.rotationSpeed);
+            math.slerp(localTransform.Rotation, quaternion.LookRotation(moveDirection, math.up()), deltaTime * unitMover.rotationSpeed);
 
-        //Apply linear velocity and clamp angular (safety measure for constraint failures)
+        // Apply linear velocity and clamp angular (safety measure for constraint failures)
         physicsVelocity.Linear = moveDirection * unitMover.moveSpeed;
         physicsVelocity.Angular = float3.zero;
 
-        //Transform movement alternative:
-        //localTransform.ValueRW.Position += moveDirection * unitMover.ValueRO.value * SystemAPI.Time.DeltaTime;
+        // Transform movement alternative:
+        // localTransform.ValueRW.Position += moveDirection * unitMover.ValueRO.value * SystemAPI.Time.DeltaTime;
     }
 }
 

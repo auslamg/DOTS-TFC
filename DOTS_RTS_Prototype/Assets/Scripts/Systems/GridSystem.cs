@@ -229,7 +229,7 @@ partial struct GridSystem : ISystem
             new NativeArray<RefRW<GridCell>>(gridData.width * gridData.height, Allocator.Temp);
 
             // Set all pathing costs to default values.
-            
+            {
                 InitializeGridJob initializeGridJob = new InitializeGridJob
                 {
                     flowFieldIndex = flowFieldIndex,
@@ -238,6 +238,7 @@ partial struct GridSystem : ISystem
                 JobHandle initializeGridJobHandle = initializeGridJob.ScheduleParallel(state.Dependency);
                 initializeGridJobHandle.Complete();
 
+                // Add all cells to indexes.
                 for (int x = 0; x < gridData.width; x++)
                 {
                     for (int y = 0; y < gridData.height; y++)
@@ -250,12 +251,11 @@ partial struct GridSystem : ISystem
                     }
                 }
                 UpdateDebugVisual(gridData);
-            
+            }
 
             // Obstructed cell detection and cost calculation
-            
+            {
                 CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
-                //MARK
                 var obstructedCollisionFilter = new CollisionFilter
                 {
                     BelongsTo = ~0u,
@@ -284,11 +284,13 @@ partial struct GridSystem : ISystem
 
                 JobHandle updatePathingCostJobHandle = updatePathingCostJob.ScheduleParallel(state.Dependency);
                 updatePathingCostJobHandle.Complete();
-            
+            }
 
-            // FlowField Calculation. //FIX Burst error is inside this block
-            NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp);
+
+            // FlowField Calculation.
             {
+                // BFS Queue, started on target
+                NativeQueue<RefRW<GridCell>> gridCellOpenQueue = new NativeQueue<RefRW<GridCell>>(Allocator.Temp);
                 RefRW<GridCell> targetGridCell = gridCellArray[CoordsToIndex(targetCoords, gridData.width)];
                 gridCellOpenQueue.Enqueue(targetGridCell);
 
@@ -326,17 +328,20 @@ partial struct GridSystem : ISystem
                 gridCellOpenQueue.Dispose();
             }
 
-            FlowField flowField = gridData.flowFieldArray[flowFieldIndex];
-            flowField.targetCoords = targetCoords;
-            flowField.isCalculated = true;
-            gridData.flowFieldArray[flowFieldIndex] = flowField;
+            // Set all data values
+            {
+                // Set data values for calculated flowfield.
+                FlowField flowField = gridData.flowFieldArray[flowFieldIndex];
+                flowField.targetCoords = targetCoords;
+                flowField.isCalculated = true;
+                gridData.flowFieldArray[flowFieldIndex] = flowField;
 
-            // IMPORTANT: set data value (non-reference type).
-            SystemAPI.SetComponent<GridData>(state.SystemHandle, gridData);
-            // Show debug visuals.
-            UpdateDebugVisual(gridData);
+                // Set component data
+                SystemAPI.SetComponent<GridData>(state.SystemHandle, gridData);
+                // Show debug visuals.
+                UpdateDebugVisual(gridData);
+            }
         }
-        
     }
 
     /// <summary>
@@ -860,6 +865,32 @@ public struct GridCell : IComponentData
 
     /// <summary>Movement or cost value used by pathing.</summary>
     public byte stepCost;
+
+    /// <summary>Cached best cost for pathing calculations.</summary>
+    public int bestPathCost;
+
+    /// <summary>Direction vector to the next cell on a path.</summary>
+    public float2 pathingVector;
+}
+
+/// <summary>
+/// Represents a single logical cell inside the runtime grid.
+/// </summary>
+public struct GridChunk : IComponentData
+{
+    
+    /// <summary>Flow field index that identifies which <see cref="FlowField"/> the cell belongs to.</summary>
+    public int flowFieldIndex;
+
+    /// <summary>Cell unique index for collection identification.</summary>
+    public int index;
+    public int2 originCoords;
+
+    /// <summary>Dimension size of chunk (64x64 Chunk => 64 squareSize).</summary>
+    public int squareSize;
+
+    public bool occluded;
+    public bool viewed;
 
     /// <summary>Cached best cost for pathing calculations.</summary>
     public int bestPathCost;
