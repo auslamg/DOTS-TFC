@@ -41,7 +41,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_Name
-      value: TowerBuilding
+      value: BuildingTower
       objectReference: {fileID: 0}
     - target: {fileID: 5378865474685698317, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: buildingKeyType
@@ -50,7 +50,7 @@ PrefabInstance:
     - target: {fileID: 6087457121680761858, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0a104b681924c1642b974608234a14b9, type: 3}
+      objectReference: {fileID: 21300000, guid: ee28e93c4e18a314987d575a5cba5259, type: 3}
     - target: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9

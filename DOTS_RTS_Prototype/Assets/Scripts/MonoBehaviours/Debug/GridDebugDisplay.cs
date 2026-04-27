@@ -14,9 +14,11 @@ public class GridDebugDisplay : MonoBehaviour
     [SerializeField]
     private Sprite baseCell;
     [SerializeField]
-    private Sprite baseChunk;
-    [SerializeField]
     private Sprite arrowCell;
+    [SerializeField]
+    private Sprite noPathCell;
+    [SerializeField]
+    private Sprite baseChunk;
 
     private bool isInitialized = false;
     private GridCellDebug[,] gridCellsArray;
@@ -154,17 +156,18 @@ public class GridDebugDisplay : MonoBehaviour
     public void UpdateCellVisual(GridCell cell)
     {
         GridCellDebug cellDebug = gridCellsArray[cell.x, cell.y];
-        if (cell.stepCost == 0 && cell.bestPathCost == 0) // Target
-        {
-            cellDebug.SetSprite(baseCell);
-            cellDebug.SetColor(new Color(1, 1, 0, 1));
 
-            cellDebug.SetSpriteRotation(Quaternion.LookRotation(
+        cellDebug.SetSpriteRotation(Quaternion.LookRotation(
                     new Vector3(
                         1,
                         0,
                         0),
                     Vector3.up));
+
+        if (cell.stepCost == 0 && cell.bestPathCost == 0) // Target
+        {
+            cellDebug.SetSprite(baseCell);
+            cellDebug.SetColor(new Color(1, 1, 0, 1));
         }
         else
         {
@@ -172,6 +175,11 @@ public class GridDebugDisplay : MonoBehaviour
             {
                 cellDebug.SetSprite(baseCell);
                 cellDebug.SetColor(Color.red);
+            }
+            else if (cell.bestPathCost == int.MaxValue)
+            {
+                cellDebug.SetSprite(noPathCell);
+                cellDebug.SetColor(new Color(1, 0, 0, .25f));
             }
             else if (!cell.flowVector.Equals(Vector2.zero))
             {

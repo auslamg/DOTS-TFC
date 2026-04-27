@@ -581,8 +581,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5052407974d30bf47a56537c3f16cfcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridAuthoring
-  width: 32
-  height: 32
+  width: 64
+  height: 64
   gridCellSize: 5
 --- !u!4 &782850310
 Transform:
@@ -1562,7 +1562,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4457291073713935486, guid: 099c487aa3645b54ba8fa1efe96936ef, type: 3}
       propertyPath: m_Name
-      value: HQFort
+      value: CastleFort
       objectReference: {fileID: 0}
     - target: {fileID: 4457291073713935486, guid: 099c487aa3645b54ba8fa1efe96936ef, type: 3}
       propertyPath: m_IsActive

@@ -19,7 +19,7 @@ PrefabInstance:
     - target: {fileID: 6087457121680761858, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0a104b681924c1642b974608234a14b9, type: 3}
+      objectReference: {fileID: 21300000, guid: 6676237bbc1bba84ba5a3a96463692f5, type: 3}
     - target: {fileID: 6859261061538670796, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: maxHealth
       value: 1200

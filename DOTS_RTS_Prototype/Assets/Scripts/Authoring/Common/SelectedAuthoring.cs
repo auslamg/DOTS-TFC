@@ -49,10 +49,12 @@ public struct Selected : IComponentData, IEnableableComponent
     /// Reference to the selected entity's selection gizmo.
     /// </summary>
     public Entity selectedGizmoEntity;
+
     /// <summary>
     /// Display scale for the selected entity's selection gizmo when selected.
     /// </summary>
     public float displayScale;
+
     /// <summary>
     /// Event-bool triggered on selecting this entity.
     /// </summary>
@@ -60,6 +62,7 @@ public struct Selected : IComponentData, IEnableableComponent
     /// Custom events are reset at the end of each frame in ResetEventSystem.
     /// </remarks>
     public bool onSelected;
+    
     /// <summary>
     /// Event-bool triggered on deselecting this entity.
     /// </summary>

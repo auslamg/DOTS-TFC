@@ -41,6 +41,7 @@ partial struct GridSystem : ISystem
 
         InitializeDebugVisual(gridData);
         UpdateDebugVisual(gridData);
+        InitializeMinimapCamera(gridData);
     }
 
     [BurstDiscard]
@@ -59,6 +60,12 @@ partial struct GridSystem : ISystem
     private static void UpdateDebugVisual(GridData gridData, int i)
     {
         GridDebugDisplay.Instance?.UpdateGridVisual(gridData, i);
+    }
+
+    [BurstDiscard]
+    private static void InitializeMinimapCamera(GridData gridData)
+    {
+        MinimapCameraHandler.Instance?.InitializeCamera(gridData);
     }
 
 
