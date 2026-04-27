@@ -47,6 +47,10 @@ PrefabInstance:
       propertyPath: buildingKeyType
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6087457121680761858, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0a104b681924c1642b974608234a14b9, type: 3}
     - target: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9
@@ -154,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5320d3555fca3a843abfc396b5808e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetFinderAuthoring
-  scanFrequency: 1
+  scanInterval: 0
   targetRange: 30
   swapTargetMinDistance: 5
 --- !u!114 &1459775456809195627
@@ -171,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
   projectilePrefabKey: Bullet
   onShootSpawnedEntityKey: 
-  attackFrequency: 0.25
+  attackInterval: 0
   attackDistance: 30
   damageAmount: 20
   projectileSpawnPointTransform: {fileID: 1544517710400913710}

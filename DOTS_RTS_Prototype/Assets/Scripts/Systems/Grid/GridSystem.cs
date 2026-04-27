@@ -268,7 +268,7 @@ partial struct GridSystem : ISystem
         {
 
             int2 targetCoords = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
-            Debug.Log($"Resolving PATH request to {targetCoords}");
+            /* Debug.Log($"Resolving PATH request to {targetCoords}"); */
 
             // Resolving request.
             flowFieldRequestEnabled.ValueRW = false;
@@ -279,12 +279,11 @@ partial struct GridSystem : ISystem
             {
                 if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
                 {
-                    Debug.Log("FlowField found");
                     flowFieldFollower.ValueRW.flowFieldIndex = i;
                     flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
                     flowFieldFollower.ValueRW.postFormationPosition = flowFieldRequest.ValueRO.postFormationPosition;
                     flowFieldFollowerEnabled.ValueRW = true;
-                    Debug.Log($"flowFieldFollowerEnabled {flowFieldFollowerEnabled.ValueRO}");
+                    
                     UpdateDebugVisual(gridData, i);
 
                     existingPath = true;
@@ -293,7 +292,7 @@ partial struct GridSystem : ISystem
             }
             if (existingPath)
             {
-                Debug.Log($"FLOWFIELD FOUND: Index {flowFieldFollower.ValueRW.flowFieldIndex}. Exiting navigation.");
+                /* Debug.Log($"FLOWFIELD FOUND: Index {flowFieldFollower.ValueRW.flowFieldIndex}. Exiting navigation."); */
                 continue;
             }
 

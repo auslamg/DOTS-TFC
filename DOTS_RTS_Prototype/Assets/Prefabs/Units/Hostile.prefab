@@ -64,6 +64,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: b6815ab17cf31b645b33d7e67d00ce14, type: 2}
+    - target: {fileID: 1934920021711364933, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: m_Color.b
+      value: 0.2392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 1934920021711364933, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3032814909107480270, guid: 27267cb482aa5d24f8d7f71b916e0a74, type: 3}
       propertyPath: m_Name
       value: Hostile
