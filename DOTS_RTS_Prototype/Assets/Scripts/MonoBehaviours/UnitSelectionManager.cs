@@ -56,7 +56,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Radius used by single-click sphere cast when selecting entities.")]
-    private float sphereCastColliderRadius = 1.5f;
+    private float sphereCastColliderRadius = 1f;
 
 
     [Header("Line formation parameters")]
@@ -310,21 +310,21 @@ public class UnitSelectionManager : MonoBehaviour
         NativeArray<PathRequest> pathRequestArray = query.ToComponentDataArray<PathRequest>(Allocator.Temp);
 
         //Get average position of all entities queried to send it as start position to formation methods
-        float3 avgPosition = float3.zero;
-        avgPosition = AveragePositionXZ(localTransformArray);
+        float3 avgPosition = AveragePositionXZ(localTransformArray);
 
         //Calculate offset for each selected Unit inside a set formation.
         NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
 
         for (int i = 0; i < manualMoveArray.Length; i++)
         {
-            //New MoveOverride values
+            //New ManualMove values
             ManualMove newManualMove = manualMoveArray[i];
-            newManualMove.targetPosition = formationPositionsArray[i];
+            newManualMove.targetPosition = targetPosition;
+            newManualMove.postFormationPosition = formationPositionsArray[i];
             manualMoveArray[i] = newManualMove;
             entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
 
-            //New TargetOverride values
+            //New ManualTarget values
             ManualTarget newManualTarget = manualTargetArray[i];
             newManualTarget.targetEntity = Entity.Null;
             manualTargetArray[i] = newManualTarget;
@@ -332,13 +332,14 @@ public class UnitSelectionManager : MonoBehaviour
 
             //New PathRequest values
             PathRequest newPathRequest = pathRequestArray[i];
-            newPathRequest.targetPosition = formationPositionsArray[i];
+            newPathRequest.targetPosition = targetPosition;
+            newPathRequest.postFormationPosition = formationPositionsArray[i];
             pathRequestArray[i] = newPathRequest;
+            // Enable path request to start pathing.
+            entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
 
             Debug.Log("Sending path request");
 
-            // Enable path request to start pathing.
-            entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
             // Disable FlowField initially, in case it's not necessary.
             entityManager.SetComponentEnabled<FlowFieldRequest>(entityArray[i], false);
             entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);

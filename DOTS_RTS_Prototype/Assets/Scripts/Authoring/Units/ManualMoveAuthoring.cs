@@ -32,10 +32,13 @@ public class ManualMoveBaker : Baker<ManualMoveAuthoring>
 /// </remarks>
 public struct ManualMove : IComponentData, IEnableableComponent
 {
-    //TODO: Rename to destination
     /// <summary>
     /// Desired position to move the Entity to.
     /// </summary>
     public float3 targetPosition;
+    /// <summary>
+    /// Desired final position after formation calculation.
+    /// </summary>
+    public float3 postFormationPosition;
 }
 

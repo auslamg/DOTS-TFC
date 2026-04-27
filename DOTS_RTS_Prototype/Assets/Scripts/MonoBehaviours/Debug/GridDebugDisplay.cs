@@ -158,6 +158,13 @@ public class GridDebugDisplay : MonoBehaviour
         {
             cellDebug.SetSprite(baseCell);
             cellDebug.SetColor(new Color(1, 1, 0, 1));
+
+            cellDebug.SetSpriteRotation(Quaternion.LookRotation(
+                    new Vector3(
+                        1,
+                        0,
+                        0),
+                    Vector3.up));
         }
         else
         {

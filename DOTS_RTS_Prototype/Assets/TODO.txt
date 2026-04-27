@@ -52,6 +52,13 @@ Document
         Add BuildingDataSO to registry
         Add key to BuildingDataSOHolder component
 
+- PATHFINDING REQUEST PROCESS:
+    Move order handled from UnitSelectionManager (might refactor).
+    PathRequestJob handles pathing method (straight if available, navigation if required).
+    GridSystem calculates FlowFields for all PathRequests that require it.
+    Follow flow field while the path to target is not clear.
+    Whenever it is clear, disable flowFieldFollower and just set unitMover target position to the final destination.
+
 
 
 Aesthetic/UX addons

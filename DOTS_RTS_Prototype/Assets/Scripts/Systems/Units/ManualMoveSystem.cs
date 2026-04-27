@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 /// <summary>
 /// Executes manual movement overrides and disables them once destination is reached.
@@ -28,7 +29,7 @@ partial struct ManualMoveSystem : ISystem
             if (math.distancesq(localTransform.ValueRO.Position, manualNove.ValueRO.targetPosition) > unitMover.ValueRO.targetReachedDistanceSquared)
             {
                 //Move closer
-                unitMover.ValueRW.targetPosition = manualNove.ValueRO.targetPosition;
+                unitMover.ValueRW.targetPosition = manualNove.ValueRO.postFormationPosition;
             }
             else
             {

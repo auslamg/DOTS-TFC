@@ -69,6 +69,7 @@ public struct UnitMover : IComponentData
     /// Current desired position to move the Entity to.
     /// </summary>
     public float3 targetPosition;
+
     /// <summary>
     /// Determines whether the entity is currently moving. //TODO: Use for FSM
     /// </summary>

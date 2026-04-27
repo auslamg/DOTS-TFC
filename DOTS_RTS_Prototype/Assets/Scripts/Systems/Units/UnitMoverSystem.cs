@@ -144,6 +144,7 @@ public partial struct InitializeTargetPositionJob : IJobEntity
 
         if (math.lengthsq(unitMover.targetPosition) == 0f)
         {
+            Debug.Log("Initialized position.");
             unitMover.targetPosition = localTransform.Position;
         }
     }
@@ -159,10 +160,13 @@ public partial struct PathRequestJob : IJobEntity
 
     /// <summary>Component lookup for <see cref="PathRequest"/> components. Used to access pathfinding requests on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<PathRequest> pathRequestComponentLookup;
+
     /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to enable/disable flow field navigation on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
+
     /// <summary>Component lookup for <see cref="FlowFieldRequest"/> components. Used to request flow field navigation for entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldRequest> flowFieldRequestComponentLookup;
+
     /// <summary>Component lookup for <see cref="ManualMove"/> components. Used to disable manual movement when pathfinding is required.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<ManualMove> manualMoveComponentLookup;
 
@@ -187,9 +191,16 @@ public partial struct PathRequestJob : IJobEntity
     {
         // Lookup local fetch for readability.
         PathRequest pathRequest = pathRequestComponentLookup[entity];
+        /* Debug.Log($"Resolving PATH REQUEST to {pathRequest.targetPosition} - {pathRequest.postFormationPosition}"); */
+
+        // If no formation required, set formation position to anchor position.
+        if (pathRequest.postFormationPosition.Equals(float3.zero))
+        {
+            pathRequest.postFormationPosition = pathRequest.targetPosition;
+        }
 
         // Check if a straight path to target is available. If not, request navigation.
-        RaycastInput raycastInput = new RaycastInput
+        RaycastInput targetRaycastInput = new RaycastInput
         {
             Start = localTransform.Position,
             End = pathRequest.targetPosition,
@@ -200,12 +211,33 @@ public partial struct PathRequestJob : IJobEntity
                 GroupIndex = 0
             }
         };
-        if (!collisionWorld.CastRay(raycastInput))
+
+        RaycastInput formationRaycastInput = new RaycastInput
+        {
+            Start = localTransform.Position,
+            End = pathRequest.postFormationPosition,
+            Filter = new CollisionFilter
+            {
+                BelongsTo = ~0u,
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                GroupIndex = 0
+            }
+        };
+
+        if (!collisionWorld.CastRay(formationRaycastInput))
+        {
+            unitMover.targetPosition = pathRequest.postFormationPosition;
+            flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
+            flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+            /* Debug.Log($"Going for STRAIGHT FORMATION: {unitMover.targetPosition}"); */
+        }
+        else if (!collisionWorld.CastRay(targetRaycastInput))
         {
             // Hit nothing: moving straight towards target.
             unitMover.targetPosition = pathRequest.targetPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+            /* Debug.Log($"Going for STRAIGHT TARGET: {unitMover.targetPosition}"); */
         }
         else
         {
@@ -215,20 +247,24 @@ public partial struct PathRequestJob : IJobEntity
             if (manualMoveComponentLookup.HasComponent(entity))
             {
                 manualMoveComponentLookup.SetComponentEnabled(entity, false);
+                /* Debug.Log("Going for FLOWFIELD NAVIGATION. Disabling MANUAL MOVE"); */
             }
 
             if (IsWalkable(pathRequest.targetPosition, gridWidth, gridHeight, gridCellSize, pathingCostMap))
             {
+                Debug.Log("Navigation to walkable. UnitMover should check if unreachable.");
                 // Walkable: ask for navigation.
                 // Unit mover will check if it's unreachable.
                 var flowFieldRequest = flowFieldRequestComponentLookup[entity];
                 flowFieldRequest.targetPosition = pathRequest.targetPosition;
+                flowFieldRequest.postFormationPosition = pathRequest.postFormationPosition;
                 flowFieldRequestComponentLookup[entity] = flowFieldRequest;
 
                 flowFieldRequestComponentLookup.SetComponentEnabled(entity, true);
             }
             else
             {
+                Debug.Log("Navigation UNREACHABLE. DON'T NAVIGATE.");
                 // Unwalkable position, simply don't navigate.
                 unitMover.targetPosition = localTransform.Position;
                 flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
@@ -281,12 +317,32 @@ public partial struct CheckStraightPathJob : IJobEntity
             }
         };
 
-        if (!collisionWorld.CastRay(raycastInput))
+        RaycastInput formationRaycastInput = new RaycastInput
+        {
+            Start = localTransform.Position,
+            End = flowFieldFollower.postFormationPosition,
+            Filter = new CollisionFilter
+            {
+                BelongsTo = ~0u,
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                GroupIndex = 0
+            }
+        };
+
+        if (!collisionWorld.CastRay(formationRaycastInput))
+        {
+            // Hit nothing. Take a straight path
+            unitMover.targetPosition = flowFieldFollower.postFormationPosition;
+            flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+            Debug.Log("Recheck STRAIGHT FORMATION");
+        }
+        /* else if (!collisionWorld.CastRay(raycastInput))
         {
             // Hit nothing. Take a straight path
             unitMover.targetPosition = flowFieldFollower.targetPosition;
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-        }
+            Debug.Log("Recheck STRAIGHT TARGET");
+        } */
     }
 }
 
@@ -323,6 +379,8 @@ public partial struct FollowFlowFieldJob : IJobEntity
         GridCell gridCell = gridCellComponentLookup[currentCell];
         float3 worldMovementVector = GridVectorToWorldSpace(gridCell.flowVector);
 
+        /* Debug.Log($"Following FLOWFIELD {entity.Index} {worldMovementVector}"); */
+
         // If inside a wall, use the previous cell's vector. Else, read cell vector.
         if (IsObstructed(gridCell))
         {
@@ -339,6 +397,7 @@ public partial struct FollowFlowFieldJob : IJobEntity
         {
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
             unitMover.targetPosition = localTransform.Position;
+            Debug.Log("Target UNREACHABLE. STOP.");
             return;
         }
 
@@ -347,9 +406,10 @@ public partial struct FollowFlowFieldJob : IJobEntity
             worldMovementVector * gridCellSize * 2;
 
         // Detect if the unit has reached its destination.
-        if (math.distance(localTransform.Position, flowFieldFollower.targetPosition) < gridCellSize * 1.5f)
+        if (math.distance(localTransform.Position, flowFieldFollower.targetPosition) < gridCellSize * 1.5f ||
+            math.distance(localTransform.Position, flowFieldFollower.postFormationPosition) < gridCellSize * 1.5f)
         {
-            Debug.Log("Stopped unit");
+            Debug.Log("Target REACHED. STOP.");
             unitMover.targetPosition = localTransform.Position;
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
         }
@@ -379,6 +439,7 @@ public partial struct MoveUnitJob : IJobEntity
         float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; // REVIEW: Take into account for melee attacks
         if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
+            /* Debug.Log("Target reached. STOP."); */
             // Reached target
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;
@@ -386,7 +447,6 @@ public partial struct MoveUnitJob : IJobEntity
             return;
         }
         unitMover.isMoving = true;
-
 
         moveDirection = math.normalize(moveDirection);
 

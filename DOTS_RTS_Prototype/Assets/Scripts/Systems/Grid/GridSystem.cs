@@ -268,6 +268,7 @@ partial struct GridSystem : ISystem
         {
 
             int2 targetCoords = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
+            Debug.Log($"Resolving PATH request to {targetCoords}");
 
             // Resolving request.
             flowFieldRequestEnabled.ValueRW = false;
@@ -278,9 +279,12 @@ partial struct GridSystem : ISystem
             {
                 if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
                 {
+                    Debug.Log("FlowField found");
                     flowFieldFollower.ValueRW.flowFieldIndex = i;
                     flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
+                    flowFieldFollower.ValueRW.postFormationPosition = flowFieldRequest.ValueRO.postFormationPosition;
                     flowFieldFollowerEnabled.ValueRW = true;
+                    Debug.Log($"flowFieldFollowerEnabled {flowFieldFollowerEnabled.ValueRO}");
                     UpdateDebugVisual(gridData, i);
 
                     existingPath = true;
@@ -289,6 +293,7 @@ partial struct GridSystem : ISystem
             }
             if (existingPath)
             {
+                Debug.Log($"FLOWFIELD FOUND: Index {flowFieldFollower.ValueRW.flowFieldIndex}. Exiting navigation.");
                 continue;
             }
 
@@ -298,6 +303,7 @@ partial struct GridSystem : ISystem
             // Proceed with pathfinding
             flowFieldFollower.ValueRW.flowFieldIndex = flowFieldIndex;
             flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
+            flowFieldFollower.ValueRW.postFormationPosition = flowFieldRequest.ValueRO.postFormationPosition;
             flowFieldFollowerEnabled.ValueRW = true;
 
             NativeArray<RefRW<GridCell>> gridCellArray =
@@ -361,7 +367,6 @@ partial struct GridSystem : ISystem
                 updatePathingCostJobHandle.Complete();
             }
 
-
             // FlowField Calculation.
             {
                 // BFS Queue, started on target
@@ -405,6 +410,8 @@ partial struct GridSystem : ISystem
 
             // Set all data values
             {
+                Debug.Log($"Allocated FLOWFIELD {flowFieldIndex}");
+
                 // Set data values for calculated flowfield.
                 FlowField flowField = gridData.flowFieldArray[flowFieldIndex];
                 flowField.targetCoords = targetCoords;

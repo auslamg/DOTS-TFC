@@ -28,6 +28,13 @@ public class PathRequestBaker : Baker<PathRequestAuthoring>
 /// </summary>
 public struct PathRequest : IComponentData, IEnableableComponent
 {
+    /// <summary>
+    /// Current desired position to navigate to in case it is needed.
+    /// </summary>
     public float3 targetPosition;
+    /// <summary>
+    /// Desired final position after formation calculation.
+    /// </summary>
+    public float3 postFormationPosition;
 }
 

@@ -129,6 +129,7 @@ partial struct TrainerSystem : ISystem
                 // Set unit destination to RallyPosition. // IDEA: Do this only if the target position is reachable 
                 PathRequest pathRequest = state.EntityManager.GetComponentData<PathRequest>(unitPrefab);
                 pathRequest.targetPosition = localTransform.ValueRO.Position + trainer.ValueRO.rallyPositionOffset;
+                pathRequest.postFormationPosition = localTransform.ValueRO.Position + trainer.ValueRO.rallyPositionOffset;
                 ecb.SetComponent(spawnedUnitEntity, pathRequest);
                 ecb.SetComponentEnabled<PathRequest>(spawnedUnitEntity, true);
 

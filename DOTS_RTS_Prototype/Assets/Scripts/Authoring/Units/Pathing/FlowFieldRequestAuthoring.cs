@@ -28,7 +28,18 @@ public class FlowFieldRequestBaker : Baker<FlowFieldRequestAuthoring>
 /// </summary>
 public struct FlowFieldRequest : IComponentData, IEnableableComponent
 {
+    /// <summary>
+    /// Current desired position to navigate to in case it is needed.
+    /// </summary>
     public float3 targetPosition;
-    public float3 lastMoveVector;
+    /// <summary>
+    /// Last used <see cref="FlowField"/> vector to reuse in case a flowfield is unavailable (like inside walls).
+    /// </summary>
+    public float3 lastFlowVector;
+    /// <summary>
+    /// Desired final position after formation calculation.
+    /// </summary>
+    public float3 postFormationPosition;
+
 }
 
