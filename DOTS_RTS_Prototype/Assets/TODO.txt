@@ -82,7 +82,25 @@ Gameplay features
 - FEATURE: ActionQueue: Queue multiple actions in FCFS while holding shift.
     >> IDEA: Make it (A) a struct with enum "ActionType" and an "ActionDecoder" system, or (B) an interface "IQueuableAction" with different fields
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
-- FEATURE: Buildings
+- FIX: Spawner spawned entites spawn inside the building and cannot navigate outside. Add an external spawn point.
+- FIX: Units straight pathing in large formations to positions close to walls will make units go through the walls themselves. This isn't ideal since it defeats the purpose of walls.
+
+- SAVE GAME SYSTEM IDEA:
+    ISaveableComponent interface for components that 100% require persistence
+    EntityID IComponentData to identify entities post-allocation 
+    Convert entity references from runtime id's to persisted id's
+    Serialize to binary for performance and filesize and Safety
+
+    INVESTIGATE
+    Serialize by chunk (???)
+    Save asynchronously (???)
+    Compress save files - LZ4 (???)
+
+    OR 
+
+- JUST USE SerializeUtility ( HIGHLY EXPERIMENTAL )
+
+
 
 Performance/data features
 - FEATURE: Texture Atlas pre-runtime calculation
@@ -150,4 +168,5 @@ DONE: REFACTOR: Remove commented obsolete code from the animation baking authori
 DONE: REFACTOR: Parametrize EnemySpawner and rename to Spawner (change SO)
 DONE: RENAME: Barracks scripts to Trainer
 
-
+DONE: REFACTOR/OPTIMIZE: Add Leaders-Followers optimization to Pathing system: FlowField request should save input coordinate (pre-formation calculation) and group it with other entities with the same coordinate. Select a leader and calculate the FlowField once, then through straight path requests relocate positions to calculated formation.
+    Athough not exactly executed that way, the idea that one single flowfield is calculated regardless of army size has been efectively implemented already.
