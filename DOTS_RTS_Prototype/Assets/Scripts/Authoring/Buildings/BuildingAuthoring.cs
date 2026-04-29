@@ -2,6 +2,7 @@ using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+
 /// <summary>
 /// Managed component for the <see cref="Building"/> unmanaged component.
 /// </summary>

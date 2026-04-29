@@ -81,9 +81,8 @@ public class BuildingPlacementManager : MonoBehaviour
     /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
-    void Awake()
+    private void InitializeSingleton()
     {
-        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -95,6 +94,11 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        InitializeSingleton();
+    }
+
     /// <summary>
     /// Updates building ghost position and handles left/right-click placement controls.
     /// </summary>
@@ -103,6 +107,14 @@ public class BuildingPlacementManager : MonoBehaviour
         if (ghostPrefab != null)
         {
             ghostPrefab.transform.position = mouseWorldPosition;
+            if (CanPlaceBuilding())
+            {
+                SetGhostColor(true);
+            }
+            else
+            {
+                SetGhostColor(false);
+            }
         }
         // Ignore placement clicks while the cursor is interacting with UI.
         if (EventSystem.current.IsPointerOverGameObject())
@@ -166,10 +178,10 @@ public class BuildingPlacementManager : MonoBehaviour
             return false;
         }
         EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        
+
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
-        CollisionFilter filter = new CollisionFilter
+        CollisionFilter buildingsFilter = new CollisionFilter
         {
             BelongsTo = ~0u, //All layers
             CollidesWith = 1u << GameAssets.BUILDINGS_LAYER,
@@ -186,7 +198,7 @@ public class BuildingPlacementManager : MonoBehaviour
                 orientation: Quaternion.identity,
                 boxCollider.size / 2 * colliderOffsetMultiplier,
                 ref hitList,
-                filter))
+                buildingsFilter))
         {
             return false;
         }
@@ -198,7 +210,7 @@ public class BuildingPlacementManager : MonoBehaviour
                 position: mouseWorldPosition,
                 radius: buildingDataSO.minDistanceToSimilar,
                 ref hitList,
-                filter))
+                buildingsFilter))
         {
             foreach (DistanceHit distanceHit in hitList)
             {
@@ -213,6 +225,59 @@ public class BuildingPlacementManager : MonoBehaviour
                 }
             }
         }
+
+
+        CollisionFilter resourceSourcesFilter = new CollisionFilter
+        {
+            BelongsTo = ~0u, //All layers
+            CollidesWith = 1u << GameAssets.RESOURCE_SOURCES_LAYER,
+            GroupIndex = 0
+        };
+
+        // Enforce resource sources in range for harvesters.
+        if (buildingDataSO.buildingType == BuildingType.Harvester)
+        {
+            bool validResource = false;
+            Debug.Log("Checking for harvester proximity");
+            Entity harvesterEntity = 
+                    LookupEntityPrefab.FetchEntityPrefab(EntityPrefabKey.From(buildingDataSO.buildingKey));
+            Harvester harvester = entityManager.GetComponentData<Harvester>(harvesterEntity);
+
+            if (collisionWorld.OverlapSphere(
+                position: mouseWorldPosition,
+                radius: harvester.harvestingRange,
+                ref hitList,
+                resourceSourcesFilter))
+            {
+                foreach (DistanceHit distanceHit in hitList)
+                {
+                    Debug.Log($"{distanceHit.Entity}");
+                    if (entityManager.HasComponent<ResourceSource>(distanceHit.Entity))
+                    {
+                        Debug.Log("Checking resource compat");
+                        ResourceSource resourceSource = entityManager.GetComponentData<ResourceSource>(distanceHit.Entity);
+                        if (harvester.harvestedResourceKey == resourceSource.generatedResourceKey)
+                        {
+                            Debug.Log("Found harvester resource");
+                            validResource = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return validResource;
+        }
+
         return true;
+    }
+
+    private void SetGhostColor(bool placeable)
+    {
+        foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())
+        {
+            mesh.material.color = placeable ?
+                new Color(0, 0.5f, 1, 0.25f) :
+                new Color(1, 0, 0, 0.25f);
+        }
     }
 }

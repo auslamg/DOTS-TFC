@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
-  m_Name: HQFort
+  m_Name: FarmHouse
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingType: 5
+  buildingType: 4
   prefabGO: {fileID: 0}
   minDistanceToSimilar: 0
-  isBuildable: 0
+  isBuildable: 1
   imageCard: {fileID: 0}
   buildingGhostPrefab: {fileID: 0}

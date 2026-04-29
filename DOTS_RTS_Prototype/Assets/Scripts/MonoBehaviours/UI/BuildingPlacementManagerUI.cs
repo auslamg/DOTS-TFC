@@ -47,14 +47,39 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private Dictionary<BuildingDataSO, RectTransform> buildingButtonDictionary;
 
 
+    
+    private void Awake()
+    {
+        InitializeUI();
+    }
+
     /// <summary>
     /// Initializes template state and builds one button for each buildable building entry.
     /// </summary>
-    private void Awake()
+    private void InitializeUI()
     {
         buildingButtonTemplate.gameObject.SetActive(false);
         buildingButtonDictionary = new Dictionary<BuildingDataSO, RectTransform>();
 
+        ConstructBuildingRoster();
+    }
+    
+    private void Start()
+    {
+        InitializeUI_PostBake();
+    }
+
+    /// <summary>
+    /// Subscribes to active-building changes and syncs selection visuals.
+    /// </summary>
+    private void InitializeUI_PostBake()
+    {
+        BuildingPlacementManager.Instance.OnActiveBuildingDataChange += BuildingPlacementManager_OnActiveBuildingDataChange;
+        UpdateSelectedVisual();
+    }
+
+    private void ConstructBuildingRoster()
+    {
         foreach (BuildingDataSO buildingDataSO in buildingDataRegistrySO.buildingDataSOList)
         {
             if (buildingDataSO.isBuildable)
@@ -62,23 +87,6 @@ public class BuildingPlacementManagerUI : MonoBehaviour
                 BuildButton(buildingDataSO);
             }
         }
-    }
-
-    /// <summary>
-    /// Subscribes to active-building changes and syncs selection visuals.
-    /// </summary>
-    private void Start()
-    {
-        BuildingPlacementManager.Instance.OnActiveBuildingDataChange += BuildingPlacementManager_OnActiveBuildingDataChange;
-        UpdateSelectedVisual();
-    }
-
-    /// <summary>
-    /// Refreshes button selection visuals when the active building changes.
-    /// </summary>
-    private void BuildingPlacementManager_OnActiveBuildingDataChange(object sender, System.EventArgs e)
-    {
-        UpdateSelectedVisual();
     }
 
     /// <summary>
@@ -115,6 +123,14 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Refreshes button selection visuals when the active building changes.
+    /// </summary>
+    private void BuildingPlacementManager_OnActiveBuildingDataChange(object sender, System.EventArgs e)
+    {
+        UpdateSelectedVisual();
+    }
+
+    /// <summary>
     /// Adds click behavior to set the clicked building as the active placement target.
     /// </summary>
     /// <param name="buildingData">Building definition represented by the button.</param>
@@ -140,7 +156,6 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.ActiveBuildingDataSO];
         if (selectedBuildingButton != null)
         {
-
             SetSelected(selectedBuildingButton, true);
         }
     }

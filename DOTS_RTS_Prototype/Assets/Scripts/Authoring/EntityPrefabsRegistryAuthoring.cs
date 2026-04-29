@@ -169,6 +169,11 @@ public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityP
         return cmp;
     }
 
+    public static EntityPrefabKey From(IEntityPrefabMappable other)
+    {
+        return new EntityPrefabKey { name = other.GetKey(), };
+    }
+
     public override int GetHashCode()
     {
         unchecked

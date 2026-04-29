@@ -61,6 +61,22 @@ public static class DataLookup
     }
 
     /// <summary>
+    /// Retrieves a <see cref="ResourceData"/> entry from a sorted resource blob array.
+    /// </summary>
+    /// <param name="resourceDataBlobArrayRef">Blob array reference containing resource registry entries sorted by key.</param>
+    /// <param name="resourceKey">Key used to locate the resource entry.</param>
+    /// <returns>A reference to the matching <see cref="ResourceData"/> entry.</returns>
+    [BurstCompile]
+    public static ref ResourceData GetResourceData(
+        ref BlobAssetReference<BlobArray<ResourceData>> resourceDataBlobArrayRef,
+        in ResourceKey resourceKey)
+    {
+        return ref LookupResourceData.GetResourceData(
+            ref resourceDataBlobArrayRef,
+            resourceKey);
+    }
+
+    /// <summary>
     /// Retrieves an entity prefab from the supplied entity prefab buffer.
     /// </summary>
     /// <param name="entityReferencesBuffer">Sorted dynamic buffer of entity prefab mappings.</param>

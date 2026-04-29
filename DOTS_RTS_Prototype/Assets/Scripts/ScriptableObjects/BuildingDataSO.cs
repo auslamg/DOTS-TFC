@@ -155,6 +155,6 @@ public enum BuildingType
     Tower,
     Trainer,
     Spawner,
-    Production,
+    Harvester,
     Fort
 }

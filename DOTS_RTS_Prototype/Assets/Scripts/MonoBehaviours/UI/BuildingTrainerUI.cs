@@ -38,13 +38,6 @@ public class BuildingTrainerUI : MonoBehaviour
     [Tooltip("Template button used for each trainable unit entry.")]
     private Button trainingButtonTemplate;
 
-    /// <summary>
-    /// Fallback sprite used when a unit has no configured card image.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Fallback sprite used when a trainable unit has no card image.")]
-    private Sprite placeholderTrainButtonImage;
-
     [Header("Production queue")]
     /// <summary>
     /// Container where queued-unit buttons are instantiated.
@@ -71,7 +64,7 @@ public class BuildingTrainerUI : MonoBehaviour
     /* [SerializeField] private Sprite placeholderProductionQueueImage; */
 
     /* [SerializeField] private string spawnedEntityKey; */
-    
+
     /// <summary>
     /// Cached EntityManager used for reading and writing trainer ECS data.
     /// </summary>
@@ -92,14 +85,25 @@ public class BuildingTrainerUI : MonoBehaviour
             });
             entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
         }); */
+        InitializeUI();
+    }
+
+    private void InitializeUI()
+    {
         trainingButtonTemplate.gameObject.SetActive(false);
         productionQueueButtonTemplate.gameObject.SetActive(false);
+    }
+
+
+    void Start()
+    {
+        InitializeUI_PostBake();
     }
 
     /// <summary>
     /// Caches ECS access, subscribes to relevant events, and hides the panel until a trainer is selected.
     /// </summary>
-    void Start()
+    private void InitializeUI_PostBake()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
@@ -119,7 +123,7 @@ public class BuildingTrainerUI : MonoBehaviour
         Entity entity = (Entity)sender;
         if (entity == trainerEntity)
         {
-            UpdateBuildingUI();
+            UpdateUI();
         }
     }
 
@@ -128,7 +132,7 @@ public class BuildingTrainerUI : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        UpdateProgressBarVisual();
+        UpdateProgressBar();
     }
 
     /// <summary>
@@ -138,16 +142,16 @@ public class BuildingTrainerUI : MonoBehaviour
     /// <param name="e">Unused event payload.</param>
     private void UnitSelectionManager_OnSelectionChange(object sender, EventArgs e)
     {
-        EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp)
+        using EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<Selected, Trainer>()
             .Build(entityManager);
 
-        NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
+        using NativeArray<Entity> entityArray = entityQuery.ToEntityArray(Allocator.Temp);
         if (entityArray.Length > 0)
         {
             trainerEntity = entityArray[0];
             SetVisible(true);
-            UpdateBuildingUI();
+            UpdateUI();
         }
         else
         {
@@ -157,9 +161,19 @@ public class BuildingTrainerUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Rebuilds all trainer-related UI sections from ECS data.
+    /// </summary>
+    void UpdateUI()
+    {
+        UpdateProgressBar();
+        UpdateUnitRosterButtons();
+        UpdateUnitQueueButtons();
+    }
+
+    /// <summary>
     /// Updates progress bar fill from current trainer state.
     /// </summary>
-    void UpdateProgressBarVisual()
+    void UpdateProgressBar()
     {
         if (trainerEntity == Entity.Null)
         {
@@ -179,19 +193,15 @@ public class BuildingTrainerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Rebuilds all trainer-related UI sections from ECS data.
-    /// </summary>
-    void UpdateBuildingUI()
-    {
-        UpdateProgressBarVisual();
-        UpdateUnitRosterButtons();
-        UpdateUnitQueueVisual();
-    }
-
-    /// <summary>
     /// Recreates roster buttons from the trainer's <see cref="TrainableEntry"/> buffer.
     /// </summary>
     private void UpdateUnitRosterButtons()
+    {
+        ScrapUnitRoster();
+        ConstructUnitRoster();
+    }
+
+    private void ScrapUnitRoster()
     {
         foreach (Transform child in trainingButtonContainer)
         {
@@ -205,21 +215,28 @@ public class BuildingTrainerUI : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+    }
 
+    private void ConstructUnitRoster()
+    {
         DynamicBuffer<TrainableEntry> trainableRosterBuffer =
-                entityManager.GetBuffer<TrainableEntry>(trainerEntity, isReadOnly: true);
+                        entityManager.GetBuffer<TrainableEntry>(trainerEntity, isReadOnly: true);
 
         foreach (TrainableEntry queuedUnit in trainableRosterBuffer)
         {
-            Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingButtonContainer);
-            UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
-
-            SetUnitCard(unitDataSO, unitTrainButton.gameObject);
-
-            AddTrainingButtonListener(queuedUnit, unitTrainButton);
-
-            unitTrainButton.gameObject.SetActive(true);
+            BuildUnitButton(queuedUnit);
         }
+    }
+
+    private void BuildUnitButton(TrainableEntry queuedUnit)
+    {
+        Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingButtonContainer);
+        UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
+
+        SetUnitCard(unitDataSO, unitTrainButton.gameObject);
+        AddTrainingButtonListener(queuedUnit, unitTrainButton);
+
+        unitTrainButton.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -244,7 +261,13 @@ public class BuildingTrainerUI : MonoBehaviour
     /// <summary>
     /// Recreates queue buttons from the trainer's <see cref="QueuedUnitBuffer"/>.
     /// </summary>
-    private void UpdateUnitQueueVisual()
+    private void UpdateUnitQueueButtons()
+    {
+        ScrapUnitQueue();
+        ConstructUnitQueue();
+    }
+
+    private void ScrapUnitQueue()
     {
         foreach (Transform child in productionQueueContainer)
         {
@@ -258,22 +281,29 @@ public class BuildingTrainerUI : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+    }
 
+    private void ConstructUnitQueue()
+    {
         DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
-                entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: true);
+                        entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: true);
 
         for (int queueIndex = 0; queueIndex < trainerQueueBuffer.Length; queueIndex++)
         {
-            QueuedUnitBuffer queuedUnit = trainerQueueBuffer[queueIndex];
-            Button unitQueueButton = Instantiate(productionQueueButtonTemplate, parent: productionQueueContainer);
-            UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
-
-            SetUnitCard(unitDataSO, unitQueueButton.gameObject);
-
-            AddQueueButtonListener(queueIndex, unitQueueButton);
-
-            unitQueueButton.gameObject.SetActive(true);
+            BuildQueueButton(ref trainerQueueBuffer, queueIndex);
         }
+    }
+
+    private void BuildQueueButton(ref DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer, int queueIndex)
+    {
+        QueuedUnitBuffer queuedUnit = trainerQueueBuffer[queueIndex];
+        Button unitQueueButton = Instantiate(productionQueueButtonTemplate, parent: productionQueueContainer);
+        UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
+
+        SetUnitCard(unitDataSO, unitQueueButton.gameObject);
+        AddQueueButtonListener(queueIndex, unitQueueButton);
+
+        unitQueueButton.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -281,9 +311,7 @@ public class BuildingTrainerUI : MonoBehaviour
     /// </summary>
     /// <param name="queueIndex">Queue index represented by the button.</param>
     /// <param name="unitQueueButton">Button instance to wire.</param>
-    private void AddQueueButtonListener(
-        int queueIndex,
-        Button unitQueueButton)
+    private void AddQueueButtonListener(int queueIndex, Button unitQueueButton)
     {
         unitQueueButton.onClick.RemoveAllListeners();
         unitQueueButton.onClick.AddListener(() =>
@@ -308,13 +336,13 @@ public class BuildingTrainerUI : MonoBehaviour
                 SetProgressToZero();
             }
 
-            UpdateProgressBarVisual();
-            UpdateUnitQueueVisual();
+            UpdateProgressBar();
+            UpdateUnitQueueButtons();
         });
     }
 
     /// <summary>
-    /// Resets active trainer progress to zero in ECS.
+    /// Resets active trainer progress to zero in ECS. //FIX: UI should not include logic
     /// </summary>
     private void SetProgressToZero()
     {
@@ -339,7 +367,6 @@ public class BuildingTrainerUI : MonoBehaviour
         else
         {
             Debug.LogWarning($"No icon found for UnitKey '{unitDataSO.unitKey}'");
-            image.sprite = placeholderTrainButtonImage;
         }
     }
 

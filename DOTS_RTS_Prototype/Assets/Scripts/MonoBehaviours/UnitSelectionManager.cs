@@ -94,9 +94,8 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
-    void Awake()
+    private void InitializeSingleton()
     {
-        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -106,6 +105,11 @@ public class UnitSelectionManager : MonoBehaviour
             Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
             Destroy(this);
         }
+    }
+
+    private void Awake()
+    {
+        InitializeSingleton();
     }
 
     /// <summary>

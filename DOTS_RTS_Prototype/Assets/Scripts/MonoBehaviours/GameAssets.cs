@@ -18,6 +18,12 @@ public class GameAssets : MonoBehaviour
     /// Layer index used by building entities.
     /// </summary>
     public const int BUILDINGS_LAYER = 7;
+
+    /// <summary>
+    /// Layer index used by building entities.
+    /// </summary>
+    public const int RESOURCE_SOURCES_LAYER = 8;
+
     /// <summary>
     /// Layer index used by pathfinding obstructed tile markers.
     /// </summary>
@@ -82,9 +88,8 @@ public class GameAssets : MonoBehaviour
     /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
-    void Awake()
+    private void InitializeSingleton()
     {
-        // Initialize singleton instance state.
         if (Instance == null)
         {
             Instance = this;
@@ -94,6 +99,11 @@ public class GameAssets : MonoBehaviour
             Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
             Destroy(this);
         }
+    }
+
+    private void Awake()
+    {
+        InitializeSingleton();
     }
     
 }

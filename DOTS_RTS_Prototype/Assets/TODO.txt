@@ -75,7 +75,8 @@ Aesthetic/UX addons
 - UI: Building ghosts should display valid placement in real time by changing colors
 - UI: TODO/IMPORTANT Add a OS selector that distinguishes between Win/Android and activates respective components (Camera controller, selector, etc.)
 - FIX: Camera pinch bug: releasing both touches in quick succesion counts as a super-fast drag
-- FEATURE: Seyying trainer rally point to an unreachable/ unwalkable position shouldn't be allowed
+- FEATURE: Setting trainer rally point to an unreachable/ unwalkable position shouldn't be allowed
+- REFACTOR UI: Make Unit roster train buttons and queue buttons their own subclasses to reduce BuildingTrainerUI file size and increase clarity.
 
 
 Gameplay features
@@ -84,6 +85,9 @@ Gameplay features
     - FEATURE: When manually attacking a unit, add surrounding units to queue as attack actions.
 - FIX: Spawner spawned entites spawn inside the building and cannot navigate outside. Add an external spawn point.
 - FIX: Units straight pathing in large formations to positions close to walls will make units go through the walls themselves. This isn't ideal since it defeats the purpose of walls.
+- FIX: Melee attack untis should face target
+
+- FIXED: FIX: Cannot build more added buildings ??? Add prefab registry entry
 
 - SAVE GAME SYSTEM IDEA:
     ISaveableComponent interface for components that 100% require persistence

@@ -20,7 +20,7 @@ partial struct MinimapDisplaySystem : ISystem
         {
             RefRW<LocalTransform> iconLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(minimapDisplay.ValueRO.minimapIconEntity);
             iconLocalTransform.ValueRW.Scale = iconSize / 32;
-            Debug.Log($"Setting icon size {iconLocalTransform.ValueRO.Scale}");
+            /* Debug.Log($"Setting icon size {iconLocalTransform.ValueRO.Scale}"); */
         }
     }
 
