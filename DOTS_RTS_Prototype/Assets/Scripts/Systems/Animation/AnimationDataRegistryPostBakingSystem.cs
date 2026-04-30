@@ -18,6 +18,12 @@ using UnityEngine;
 /// </remarks>
 partial struct AnimationDataRegistryPostBakingSystem : ISystem
 {
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<AnimationRegistrySOReference>();
+    }
+
     /// <summary>
     /// Rebuilds the animation data blob and stores it in the animation registry singleton.
     /// </summary>
@@ -136,5 +142,5 @@ partial struct AnimationDataRegistryPostBakingSystem : ISystem
             }
         }
     } */
-    
+
 }

@@ -28,7 +28,7 @@ partial struct GameOverOnDeathSystem : ISystem
             {
                 if (health.ValueRO.onDeath)
                 {
-                    DOTSEventManager.Instance.TriggerOnGameOver(gameOverOnDeath.ValueRO.gameOverMessage);
+                    DOTSEventManager.Instance?.TriggerOnGameOver(gameOverOnDeath.ValueRO.gameOverMessage);
                 }
             }
         }
@@ -47,7 +47,7 @@ partial struct GameOverOnDeathSystem : ISystem
             {
                 if (!gameOverOnGroupDeath.ValueRO.registered)
                 {
-                    DOTSEventManager.Instance.TriggerOnCriticalConstruction(entity);
+                    DOTSEventManager.Instance?.TriggerOnCriticalConstruction(entity);
                 }
             }
         }
@@ -68,7 +68,7 @@ partial struct GameOverOnDeathSystem : ISystem
             {
                 if (health.ValueRO.onDeath)
                 {
-                    DOTSEventManager.Instance.TriggerOnCriticalDestruction(entity);
+                    DOTSEventManager.Instance?.TriggerOnCriticalDestruction(entity);
                 }
             }
         }

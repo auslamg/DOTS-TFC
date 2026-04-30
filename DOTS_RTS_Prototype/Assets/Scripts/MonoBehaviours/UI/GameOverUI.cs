@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -18,6 +19,22 @@ public class GameOverUI : MonoBehaviour
     [SerializeField]
     [Tooltip("Text element that displays the game-over message.")]
     TMP_Text messageText;
+
+    /// <summary>
+    /// Button to go back to the main menu.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to go back to the main menu.")]
+    Button mainMenuButton;
+
+    void Awake()
+    {
+        mainMenuButton.onClick.AddListener(() =>
+        {
+            Time.timeScale = 1;
+            SceneManager.LoadScene(0);
+        });
+    }
 
     /// <summary>
     /// Subscribes to game-over events and hides the panel until needed.

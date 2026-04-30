@@ -51,7 +51,7 @@ partial struct ResetEventSystem : ISystem
         }.ScheduleParallel(state.Dependency).Complete();
 
         //REVIEW: Managed code so no Burst, although the code on this method is fairly costless (there's only Job schedulling)
-        DOTSEventManager.Instance.TriggerOnTrainerUnitQueueChange(onTrainerUnitQueueChangeFiringEntities);
+        DOTSEventManager.Instance?.TriggerOnTrainerUnitQueueChange(onTrainerUnitQueueChangeFiringEntities);
 
         // Combine all parallel job handles so downstream systems wait on all reset jobs
         state.Dependency = JobHandle.CombineDependencies(jobHandleArray);

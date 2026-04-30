@@ -11,12 +11,19 @@ public class MobilePerformanceMonitor : MonoBehaviour
     [Tooltip("Font size used for all on-screen performance labels.")]
     [SerializeField] int fontSize = 24;
 
+    [Tooltip("Time window (in seconds) used to sample FPS.")]
+    [SerializeField] float fpsSampleInterval = 0.1f;
+
     float fps;
     float avgFps;
 
     const float AvgWindow = 10f;
     Queue<float> frameTimes = new Queue<float>();
     float frameTimeSum = 0f;
+
+    // FPS sampling
+    float fpsTimer = 0f;
+    int fpsFrameCount = 0;
 
     int maxWorkerThreads;
     ProfilerRecorder jobThreadRecorder;
@@ -38,14 +45,24 @@ public class MobilePerformanceMonitor : MonoBehaviour
     }
 
     /// <summary>
-    /// Samples instantaneous FPS, maintains the rolling average window, and captures GPU frame timing.
+    /// Samples FPS over a configurable interval, maintains the rolling average window, and captures GPU frame timing.
     /// </summary>
     void Update()
     {
         float dt = Time.deltaTime;
-        fps = 1f / dt;
 
-        // Rolling average over the last AvgWindow seconds
+        // --- Configurable FPS sampling ---
+        fpsTimer += dt;
+        fpsFrameCount++;
+
+        if (fpsTimer >= fpsSampleInterval)
+        {
+            fps = fpsFrameCount / fpsTimer;
+            fpsTimer = 0f;
+            fpsFrameCount = 0;
+        }
+
+        // --- Rolling average over the last AvgWindow seconds ---
         frameTimes.Enqueue(dt);
         frameTimeSum += dt;
 
@@ -56,7 +73,7 @@ public class MobilePerformanceMonitor : MonoBehaviour
 
         avgFps = frameTimes.Count / frameTimeSum;
 
-        // GPU frame timing
+        // --- GPU frame timing ---
         FrameTimingManager.CaptureFrameTimings();
         uint count = FrameTimingManager.GetLatestTimings(1, frameTimings);
 

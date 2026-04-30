@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5def363345164f409a70b78f58b72b6, type: 3}
   m_Name: __None
   m_EditorClassIdentifier: Assembly-CSharp::ResourceSO
-  resourceType: 1
-  icon: {fileID: 21300000, guid: 5c826d101f14efe4d902a1392335e086, type: 3}
+  resourceType: 0
+  icon: {fileID: 0}
   cachedKey:
     name:
-      utf8LengthInBytes: 4
+      utf8LengthInBytes: 6
       bytes:
         offset0000:
-          byte0000: 70
-          byte0001: 111
-          byte0002: 111
-          byte0003: 100
-          byte0004: 0
-          byte0005: 0
+          byte0000: 95
+          byte0001: 95
+          byte0002: 78
+          byte0003: 111
+          byte0004: 110
+          byte0005: 101
           byte0006: 0
           byte0007: 0
           byte0008: 0

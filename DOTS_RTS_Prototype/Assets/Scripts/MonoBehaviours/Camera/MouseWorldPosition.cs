@@ -57,7 +57,7 @@ public class MouseWorldPosition : MonoBehaviour
     {
         if (Input.GetKeyDown(debugKey))
         {
-            Debug.Log(GetPosition());
+            Debug.Log($"MouseWorldPosition: {GetPosition()}");
         }
     }
 
