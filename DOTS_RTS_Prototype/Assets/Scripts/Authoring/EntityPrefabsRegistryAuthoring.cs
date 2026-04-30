@@ -143,6 +143,7 @@ public struct EntityPrefab : IBufferElementData
 /// <summary>
 /// Unique identifier for a <see cref="EntityPrefab"/> struct, obtained from the prefab name.
 /// </summary>
+[Serializable]
 public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityPrefabKey>, IComparable<IEntityPrefabMappable>
 {
     /// <summary>

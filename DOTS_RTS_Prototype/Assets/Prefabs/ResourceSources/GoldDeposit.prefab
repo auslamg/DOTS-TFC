@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7811461303415439450}
   - component: {fileID: 3402967954461479188}
   m_Layer: 8
-  m_Name: GoldOreVein
+  m_Name: GoldDeposit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

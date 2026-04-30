@@ -18,3 +18,75 @@ MonoBehaviour:
   isBuildable: 1
   imageCard: {fileID: 21300000, guid: 52e75afc67cb28d49a06a0a1fc191cb5, type: 3}
   buildingGhostPrefab: {fileID: 6602768267658883460, guid: 48eb82aa06097b442a95fbf37a16361b, type: 3}
+  constructionCost:
+  - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
+    value: 50
+  cachedKey:
+    name:
+      utf8LengthInBytes: 15
+      bytes:
+        offset0000:
+          byte0000: 66
+          byte0001: 97
+          byte0002: 114
+          byte0003: 114
+          byte0004: 97
+          byte0005: 99
+          byte0006: 107
+          byte0007: 115
+          byte0008: 84
+          byte0009: 114
+          byte0010: 97
+          byte0011: 105
+          byte0012: 110
+          byte0013: 101
+          byte0014: 114
+          byte0015: 0
+        offset0016:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        offset0032:
+          byte0000: 0
+          byte0001: 0
+          byte0002: 0
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
+          byte0006: 0
+          byte0007: 0
+          byte0008: 0
+          byte0009: 0
+          byte0010: 0
+          byte0011: 0
+          byte0012: 0
+          byte0013: 0
+          byte0014: 0
+          byte0015: 0
+        byte0048: 0
+        byte0049: 0
+        byte0050: 0
+        byte0051: 0
+        byte0052: 0
+        byte0053: 0
+        byte0054: 0
+        byte0055: 0
+        byte0056: 0
+        byte0057: 0
+        byte0058: 0
+        byte0059: 0
+        byte0060: 0
+        byte0061: 0

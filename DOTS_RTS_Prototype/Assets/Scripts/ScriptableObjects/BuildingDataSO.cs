@@ -50,6 +50,13 @@ public class BuildingDataSO : ScriptableObject
     [Tooltip("Ghost prefab used for building placement preview.")]
     public GameObject buildingGhostPrefab;
 
+    /// <summary>
+    /// Resource construction cost for building placement.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Resource construction cost for building placement.")]
+    public ResourceQuantity[] constructionCost;
+
     [SerializeField, HideInInspector]
     private BuildingKey cachedKey;
 
@@ -82,6 +89,7 @@ public class BuildingDataSO : ScriptableObject
 /// <summary>
 /// Unique identifier for a <see cref="BuildingData"/> struct, obtained from the SO name.
 /// </summary>
+[Serializable]
 public struct BuildingKey : IEquatable<BuildingKey>, IComparable<BuildingKey>, IEntityPrefabMappable
 {
     /// <summary>

@@ -13,17 +13,21 @@ using UnityEngine.UI;
 /// selection and queue-change events, rebuilds button lists from ECS buffers, and sends
 /// training/cancel requests back to ECS through component updates.
 /// </remarks>
-public class BuildingTrainerUI : MonoBehaviour
+public class TrainerUI : MonoBehaviour
 {
     [Header("DOTS access")]
+
     /// <summary>
     /// Currently selected trainer entity used as UI data source.
     /// </summary>
     [SerializeField]
     [Tooltip("Currently selected trainer entity used as source for roster, queue, and progress UI.")]
     private Entity trainerEntity;
+
     /* [SerializeField] private Button soldierButton; */
+
     [Header("Training roster")]
+
     /// <summary>
     /// Container where trainable-unit buttons are instantiated.
     /// </summary>
@@ -39,6 +43,7 @@ public class BuildingTrainerUI : MonoBehaviour
     private Button trainingButtonTemplate;
 
     [Header("Production queue")]
+
     /// <summary>
     /// Container where queued-unit buttons are instantiated.
     /// </summary>
@@ -65,6 +70,12 @@ public class BuildingTrainerUI : MonoBehaviour
 
     /* [SerializeField] private string spawnedEntityKey; */
 
+    [Header("Registries")]
+
+    [SerializeField]
+    UnitDataRegistrySO unitDataRegistrySO;
+
+
     /// <summary>
     /// Cached EntityManager used for reading and writing trainer ECS data.
     /// </summary>
@@ -75,16 +86,6 @@ public class BuildingTrainerUI : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        //TODO: Move this to every refresh? //Optimize
-        /* soldierButton.onClick.AddListener(() =>
-        {
-            //Enables Unit queue
-            entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
-            {
-                unitKey = new UnitKey { name = spawnedEntityKey }
-            });
-            entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
-        }); */
         InitializeUI();
     }
 
@@ -249,12 +250,19 @@ public class BuildingTrainerUI : MonoBehaviour
         unitTrainButton.onClick.RemoveAllListeners();
         unitTrainButton.onClick.AddListener(() =>
         {
-            //Enables Unit queue
-            entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
+            UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(queuedUnit.unitKey);
+            if (ResourceManager.Instance.CanSpendResourceValues(unitDataSO.constructionCost))
             {
-                unitKey = queuedUnit.unitKey
-            });
-            entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
+                // Enables Unit queue.
+                entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
+                {
+                    unitKey = queuedUnit.unitKey
+                });
+                entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
+
+                // Consumes construction cost.
+                ResourceManager.Instance.SpendResourceValues(unitDataSO.constructionCost);
+            }
         });
     }
 
@@ -324,13 +332,18 @@ public class BuildingTrainerUI : MonoBehaviour
             DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
                 entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: false);
 
-            //Removes unit from buffer
+            // If actually inside the buffer.
             if (queueIndex >= 0 && queueIndex < trainerQueueBuffer.Length)
             {
+                // Refund construction cost.
+                UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(trainerQueueBuffer[queueIndex].unitKey);
+                ResourceManager.Instance.AddResourceValues(unitDataSO.constructionCost);
+
+                // Remove unit from buffer.
                 trainerQueueBuffer.RemoveAt(queueIndex);
             }
 
-            //Reset progress if the unit currently training is cancelled
+            // Reset progress if the unit currently training is cancelled
             if (queueIndex == 0)
             {
                 SetProgressToZero();
@@ -377,5 +390,17 @@ public class BuildingTrainerUI : MonoBehaviour
     private void SetVisible(bool value)
     {
         gameObject.SetActive(value);
+    }
+
+    void OnDisable()
+    {
+        ScrapUnitRoster();
+        ScrapUnitQueue();
+    }
+
+    void OnDestroy()
+    {
+        ScrapUnitRoster();
+        ScrapUnitQueue();
     }
 }

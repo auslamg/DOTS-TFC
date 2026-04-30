@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using static GridSystem;
 
-partial struct GridUtil
+public static class GridUtil
 {
     /// <summary>
     /// Calculates the movement vector from one 2D position to another.

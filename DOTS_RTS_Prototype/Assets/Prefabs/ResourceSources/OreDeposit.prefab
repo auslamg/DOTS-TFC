@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 3198847598175216017}
   - component: {fileID: 6863455912853694416}
   m_Layer: 8
-  m_Name: IronOreVein
+  m_Name: OreDeposit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

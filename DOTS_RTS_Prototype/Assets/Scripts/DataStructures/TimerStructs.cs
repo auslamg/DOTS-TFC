@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
+[Serializable]
 public struct LoopingTimer
 {
     public float Time;
@@ -34,6 +36,7 @@ public struct LoopingTimer
 }
 
 [BurstCompile]
+[Serializable]
 public struct DynamicTimer
 {
     public float Time;
@@ -62,6 +65,7 @@ public struct DynamicTimer
 }
 
 /* [BurstCompile]
+[Serializable]
 public struct LoopingCounter
 {
     public int Step;

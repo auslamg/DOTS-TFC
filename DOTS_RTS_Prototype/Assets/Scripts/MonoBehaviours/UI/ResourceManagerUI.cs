@@ -89,7 +89,10 @@ public class ResourceManagerUI : MonoBehaviour
     {
         foreach (ResourceSO resourceSO in resourceRegistrySO.resourceSOList)
         {
-            BuildResourceField(resourceSO);
+            if (resourceSO.resourceType != ResourceType.None)
+            {
+                BuildResourceField(resourceSO);
+            }
         }
     }
 
@@ -107,7 +110,10 @@ public class ResourceManagerUI : MonoBehaviour
     {
         foreach (ResourceSO resourceSO in resourceRegistrySO.resourceSOList)
         {
-            resourceFieldDictionary[resourceSO].UpdateAmount(ResourceManager.Instance.GetResourceValue(resourceSO.resourceKey));
+            if (resourceSO.resourceType != ResourceType.None)
+            {
+                resourceFieldDictionary[resourceSO].UpdateAmount(ResourceManager.Instance.GetResourceAmount(resourceSO.resourceKey));
+            }
         }
     }
 }

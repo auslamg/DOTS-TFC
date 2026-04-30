@@ -22,7 +22,7 @@ public class BuildingPlacementManager : MonoBehaviour
     [Tooltip("Currently selected building definition used for ghost preview and placement rules.")]
     private BuildingDataSO buildingDataSO;
 
-    public BuildingDataSO ActiveBuildingDataSO
+    public BuildingDataSO activeBuildingDataSO
     {
         get => buildingDataSO;
         set
@@ -64,7 +64,7 @@ public class BuildingPlacementManager : MonoBehaviour
     private float placingExtentsOffset = 1.1f;
 
     /// <summary>
-    /// Raised when <see cref="ActiveBuildingDataSO"/> changes.
+    /// Raised when <see cref="activeBuildingDataSO"/> changes.
     /// </summary>
     public event EventHandler OnActiveBuildingDataChange;
 
@@ -123,7 +123,7 @@ public class BuildingPlacementManager : MonoBehaviour
             return;
         }
 
-        if (ActiveBuildingDataSO.IsNone())
+        if (activeBuildingDataSO.IsNone())
         {
 
             return;
@@ -133,32 +133,41 @@ public class BuildingPlacementManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (CanPlaceBuilding())
+            if (ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
             {
-                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-                // Create the prefab lookup key expected by the ECS data layer.
-                // Retrieve key from active buildingData
-                EntityPrefabKey buildingKey = new EntityPrefabKey
+                if (CanPlaceBuilding())
                 {
-                    name = ActiveBuildingDataSO.name
-                };
+                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-                /* Debug.Log($"Placing buildings: {buildingKey.name}"); */
+                    // Create the prefab lookup key expected by the ECS data layer.
+                    // Retrieve key from active buildingData
+                    EntityPrefabKey buildingKey = new EntityPrefabKey
+                    {
+                        name = activeBuildingDataSO.name
+                    };
 
-                Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
-                entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(mouseWorldPosition));
+                    /* Debug.Log($"Placing buildings: {buildingKey.name}"); */
+
+                    Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
+                    entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(mouseWorldPosition));
+
+                    ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
+                }
+                else
+                {
+                    /* Debug.Log($"Cannot place building: {buildingKey} at {mouseWorldPosition}"); */
+                }
             }
             else
             {
-                /* Debug.Log($"Cannot place building: {buildingKey} at {mouseWorldPosition}"); */
+                Debug.Log("Insufficient funds.");
             }
         }
 
         if (Input.GetMouseButtonDown(1))
         {
             //On left click set no active building
-            ActiveBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
+            activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
         }
 
     }

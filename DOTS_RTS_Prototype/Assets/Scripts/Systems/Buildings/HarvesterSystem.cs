@@ -16,7 +16,7 @@ partial struct HarvesterSystem : ISystem
         {
             if (harvester.ValueRW.harvestCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
             {
-                ResourceManager.Instance?.AddResourceAmount(harvester.ValueRO.harvestedResourceKey, harvester.ValueRO.harvestAmount);
+                ResourceManager.Instance?.AddResourceValue(harvester.ValueRO.harvestedResourceKey, harvester.ValueRO.harvestAmount);
             }
         }
     }

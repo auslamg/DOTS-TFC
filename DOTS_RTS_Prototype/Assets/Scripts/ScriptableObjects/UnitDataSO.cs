@@ -31,6 +31,13 @@ public class UnitDataSO : ScriptableObject
     [Tooltip("Sprite shown for this unit in UI cards/buttons.")]
     public Sprite imageCard;
 
+    /// <summary>
+    /// Resource construction cost for unit training.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Resource construction cost for unit training.")]
+    public ResourceQuantity[] constructionCost;
+
     [SerializeField, HideInInspector]
     private UnitKey cachedKey;
 
@@ -54,6 +61,7 @@ public class UnitDataSO : ScriptableObject
 /// <summary>
 /// Unique identifier for a <see cref="UnitData"/> struct, obtained from the SO name.
 /// </summary>
+[Serializable]
 public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>, IEntityPrefabMappable
 {
     /// <summary>

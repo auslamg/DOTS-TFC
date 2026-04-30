@@ -140,7 +140,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         Button button = buildingButton.GetComponent<Button>();
         button.onClick.AddListener(() =>
         {
-            BuildingPlacementManager.Instance.ActiveBuildingDataSO = buildingData;
+            BuildingPlacementManager.Instance.activeBuildingDataSO = buildingData;
         });
     }
 
@@ -153,7 +153,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         {
             SetSelected(buildingButton, false);
         }
-        RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.ActiveBuildingDataSO];
+        RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.activeBuildingDataSO];
         if (selectedBuildingButton != null)
         {
             SetSelected(selectedBuildingButton, true);

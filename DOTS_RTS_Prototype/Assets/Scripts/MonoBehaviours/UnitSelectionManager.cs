@@ -121,7 +121,7 @@ public class UnitSelectionManager : MonoBehaviour
         {
             return;
         }
-        if (!BuildingPlacementManager.Instance.ActiveBuildingDataSO.IsNone())
+        if (!BuildingPlacementManager.Instance.activeBuildingDataSO.IsNone())
         {
             return;
         }

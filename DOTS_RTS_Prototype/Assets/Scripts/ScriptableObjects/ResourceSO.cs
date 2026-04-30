@@ -1,5 +1,6 @@
 using System;
 using Unity.Collections;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -43,6 +44,7 @@ public class ResourceSO : ScriptableObject
 /// <summary>
 /// Unique identifier for a <see cref="ResourceData"/> struct, obtained from the SO name.
 /// </summary>
+[Serializable]
 public struct ResourceKey : IEquatable<ResourceKey>, IComparable<ResourceKey>
 {
     /// <summary>
@@ -115,5 +117,6 @@ public enum ResourceType
     None,
     Food,
     Ore,
+    Construction,
     Misc    
 }

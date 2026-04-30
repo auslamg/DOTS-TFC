@@ -51,6 +51,8 @@ class HarvesterBaker : Baker<HarvesterAuthoring>
             },
             harvestCooldownTimer = new LoopingTimer
             {
+                
+                Time = authoring.harvestInterval,
                 Interval = authoring.harvestInterval
             },
             harvestAmount = authoring.harvestAmount,

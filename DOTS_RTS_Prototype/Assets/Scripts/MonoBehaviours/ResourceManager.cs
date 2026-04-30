@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResourceManager : MonoBehaviour
 {
 
+    [SerializeField] ResourceQuantity[] startingResources;
     [SerializeField] ResourceRegistrySO resourceRegistrySO;
     private Dictionary<ResourceKey, int> resourceAmountDictionary;
 
@@ -43,7 +44,12 @@ public class ResourceManager : MonoBehaviour
         }
     }
 
-    public bool AddResourceAmount(ResourceKey resourceKey, int resourceAmount)
+    void Start()
+    {
+        AddResourceValues(startingResources);
+    }
+
+    public bool AddResourceValue(ResourceKey resourceKey, int resourceAmount)
     {
         if (resourceAmountDictionary.ContainsKey(resourceKey))
         {
@@ -54,23 +60,101 @@ public class ResourceManager : MonoBehaviour
         else return false;
     }
 
-    public bool AddResourceAmount(string resource, int resourceAmount)
+    public bool AddResourceValue(string resource, int resourceAmount)
     {
         var resourceKey = new ResourceKey
         {
             name = resource
         };
-        return AddResourceAmount(resourceKey, resourceAmount);
+        return AddResourceValue(resourceKey, resourceAmount);
     }
-    public int GetResourceValue(ResourceKey resourceKey)
+
+    public bool AddResourceValue(ResourceQuantity resourceQuantity)
+    {
+        if (resourceAmountDictionary.ContainsKey(resourceQuantity.resourceSO.resourceKey))
+        {
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.value;
+            OnResourceValueChange.Invoke(this, EventArgs.Empty);
+            return true;
+        }
+        else return false;
+    }
+
+    public bool AddResourceValues(ResourceQuantity[] resourceQuantities)
+    {
+        foreach (var resource in resourceQuantities)
+        {
+            if (!resourceAmountDictionary.ContainsKey(resource.resourceSO.resourceKey))
+            {
+                return false;
+            }
+        }
+
+        foreach (var resourceQuantity in resourceQuantities)
+        {
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.value;
+        }
+        OnResourceValueChange.Invoke(this, EventArgs.Empty);
+        return true;
+    }
+
+    public int GetResourceAmount(ResourceKey resourceKey)
     {
         return resourceAmountDictionary[resourceKey];
     }
 
     public int GetResourceValue(ResourceSO resourceSO)
     {
-        return GetResourceValue(resourceSO.resourceKey);
+        return GetResourceAmount(resourceSO.resourceKey);
     }
 
+    public bool CanSpendResourceValue(ResourceQuantity resourceQuantity)
+    {
+        return resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] >= resourceQuantity.value;
+    }
 
+    public bool CanSpendResourceValues(ResourceQuantity[] resourceQuantities)
+    {
+        foreach (var resourceQuantity in resourceQuantities)
+        {
+            if (resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] < resourceQuantity.value)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public bool SpendResourceValue(ResourceQuantity resourceQuantity)
+    {
+        if (CanSpendResourceValue(resourceQuantity))
+        {
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.value;
+            OnResourceValueChange.Invoke(this, EventArgs.Empty);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool SpendResourceValues(ResourceQuantity[] resourceQuantities)
+    {
+        if (CanSpendResourceValues(resourceQuantities))
+        {
+            foreach (var resourceQuantity in resourceQuantities)
+            {
+                resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.value;
+            }
+            OnResourceValueChange.Invoke(this, EventArgs.Empty);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
