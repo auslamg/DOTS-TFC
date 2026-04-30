@@ -42,6 +42,13 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private Sprite placeholderBuildingButtonImage;
 
     /// <summary>
+    /// UI Grid size.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("UI Grid size.")]
+    private int optionsGridSize = 9;
+
+    /// <summary>
     /// Runtime cache mapping each building definition to its instantiated UI button.
     /// </summary>
     private Dictionary<BuildingDataSO, RectTransform> buildingButtonDictionary;
@@ -80,13 +87,39 @@ public class BuildingPlacementManagerUI : MonoBehaviour
 
     private void ConstructBuildingRoster()
     {
+        int i = 0;
         foreach (BuildingDataSO buildingDataSO in buildingDataRegistrySO.buildingDataSOList)
         {
+            Debug.Log($"Constructing building roster {i}");
+
+            if (i >= optionsGridSize)
+            {
+                return;
+            }
             if (buildingDataSO.isBuildable)
             {
                 BuildButton(buildingDataSO);
             }
+            i++;
         }
+
+        for (var j = i; j < optionsGridSize+1; j++)
+        {
+            Debug.Log($"Constructing building roster {j}");
+            BuildEmptyButton();
+        }
+    }
+
+    /// <summary>
+    /// Instantiates and wires a single building card button.
+    /// </summary>
+    /// <param name="buildingDataSo">Building definition represented by the button.</param>
+    private void BuildEmptyButton()
+    {
+        RectTransform buildingButton = Instantiate(buildingButtonTemplate, buildingButtonContainer);
+        buildingButton.gameObject.SetActive(true);
+        Image image = buildingButton.transform.GetChild(2).GetComponent<Image>();
+        image.color = new Color(1,1,1,0);
     }
 
     /// <summary>
