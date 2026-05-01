@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5320d3555fca3a843abfc396b5808e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TargetFinderAuthoring
-  scanInterval: 0
+  scanInterval: 0.2
   targetRange: 30
   swapTargetMinDistance: 5
 --- !u!114 &1459775456809195627
@@ -175,7 +175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
   projectilePrefabKey: Bullet
   onShootSpawnedEntityKey: 
-  attackInterval: 0
+  attackInterval: 0.4
   attackDistance: 30
   damageAmount: 20
   projectileSpawnPointTransform: {fileID: 1544517710400913710}

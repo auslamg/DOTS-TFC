@@ -54,7 +54,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private Dictionary<BuildingDataSO, RectTransform> buildingButtonDictionary;
 
 
-    
+
     private void Awake()
     {
         InitializeUI();
@@ -70,7 +70,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
 
         ConstructBuildingRoster();
     }
-    
+
     private void Start()
     {
         InitializeUI_PostBake();
@@ -92,18 +92,24 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         {
             Debug.Log($"Constructing building roster {i}");
 
-            if (i >= optionsGridSize)
+            if (i < optionsGridSize)
             {
+                i++;
+                if (buildingDataSO.isBuildable)
+                {
+                    BuildButton(buildingDataSO);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Couldn't show all building options in BuidlingPlacementManagerUI");
                 return;
             }
-            if (buildingDataSO.isBuildable)
-            {
-                BuildButton(buildingDataSO);
-            }
-            i++;
+
         }
 
-        for (var j = i; j < optionsGridSize+1; j++)
+        // Remaining empty buttons
+        for (var j = i; j < optionsGridSize + 1; j++)
         {
             Debug.Log($"Constructing building roster {j}");
             BuildEmptyButton();
@@ -119,7 +125,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         RectTransform buildingButton = Instantiate(buildingButtonTemplate, buildingButtonContainer);
         buildingButton.gameObject.SetActive(true);
         Image image = buildingButton.transform.GetChild(2).GetComponent<Image>();
-        image.color = new Color(1,1,1,0);
+        image.color = new Color(1, 1, 1, 0);
     }
 
     /// <summary>

@@ -164,5 +164,6 @@ public enum BuildingType
     Trainer,
     Spawner,
     Harvester,
-    Fort
+    Fort,
+    Producer,
 }

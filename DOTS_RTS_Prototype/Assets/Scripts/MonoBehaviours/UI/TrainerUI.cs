@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using TMPro;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.VisualScripting;
@@ -33,7 +35,7 @@ public class TrainerUI : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Container where trainable-unit buttons are instantiated.")]
-    private RectTransform trainingButtonContainer;
+    private RectTransform trainingRosterContainer;
 
     /// <summary>
     /// Template used for trainable-unit buttons.
@@ -59,6 +61,13 @@ public class TrainerUI : MonoBehaviour
     private Button productionQueueButtonTemplate;
 
     /// <summary>
+    /// Template used for queued-unit buttons.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Template button used for each queued unit entry.")]
+    private Button remainderQueueButtonTemplate;
+
+    /// <summary>
     /// Fill image that displays active training progress.
     /// </summary>
     [SerializeField]
@@ -74,6 +83,15 @@ public class TrainerUI : MonoBehaviour
 
     [SerializeField]
     UnitDataRegistrySO unitDataRegistrySO;
+
+    [Header("Settings")]
+
+    /// <summary>
+    /// UI Grid max size.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("UI Grid max size.")]
+    private int optionsGridMaxSize = 5;
 
 
     /// <summary>
@@ -93,6 +111,7 @@ public class TrainerUI : MonoBehaviour
     {
         trainingButtonTemplate.gameObject.SetActive(false);
         productionQueueButtonTemplate.gameObject.SetActive(false);
+        remainderQueueButtonTemplate.gameObject.SetActive(false);
     }
 
 
@@ -204,7 +223,7 @@ public class TrainerUI : MonoBehaviour
 
     private void ScrapUnitRoster()
     {
-        foreach (Transform child in trainingButtonContainer)
+        foreach (Transform child in trainingRosterContainer)
         {
             if (child.gameObject == trainingButtonTemplate.gameObject)
             {
@@ -223,15 +242,25 @@ public class TrainerUI : MonoBehaviour
         DynamicBuffer<TrainableEntry> trainableRosterBuffer =
                         entityManager.GetBuffer<TrainableEntry>(trainerEntity, isReadOnly: true);
 
+        int i = 0;
         foreach (TrainableEntry queuedUnit in trainableRosterBuffer)
         {
-            BuildUnitButton(queuedUnit);
+            if (i < optionsGridMaxSize)
+            {
+                i++;
+                BuildUnitButton(queuedUnit);
+            }
+            else
+            {
+                Debug.LogWarning($"Couldn't show all unit options in TrainerUI");
+                return;
+            }
         }
     }
 
     private void BuildUnitButton(TrainableEntry queuedUnit)
     {
-        Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingButtonContainer);
+        Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingRosterContainer);
         UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
 
         SetUnitCard(unitDataSO, unitTrainButton.gameObject);
@@ -279,7 +308,8 @@ public class TrainerUI : MonoBehaviour
     {
         foreach (Transform child in productionQueueContainer)
         {
-            if (child.gameObject == productionQueueButtonTemplate.gameObject)
+            if (child.gameObject == productionQueueButtonTemplate.gameObject ||
+                child.gameObject == remainderQueueButtonTemplate.gameObject)
             {
                 continue;
             }
@@ -298,8 +328,26 @@ public class TrainerUI : MonoBehaviour
 
         for (int queueIndex = 0; queueIndex < trainerQueueBuffer.Length; queueIndex++)
         {
-            BuildQueueButton(ref trainerQueueBuffer, queueIndex);
+            // If queue exceeds max size, draw a remainder button
+            if (queueIndex == optionsGridMaxSize - 1 &&
+                trainerQueueBuffer.Length > optionsGridMaxSize)
+            {
+                BuildRemainderQueueButton(trainerQueueBuffer.Length - queueIndex);
+                Debug.Log($"Couldn't show all queued units in TrainerUI");
+                return;
+            }
+            else
+                BuildQueueButton(ref trainerQueueBuffer, queueIndex);
         }
+
+    }
+
+    private void BuildRemainderQueueButton(int remainingElements)
+    {
+        Button remainderQueueButton = Instantiate(remainderQueueButtonTemplate, parent: productionQueueContainer);
+        remainderQueueButton.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = remainingElements.ToString() + "+";
+
+        remainderQueueButton.gameObject.SetActive(true);
     }
 
     private void BuildQueueButton(ref DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer, int queueIndex)
@@ -372,7 +420,7 @@ public class TrainerUI : MonoBehaviour
     /// <param name="uiElement">UI object whose image component is updated.</param>
     private void SetUnitCard(UnitDataSO unitDataSO, GameObject uiElement)
     {
-        Image image = uiElement.GetComponent<Image>();
+        Image image = uiElement.transform.GetChild(0).GetChild(0).GetComponent<Image>();
         if (unitDataSO != null && unitDataSO.imageCard != null)
         {
             image.sprite = unitDataSO.imageCard;

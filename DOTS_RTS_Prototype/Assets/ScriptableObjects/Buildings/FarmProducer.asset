@@ -10,36 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
-  m_Name: FarmHouse
+  m_Name: FarmProducer
   m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingType: 4
-  prefabGO: {fileID: 0}
-  minDistanceToSimilar: 0
+  buildingType: 6
+  prefabGO: {fileID: 4638855204955178881, guid: 1ba266c1959925545ac5e32d3e56f799, type: 3}
+  minDistanceToSimilar: 15
   isBuildable: 1
-  imageCard: {fileID: 0}
-  buildingGhostPrefab: {fileID: 0}
+  imageCard: {fileID: 21300000, guid: 25eb1ed949abec1479bbebf943693398, type: 3}
+  buildingGhostPrefab: {fileID: 4931908436955704107, guid: 26a28a26719538a4ebc4072fce768349, type: 3}
   constructionCost:
-  - resourceSO: {fileID: 11400000, guid: 607a0b39fe7b5554cb9c2f46eafc27aa, type: 2}
-    value: 25
-  - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
-    value: 75
+  - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
+    value: 150
   cachedKey:
     name:
-      utf8LengthInBytes: 9
+      utf8LengthInBytes: 12
       bytes:
         offset0000:
           byte0000: 70
           byte0001: 97
           byte0002: 114
           byte0003: 109
-          byte0004: 72
-          byte0005: 111
-          byte0006: 117
-          byte0007: 115
-          byte0008: 101
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
+          byte0004: 80
+          byte0005: 114
+          byte0006: 111
+          byte0007: 100
+          byte0008: 117
+          byte0009: 99
+          byte0010: 101
+          byte0011: 114
           byte0012: 0
           byte0013: 0
           byte0014: 0
