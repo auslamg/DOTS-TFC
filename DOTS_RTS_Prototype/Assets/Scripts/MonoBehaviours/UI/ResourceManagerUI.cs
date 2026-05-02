@@ -4,6 +4,14 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Builds and maintains the resource display UI, showing current resource amounts in real-time.
+/// </summary>
+/// <remarks>
+/// This component instantiates resource field UI elements based on the resource registry,
+/// listens to resource value changes, and updates the displayed amounts accordingly.
+/// It manages a dictionary of resource fields for efficient lookups and updates.
+/// </remarks>
 public class ResourceManagerUI : MonoBehaviour
 {
     /// <summary>
@@ -35,12 +43,12 @@ public class ResourceManagerUI : MonoBehaviour
     private Sprite placeholderResourceIconImage;
 
     /// <summary>
-    /// Runtime cache mapping each building definition to its instantiated UI button.
+    /// Runtime cache mapping each resource definition to its instantiated UI field.
     /// </summary>
     private Dictionary<ResourceSO, ResourceFieldUI> resourceFieldDictionary;
 
     /// <summary>
-    /// Initializes template state and builds one button for each buildable building entry.
+    /// Initializes template state and builds one resource field for each resource entry.
     /// </summary>
     private void Awake()
     {
@@ -49,27 +57,44 @@ public class ResourceManagerUI : MonoBehaviour
         InitializeUI();
     }
 
+    /// <summary>
+    /// Rebuilds resource fields from the registry, scrapping any existing ones.
+    /// </summary>
     private void InitializeUI()
     {
         ScrapResourceFields();
         ConstructResourceFields();
     }
 
+    /// <summary>
+    /// Subscribes to resource value changes after scene initialization.
+    /// </summary>
     void Start()
     {
         InitializeUI_PostBake();
     }
 
+    /// <summary>
+    /// Subscribes to resource value change events from the ResourceManager.
+    /// </summary>
     private void InitializeUI_PostBake()
     {
         ResourceManager.Instance.OnResourceValueChange += ResourceManager_OnResourceValueChange;
     }
 
+    /// <summary>
+    /// Handles resource value change events and updates the UI display.
+    /// </summary>
+    /// <param name="sender">Unused event sender.</param>
+    /// <param name="e">Unused event payload.</param>
     private void ResourceManager_OnResourceValueChange(object sender, EventArgs e)
     {
         UpdateResourceValues();
     }
 
+    /// <summary>
+    /// Destroys all instantiated resource field UI elements, preserving the template.
+    /// </summary>
     private void ScrapResourceFields()
     {
         foreach (Transform child in resourceFieldContainer)
@@ -85,6 +110,9 @@ public class ResourceManagerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Instantiates resource fields for all non-None resource types from the registry.
+    /// </summary>
     private void ConstructResourceFields()
     {
         foreach (ResourceSO resourceSO in resourceRegistrySO.resourceSOList)
@@ -96,6 +124,10 @@ public class ResourceManagerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Instantiates and initializes a single resource field UI element.
+    /// </summary>
+    /// <param name="resourceSO">Resource definition to display.</param>
     private void BuildResourceField(ResourceSO resourceSO)
     {
         RectTransform resourceTransform = Instantiate(resourceFieldTemplate, resourceFieldContainer);
@@ -106,6 +138,9 @@ public class ResourceManagerUI : MonoBehaviour
         resourceFieldDictionary[resourceSO] = resourceField;
     }
 
+    /// <summary>
+    /// Updates all resource field values to reflect current resource amounts.
+    /// </summary>
     private void UpdateResourceValues()
     {
         foreach (ResourceSO resourceSO in resourceRegistrySO.resourceSOList)

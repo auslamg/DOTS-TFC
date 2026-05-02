@@ -101,6 +101,13 @@ public class TouchCameraController : MonoBehaviour
     [Tooltip("Cinemachine camera component used for controlling the view and focus.")]
     private CinemachineCamera cinemachineCamera;
 
+    /// <summary>
+    /// Game object pivot towards which the camera will look. Translations are applied on its transform.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Game object pivot towards which the camera will look. Translations are applied on its transform.")]
+    private GameObject pivotGO;
+
     [SerializeField]
     private CameraHandler camHandler;
 
@@ -110,13 +117,35 @@ public class TouchCameraController : MonoBehaviour
     /// </summary>
     private int previousTouchCount = 0;
 
+    /// <summary>
+    /// Global singleton access to unit selection behavior.
+    /// </summary>
+    public static TouchCameraController Instance { get; private set; }
+
     void Awake()
     {
-        camHandler = gameObject.GetComponent<CameraHandler>();
+        InitializeSingleton();
+        camHandler = pivotGO.GetComponent<CameraHandler>();
 
         if (!camHandler.enabled || camHandler == null)
         {
             Debug.LogError("Camera controller could not find ZoomHandler component");
+        }
+    }
+
+    /// <summary>
+    /// Initializes singleton instance state.
+    /// </summary>
+    private void InitializeSingleton()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
+            Destroy(this);
         }
     }
 
@@ -184,7 +213,7 @@ public class TouchCameraController : MonoBehaviour
 
         // Apply movement 
         Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
-        transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+        pivotGO.transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
     }
 
     /// <summary>
@@ -268,7 +297,7 @@ public class TouchCameraController : MonoBehaviour
 
             // Apply movement 
             Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
-            transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+            pivotGO.transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
 
             DebounceTouchDrag();
         }

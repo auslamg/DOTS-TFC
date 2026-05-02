@@ -3,32 +3,41 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the main menu UI interactions, providing buttons to start the game or exit the application.
+/// </summary>
+/// <remarks>
+/// This component handles scene navigation and application lifecycle events.
+/// The play button loads the game scene, and the quit button closes the application.
+/// </remarks>
 public class MainMenuUI : MonoBehaviour
 {
-    [SerializeField] Button playbutton;
-    [SerializeField] Button quitbutton;
+    /// <summary>
+    /// Button to start the game and load the main game scene.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to start the game and load the main game scene.")]
+    Button playButton;
 
+    /// <summary>
+    /// Button to quit the application.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to quit the application.")]
+    Button quitButton;
+
+    /// <summary>
+    /// Wires button listeners to handle play and quit actions.
+    /// </summary>
     void Awake()
     {
-        playbutton.onClick.AddListener(() =>
+        playButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene(1);
         });
-        quitbutton.onClick.AddListener(() =>
+        quitButton.onClick.AddListener(() =>
         {
             Application.Quit();
         });
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

@@ -81,7 +81,11 @@ public class TrainerUI : MonoBehaviour
 
     [Header("Registries")]
 
+    /// <summary>
+    /// Registry containing all trainable unit definitions.
+    /// </summary>
     [SerializeField]
+    [Tooltip("Registry containing all trainable unit definitions.")]
     UnitDataRegistrySO unitDataRegistrySO;
 
     [Header("Settings")]
@@ -129,8 +133,14 @@ public class TrainerUI : MonoBehaviour
 
         UnitSelectionManager.Instance.OnSelectionChange += UnitSelectionManager_OnSelectionChange;
         DOTSEventManager.Instance.OnTrainerUnitQueueChange += DOTSEventManager_OnUnitQueueChange;
+        ResourceManager.Instance.OnResourceValueChange += ResourceManager_OnResourceValueChange;
 
         SetVisible(false);
+    }
+
+    private void ResourceManager_OnResourceValueChange(object sender, EventArgs e)
+    {
+        /* throw new NotImplementedException(); */
     }
 
     /// <summary>
