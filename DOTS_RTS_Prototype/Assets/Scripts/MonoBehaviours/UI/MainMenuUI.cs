@@ -17,7 +17,21 @@ public class MainMenuUI : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip("Button to start the game and load the main game scene.")]
-    Button playButton;
+    Button newGameButton;
+
+    /// <summary>
+    /// Button to load a saved game.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to load a saved game.")]
+    Button loadButton;
+
+    /// <summary>
+    /// Sends the player to the credits screen.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Sends the player to the credits screen.")]
+    Button creditsButton;
 
     /// <summary>
     /// Button to quit the application.
@@ -31,9 +45,19 @@ public class MainMenuUI : MonoBehaviour
     /// </summary>
     void Awake()
     {
-        playButton.onClick.AddListener(() =>
+        newGameButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene(1);
+        });
+        loadButton.onClick.AddListener(() =>
+        {
+            // TODO: Implement
+            /* LoadGame */
+        });
+        creditsButton.onClick.AddListener(() =>
+        {
+            // TODO: Implement
+            /* LoadGame */
         });
         quitButton.onClick.AddListener(() =>
         {
