@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Orc_Melee
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 3
+  playFull: 0
+  frameFrequency: 0.2
+  meshArray:
+  - {fileID: 4300000, guid: dd8ab18496b74c04cacffc76452b25a1, type: 2}
+  - {fileID: 4300000, guid: 2234257d4a67d794cb405afe35b7e6ff, type: 2}
+  - {fileID: 4300000, guid: 438f770f64e102d4e8536df4cfd54bc9, type: 2}
+  - {fileID: 4300000, guid: a32322cc0237dad419ed9712f9ba3bbd, type: 2}
+  - {fileID: 4300000, guid: 4c68a0ec60fed45479f69f072d5d60bd, type: 2}

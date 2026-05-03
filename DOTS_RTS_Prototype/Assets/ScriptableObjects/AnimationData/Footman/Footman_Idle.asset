@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Footman_Idle
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 1
+  playFull: 0
+  frameFrequency: 0.25
+  meshArray:
+  - {fileID: 4300000, guid: 5692c2a9403f1044c8ccea375d545489, type: 2}
+  - {fileID: 4300000, guid: 4dede718d8fb4fe4b885cd80092b5139, type: 2}
+  - {fileID: 4300000, guid: 496843aa6aa45af47a8893fa575468d6, type: 2}

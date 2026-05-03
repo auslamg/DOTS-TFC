@@ -41,23 +41,24 @@ partial struct ProjectileMoverSystem : ISystem
                 Shootable targetShootable = SystemAPI.GetComponent<Shootable>(targetter.ValueRO.targetEntity);
                 float3 targetPosition = targetLocalTransform.TransformPoint(targetShootable.hitPointPosition);
 
-                //TODO: Rename to distanceBeforeMoving
                 //Position previous to moving, used for calculating if the projectile overshot the target
-                float distanceBeforeSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+                float distanceBeforeMovingSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
                 // Calculate move direction
                 float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
                 moveDirection = math.normalize(moveDirection);
 
-                //Move towards target
+                // Move towards target
                 localTransform.ValueRW.Position += moveDirection * projectile.ValueRO.speed * SystemAPI.Time.DeltaTime;
+                // Rotate projectile.
+                localTransform.ValueRW.Rotation =
+                    math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), Time.deltaTime);
 
-                //TODO: Rename to distanceAfterMoving
                 //Position after moving, used for calculating if the projectile overshot the target
-                float distanceAfterSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
+                float distanceAfterMovingSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
                 //Target overshoot countermeasure
-                if (distanceBeforeSquared < distanceAfterSquared)
+                if (distanceBeforeMovingSquared < distanceAfterMovingSquared)
                 {
                     //Setting the projectile's position to the target's will count as hitting the target
                     localTransform.ValueRW.Position = targetPosition;
@@ -82,7 +83,7 @@ partial struct ProjectileMoverSystem : ISystem
                             targetOwnTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
                         }
                     }
-                    
+
 
                     entityCommandBuffer.DestroyEntity(entity);
                 }

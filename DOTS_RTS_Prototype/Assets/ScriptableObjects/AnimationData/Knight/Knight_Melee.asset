@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Knight_Melee
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 3
+  playFull: 0
+  frameFrequency: 0.2
+  meshArray:
+  - {fileID: 4300000, guid: e24348845362f2b43baace1c91af8849, type: 2}
+  - {fileID: 4300000, guid: 0b88b7c81d9cbfc4d83046b79a88ad28, type: 2}
+  - {fileID: 4300000, guid: 0b2a56d8d51affd4d8ba8bf7d1d71796, type: 2}
+  - {fileID: 4300000, guid: 0f2b037a54c2f474e9f4ba33911e5ce7, type: 2}
+  - {fileID: 4300000, guid: 7fbbd28c66885a240b4e46970b06f798, type: 2}

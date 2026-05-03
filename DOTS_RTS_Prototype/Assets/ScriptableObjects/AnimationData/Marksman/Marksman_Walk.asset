@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Marksman_Walk
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 2
+  playFull: 0
+  frameFrequency: 0.15
+  meshArray:
+  - {fileID: 4300000, guid: 996fda56dbac57b43b51608d459c9d9e, type: 2}
+  - {fileID: 4300000, guid: b8de95617dda6c2459ba9eba614aeb38, type: 2}
+  - {fileID: 4300000, guid: 9778ea7ccd1b9e74b897bffd501914f3, type: 2}
+  - {fileID: 4300000, guid: eebb7a0177a066b479993211da1d069b, type: 2}

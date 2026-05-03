@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Knight_Walk
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 2
+  playFull: 0
+  frameFrequency: 0.15
+  meshArray:
+  - {fileID: 4300000, guid: b120adddc5f39f7409dc1fdface3f9a5, type: 2}
+  - {fileID: 4300000, guid: 83bcabbab4ca97b40a511364d6de5292, type: 2}
+  - {fileID: 4300000, guid: 9ff7aee8492c8464eba2cb5e674cb3d5, type: 2}
+  - {fileID: 4300000, guid: 4076cb92378dd794a90cba51485d6dc3, type: 2}

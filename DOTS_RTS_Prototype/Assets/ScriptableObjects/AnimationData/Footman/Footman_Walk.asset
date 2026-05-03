@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Footman_Walk
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 2
+  playFull: 0
+  frameFrequency: 0.15
+  meshArray:
+  - {fileID: 4300000, guid: ace9965d11cd2d64b8263baa916c161b, type: 2}
+  - {fileID: 4300000, guid: cdd6d2b44e02c0a4d940aa3d737f6633, type: 2}
+  - {fileID: 4300000, guid: edbb639dfa0b0134e8de822832a512a6, type: 2}
+  - {fileID: 4300000, guid: 8cb328bf401ff114eaa0488ec9e91037, type: 2}

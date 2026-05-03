@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58fcb9a394e573c4aa3fe0675cbe37dd, type: 3}
+  m_Name: Marksman_Shoot
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationDataSO
+  animationType: 4
+  playFull: 0
+  frameFrequency: 0.3
+  meshArray:
+  - {fileID: 4300000, guid: fe5800b85c21c6149a43591d99cd7fc0, type: 2}
+  - {fileID: 4300000, guid: 6c000ca1bedebf64eba69259aaf836a8, type: 2}
+  - {fileID: 4300000, guid: fab0eefdff8d9f44fb8b22123a4bd330, type: 2}
