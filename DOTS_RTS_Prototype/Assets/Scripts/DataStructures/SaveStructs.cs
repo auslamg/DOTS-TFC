@@ -20,7 +20,11 @@ public struct SaveUnitData
     public quaternion rotation;
     public string prefabKey;
     public int ownerID;
+    public bool requirePathing;
+    public float3 unitMoverPosition; // ✅ now serialized
     public float3 targetPosition;
+    public float3 postFormationPosition;
+    public float3 lastMoveVector;
     public Entity targetEntity;
     public int currentHealth;
     public uint factionID;
@@ -30,9 +34,13 @@ public struct SaveUnitData
         return $"UnitSaveData(" +
                $"prefabKey: {prefabKey}, " +
                $"ownerID: {ownerID}, " +
+               $"requirePathing: {requirePathing}, " +
                $"position: ({position.x}, {position.y}, {position.z}), " +
+               $"unitMoverPosition: ({unitMoverPosition.x}, {unitMoverPosition.y}, {unitMoverPosition.z}), " + // ✅ added
                $"rotation: ({rotation.value.x}, {rotation.value.y}, {rotation.value.z}, {rotation.value.w}), " +
                $"movePosition: ({targetPosition.x}, {targetPosition.y}, {targetPosition.z}), " +
+               $"postFormationPosition: ({postFormationPosition.x}, {postFormationPosition.y}, {postFormationPosition.z}), " +
+               $"lastMoveVector: ({lastMoveVector.x}, {lastMoveVector.y}, {lastMoveVector.z}), " +
                $"targetEntity: (Index: {targetEntity.Index}, Version: {targetEntity.Version}), " +
                $"currentHealth: {currentHealth}, " +
                $"factionID: {factionID})";
@@ -46,11 +54,16 @@ public struct SaveUnitData
             rotation = new QuaternionSerializable(rotation),
             prefabKey = prefabKey,
             unitOwner = ownerID,
+            requirePathing = requirePathing,
+            unitMoverPosition = new Float3Serializable(unitMoverPosition), // ✅ added
             movePosition = new Float3Serializable(targetPosition),
+            postFormationPosition = new Float3Serializable(postFormationPosition),
+            lastMoveVector = new Float3Serializable(lastMoveVector),
             targetEntity = new EntitySerializable(targetEntity),
             currentHealth = currentHealth,
             factionID = factionID
         };
+
         return JsonUtility.ToJson(serializable, true);
     }
 
@@ -73,10 +86,26 @@ public struct SaveUnitData
             ),
             prefabKey = data.prefabKey,
             ownerID = data.unitOwner,
+            requirePathing = data.requirePathing,
+            unitMoverPosition = new float3( // ✅ added
+                data.unitMoverPosition.x,
+                data.unitMoverPosition.y,
+                data.unitMoverPosition.z
+            ),
             targetPosition = new float3(
                 data.movePosition.x,
                 data.movePosition.y,
                 data.movePosition.z
+            ),
+            postFormationPosition = new float3(
+                data.postFormationPosition.x,
+                data.postFormationPosition.y,
+                data.postFormationPosition.z
+            ),
+            lastMoveVector = new float3(
+                data.lastMoveVector.x,
+                data.lastMoveVector.y,
+                data.lastMoveVector.z
             ),
             targetEntity = new Entity
             {
@@ -95,12 +124,15 @@ public struct SaveUnitData
         public QuaternionSerializable rotation;
         public string prefabKey;
         public int unitOwner;
+        public bool requirePathing;
+        public Float3Serializable unitMoverPosition; // ✅ added
         public Float3Serializable movePosition;
+        public Float3Serializable postFormationPosition;
+        public Float3Serializable lastMoveVector;
         public EntitySerializable targetEntity;
         public int currentHealth;
         public uint factionID;
     }
-    
 }
 
 [Serializable]
@@ -193,7 +225,6 @@ public struct SaveResourceData
         return result;
     }
 
-    // Create from your runtime dictionary
     public static SaveResourceData FromDictionary(Dictionary<ResourceKey, int> dict)
     {
         var data = new SaveResourceData
@@ -213,7 +244,6 @@ public struct SaveResourceData
         return data;
     }
 
-    // Convert back to runtime dictionary
     public Dictionary<ResourceKey, int> ToDictionary()
     {
         var dict = new Dictionary<ResourceKey, int>();

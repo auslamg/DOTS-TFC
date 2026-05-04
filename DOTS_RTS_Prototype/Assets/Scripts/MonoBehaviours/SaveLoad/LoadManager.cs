@@ -88,7 +88,7 @@ public class LoadManager : MonoBehaviour
         LoadBuildings(save.buildings);
         LoadUnits(save.units);
     }
-    
+
     private void ClearPreviousEntities()
     {
         Debug.Log("[LoadManager] Clearing units and buildings...");
@@ -113,7 +113,7 @@ public class LoadManager : MonoBehaviour
             entityManager.DestroyEntity(buildingEntity);
         }
     }
-    
+
     private void LoadUnits(List<SaveUnitData> units)
     {
         Debug.Log($"[LoadManager] Loading UNITS: {units.Count}");
@@ -123,34 +123,63 @@ public class LoadManager : MonoBehaviour
             // Fetch prefab
             EntityPrefabKey entityPrefabKey = new EntityPrefabKey
             {
-              name = unitData.prefabKey,
+                name = unitData.prefabKey,
             };
             Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
-            
+
             // Rebuild the entity
             Entity entity = entityManager.Instantiate(prefabEntity);
 
             // Save post-write data.
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+
             Unit unit = entityManager.GetComponentData<Unit>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
+
+            UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
             ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
+            PathRequest pathRequest = entityManager.GetComponentData<PathRequest>(entity);
+            FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
+
             Health health = entityManager.GetComponentData<Health>(entity);
 
-            localTransform.Position = unitData.position;
-            localTransform.Rotation = unitData.rotation;
-            unit.ownerID = unitData.ownerID;
-            faction.factionID = unitData.factionID;
-            manualMove.targetPosition = unitData.targetPosition;
-            health.currentHealth = unitData.currentHealth;
+            {
+                localTransform.Position = unitData.position;
+                localTransform.Rotation = unitData.rotation;
+
+                unit.ownerID = unitData.ownerID;
+                faction.factionID = unitData.factionID;
+
+                unitMover.targetPosition = unitData.unitMoverPosition;
+                unitMover.hasStartedTargetPosition = true;
+
+                manualMove.targetPosition = unitData.targetPosition;
+                manualMove.postFormationPosition = unitData.postFormationPosition;
+
+                pathRequest.targetPosition = unitData.targetPosition;
+                pathRequest.postFormationPosition = unitData.postFormationPosition;
+
+                flowFieldFollower.lastMoveVector = unitData.lastMoveVector;
+
+                health.currentHealth = unitData.currentHealth;
+            }
 
             entityManager.SetComponentData(entity, localTransform);
+
             entityManager.SetComponentData(entity, unit);
             entityManager.SetComponentData(entity, faction);
-            entityManager.SetComponentData(entity, health);           
+
+            entityManager.SetComponentData(entity, unitMover);
+            entityManager.SetComponentData(entity, manualMove);
+            entityManager.SetComponentData(entity, pathRequest);
+            entityManager.SetComponentData(entity, flowFieldFollower);
+            
+            entityManager.SetComponentData(entity, health);
+
+            entityManager.SetComponentEnabled<PathRequest>(entity, unitData.requirePathing);
         }
     }
-    
+
     private void LoadBuildings(List<SaveBuildingData> buildings)
     {
         Debug.Log($"[LoadManager] Loading BUILDINGS: {buildings.Count}");
@@ -186,14 +215,14 @@ public class LoadManager : MonoBehaviour
             entityManager.SetComponentData(entity, health);
         }
     }
-    
+
     private void LoadResources(SaveResourceData resources)
     {
         Debug.Log("[LoadManager] Loading RESOURCES...");
 
         ResourceManager.Instance.OverrideDict(resources.ToDictionary());
     }
-    
+
     private void LoadManaged(SaveManagedData managed)
     {
         Debug.Log("[LoadManager] Loading MANAGED DATA...");

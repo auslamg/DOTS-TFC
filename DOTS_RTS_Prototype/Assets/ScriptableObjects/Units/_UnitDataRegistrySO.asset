@@ -13,7 +13,11 @@ MonoBehaviour:
   m_Name: _UnitDataRegistrySO
   m_EditorClassIdentifier: Assembly-CSharp::UnitRegistrySO
   unitDataSOList:
-  - {fileID: 11400000, guid: cf8980ea0a96d4147a40c0b6b45292ba, type: 2}
+  - {fileID: 11400000, guid: 646faf5ae4081004ebca3e090b951b85, type: 2}
   - {fileID: 11400000, guid: 567b33a1620040f449668f6eaee3cc10, type: 2}
+  - {fileID: 11400000, guid: 6225ce6e315530f4dbc073cda615326c, type: 2}
+  - {fileID: 11400000, guid: ea3f0d3bfa610e84b92afd2fa842a43a, type: 2}
+  - {fileID: 11400000, guid: cf8980ea0a96d4147a40c0b6b45292ba, type: 2}
+  - {fileID: 11400000, guid: 149cb586cd1503a4ba5722e7fe8eef2c, type: 2}
   - {fileID: 11400000, guid: 23e34c3408a33fa44a0ac156a4a0fd22, type: 2}
   - {fileID: 11400000, guid: 08a716f5473801749b5371dc0b8c3f1d, type: 2}

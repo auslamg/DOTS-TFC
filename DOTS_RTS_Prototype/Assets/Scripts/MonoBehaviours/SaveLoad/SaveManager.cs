@@ -55,7 +55,7 @@ public class SaveManager : MonoBehaviour
     {
         InitializeSingleton();
     }
-    
+
     public void SaveGame()
     {
         Debug.Log("[SaveManager] SAVING...");
@@ -91,20 +91,38 @@ public class SaveManager : MonoBehaviour
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
             Unit unit = entityManager.GetComponentData<Unit>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
+
+            UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
             ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
+            FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
+            
             ManualTarget manualTarget = entityManager.GetComponentData<ManualTarget>(entity);
             Health health = entityManager.GetComponentData<Health>(entity);
+
+            bool requirePathing =
+                entityManager.IsComponentEnabled<ManualMove>(entity) ||
+                entityManager.IsComponentEnabled<FlowFieldFollower>(entity);
 
             // Construct unit data structure.
             SaveUnitData unitData = new SaveUnitData
             {
                 position = localTransform.Position,
                 rotation = localTransform.Rotation,
+
                 prefabKey = unitDataSOHolder.unitKey.name.ToString(),
                 ownerID = unit.ownerID,
                 factionID = faction.factionID,
+
+                unitMoverPosition = unitMover.targetPosition,
+
+                requirePathing = requirePathing,
                 targetPosition = manualMove.targetPosition,
+                postFormationPosition = manualMove.postFormationPosition,
+                
+                lastMoveVector = flowFieldFollower.lastMoveVector,
+
                 targetEntity = manualTarget.targetEntity,
+
                 currentHealth = health.currentHealth,
             };
 
@@ -145,9 +163,11 @@ public class SaveManager : MonoBehaviour
             {
                 position = localTransform.Position,
                 rotation = localTransform.Rotation,
+
                 prefabKey = buildingDataSOHolder.buildingKey.name.ToString(),
                 ownerID = building.ownerID,
                 factionID = faction.factionID,
+                
                 currentHealth = health.currentHealth,
             };
 
