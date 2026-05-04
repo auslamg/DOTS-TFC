@@ -66,7 +66,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6498528023365818630, guid: 616218f3e2802d94895779b8242f89ba, type: 3}
       propertyPath: buildingKeyName
-      value: Mine
+      value: MineHarvester
+      objectReference: {fileID: 0}
+    - target: {fileID: 6498528023365818630, guid: 616218f3e2802d94895779b8242f89ba, type: 3}
+      propertyPath: buildingKeyType
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7068809329499169112, guid: 616218f3e2802d94895779b8242f89ba, type: 3}
       propertyPath: m_LocalPosition.x

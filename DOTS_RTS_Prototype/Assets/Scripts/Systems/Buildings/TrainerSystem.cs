@@ -80,7 +80,7 @@ partial struct TrainerSystem : ISystem
             }
 
 
-            //If the acive unit (already trained) is different from the next one, adjust the progress timer max to start training the next one
+            //If the active unit (already trained) is different from the next one, adjust the progress timer max to start training the next one
             if (trainer.ValueRO.activeUnitKey != spawnUnitBuffer[0].unitKey)
             {
                 trainer.ValueRW.activeUnitKey = spawnUnitBuffer[0].unitKey;

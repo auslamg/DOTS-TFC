@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4330193781514161480, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: buildingKeyName
+      value: CastleFort
+      objectReference: {fileID: 0}
     - target: {fileID: 4461606056213719054, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: displayScale
       value: 12

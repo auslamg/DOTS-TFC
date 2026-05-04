@@ -55,6 +55,7 @@ public class SaveManager : MonoBehaviour
     {
         InitializeSingleton();
     }
+    
     public void SaveGame()
     {
         Debug.Log("[SaveManager] SAVING...");
@@ -80,7 +81,7 @@ public class SaveManager : MonoBehaviour
         List<SaveUnitData> savedUnitsSet = new List<SaveUnitData>();
 
         // Read all entities.
-        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+        using var entityArray = query.ToEntityArray(Allocator.Temp);
         foreach (var entity in entityArray)
         {
             // Get prefab.
@@ -102,7 +103,7 @@ public class SaveManager : MonoBehaviour
                 prefabKey = unitDataSOHolder.unitKey.name.ToString(),
                 ownerID = unit.ownerID,
                 factionID = faction.factionID,
-                movePosition = manualMove.targetPosition,
+                targetPosition = manualMove.targetPosition,
                 targetEntity = manualTarget.targetEntity,
                 currentHealth = health.currentHealth,
             };

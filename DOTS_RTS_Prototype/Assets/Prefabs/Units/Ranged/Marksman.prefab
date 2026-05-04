@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3419464323365130216, guid: 9dea0a9da5fd3ab4aae0768fb94033d8, type: 3}
+      propertyPath: unitKeyName
+      value: Marksman
+      objectReference: {fileID: 0}
     - target: {fileID: 8260496261795234366, guid: 9dea0a9da5fd3ab4aae0768fb94033d8, type: 3}
       propertyPath: m_Name
       value: Marksman

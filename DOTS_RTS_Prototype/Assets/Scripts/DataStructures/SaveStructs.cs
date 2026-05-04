@@ -20,7 +20,7 @@ public struct SaveUnitData
     public quaternion rotation;
     public string prefabKey;
     public int ownerID;
-    public float3 movePosition;
+    public float3 targetPosition;
     public Entity targetEntity;
     public int currentHealth;
     public uint factionID;
@@ -32,7 +32,7 @@ public struct SaveUnitData
                $"ownerID: {ownerID}, " +
                $"position: ({position.x}, {position.y}, {position.z}), " +
                $"rotation: ({rotation.value.x}, {rotation.value.y}, {rotation.value.z}, {rotation.value.w}), " +
-               $"movePosition: ({movePosition.x}, {movePosition.y}, {movePosition.z}), " +
+               $"movePosition: ({targetPosition.x}, {targetPosition.y}, {targetPosition.z}), " +
                $"targetEntity: (Index: {targetEntity.Index}, Version: {targetEntity.Version}), " +
                $"currentHealth: {currentHealth}, " +
                $"factionID: {factionID})";
@@ -46,7 +46,7 @@ public struct SaveUnitData
             rotation = new QuaternionSerializable(rotation),
             prefabKey = prefabKey,
             unitOwner = ownerID,
-            movePosition = new Float3Serializable(movePosition),
+            movePosition = new Float3Serializable(targetPosition),
             targetEntity = new EntitySerializable(targetEntity),
             currentHealth = currentHealth,
             factionID = factionID
@@ -73,7 +73,7 @@ public struct SaveUnitData
             ),
             prefabKey = data.prefabKey,
             ownerID = data.unitOwner,
-            movePosition = new float3(
+            targetPosition = new float3(
                 data.movePosition.x,
                 data.movePosition.y,
                 data.movePosition.z

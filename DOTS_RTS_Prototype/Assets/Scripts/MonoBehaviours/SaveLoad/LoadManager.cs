@@ -1,4 +1,5 @@
-/* using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Unity.Collections;
 using Unity.Entities;
@@ -22,14 +23,34 @@ public class LoadManager : MonoBehaviour
     [Tooltip("Camera controller gizmo for camera position storage.")]
     private Transform cameraControllerGizmo;
 
+    private EntityManager entityManager;
+
+    [Header("References")]
+
+    /// <summary>
+    /// Global singleton access to the DOTS event bridge.
+    /// </summary>
     public static LoadManager Instance { get; private set; }
 
-    private EntityManager entityManager;
+    /// <summary>
+    /// Initializes singleton instance state.
+    /// </summary>
+    private void InitializeSingleton()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
+            Destroy(this);
+        }
+    }
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(this);
+        InitializeSingleton();
     }
 
     public bool SaveFileExists()
@@ -50,123 +71,119 @@ public class LoadManager : MonoBehaviour
         string json = File.ReadAllText(savePath);
         SaveGameData saveData = JsonUtility.FromJson<SaveGameData>(json);
 
-        ApplySave(saveData);
+        OverwriteData(saveData);
 
         Debug.Log("[LoadManager] Load complete.");
         return saveData;
     }
 
-    private void ApplySave(SaveGameData save)
+    private void OverwriteData(SaveGameData save)
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        ClearWorld();
+        ClearPreviousEntities();
 
         LoadManaged(save.managed);
         LoadResources(save.resources);
         LoadBuildings(save.buildings);
         LoadUnits(save.units);
     }
-
-    // ------------------------------------------------------------
-    // CLEAR EXISTING WORLD
-    // ------------------------------------------------------------
-    private void ClearWorld()
+    
+    private void ClearPreviousEntities()
     {
-        Debug.Log("[LoadManager] Clearing ECS world...");
+        Debug.Log("[LoadManager] Clearing units and buildings...");
 
-        var allEntities = entityManager.GetAllEntities(Allocator.Temp);
+        EntityQuery unitQuery = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Unit>().
+            Build(entityManager);
 
-        foreach (var e in allEntities)
+        using var unitArray = unitQuery.ToEntityArray(Allocator.Temp);
+        foreach (var unitEntity in unitArray)
         {
-            entityManager.DestroyEntity(e);
+            entityManager.DestroyEntity(unitEntity);
         }
 
-        allEntities.Dispose();
-    }
+        EntityQuery buildingQuery = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Building>().
+            Build(entityManager);
 
-    // ------------------------------------------------------------
-    // UNITS
-    // ------------------------------------------------------------
-    private void LoadUnits(System.Collections.Generic.List<SaveUnitData> units)
+        using var buildingArray = buildingQuery.ToEntityArray(Allocator.Temp);
+        foreach (var buildingEntity in buildingArray)
+        {
+            entityManager.DestroyEntity(buildingEntity);
+        }
+    }
+    
+    private void LoadUnits(List<SaveUnitData> units)
     {
         Debug.Log($"[LoadManager] Loading UNITS: {units.Count}");
 
-        foreach (var u in units)
+        foreach (SaveUnitData unitData in units)
         {
-            // NOTE: you will likely replace this with your prefab system
-            Entity entity = entityManager.CreateEntity();
-
-            entityManager.AddComponentData(entity, new LocalTransform
+            // Fetch prefab
+            EntityPrefabKey entityPrefabKey = new EntityPrefabKey
             {
-                Position = u.position,
-                Rotation = u.rotation,
-                Scale = 1f
-            });
+              name = unitData.prefabKey,
+            };
+            Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
+            
+            // Rebuild the entity
+            Entity entity = entityManager.Instantiate(prefabEntity);
 
-            entityManager.AddComponentData(entity, new Unit
-            {
-                ownerID = u.ownerID
-            });
+            // Save post-write data.
+            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+            Unit unit = entityManager.GetComponentData<Unit>(entity);
+            Faction faction = entityManager.GetComponentData<Faction>(entity);
+            ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
+            Health health = entityManager.GetComponentData<Health>(entity);
 
-            entityManager.AddComponentData(entity, new Faction
-            {
-                factionID = u.factionID
-            });
+            localTransform.Position = unitData.position;
+            localTransform.Rotation = unitData.rotation;
+            unit.ownerID = unitData.ownerID;
+            faction.factionID = unitData.factionID;
+            manualMove.targetPosition = unitData.targetPosition;
+            health.currentHealth = unitData.currentHealth;
 
-            entityManager.AddComponentData(entity, new Health
-            {
-                currentHealth = u.currentHealth
-            });
-
-            entityManager.AddComponentData(entity, new ManualMove
-            {
-                targetPosition = u.movePosition
-            });
-
-            entityManager.AddComponentData(entity, new ManualTarget
-            {
-                targetEntity = u.targetEntity
-            });
-
-            Debug.Log($"[LoadManager] Loaded unit: {u.prefabKey}");
+            entityManager.SetComponentData(entity, localTransform);
+            entityManager.SetComponentData(entity, unit);
+            entityManager.SetComponentData(entity, faction);
+            entityManager.SetComponentData(entity, health);           
         }
     }
-
-    // ------------------------------------------------------------
-    // BUILDINGS
-    // ------------------------------------------------------------
-    private void LoadBuildings(System.Collections.Generic.List<SaveBuildingData> buildings)
+    
+    private void LoadBuildings(List<SaveBuildingData> buildings)
     {
         Debug.Log($"[LoadManager] Loading BUILDINGS: {buildings.Count}");
 
-        foreach (var b in buildings)
+        foreach (SaveBuildingData buildingData in buildings)
         {
-            Entity entity = entityManager.CreateEntity();
-
-            entityManager.AddComponentData(entity, new LocalTransform
+            // Fetch prefab
+            EntityPrefabKey entityPrefabKey = new EntityPrefabKey
             {
-                Position = b.position,
-                Rotation = b.rotation,
-                Scale = 1f
-            });
+                name = buildingData.prefabKey,
+            };
+            Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
+            Debug.Log($"Fetching Building: {entityPrefabKey.name}");
 
-            entityManager.AddComponentData(entity, new Building
-            {
-                ownerID = b.ownerID
-            });
+            // Rebuild the entity
+            Entity entity = entityManager.Instantiate(prefabEntity);
 
-            entityManager.AddComponentData(entity, new Faction
-            {
-                factionID = b.factionID
-            });
+            // Save post-write data.
+            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+            Building building = entityManager.GetComponentData<Building>(entity);
+            Faction faction = entityManager.GetComponentData<Faction>(entity);
+            Health health = entityManager.GetComponentData<Health>(entity);
 
-            entityManager.AddComponentData(entity, new Health
-            {
-                currentHealth = b.currentHealth
-            });
+            localTransform.Position = buildingData.position;
+            localTransform.Rotation = buildingData.rotation;
+            building.ownerID = buildingData.ownerID;
+            faction.factionID = buildingData.factionID;
+            health.currentHealth = buildingData.currentHealth;
 
-            Debug.Log($"[LoadManager] Loaded building: {b.prefabKey}");
+            entityManager.SetComponentData(entity, localTransform);
+            entityManager.SetComponentData(entity, building);
+            entityManager.SetComponentData(entity, faction);
+            entityManager.SetComponentData(entity, health);
         }
     }
     
@@ -174,7 +191,7 @@ public class LoadManager : MonoBehaviour
     {
         Debug.Log("[LoadManager] Loading RESOURCES...");
 
-        ResourceManager.Instance.resourceAmountDictionary = resources.ToDictionary();
+        ResourceManager.Instance.OverrideDict(resources.ToDictionary());
     }
     
     private void LoadManaged(SaveManagedData managed)
@@ -184,4 +201,4 @@ public class LoadManager : MonoBehaviour
         cameraControllerGizmo.position = managed.camPosition;
         cameraControllerGizmo.rotation = managed.camRotation;
     }
-} */
+}

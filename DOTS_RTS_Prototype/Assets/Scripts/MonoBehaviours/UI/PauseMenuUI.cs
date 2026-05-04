@@ -64,8 +64,7 @@ public class PauseMenuUI : MonoBehaviour
         });
         loadButton.onClick.AddListener(() =>
         {
-            // TODO: Implement
-            /* LoadGame */
+            LoadManager.Instance.LoadGame();
         });
         mainMenuButton.onClick.AddListener(() =>
         {

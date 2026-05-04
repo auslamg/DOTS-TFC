@@ -7,7 +7,13 @@ public class ResourceManager : MonoBehaviour
 
     [SerializeField] ResourceQuantity[] startingResources;
     [SerializeField] ResourceRegistrySO resourceRegistrySO;
-    public Dictionary<ResourceKey, int> resourceAmountDictionary;
+    public Dictionary<ResourceKey, int> resourceAmountDictionary { get; private set; }
+
+    public void OverrideDict(Dictionary<ResourceKey, int> dict)
+    {
+        resourceAmountDictionary = dict;
+        OnResourceValueChange.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>
     /// Global access point for the active building placement manager.

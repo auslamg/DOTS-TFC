@@ -9,32 +9,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13ac75aa6b165694880c09c9a2423183, type: 3}
-  m_Name: Marksman
-  m_EditorClassIdentifier: Assembly-CSharp::UnitSO
-  unitType: 2
-  trainingTime: 10
-  imageCard: {fileID: 21300000, guid: 7e5af9f6e92c6974baebe192ce185e5e, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
+  m_Name: CastleProducerFort
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
+  buildingType: 5
+  prefabGO: {fileID: 8748852513184617564, guid: a8f49033411a3264d9a9f979c9af0b66, type: 3}
+  minDistanceToSimilar: 25
+  isBuildable: 1
+  imageCard: {fileID: 21300000, guid: 6676237bbc1bba84ba5a3a96463692f5, type: 3}
+  buildingGhostPrefab: {fileID: 3070632413876166947, guid: ec2b14f971ee88640a9dd3784a7eba3e, type: 3}
   constructionCost:
-  - resourceSO: {fileID: 11400000, guid: 607a0b39fe7b5554cb9c2f46eafc27aa, type: 2}
-    amount: 0
-  - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
-    amount: 0
+  - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
+    value: 2000
+  - resourceSO: {fileID: 11400000, guid: 779afe0b696758744bd966e62f0d64a9, type: 2}
+    value: 2000
   cachedKey:
     name:
-      utf8LengthInBytes: 8
+      utf8LengthInBytes: 10
       bytes:
         offset0000:
-          byte0000: 77
+          byte0000: 67
           byte0001: 97
-          byte0002: 114
-          byte0003: 107
-          byte0004: 115
-          byte0005: 109
-          byte0006: 97
-          byte0007: 110
-          byte0008: 0
-          byte0009: 0
+          byte0002: 115
+          byte0003: 116
+          byte0004: 108
+          byte0005: 101
+          byte0006: 70
+          byte0007: 111
+          byte0008: 114
+          byte0009: 116
           byte0010: 0
           byte0011: 0
           byte0012: 0
