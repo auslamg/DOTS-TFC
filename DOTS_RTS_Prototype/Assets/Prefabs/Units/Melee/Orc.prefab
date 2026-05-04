@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1201859742890670274, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: ownerID
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4211631314389968475, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
       propertyPath: m_Name
       value: Orc

@@ -60,8 +60,7 @@ public class PauseMenuUI : MonoBehaviour
         });
         saveButton.onClick.AddListener(() =>
         {
-            // TODO: Implement
-            /* SaveGame */
+            SaveManager.Instance.SaveGame();
         });
         loadButton.onClick.AddListener(() =>
         {

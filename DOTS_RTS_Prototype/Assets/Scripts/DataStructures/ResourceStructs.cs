@@ -5,5 +5,5 @@ using UnityEngine;
 public struct ResourceQuantity
 {
     public ResourceSO resourceSO;
-    public int value;
+    public int amount;
 }

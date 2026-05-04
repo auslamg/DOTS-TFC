@@ -7,7 +7,7 @@ public class ResourceManager : MonoBehaviour
 
     [SerializeField] ResourceQuantity[] startingResources;
     [SerializeField] ResourceRegistrySO resourceRegistrySO;
-    private Dictionary<ResourceKey, int> resourceAmountDictionary;
+    public Dictionary<ResourceKey, int> resourceAmountDictionary;
 
     /// <summary>
     /// Global access point for the active building placement manager.
@@ -73,7 +73,7 @@ public class ResourceManager : MonoBehaviour
     {
         if (resourceAmountDictionary.ContainsKey(resourceQuantity.resourceSO.resourceKey))
         {
-            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.value;
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.amount;
             OnResourceValueChange.Invoke(this, EventArgs.Empty);
             return true;
         }
@@ -92,7 +92,7 @@ public class ResourceManager : MonoBehaviour
 
         foreach (var resourceQuantity in resourceQuantities)
         {
-            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.value;
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] += resourceQuantity.amount;
         }
         OnResourceValueChange.Invoke(this, EventArgs.Empty);
         return true;
@@ -110,14 +110,14 @@ public class ResourceManager : MonoBehaviour
 
     public bool CanSpendResourceValue(ResourceQuantity resourceQuantity)
     {
-        return resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] >= resourceQuantity.value;
+        return resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] >= resourceQuantity.amount;
     }
 
     public bool CanSpendResourceValues(ResourceQuantity[] resourceQuantities)
     {
         foreach (var resourceQuantity in resourceQuantities)
         {
-            if (resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] < resourceQuantity.value)
+            if (resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] < resourceQuantity.amount)
             {
                 return false;
             }
@@ -129,7 +129,7 @@ public class ResourceManager : MonoBehaviour
     {
         if (CanSpendResourceValue(resourceQuantity))
         {
-            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.value;
+            resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.amount;
             OnResourceValueChange.Invoke(this, EventArgs.Empty);
 
             return true;
@@ -146,7 +146,7 @@ public class ResourceManager : MonoBehaviour
         {
             foreach (var resourceQuantity in resourceQuantities)
             {
-                resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.value;
+                resourceAmountDictionary[resourceQuantity.resourceSO.resourceKey] -= resourceQuantity.amount;
             }
             OnResourceValueChange.Invoke(this, EventArgs.Empty);
 
