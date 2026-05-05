@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Matcap Fort
+  m_Name: Matcap Tower
   m_Shader: {fileID: -6465566751694194690, guid: 83897529c35d06d4e9ee2c93d7f1322a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Base_Map:
-        m_Texture: {fileID: 2800000, guid: a6a8d109433abc84e938a6960d6d0d75, type: 3}
+        m_Texture: {fileID: 2800000, guid: 72af82bab28ac474ca984f54677c49c4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:

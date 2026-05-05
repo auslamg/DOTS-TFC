@@ -48,11 +48,10 @@ partial struct ProjectileMoverSystem : ISystem
                 float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
                 moveDirection = math.normalize(moveDirection);
 
+                // Rotate projectile to face movement direction
+                localTransform.ValueRW.Rotation = quaternion.LookRotationSafe(moveDirection, math.up());
                 // Move towards target
                 localTransform.ValueRW.Position += moveDirection * projectile.ValueRO.speed * SystemAPI.Time.DeltaTime;
-                // Rotate projectile.
-                localTransform.ValueRW.Rotation =
-                    math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()), Time.deltaTime);
 
                 //Position after moving, used for calculating if the projectile overshot the target
                 float distanceAfterMovingSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);

@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: scanFrequency
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 1459775456809195627, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: projectilePrefabKey
+      value: Arrow
+      objectReference: {fileID: 0}
     - target: {fileID: 2120714550759784727, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9
@@ -54,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2690996201501620553, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: buildingKeyName
-      value: GuardTower
+      value: StoneTower
       objectReference: {fileID: 0}
     - target: {fileID: 3036446947577541737, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -98,7 +102,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5583451626745932819, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.y
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5583451626745932819, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.z
@@ -106,15 +110,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5583451626745932819, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Center.y
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5640210318658886377, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3d637bd49be4bee4d8668e9578e4e50d, type: 2}
+      objectReference: {fileID: 2100000, guid: 2ad76a5f719c0ea47bd995c813790b42, type: 2}
     - target: {fileID: 7485326702547185944, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Name
-      value: GuardTower
+      value: StoneTower
       objectReference: {fileID: 0}
     - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.x
@@ -122,7 +126,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.y
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.z
@@ -130,12 +134,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Center.y
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8997649689348835859, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 4300000, guid: e682bef6cc8481b4697a381720c56d78, type: 3}
+      objectReference: {fileID: -1277366460620338370, guid: e4758da9e63c7da469159943bf9dd1df, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
