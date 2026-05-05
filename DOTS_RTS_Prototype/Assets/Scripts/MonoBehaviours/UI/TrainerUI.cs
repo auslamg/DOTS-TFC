@@ -205,7 +205,7 @@ public class TrainerUI : MonoBehaviour
     /// </summary>
     void UpdateProgressBar()
     {
-        if (trainerEntity == Entity.Null)
+        if (!EntityUtil.ExistsAndPersists(ref entityManager, ref trainerEntity))
         {
             progressBarImage.fillAmount = 0f;
             return;
@@ -382,7 +382,7 @@ public class TrainerUI : MonoBehaviour
         unitQueueButton.onClick.RemoveAllListeners();
         unitQueueButton.onClick.AddListener(() =>
         {
-            if (trainerEntity == Entity.Null || !entityManager.Exists(trainerEntity))
+            if (!EntityUtil.ExistsAndPersists(ref entityManager, ref trainerEntity))
             {
                 return;
             }

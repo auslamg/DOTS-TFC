@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Dto;
+using Dto.Buildings;
+using Dto.Units;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -58,26 +61,27 @@ public class LoadManager : MonoBehaviour
         return File.Exists(savePath);
     }
 
-    public SaveGameData LoadGame()
+    public bool LoadGame()
     {
         Debug.Log("[LoadManager] LOADING...");
 
         if (!File.Exists(savePath))
         {
             Debug.LogWarning($"[LoadManager] No save file found at: {savePath}");
-            return default;
+            return false;
         }
 
         string json = File.ReadAllText(savePath);
-        SaveGameData saveData = JsonUtility.FromJson<SaveGameData>(json);
+        DtoGameData saveData = JsonUtility.FromJson<DtoGameData>(json);
 
         OverwriteData(saveData);
+        UnitSelectionManager.Instance.TriggerOnSelectionChange();
 
         Debug.Log("[LoadManager] Load complete.");
-        return saveData;
+        return true;
     }
 
-    private void OverwriteData(SaveGameData save)
+    private void OverwriteData(DtoGameData save)
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
@@ -114,116 +118,155 @@ public class LoadManager : MonoBehaviour
         }
     }
 
-    private void LoadUnits(List<SaveUnitData> units)
+    private void LoadUnits(List<DtoUnitData> units)
     {
         Debug.Log($"[LoadManager] Loading UNITS: {units.Count}");
 
-        foreach (SaveUnitData unitData in units)
+        foreach (DtoUnitData unitData in units)
         {
-            // Fetch prefab
-            EntityPrefabKey entityPrefabKey = new EntityPrefabKey
-            {
-                name = unitData.prefabKey,
-            };
-            Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
+            ConstructUnit(unitData);
+        }
+    }
 
-            // Rebuild the entity
-            Entity entity = entityManager.Instantiate(prefabEntity);
+    private void ConstructUnit(DtoUnitData unitData)
+    {
+        // Fetch prefab.
+        EntityPrefabKey entityPrefabKey = new EntityPrefabKey
+        {
+            name = unitData.prefabKey,
+        };
+        Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
 
-            // Save post-write data.
-            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+        // Rebuild the entity.
+        Entity entity = entityManager.Instantiate(prefabEntity);
 
-            Unit unit = entityManager.GetComponentData<Unit>(entity);
-            Faction faction = entityManager.GetComponentData<Faction>(entity);
+        // Save post-write data.
+        LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
 
-            UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
-            ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
-            PathRequest pathRequest = entityManager.GetComponentData<PathRequest>(entity);
-            FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
+        Unit unit = entityManager.GetComponentData<Unit>(entity);
+        Faction faction = entityManager.GetComponentData<Faction>(entity);
+        bool selected = unitData.selected;
 
-            Health health = entityManager.GetComponentData<Health>(entity);
+        UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
+        ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
+        PathRequest pathRequest = entityManager.GetComponentData<PathRequest>(entity);
+        FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
 
-            {
-                localTransform.Position = unitData.position;
-                localTransform.Rotation = unitData.rotation;
+        Health health = entityManager.GetComponentData<Health>(entity);
 
-                unit.ownerID = unitData.ownerID;
-                faction.factionID = unitData.factionID;
+        // Value assignments.
+        {
+            localTransform.Position = unitData.position;
+            localTransform.Rotation = unitData.rotation;
 
-                unitMover.targetPosition = unitData.unitMoverPosition;
-                unitMover.hasStartedTargetPosition = true;
+            unit.ownerID = unitData.ownerID;
+            faction.factionID = unitData.factionID;
 
-                manualMove.targetPosition = unitData.targetPosition;
-                manualMove.postFormationPosition = unitData.postFormationPosition;
+            unitMover.targetPosition = unitData.unitMoverPosition;
+            unitMover.hasStartedTargetPosition = true;
 
-                pathRequest.targetPosition = unitData.targetPosition;
-                pathRequest.postFormationPosition = unitData.postFormationPosition;
+            manualMove.targetPosition = unitData.targetPosition;
+            manualMove.postFormationPosition = unitData.postFormationPosition;
 
-                flowFieldFollower.lastMoveVector = unitData.lastMoveVector;
+            pathRequest.targetPosition = unitData.targetPosition;
+            pathRequest.postFormationPosition = unitData.postFormationPosition;
 
-                health.currentHealth = unitData.currentHealth;
-            }
+            flowFieldFollower.lastMoveVector = unitData.lastMoveVector;
 
+            health.currentHealth = unitData.currentHealth;
+        }
+
+        // Copy values.
+        {
             entityManager.SetComponentData(entity, localTransform);
 
             entityManager.SetComponentData(entity, unit);
             entityManager.SetComponentData(entity, faction);
+            entityManager.SetComponentEnabled<Selected>(entity, selected);
 
             entityManager.SetComponentData(entity, unitMover);
             entityManager.SetComponentData(entity, manualMove);
             entityManager.SetComponentData(entity, pathRequest);
             entityManager.SetComponentData(entity, flowFieldFollower);
-            
+
             entityManager.SetComponentData(entity, health);
 
             entityManager.SetComponentEnabled<PathRequest>(entity, unitData.requirePathing);
         }
     }
 
-    private void LoadBuildings(List<SaveBuildingData> buildings)
+    private void LoadBuildings(List<DtoBuildingData> buildings)
     {
         Debug.Log($"[LoadManager] Loading BUILDINGS: {buildings.Count}");
 
-        foreach (SaveBuildingData buildingData in buildings)
+        foreach (DtoBuildingData buildingData in buildings)
         {
-            // Fetch prefab
-            EntityPrefabKey entityPrefabKey = new EntityPrefabKey
-            {
-                name = buildingData.prefabKey,
-            };
-            Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
-            Debug.Log($"Fetching Building: {entityPrefabKey.name}");
-
-            // Rebuild the entity
-            Entity entity = entityManager.Instantiate(prefabEntity);
-
-            // Save post-write data.
-            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
-            Building building = entityManager.GetComponentData<Building>(entity);
-            Faction faction = entityManager.GetComponentData<Faction>(entity);
-            Health health = entityManager.GetComponentData<Health>(entity);
-
-            localTransform.Position = buildingData.position;
-            localTransform.Rotation = buildingData.rotation;
-            building.ownerID = buildingData.ownerID;
-            faction.factionID = buildingData.factionID;
-            health.currentHealth = buildingData.currentHealth;
-
-            entityManager.SetComponentData(entity, localTransform);
-            entityManager.SetComponentData(entity, building);
-            entityManager.SetComponentData(entity, faction);
-            entityManager.SetComponentData(entity, health);
+            ConstructBuilding(buildingData);
         }
     }
 
-    private void LoadResources(SaveResourceData resources)
+    private void ConstructBuilding(DtoBuildingData buildingData)
+    {
+        // Fetch prefab.
+        EntityPrefabKey entityPrefabKey = new EntityPrefabKey
+        {
+            name = buildingData.prefabKey,
+        };
+        Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
+        Debug.Log($"Fetching Building: {entityPrefabKey.name}");
+
+        // Rebuild the entity.
+        Entity entity = entityManager.Instantiate(prefabEntity);
+
+        // Save post-write data.
+        {
+            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+            Building building = entityManager.GetComponentData<Building>(entity);
+            Faction faction = entityManager.GetComponentData<Faction>(entity);
+            bool selected = buildingData.selected;
+            Health health = entityManager.GetComponentData<Health>(entity);
+
+            // Value assignments.
+            {
+                localTransform.Position = buildingData.position;
+                localTransform.Rotation = buildingData.rotation;
+                building.ownerID = buildingData.ownerID;
+                faction.factionID = buildingData.factionID;
+                health.currentHealth = buildingData.currentHealth;
+            }
+
+            // Copy values.
+            {
+                entityManager.SetComponentData(entity, localTransform);
+                entityManager.SetComponentData(entity, building);
+                entityManager.SetComponentData(entity, faction);
+                entityManager.SetComponentEnabled<Selected>(entity, selected);
+                entityManager.SetComponentData(entity, health);
+            }
+        }
+
+        // Read trainer buffer data if necessary.
+        if (entityManager.HasComponent<Trainer>(entity) &&
+            entityManager.HasBuffer<QueuedUnitBuffer>(entity))
+        {
+            DynamicBuffer<QueuedUnitBuffer> unitQueueBuffer =
+                    entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: false);
+
+            Trainer trainer = buildingData.trainerData.ToTrainer();
+            buildingData.trainerData.RewriteQueuedUnitBuffer(unitQueueBuffer);
+
+            entityManager.SetComponentData(entity, trainer);
+        }
+    }
+
+    private void LoadResources(DtoResourceData resources)
     {
         Debug.Log("[LoadManager] Loading RESOURCES...");
 
         ResourceManager.Instance.OverrideDict(resources.ToDictionary());
     }
 
-    private void LoadManaged(SaveManagedData managed)
+    private void LoadManaged(DtoManagedData managed)
     {
         Debug.Log("[LoadManager] Loading MANAGED DATA...");
 

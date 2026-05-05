@@ -434,8 +434,8 @@ MonoBehaviour:
     y: 0
     width: 462
     height: 941
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 76}
+  m_MaxSize: {x: 4001, y: 4026}
   m_ActualView: {fileID: 33}
   m_Panes:
   - {fileID: 32}
@@ -465,7 +465,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 43
+    y: 0
     width: 1920
     height: 36
   m_SerializedDataModeController:
@@ -730,8 +730,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Console\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 854
-    y: 680
+    x: 855
+    y: 24
     width: 602
     height: 314
   m_SerializedDataModeController:
@@ -769,7 +769,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79
+    y: 24
     width: 236
     height: 575
   m_SerializedDataModeController:
@@ -788,8 +788,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs:
-      - m_Data: 0
+      m_SelectedIDs: []
       m_LastClickedID:
         m_Data: 0
       m_ExpandedIDs:
@@ -800,8 +799,8 @@ MonoBehaviour:
       - m_Data: 65308
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: OfficeBigSpawner
-        m_OriginalName: OfficeBigSpawner
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
@@ -809,10 +808,10 @@ MonoBehaviour:
           width: 0
           height: 0
         m_UserData:
-          m_Data: -1982
+          m_Data: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 8}
@@ -883,8 +882,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Scene\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 237
-    y: 79
+    x: 238
+    y: 24
     width: 290
     height: 575
   m_SerializedDataModeController:
@@ -1521,7 +1520,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.39376453, y: -0.4342562, z: 0.2176677, w: -0.7808278}
     speed: 2
-    m_Value: {x: -0.39362675, y: -0.43410426, z: 0.21759154, w: -0.78055465}
+    m_Value: {x: 0.3937645, y: 0.43425617, z: -0.2176677, w: 0.78082776}
   m_Size:
     m_Target: 9.934541
     speed: 2
@@ -1580,8 +1579,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 529
-    y: 79
+    x: 530
+    y: 24
     width: 606
     height: 575
   m_SerializedDataModeController:
@@ -1683,8 +1682,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1137
-    y: 79
+    x: 1
+    y: 24
     width: 319
     height: 262
   m_SerializedDataModeController:
@@ -1735,10 +1734,7 @@ MonoBehaviour:
       m_Data: 66466
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 66382
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1771,9 +1767,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1855,8 +1849,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Project\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1137
-    y: 367
+    x: 1
+    y: 312
     width: 319
     height: 287
   m_SerializedDataModeController:
@@ -1907,12 +1901,7 @@ MonoBehaviour:
       m_Data: 86750
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 66374
-    - m_Data: 86750
-    - m_Data: 86752
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1945,9 +1934,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2083,10 +2070,7 @@ MonoBehaviour:
       m_Data: 66382
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 66382
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2119,9 +2103,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2298,9 +2280,7 @@ MonoBehaviour:
       m_Data: 102732
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2333,9 +2313,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2419,7 +2397,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 680
+    y: 24
     width: 853
     height: 314
   m_SerializedDataModeController:
@@ -2470,12 +2448,7 @@ MonoBehaviour:
       m_Data: 66470
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 66388
-    - m_Data: 66472
-    - m_Data: 66474
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2508,9 +2481,7 @@ MonoBehaviour:
       m_Data: 0
     m_ExpandedIDs:
     - m_Data: 0
-    - m_Data: 66172
-    - m_Data: 1000000000
-    - m_Data: 2147483647
+    - m_Data: 61252
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -2724,8 +2695,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1458
-    y: 79
+    x: 1459
+    y: 24
     width: 461
     height: 915
   m_SerializedDataModeController:

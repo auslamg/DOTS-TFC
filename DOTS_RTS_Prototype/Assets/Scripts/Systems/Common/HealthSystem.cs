@@ -1,6 +1,9 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
+using UnityEngine;
 
 /// <summary>
 /// Applies entity death when health reaches zero and queues structural destruction.
@@ -9,14 +12,12 @@ partial struct HealthSystem : ISystem
 {
     /// <summary>
     /// Marks death events and schedules entity destruction through an end-simulation command buffer.
+    /// Triggers <see cref="UnitSelectionManager.OnSelectionChange"/> if a selected unit has died.
     /// </summary>
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer =
             SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
-        //Alternative new EntityCommandBuffer (unoptimized)
-        /* new EntityCommandBuffer(Allocator.Temp); */
 
         foreach ((
             RefRW<Health> health,
@@ -27,19 +28,24 @@ partial struct HealthSystem : ISystem
         {
             if (health.ValueRO.currentHealth <= 0)
             {
-                //Dead unit
+                // Mark dead unit and buffer destruction.
                 health.ValueRW.onDeath = true;
                 entityCommandBuffer.DestroyEntity(entity);
-
-                //[Deprecated]
-                //Cannot destroy entities at runtime due to structural change errors.
-                //Buffer the operation for future entity destruction. Manual destruction:
-                /* state.EntityManager.DestroyEntity(entity); */
-
             }
         }
-        //[Deprecated]
-        // New EntityCommandBuffers have to be played (.Playback) to commit structural changes. 
-        /* entityCommandBuffer.Playback(state.EntityManager); */
+
+        foreach ((
+            RefRO<Health> health,
+            RefRO<Selected> selected)
+                in SystemAPI.Query<
+                RefRO<Health>,
+                RefRO<Selected>>())
+        {
+            // Selected unit has died, update selection.
+            if (health.ValueRO.onDeath)
+            {
+                DOTSEventManager.Instance.TriggerOnSelectedDeath();
+            }
+        }
     }
 }

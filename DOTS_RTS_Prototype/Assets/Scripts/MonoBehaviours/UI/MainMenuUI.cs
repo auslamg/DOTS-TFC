@@ -51,8 +51,11 @@ public class MainMenuUI : MonoBehaviour
         });
         loadButton.onClick.AddListener(() =>
         {
-            // TODO: Implement
-            /* LoadGame */
+            SceneManager.LoadScene(1);
+            LoadManager.Instance.LoadGame();
+
+            Time.timeScale = 1;
+            gameObject.SetActive(false);
         });
         creditsButton.onClick.AddListener(() =>
         {

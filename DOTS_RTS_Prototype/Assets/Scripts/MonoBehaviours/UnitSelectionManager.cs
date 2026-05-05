@@ -89,8 +89,6 @@ public class UnitSelectionManager : MonoBehaviour
     [Tooltip("Additional unit slots added for each subsequent ring in circle formation.")]
     private int unitsPerRing = 3;
 
-
-
     /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
@@ -110,6 +108,16 @@ public class UnitSelectionManager : MonoBehaviour
     private void Awake()
     {
         InitializeSingleton();
+    }
+
+    void Start()
+    {
+        DOTSEventManager.Instance.OnSelectedDeath += DOTSEventManager_OnSelectedDeath;
+    }
+
+    private void DOTSEventManager_OnSelectedDeath(object sender, EventArgs e)
+    {
+        TriggerOnSelectionChange();
     }
 
     /// <summary>
@@ -629,6 +637,12 @@ public class UnitSelectionManager : MonoBehaviour
         return positionArray;
     }
 
-
-
+    /// <summary>
+    /// Invokes the <see cref="OnSelectionChange"/> event from an external script.
+    /// </summary>
+    public void TriggerOnSelectionChange()
+    {
+        Debug.Log("Triggered OnSelectionChange from outside");
+        OnSelectionChange?.Invoke(this, EventArgs.Empty);
+    }
 }

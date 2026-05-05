@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Dto;
+using Dto.Buildings;
+using Dto.Units;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -9,8 +12,6 @@ using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
-    EntityManager entityManager;
-
     [Header("Save path settings")]
 
     /// <summary>
@@ -29,6 +30,8 @@ public class SaveManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Camera controller gizmo for camera position storage.")]
     private Transform cameraControllerGizmo;
+
+    EntityManager entityManager;
 
     /// <summary>
     /// Global singleton access to the DOTS event bridge.
@@ -56,162 +59,24 @@ public class SaveManager : MonoBehaviour
         InitializeSingleton();
     }
 
-    public void SaveGame()
+    public bool SaveGame()
     {
         Debug.Log("[SaveManager] SAVING...");
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        List<SaveUnitData> savedUnitsSet = GetAllUnitData();
-        List<SaveBuildingData> savedBuildingsSet = GetAllBuildingData();
-        var saveResourceData = GetAllResourceData();
-        var managedData = GetManagedData();
-
-        WriteSaveFile();
+        return WriteSaveFile();
     }
 
-    private List<SaveUnitData> GetAllUnitData()
-    {
-        Debug.Log("[SaveManager] Reading UNITS...");
-
-        //Query all entities with the Selected component to disable it
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Unit>().
-            Build(entityManager);
-
-        List<SaveUnitData> savedUnitsSet = new List<SaveUnitData>();
-
-        // Read all entities.
-        using var entityArray = query.ToEntityArray(Allocator.Temp);
-        foreach (var entity in entityArray)
-        {
-            // Get prefab.
-            UnitDataSOHolder unitDataSOHolder = entityManager.GetComponentData<UnitDataSOHolder>(entity);
-
-            // Save post-write data.
-            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
-            Unit unit = entityManager.GetComponentData<Unit>(entity);
-            Faction faction = entityManager.GetComponentData<Faction>(entity);
-
-            UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
-            ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
-            FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
-            
-            ManualTarget manualTarget = entityManager.GetComponentData<ManualTarget>(entity);
-            Health health = entityManager.GetComponentData<Health>(entity);
-
-            bool requirePathing =
-                entityManager.IsComponentEnabled<ManualMove>(entity) ||
-                entityManager.IsComponentEnabled<FlowFieldFollower>(entity);
-
-            // Construct unit data structure.
-            SaveUnitData unitData = new SaveUnitData
-            {
-                position = localTransform.Position,
-                rotation = localTransform.Rotation,
-
-                prefabKey = unitDataSOHolder.unitKey.name.ToString(),
-                ownerID = unit.ownerID,
-                factionID = faction.factionID,
-
-                unitMoverPosition = unitMover.targetPosition,
-
-                requirePathing = requirePathing,
-                targetPosition = manualMove.targetPosition,
-                postFormationPosition = manualMove.postFormationPosition,
-                
-                lastMoveVector = flowFieldFollower.lastMoveVector,
-
-                targetEntity = manualTarget.targetEntity,
-
-                currentHealth = health.currentHealth,
-            };
-
-            // Add to save set.
-            savedUnitsSet.Add(unitData);
-            Debug.Log($"[SaveManager] Saving unit: {unitData}");
-        }
-
-        return savedUnitsSet;
-    }
-
-    private List<SaveBuildingData> GetAllBuildingData()
-    {
-        Debug.Log("[SaveManager] Reading BUILDINGS...");
-
-        //Query all entities with the Selected component to disable it
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Building>().
-            Build(entityManager);
-
-        List<SaveBuildingData> savedBuildingsSet = new List<SaveBuildingData>();
-
-        // Read all entities.
-        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-        foreach (var entity in entityArray)
-        {
-            // Get prefab.
-            BuildingDataSOHolder buildingDataSOHolder = entityManager.GetComponentData<BuildingDataSOHolder>(entity);
-
-            // Save post-write data.
-            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
-            Building building = entityManager.GetComponentData<Building>(entity);
-            Faction faction = entityManager.GetComponentData<Faction>(entity);
-            Health health = entityManager.GetComponentData<Health>(entity);
-
-            // Construct unit data structure.
-            SaveBuildingData buildingData = new SaveBuildingData
-            {
-                position = localTransform.Position,
-                rotation = localTransform.Rotation,
-
-                prefabKey = buildingDataSOHolder.buildingKey.name.ToString(),
-                ownerID = building.ownerID,
-                factionID = faction.factionID,
-                
-                currentHealth = health.currentHealth,
-            };
-
-            // Add to save set.
-            savedBuildingsSet.Add(buildingData);
-            Debug.Log($"[SaveManager] Saving building: {buildingData}");
-        }
-
-        return savedBuildingsSet;
-    }
-
-    private SaveResourceData GetAllResourceData()
-    {
-        var resourceAmountDictionary = ResourceManager.Instance.resourceAmountDictionary;
-
-        return SaveResourceData.FromDictionary(resourceAmountDictionary);
-    }
-
-    private SaveManagedData GetManagedData()
-    {
-        float3 camPosition = cameraControllerGizmo.position;
-        quaternion camRotation = cameraControllerGizmo.rotation;
-
-        SaveManagedData saveManagedData = new SaveManagedData
-        {
-            camPosition = camPosition,
-            camRotation = camRotation
-        };
-
-
-        Debug.Log($"[SaveManager] Saving managed data: {saveManagedData}");
-        return saveManagedData;
-    }
-
-    private void WriteSaveFile()
+    private bool WriteSaveFile()
     {
         Debug.Log("[SaveManager] Writing save file...");
 
         try
         {
-            SaveGameData saveGame = new SaveGameData
+            DtoGameData saveGame = new DtoGameData
             {
-                units = new List<SaveUnitData>(GetAllUnitData()),
-                buildings = new List<SaveBuildingData>(GetAllBuildingData()),
+                units = new List<DtoUnitData>(GetAllUnitData()),
+                buildings = new List<DtoBuildingData>(GetAllBuildingData()),
                 resources = GetAllResourceData(),
                 managed = GetManagedData()
             };
@@ -224,10 +89,158 @@ public class SaveManager : MonoBehaviour
             File.WriteAllText(savePath, json);
 
             Debug.Log($"[SaveManager] Save written successfully to: {savePath}");
+            return true;
         }
         catch (Exception e)
         {
             Debug.LogError($"[SaveManager] Failed to write save file: {e}");
+            return false;
         }
+    }
+
+    private List<DtoUnitData> GetAllUnitData()
+    {
+        Debug.Log("[SaveManager] Reading UNITS...");
+
+        // Query all entities with the Unit component.
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Unit>().
+            Build(entityManager);
+
+        List<DtoUnitData> savedUnitsSet = new List<DtoUnitData>();
+
+        // Read all entities.
+        using var entityArray = query.ToEntityArray(Allocator.Temp);
+        foreach (var entity in entityArray)
+        {
+            // Get prefab.
+            UnitDataSOHolder unitDataSOHolder = entityManager.GetComponentData<UnitDataSOHolder>(entity);
+
+            // Save dynamic data.
+            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+
+            Unit unit = entityManager.GetComponentData<Unit>(entity);
+            Faction faction = entityManager.GetComponentData<Faction>(entity);
+            bool selected = entityManager.IsComponentEnabled<Selected>(entity);
+
+            bool requirePathing =
+                            entityManager.IsComponentEnabled<ManualMove>(entity) ||
+                            entityManager.IsComponentEnabled<FlowFieldFollower>(entity);
+            UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
+            ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
+            FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
+            
+            ManualTarget manualTarget = entityManager.GetComponentData<ManualTarget>(entity);
+            Health health = entityManager.GetComponentData<Health>(entity);
+            
+            // Construct unit data structure.
+            DtoUnitData unitData = new DtoUnitData
+            {
+                position = localTransform.Position,
+                rotation = localTransform.Rotation,
+
+                prefabKey = unitDataSOHolder.unitKey.name.ToString(),
+                ownerID = unit.ownerID,
+                factionID = faction.factionID,
+                selected = selected,
+
+                unitMoverPosition = unitMover.targetPosition,
+                requirePathing = requirePathing,
+                targetPosition = manualMove.targetPosition,
+                postFormationPosition = manualMove.postFormationPosition,
+                lastMoveVector = flowFieldFollower.lastMoveVector,
+
+                targetEntity = manualTarget.targetEntity,
+                currentHealth = health.currentHealth,
+            };
+
+            // Add to save set.
+            savedUnitsSet.Add(unitData);
+            Debug.Log($"[SaveManager] Saving unit: {unitData}");
+        }
+
+        return savedUnitsSet;
+    }
+
+    private List<DtoBuildingData> GetAllBuildingData()
+    {
+        Debug.Log("[SaveManager] Reading BUILDINGS...");
+
+        // Query all entities with the Building component.
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Building>().
+            Build(entityManager);
+
+        List<DtoBuildingData> savedBuildingsSet = new List<DtoBuildingData>();
+
+        // Read all entities.
+        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
+        foreach (var entity in entityArray)
+        {
+            // Get prefab.
+            BuildingDataSOHolder buildingDataSOHolder = entityManager.GetComponentData<BuildingDataSOHolder>(entity);
+
+            // Save dynamic data.
+            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+
+            Building building = entityManager.GetComponentData<Building>(entity);
+            Faction faction = entityManager.GetComponentData<Faction>(entity);
+            bool selected = entityManager.IsComponentEnabled<Selected>(entity);
+
+            Health health = entityManager.GetComponentData<Health>(entity);
+
+            // Construct unit data structure.
+            DtoBuildingData buildingData = new DtoBuildingData
+            {
+                position = localTransform.Position,
+                rotation = localTransform.Rotation,
+
+                prefabKey = buildingDataSOHolder.buildingKey.name.ToString(),
+                ownerID = building.ownerID,
+                factionID = faction.factionID,
+                selected = selected,
+
+                currentHealth = health.currentHealth,
+            };
+
+            // Read trainer data if necessary
+            if (entityManager.HasComponent<Trainer>(entity) && 
+                entityManager.HasBuffer<QueuedUnitBuffer>(entity))
+            {
+                Trainer trainer = entityManager.GetComponentData<Trainer>(entity);
+                DynamicBuffer<QueuedUnitBuffer> unitQueueBuffer =
+                        entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: true);
+                buildingData.trainerData = DtoTrainerData.FromTrainer(trainer, unitQueueBuffer);
+            }           
+
+            // Add to save set.
+            savedBuildingsSet.Add(buildingData);
+            Debug.Log($"[SaveManager] Saving building: {buildingData}");
+        }
+
+        return savedBuildingsSet;
+    }
+
+    private DtoResourceData GetAllResourceData()
+    {
+        var resourceAmountDictionary = ResourceManager.Instance.resourceAmountDictionary;
+
+        return DtoResourceData.FromDictionary(resourceAmountDictionary);
+    }
+
+    private DtoManagedData GetManagedData()
+    {
+        float3 camPosition = cameraControllerGizmo.position;
+        quaternion camRotation = cameraControllerGizmo.rotation;
+
+        DtoManagedData saveManagedData = new DtoManagedData
+        {
+            camPosition = camPosition,
+            camRotation = camRotation
+        };
+
+
+        Debug.Log($"[SaveManager] Saving managed data: {saveManagedData}");
+        return saveManagedData;
     }
 }

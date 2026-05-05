@@ -97,7 +97,7 @@ public partial struct AimShootAnimationStateJob : IJobEntity
         //FIX: Use utils method
         //TODO: Refactor into fsm
         if (!unitMover.isMoving && targetter.targetEntity != Entity.Null)
-        {
+        { 
             RefRW<ActiveAnimation> activeAnimation =
                 activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
             activeAnimation.ValueRW.nextAnimationKey = unitAnimations.aimAnimationKey;

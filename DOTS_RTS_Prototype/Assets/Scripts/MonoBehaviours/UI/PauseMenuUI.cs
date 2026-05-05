@@ -65,6 +65,10 @@ public class PauseMenuUI : MonoBehaviour
         loadButton.onClick.AddListener(() =>
         {
             LoadManager.Instance.LoadGame();
+
+            Time.timeScale = 1;
+            gameModeButtonsUI.gameObject.SetActive(true);
+            gameObject.SetActive(false);
         });
         mainMenuButton.onClick.AddListener(() =>
         {

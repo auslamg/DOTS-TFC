@@ -20,6 +20,11 @@ public class DOTSEventManager : MonoBehaviour
     /// <summary>
     /// Raised when a critical entity is constructed/registered.
     /// </summary>
+    public event EventHandler OnSelectedDeath;
+
+    /// <summary>
+    /// Raised when a critical entity is constructed/registered.
+    /// </summary>
     public event EventHandler<EntityEventArgs> OnCriticalConstruction;
 
     /// <summary>
@@ -68,6 +73,15 @@ public class DOTSEventManager : MonoBehaviour
         {
             OnTrainerUnitQueueChange?.Invoke(e, EventArgs.Empty);
         }        
+    }
+
+    /// <summary>
+    /// Emits a critical-construction event.
+    /// </summary>
+    /// <param name="firingEntity">Entity that was registered as critical.</param>
+    public void TriggerOnSelectedDeath()
+    {
+        OnSelectedDeath?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>

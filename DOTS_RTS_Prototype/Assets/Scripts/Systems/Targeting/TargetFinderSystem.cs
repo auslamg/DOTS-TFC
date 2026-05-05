@@ -23,6 +23,7 @@ partial struct TargetFinderSystem : ISystem
     {
         //Register CollisionWorld for physics queries
         CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
+        EntityManager entityManager = state.EntityManager;
 
         //Used for registering all available targets
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
@@ -87,7 +88,7 @@ partial struct TargetFinderSystem : ISystem
                                     targetFaction.factionID != GameAssets.NONE_FACTION)
                                 {
                                     //Closest target logic
-                                    if (closestTargetEntity == Entity.Null)
+                                    if (!EntityUtil.ExistsAndPersists(ref entityManager, ref closestTargetEntity))
                                     {
                                         closestTargetEntity = distanceHit.Entity;
                                         closestTargetDistance = distanceHit.Distance;
@@ -104,7 +105,7 @@ partial struct TargetFinderSystem : ISystem
                             }
                         }
                     }
-                    if (closestTargetEntity != Entity.Null)
+                    if (EntityUtil.ExistsAndPersists(ref entityManager, ref closestTargetEntity))
                     {
                         targetter.ValueRW.targetEntity = closestTargetEntity;
                     }
