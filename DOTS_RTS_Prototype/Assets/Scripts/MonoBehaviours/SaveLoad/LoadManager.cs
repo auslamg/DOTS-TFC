@@ -145,7 +145,8 @@ public class LoadManager : MonoBehaviour
 
         Unit unit = entityManager.GetComponentData<Unit>(entity);
         Faction faction = entityManager.GetComponentData<Faction>(entity);
-        bool selected = unitData.selected;
+        bool isSelected = unitData.selected;
+        Selected selected = entityManager.GetComponentData<Selected>(entity);
 
         UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
         ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
@@ -161,6 +162,7 @@ public class LoadManager : MonoBehaviour
 
             unit.ownerID = unitData.ownerID;
             faction.factionID = unitData.factionID;
+            selected.onSelected = isSelected;
 
             unitMover.targetPosition = unitData.unitMoverPosition;
             unitMover.hasStartedTargetPosition = true;
@@ -182,7 +184,8 @@ public class LoadManager : MonoBehaviour
 
             entityManager.SetComponentData(entity, unit);
             entityManager.SetComponentData(entity, faction);
-            entityManager.SetComponentEnabled<Selected>(entity, selected);
+            entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+            entityManager.SetComponentData(entity, selected);
 
             entityManager.SetComponentData(entity, unitMover);
             entityManager.SetComponentData(entity, manualMove);
@@ -221,26 +224,35 @@ public class LoadManager : MonoBehaviour
         // Save post-write data.
         {
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+
             Building building = entityManager.GetComponentData<Building>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
-            bool selected = buildingData.selected;
+            bool isSelected = buildingData.selected;
+            Selected selected = entityManager.GetComponentData<Selected>(entity);
+
             Health health = entityManager.GetComponentData<Health>(entity);
 
             // Value assignments.
             {
                 localTransform.Position = buildingData.position;
                 localTransform.Rotation = buildingData.rotation;
+
                 building.ownerID = buildingData.ownerID;
                 faction.factionID = buildingData.factionID;
+                selected.onSelected = isSelected;
+
                 health.currentHealth = buildingData.currentHealth;
             }
 
             // Copy values.
             {
                 entityManager.SetComponentData(entity, localTransform);
+
                 entityManager.SetComponentData(entity, building);
                 entityManager.SetComponentData(entity, faction);
-                entityManager.SetComponentEnabled<Selected>(entity, selected);
+                entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+                entityManager.SetComponentData(entity, selected);
+
                 entityManager.SetComponentData(entity, health);
             }
         }
