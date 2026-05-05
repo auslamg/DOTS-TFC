@@ -1277,7 +1277,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1132093315813226233, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
       propertyPath: m_Name
-      value: BarracksTrainer
+      value: TentTrainer
       objectReference: {fileID: 0}
     - target: {fileID: 1132093315813226233, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
       propertyPath: m_IsActive
@@ -1354,7 +1354,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
       propertyPath: m_Name
-      value: GuardTower
+      value: StoneTower
       objectReference: {fileID: 0}
     - target: {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
       propertyPath: m_IsActive
