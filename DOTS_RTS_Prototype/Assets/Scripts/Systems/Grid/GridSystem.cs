@@ -42,6 +42,13 @@ partial struct GridSystem : ISystem
         InitializeDebugVisual(gridData);
         UpdateDebugVisual(gridData);
         InitializeMinimapCamera(gridData);
+        UpdateManagedData(gridData);
+    }
+
+    [BurstDiscard]
+    private void UpdateManagedData(GridData gridData)
+    {
+        BuildingPlacementManager.Instance?.SetGridData(gridData);
     }
 
     [BurstDiscard]
@@ -251,7 +258,6 @@ partial struct GridSystem : ISystem
         }
 
         gridCellComponentLookup.Update(ref state);
-
         GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
 
         // ===============================================
@@ -290,7 +296,7 @@ partial struct GridSystem : ISystem
                     flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
                     flowFieldFollower.ValueRW.postFormationPosition = flowFieldRequest.ValueRO.postFormationPosition;
                     flowFieldFollowerEnabled.ValueRW = true;
-                    
+
                     UpdateDebugVisual(gridData, i);
 
                     existingPath = true;
@@ -303,8 +309,8 @@ partial struct GridSystem : ISystem
                 continue;
             }
 
-            int flowFieldIndex = gridData.nextFlowFieldIndex; // FIX Use LoopCounter
-            gridData.nextFlowFieldIndex = (gridData.nextFlowFieldIndex + 1) % FLOW_FIELD_MAP_COUNT; // FIX Use LoopCounter
+            int flowFieldIndex = gridData.nextFlowFieldIndex;
+            gridData.nextFlowFieldIndex = (gridData.nextFlowFieldIndex + 1) % FLOW_FIELD_MAP_COUNT;
 
             // Proceed with pathfinding
             flowFieldFollower.ValueRW.flowFieldIndex = flowFieldIndex;
@@ -340,8 +346,49 @@ partial struct GridSystem : ISystem
                 UpdateDebugVisual(gridData);
             }
 
-            // Obstructed cell detection and cost calculation
+            // Account for footprints
+            foreach ((
+               RefRW<BuildingFootprint> buildingFootprint,
+               RefRO<LocalTransform> localTransform)
+                   in SystemAPI.Query<
+                   RefRW<BuildingFootprint>,
+                   RefRO<LocalTransform>>())
             {
+                // No need to add the footprint.
+                /* if (buildingFootprint.ValueRO.isAccountedFor) return; */
+
+                float3 origin = buildingFootprint.ValueRO.origin;
+                int2 originCoords = GridUtil.WorldPositionToCoords(origin, gridData.gridCellSize);
+                int2 occlusionFootprint = buildingFootprint.ValueRO.occlusionSize;
+
+                NativeList<int2> obstructedCoords = GetCoordFootprint(originCoords, gridData.width, gridData.height, occlusionFootprint);
+
+                Debug.Log($"[Footprint]: Loading building at {localTransform.ValueRO.Position}");
+
+                foreach (var coord in obstructedCoords)
+                {
+                    int index = GridUtil.CoordsToIndex(coord, gridData.width);
+
+                    // Update this flowfield
+                    {
+                        Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[index];
+                        GridCell gridCell = state.EntityManager.GetComponentData<GridCell>(cellEntity);
+
+                        gridCell.stepCost = OBSTRUCTED_COST;
+                        state.EntityManager.SetComponentData(cellEntity, gridCell);
+                    }
+
+                    gridData.pathingCostMap[index] = OBSTRUCTED_COST;
+                    Debug.Log($"[Footprint]: Occupying {coord}");
+                }
+                buildingFootprint.ValueRW.isAccountedFor = true;
+                UpdateDebugVisual(gridData);
+
+                Debug.Log($"[Footprint]: Loaded building at {localTransform.ValueRO.Position}");
+            }
+
+            // Obstructed cell detection and cost calculation
+            /* {
                 CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
                 var obstructedCollisionFilter = new CollisionFilter
                 {
@@ -371,7 +418,7 @@ partial struct GridSystem : ISystem
 
                 JobHandle updatePathingCostJobHandle = updatePathingCostJob.ScheduleParallel(state.Dependency);
                 updatePathingCostJobHandle.Complete();
-            }
+            } */
 
             // FlowField Calculation.
             {

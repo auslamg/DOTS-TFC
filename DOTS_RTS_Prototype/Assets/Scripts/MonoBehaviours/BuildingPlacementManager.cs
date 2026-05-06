@@ -22,6 +22,11 @@ public class BuildingPlacementManager : MonoBehaviour
     [Tooltip("Currently selected building definition used for ghost preview and placement rules.")]
     private BuildingDataSO buildingDataSO;
 
+    private EntityManager entityManager;
+    private GridData gridData;
+
+    Vector3 placePosition => GridUtil.SnapWorldPosition(mouseWorldPosition, gridData.gridCellSize);
+
     public BuildingDataSO activeBuildingDataSO
     {
         get => buildingDataSO;
@@ -97,6 +102,12 @@ public class BuildingPlacementManager : MonoBehaviour
     private void Awake()
     {
         InitializeSingleton();
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    }
+
+    public void SetGridData(GridData gridData)
+    {
+        this.gridData = gridData;
     }
 
     /// <summary>
@@ -106,7 +117,8 @@ public class BuildingPlacementManager : MonoBehaviour
     {
         if (ghostPrefab != null)
         {
-            ghostPrefab.transform.position = mouseWorldPosition;
+            ghostPrefab.transform.position = placePosition;
+
             if (CanPlaceBuilding())
             {
                 SetGhostColor(true);
@@ -137,8 +149,6 @@ public class BuildingPlacementManager : MonoBehaviour
             {
                 if (CanPlaceBuilding())
                 {
-                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
                     // Create the prefab lookup key expected by the ECS data layer.
                     // Retrieve key from active buildingData
                     EntityPrefabKey buildingKey = new EntityPrefabKey
@@ -146,10 +156,10 @@ public class BuildingPlacementManager : MonoBehaviour
                         name = activeBuildingDataSO.name
                     };
 
-                    /* Debug.Log($"Placing buildings: {buildingKey.name}"); */
+                    Debug.Log($"Placing buildings: {buildingKey.name}");
 
                     Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
-                    entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(mouseWorldPosition));
+                    entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(placePosition));
 
                     ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
                 }
@@ -186,8 +196,6 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             return false;
         }
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
         CollisionFilter buildingsFilter = new CollisionFilter
@@ -203,7 +211,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
         // Reject the placement if the building footprint overlaps any existing building.
         if (collisionWorld.OverlapBox(
-                center: mouseWorldPosition,
+                center: placePosition,
                 orientation: Quaternion.identity,
                 boxCollider.size / 2 * colliderOffsetMultiplier,
                 ref hitList,
@@ -216,7 +224,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
         // Enforce minimum spacing between buildings of the same type.
         if (collisionWorld.OverlapSphere(
-                position: mouseWorldPosition,
+                position: placePosition,
                 radius: buildingDataSO.minDistanceToSimilar,
                 ref hitList,
                 buildingsFilter))
@@ -248,12 +256,12 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             bool validResource = false;
             Debug.Log("Checking for harvester proximity");
-            Entity harvesterEntity = 
+            Entity harvesterEntity =
                     LookupEntityPrefab.FetchEntityPrefab(EntityPrefabKey.From(buildingDataSO.buildingKey));
             Harvester harvester = entityManager.GetComponentData<Harvester>(harvesterEntity);
 
             if (collisionWorld.OverlapSphere(
-                position: mouseWorldPosition,
+                position: placePosition,
                 radius: harvester.harvestingRange,
                 ref hitList,
                 resourceSourcesFilter))

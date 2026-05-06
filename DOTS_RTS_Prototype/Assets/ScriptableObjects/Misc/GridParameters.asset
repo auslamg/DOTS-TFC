@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2beb79dd28499f24a9c52c992527f4c0, type: 3}
+  m_Name: GridParameters
+  m_EditorClassIdentifier: Assembly-CSharp::GridParametersSO
+  size: 32
+  gridCellSize: 5
+  validate: 0

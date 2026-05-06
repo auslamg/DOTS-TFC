@@ -13,24 +13,7 @@ using System.Linq;
 /// </remarks>
 class GridAuthoring : MonoBehaviour
 {
-    /// <summary>
-    /// Grid width in cells.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Grid width in cells.")]
-    public int width = 20;
-    /// <summary>
-    /// Grid height in cells.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Grid height in cells.")]
-    public int height = 20;
-    /// <summary>
-    /// Size of a single grid cell side in world units.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Size of a single grid cell side in world units.")]
-    public float gridCellSize = 5;
+    public GridParametersSO gridParameters;
 
     /// <summary>
     /// Scene singleton instance for managed-side access.
@@ -53,7 +36,6 @@ class GridAuthoring : MonoBehaviour
             Destroy(this);
         }
     }
-
 }
 
 /// <summary>
@@ -63,12 +45,13 @@ class GridBaker : Baker<GridAuthoring>
 {
     public override void Bake(GridAuthoring authoring)
     {
+        var gridParameters = authoring.gridParameters;
         Entity entity = GetEntity(TransformUsageFlags.WorldSpace);
         AddComponent(entity, new GridDataParameters
         {
-            width = authoring.width,
-            height = authoring.height,
-            gridCellSize = authoring.gridCellSize,
+            width = gridParameters.size,
+            height = gridParameters.size,
+            gridCellSize = gridParameters.gridCellSize,
             isInitialized = false
         });
     }

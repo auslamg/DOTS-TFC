@@ -77,6 +77,26 @@ public static class GridUtil
         return totalCount * flowFieldIndex + CoordsToIndex(coords, width);
     }
 
+    public static NativeList<int2> GetCoordFootprint(int2 origin, int gridWidth, int gridHeight, int2 size)
+    {
+        NativeList<int2> result = new NativeList<int2>(Allocator.Temp);
+
+        for (int dx = 0; dx < size.x; dx++)
+        {
+            for (int dy = 0; dy < size.y; dy++)
+            {
+                int2 coord = new int2(origin.x + dx, origin.y + dy);
+
+                if (ValidateCoords(coord, gridWidth, gridHeight))
+                {
+                    result.Add(coord);
+                }
+            }
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// Calculates the world position of the given grid cell's origin corner.
     /// </summary>
@@ -131,6 +151,15 @@ public static class GridUtil
             (int)math.floor(worldPosition.x / gridCellSize),
             (int)math.floor(worldPosition.z / gridCellSize)
         );
+    }
+
+    /// <summary>
+    /// Converts a world-space position into a grid-snapped world position.
+    /// </summary>
+    public static float3 SnapWorldPosition(float3 worldPosition, float gridCellSize)
+    {
+        return GridUtil.CoordsToWorldPositionCenter(
+                    GridUtil.WorldPositionToCoords(worldPosition, gridCellSize), gridCellSize);
     }
 
     /// <summary>
