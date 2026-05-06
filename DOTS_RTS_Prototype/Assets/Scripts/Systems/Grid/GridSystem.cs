@@ -261,6 +261,48 @@ partial struct GridSystem : ISystem
         gridCellComponentLookup.Update(ref state);
         GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
 
+        // Account for occluders
+        foreach ((
+           RefRW<Occluder> occluder,
+           RefRO<LocalTransform> localTransform)
+               in SystemAPI.Query<
+               RefRW<Occluder>,
+               RefRO<LocalTransform>>())
+        {
+            // No new buildings - no need to update the occlusion.
+            if (occluder.ValueRO.isAccountedFor) continue;
+            Debug.Log("[OCCLUSION UPDATED]");
+
+            float3 origin = localTransform.ValueRO.Position;
+            origin.x -= (occluder.ValueRO.occlusionFootprint.x * gridData.gridCellSize / 2) - 1;
+            origin.z -= (occluder.ValueRO.occlusionFootprint.y * gridData.gridCellSize / 2) - 1;
+
+            int2 originCoords = GridUtil.WorldPositionToCoords(origin, gridData.gridCellSize);
+            int2 occlusionFootprint = occluder.ValueRO.occlusionFootprint;
+
+            NativeList<int2> obstructedCoords = GetCoordFootprint(originCoords, gridData.width, gridData.height, occlusionFootprint);
+
+            /* Debug.Log($"[Occluder]: Loading occlusion at {localTransform.ValueRO.Position}"); */
+
+            foreach (var coord in obstructedCoords)
+            {
+                int index = GridUtil.CoordsToIndex(coord, gridData.width);
+                gridData.pathingCostMap[index] =
+                    (byte)(occluder.ValueRO.markedForDeletion ? 0 : OBSTRUCTED_COST);
+
+                /* Debug.Log($"[Occluder]: Occupying {coord}"); */
+            }
+
+            obstructedCoords.Dispose();
+            occluder.ValueRW.isAccountedFor = true;
+
+            gridData.UpdatePathingMapVersion();
+
+            UpdateDebugVisual(gridData);
+
+            /* Debug.Log($"[Occluder]: Loaded occlusion at {localTransform.ValueRO.Position}"); */
+        }
+
         // ===============================================
         // PATHING START
         // ===============================================
@@ -348,50 +390,21 @@ partial struct GridSystem : ISystem
                 UpdateDebugVisual(gridData);
             }
 
-            // Account for footprints
-            foreach ((
-               RefRW<Occluder> buildingFootprint,
-               RefRO<LocalTransform> localTransform)
-                   in SystemAPI.Query<
-                   RefRW<Occluder>,
-                   RefRO<LocalTransform>>())
+            // Account for occluders
+
+            /* Debug.Log($"[Occluder]: Loading occlusion at {localTransform.ValueRO.Position}"); */
+            //TODO
+            // Apply pathingCostMap to current flowfield
+            for (int i = 0; i < gridData.pathingCostMap.Length; i++)
             {
-                // No need to add the footprint.
-                /* if (buildingFootprint.ValueRO.isAccountedFor) return; */
+                if (gridData.pathingCostMap[i] != OBSTRUCTED_COST)
+                    continue;
 
-                float3 origin = localTransform.ValueRO.Position;
-                origin.x -= (buildingFootprint.ValueRO.occlusionFootprint.x * gridData.gridCellSize / 2) - 1;
-                origin.z -= (buildingFootprint.ValueRO.occlusionFootprint.y * gridData.gridCellSize / 2) - 1;
+                RefRW<GridCell> cell = gridCellArray[i];
 
-                int2 originCoords = GridUtil.WorldPositionToCoords(origin, gridData.gridCellSize);
-                int2 occlusionFootprint = buildingFootprint.ValueRO.occlusionFootprint;
-
-                NativeList<int2> obstructedCoords = GetCoordFootprint(originCoords, gridData.width, gridData.height, occlusionFootprint);
-
-                Debug.Log($"[Footprint]: Loading building at {localTransform.ValueRO.Position}");
-
-                foreach (var coord in obstructedCoords)
-                {
-                    int index = GridUtil.CoordsToIndex(coord, gridData.width);
-
-                    // Update this flowfield
-                    {
-                        Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[index];
-                        GridCell gridCell = state.EntityManager.GetComponentData<GridCell>(cellEntity);
-
-                        gridCell.stepCost = OBSTRUCTED_COST;
-                        state.EntityManager.SetComponentData(cellEntity, gridCell);
-                    }
-
-                    gridData.pathingCostMap[index] = OBSTRUCTED_COST;
-                    /* Debug.Log($"[Footprint]: Occupying {coord}"); */
-                }
-                buildingFootprint.ValueRW.isAccountedFor = true;
-                UpdateDebugVisual(gridData);
-
-                obstructedCoords.Dispose();
-                /* Debug.Log($"[Footprint]: Loaded building at {localTransform.ValueRO.Position}"); */
+                cell.ValueRW.stepCost = OBSTRUCTED_COST;
             }
+
 
             // FlowField Calculation.
             {
@@ -436,7 +449,7 @@ partial struct GridSystem : ISystem
 
             // Set all data values
             {
-                Debug.Log($"Allocated FLOWFIELD {flowFieldIndex}");
+                Debug.Log($"[FlowField] Allocated flowfield {flowFieldIndex}");
 
                 // Set data values for calculated flowfield.
                 FlowField flowField = gridData.flowFieldArray[flowFieldIndex];

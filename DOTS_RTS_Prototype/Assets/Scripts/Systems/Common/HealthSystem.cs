@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 
+[UpdateBefore(typeof(GridSystem))]
 /// <summary>
 /// Applies entity death when health reaches zero and queues structural destruction.
 /// </summary>

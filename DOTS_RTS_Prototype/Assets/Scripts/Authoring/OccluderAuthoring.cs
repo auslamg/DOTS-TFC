@@ -53,7 +53,8 @@ class OccluderBaker : Baker<OccluderAuthoring>
         AddComponent(entity, new Occluder
         {
             occlusionFootprint = new int2(x, y),
-            isAccountedFor = false
+            isAccountedFor = false,
+            markedForDeletion = false
         });
     }
 }
@@ -62,4 +63,5 @@ public struct Occluder : IComponentData
 {
     public int2 occlusionFootprint;
     public bool isAccountedFor;
+    public bool markedForDeletion;
 }
