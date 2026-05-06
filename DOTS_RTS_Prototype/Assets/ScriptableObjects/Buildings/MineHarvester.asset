@@ -16,11 +16,11 @@ MonoBehaviour:
   prefabGO: {fileID: 1693668972295213622, guid: a1a37b4af0b722a4ab9b2c6c08e89e31, type: 3}
   minDistanceToSimilar: 0
   isBuildable: 1
-  imageCard: {fileID: 21300000, guid: ff20c38a6b472cd448c9bb4e88183c30, type: 3}
+  imageCard: {fileID: 21300000, guid: 62f5dc0c4fb53d043ab9eada506d64bc, type: 3}
   buildingGhostPrefab: {fileID: 8475691647138967676, guid: d85660381c3ab7b43a0736beb8617cc2, type: 3}
   constructionCost:
   - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
-    value: 150
+    amount: 0
   cachedKey:
     name:
       utf8LengthInBytes: 13

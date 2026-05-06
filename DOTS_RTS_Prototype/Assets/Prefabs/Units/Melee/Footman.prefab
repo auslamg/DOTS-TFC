@@ -24,6 +24,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 5692c2a9403f1044c8ccea375d545489, type: 2}
+    - target: {fileID: 3430435194030026163, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: maxHealth
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3430435194030026163, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: currentHealth
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 4211631314389968475, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
       propertyPath: m_Name
       value: Footman

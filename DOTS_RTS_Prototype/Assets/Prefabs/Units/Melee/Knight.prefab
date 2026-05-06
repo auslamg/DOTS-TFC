@@ -24,9 +24,17 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 1773bbaa9508a7f42b1a7212405d7673, type: 2}
+    - target: {fileID: 3430435194030026163, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: maxHealth
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3430435194030026163, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: currentHealth
+      value: 500
+      objectReference: {fileID: 0}
     - target: {fileID: 4211631314389968475, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
       propertyPath: m_Name
-      value: Knight Variant
+      value: Knight
       objectReference: {fileID: 0}
     - target: {fileID: 4216230284549380819, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

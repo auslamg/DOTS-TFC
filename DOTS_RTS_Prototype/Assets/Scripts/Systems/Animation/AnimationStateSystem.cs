@@ -103,8 +103,6 @@ public partial struct AimShootAnimationStateJob : IJobEntity
             activeAnimation.ValueRW.nextAnimationKey = unitAnimations.aimAnimationKey;
         }
 
-
-        //TODO: Refactor into fsm
         if (shootAttack.onShoot.isTriggered)
         {
             RefRW<ActiveAnimation> activeAnimation =

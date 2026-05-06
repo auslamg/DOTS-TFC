@@ -102,7 +102,7 @@ public partial struct ActiveAnimationJob : IJobEntity
             /// a single game frame. This is probably because the logic would only run on the frame 0, therefore after the
             /// animation had already started. On why it works well with animData.frameCount - 2, no idea, might just be
             /// a coincidence that the only melee attack animation matches the idle animation pose loosely and this wasn't solved
-            if ((activeAnimation.currentFrame == animData.frameCount - 2 ||
+            if ((activeAnimation.currentFrame == animData.frameCount - 1 ||
                     (activeAnimation.currentFrame == 0 &&
                     animData.frameCount < 2)) &&
                 animData.IsUninterruptible())

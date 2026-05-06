@@ -9,6 +9,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 325613256193888693, guid: 9dea0a9da5fd3ab4aae0768fb94033d8, type: 3}
+      propertyPath: damageAmount
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 325613256193888693, guid: 9dea0a9da5fd3ab4aae0768fb94033d8, type: 3}
+      propertyPath: attackDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 325613256193888693, guid: 9dea0a9da5fd3ab4aae0768fb94033d8, type: 3}
       propertyPath: projectilePrefabKey
       value: Arrow
       objectReference: {fileID: 0}

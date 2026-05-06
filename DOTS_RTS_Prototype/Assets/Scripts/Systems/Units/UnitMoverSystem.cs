@@ -207,9 +207,7 @@ public partial struct PathRequestJob : IJobEntity
             Filter = new CollisionFilter
             {
                 BelongsTo = ~0u,
-                CollidesWith = 
-                    (1u << GameAssets.OBSTRUCTION_LAYER) |
-                    (1u << GameAssets.BUILDINGS_LAYER),
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                 GroupIndex = 0
             }
         };
@@ -221,9 +219,7 @@ public partial struct PathRequestJob : IJobEntity
             Filter = new CollisionFilter
             {
                 BelongsTo = ~0u,
-                CollidesWith =
-                    (1u << GameAssets.OBSTRUCTION_LAYER) |
-                    (1u << GameAssets.BUILDINGS_LAYER),
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                 GroupIndex = 0
             }
         };
@@ -316,9 +312,8 @@ public partial struct CheckStraightPathJob : IJobEntity
             Filter = new CollisionFilter
             {
                 BelongsTo = ~0u,
-                CollidesWith =
-                    (1u << GameAssets.OBSTRUCTION_LAYER) |
-                    (1u << GameAssets.BUILDINGS_LAYER),
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
+
                 GroupIndex = 0
             }
         };
@@ -330,9 +325,7 @@ public partial struct CheckStraightPathJob : IJobEntity
             Filter = new CollisionFilter
             {
                 BelongsTo = ~0u,
-                CollidesWith =
-                    (1u << GameAssets.OBSTRUCTION_LAYER) |
-                    (1u << GameAssets.BUILDINGS_LAYER),
+                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                 GroupIndex = 0
             }
         };

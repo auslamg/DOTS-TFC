@@ -411,7 +411,7 @@ public class TrainerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Resets active trainer progress to zero in ECS. //FIX: UI should not include logic
+    /// Resets active trainer progress to zero in ECS.
     /// </summary>
     private void SetProgressToZero()
     {

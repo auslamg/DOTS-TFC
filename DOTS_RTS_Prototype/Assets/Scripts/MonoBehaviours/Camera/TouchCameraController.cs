@@ -272,7 +272,6 @@ public class TouchCameraController : MonoBehaviour
             Vector3 currentTouch0WorldPosition = TouchWorldPosition.Instance.GetPosition(0);
             Vector3 currentTouch1WorldPosition = TouchWorldPosition.Instance.GetPosition(1);
 
-            //FIX Culprit
             Vector3 currentAvgWorldPosition =
                 currentTouch0WorldPosition + currentTouch1WorldPosition * 0.5f;
 
