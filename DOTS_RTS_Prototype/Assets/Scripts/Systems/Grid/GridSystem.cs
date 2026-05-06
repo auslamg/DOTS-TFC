@@ -297,6 +297,7 @@ partial struct GridSystem : ISystem
             occluder.ValueRW.isAccountedFor = true;
 
             gridData.UpdatePathingMapVersion();
+            SystemAPI.SetComponent<GridData>(state.SystemHandle, gridData);
 
             UpdateDebugVisual(gridData);
 
@@ -657,6 +658,7 @@ public struct GridData : IComponentData
 
     public void UpdatePathingMapVersion()
     {
+        Debug.Log("Updated Map Version");
         if (pathingMapVersion == uint.MaxValue)
             pathingMapVersion = 0;
         else

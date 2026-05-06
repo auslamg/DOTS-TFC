@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: -7570847429946315173}
   - component: {fileID: -2611101858865699950}
   - component: {fileID: 844678832823457546}
+  - component: {fileID: 5435347148750831781}
   - component: {fileID: 5529214234308960562}
   - component: {fileID: -8038847630424215430}
   - component: {fileID: -2479219367038610689}
@@ -521,6 +522,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3743b7e0507f7e4ca079325cec9bba9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StraightPathRequestAuthoring
+--- !u!114 &5435347148750831781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032814909107480270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ee4f7c44fbe55f42aadf6d32df1c5db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PathingRescheduleAuthoring
+  attemptInterval: 1
 --- !u!114 &5529214234308960562
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+
 /// <summary>
 /// Managed component for the <see cref="MeleeAttack"/> unmanaged component.
 /// </summary>
