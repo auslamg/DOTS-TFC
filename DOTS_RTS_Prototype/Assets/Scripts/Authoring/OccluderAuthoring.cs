@@ -2,16 +2,17 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-class BuildingFootprintAuthoring : MonoBehaviour
+class OccluderAuthoring : MonoBehaviour
 {
+    public BoxCollider occlusionBox;
     public GridParametersSO gridParameters;
 }
 
-class BuildingFootprintAuthoringBaker : Baker<BuildingFootprintAuthoring>
+class OccluderBaker : Baker<OccluderAuthoring>
 {
-    public override void Bake(BuildingFootprintAuthoring authoring)
+    public override void Bake(OccluderAuthoring authoring)
     {
-        var box = authoring.GetComponent<BoxCollider>();
+        var box = authoring.occlusionBox;
         var gridParameters = authoring.gridParameters;
 
         // Account for transform scale.
@@ -49,16 +50,16 @@ class BuildingFootprintAuthoringBaker : Baker<BuildingFootprintAuthoring>
         );
 
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new BuildingFootprint
+        AddComponent(entity, new Occluder
         {
-            occlusionSize = new int2(x, y),
+            occlusionFootprint = new int2(x, y),
             isAccountedFor = false
         });
     }
 }
 
-public struct BuildingFootprint : IComponentData
+public struct Occluder : IComponentData
 {
-    public int2 occlusionSize;
+    public int2 occlusionFootprint;
     public bool isAccountedFor;
 }

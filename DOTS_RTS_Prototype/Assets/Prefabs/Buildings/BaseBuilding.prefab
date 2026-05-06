@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12baef144a3ff334e981a8b51e3a7d7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingFootprintAuthoring
+  occlusionBox: {fileID: 1701842741155784456}
   gridParameters: {fileID: 11400000, guid: 792bcb9b3a3c1574baf943c87024ecc8, type: 2}
 --- !u!114 &6859261061538670796
 MonoBehaviour:

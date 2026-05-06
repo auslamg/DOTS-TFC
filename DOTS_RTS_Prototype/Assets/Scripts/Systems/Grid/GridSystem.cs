@@ -117,6 +117,7 @@ partial struct GridSystem : ISystem
                 gridCellSize = gridParams.gridCellSize,
                 flowFieldArray = flowFieldArray,
                 pathingCostMap = new NativeArray<byte>(totalCellCount, Allocator.Persistent),
+                pathingMapVersion = 0,
                 chunkArray = chunkArray,
                 globalGridCellIndexedArray = globalGridCellList.ToArray(Allocator.Persistent)
             });
@@ -290,7 +291,8 @@ partial struct GridSystem : ISystem
             bool existingPath = false;
             for (int i = 0; i < FLOW_FIELD_MAP_COUNT; i++)
             {
-                if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
+                if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords) &&
+                    gridData.pathingMapVersion == gridData.flowFieldArray[i].pathingMapVersion)
                 {
                     flowFieldFollower.ValueRW.flowFieldIndex = i;
                     flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
@@ -348,21 +350,21 @@ partial struct GridSystem : ISystem
 
             // Account for footprints
             foreach ((
-               RefRW<BuildingFootprint> buildingFootprint,
+               RefRW<Occluder> buildingFootprint,
                RefRO<LocalTransform> localTransform)
                    in SystemAPI.Query<
-                   RefRW<BuildingFootprint>,
+                   RefRW<Occluder>,
                    RefRO<LocalTransform>>())
             {
                 // No need to add the footprint.
                 /* if (buildingFootprint.ValueRO.isAccountedFor) return; */
 
                 float3 origin = localTransform.ValueRO.Position;
-                origin.x -= (buildingFootprint.ValueRO.occlusionSize.x * gridData.gridCellSize / 2) - 1;
-                origin.z -= (buildingFootprint.ValueRO.occlusionSize.y * gridData.gridCellSize / 2) - 1;
+                origin.x -= (buildingFootprint.ValueRO.occlusionFootprint.x * gridData.gridCellSize / 2) - 1;
+                origin.z -= (buildingFootprint.ValueRO.occlusionFootprint.y * gridData.gridCellSize / 2) - 1;
 
                 int2 originCoords = GridUtil.WorldPositionToCoords(origin, gridData.gridCellSize);
-                int2 occlusionFootprint = buildingFootprint.ValueRO.occlusionSize;
+                int2 occlusionFootprint = buildingFootprint.ValueRO.occlusionFootprint;
 
                 NativeList<int2> obstructedCoords = GetCoordFootprint(originCoords, gridData.width, gridData.height, occlusionFootprint);
 
@@ -382,46 +384,14 @@ partial struct GridSystem : ISystem
                     }
 
                     gridData.pathingCostMap[index] = OBSTRUCTED_COST;
-                    Debug.Log($"[Footprint]: Occupying {coord}");
+                    /* Debug.Log($"[Footprint]: Occupying {coord}"); */
                 }
                 buildingFootprint.ValueRW.isAccountedFor = true;
                 UpdateDebugVisual(gridData);
 
-                Debug.Log($"[Footprint]: Loaded building at {localTransform.ValueRO.Position}");
+                obstructedCoords.Dispose();
+                /* Debug.Log($"[Footprint]: Loaded building at {localTransform.ValueRO.Position}"); */
             }
-
-            // Obstructed cell detection and cost calculation
-            /* {
-                CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
-                var obstructedCollisionFilter = new CollisionFilter
-                {
-                    BelongsTo = ~0u,
-                    CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
-                    GroupIndex = 0
-                };
-                var weightedCollisionFilter = new CollisionFilter
-                {
-                    BelongsTo = ~0u,
-                    CollidesWith = 1u << GameAssets.WEIGHTED_LAYER,
-                    GroupIndex = 0
-                };
-
-                UpdatePathingCostJob updatePathingCostJob = new UpdatePathingCostJob
-                {
-                    pathingCostMap = gridData.pathingCostMap,
-                    flowField = gridData.flowFieldArray[flowFieldIndex],
-                    collisionWorld = collisionWorld,
-                    gridWidth = gridData.width,
-                    gridCellSize = gridData.gridCellSize,
-                    overlapSphereRadius = gridData.gridCellSize * .5f,
-                    obstructedCollisionFilter = obstructedCollisionFilter,
-                    weightedCollisionFilter = weightedCollisionFilter
-
-                };
-
-                JobHandle updatePathingCostJobHandle = updatePathingCostJob.ScheduleParallel(state.Dependency);
-                updatePathingCostJobHandle.Complete();
-            } */
 
             // FlowField Calculation.
             {
@@ -472,6 +442,7 @@ partial struct GridSystem : ISystem
                 FlowField flowField = gridData.flowFieldArray[flowFieldIndex];
                 flowField.targetCoords = targetCoords;
                 flowField.isCalculated = true;
+                flowField.pathingMapVersion = gridData.pathingMapVersion;
                 gridData.flowFieldArray[flowFieldIndex] = flowField;
 
                 // Set component data
@@ -605,24 +576,6 @@ partial struct GridSystem : ISystem
         return result;
     }
 
-
-
-
-    /* for (int i = 0; i<FLOW_FIELD_MAP_COUNT; i++)
-            {
-                if (gridData.flowFieldArray[i].targetCoords.Equals(targetCoords))
-                {
-                    flowFieldFollower.ValueRW.flowFieldIndex = i;
-                    flowFieldFollower.ValueRW.targetPosition = flowFieldRequest.ValueRO.targetPosition;
-                    flowFieldFollowerEnabled.ValueRW = true;
-
-                    GridDebugDisplay.Instance?.UpdateGridVisual(gridData, i);
-
-    existingPath = true;
-                    break;
-                }
-            } */
-
 }
 
 [BurstCompile]
@@ -657,67 +610,6 @@ public partial struct InitializeFlowFieldJob : IJobEntity
     }
 }
 
-[BurstCompile]
-public partial struct UpdatePathingCostJob : IJobEntity
-{
-    /// <summary>Cell pathing cost map inside <see cref="GridData"/>.</summary>
-    [NativeDisableParallelForRestriction] public NativeArray<byte> pathingCostMap;
-
-    /// <summary>Used to identify which flowfield is being updated.</summary>
-    [ReadOnly] public FlowField flowField;
-
-    /// <summary>Used for physics queries.</summary>
-    [ReadOnly] public CollisionWorld collisionWorld;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
-    [ReadOnly] public int gridWidth;
-
-    /// <summary><see cref="GridData"/> decomposed data to avoid nested collection usage.</summary>
-    [ReadOnly] public float gridCellSize;
-
-    /// <summary>Physics query decomposed parameters, cached for optimization.</summary>
-    [ReadOnly] public float overlapSphereRadius;
-
-    /// <summary>Physics query decomposed parameters, cached for optimization.</summary>
-    [ReadOnly] public CollisionFilter obstructedCollisionFilter;
-
-    /// <summary>Physics query decomposed parameters, cached for optimization.</summary>
-    [ReadOnly] public CollisionFilter weightedCollisionFilter;
-
-    public void Execute(ref GridCell gridCell)
-    {
-        NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.TempJob);
-
-        // If detecting an obstructed cell, set its cost.
-        if (collisionWorld.OverlapSphere(
-                position: CoordsToWorldPositionCenter(gridCell.x, gridCell.y, gridCellSize),
-                radius: overlapSphereRadius,
-                ref distanceHitList,
-                obstructedCollisionFilter
-            ))
-        {
-            gridCell.stepCost = GridSystem.OBSTRUCTED_COST;
-            int index = CoordsToIndex(gridCell.x, gridCell.y, gridWidth);
-            pathingCostMap[index] = GridSystem.OBSTRUCTED_COST;
-        }
-
-        // If detecting a weighted cell, set its cost.
-        if (collisionWorld.OverlapSphere(
-                position: CoordsToWorldPositionCenter(gridCell.x, gridCell.y, gridCellSize),
-                radius: overlapSphereRadius,
-                ref distanceHitList,
-                weightedCollisionFilter
-            ))
-        {
-            gridCell.stepCost = GridSystem.WEIGHTED_COST;
-            int index = CoordsToIndex(gridCell.x, gridCell.y, gridWidth);
-            pathingCostMap[index] = GridSystem.WEIGHTED_COST;
-        }
-
-        distanceHitList.Dispose();
-    }
-}
-
 /// <summary>
 /// Stores baked grid configuration and the runtime grid entity map for the system.
 /// </summary>
@@ -741,12 +633,22 @@ public struct GridData : IComponentData
     /// <summary>Map for every grid's flow field cost.</summary>
     public NativeArray<byte> pathingCostMap;
 
+    /// <summary>Pathing cost map versioning id to avoid reusing old flowfields without accounting for new buildings.</summary>
+    public uint pathingMapVersion;
+
     /// <summary>Entity lookup map for every created grid cell.</summary>
     public NativeArray<GridChunk> chunkArray;
 
     /// <summary>Index for every existing grid cell from every single <see cref="FlowField"/>.</summary>
     public NativeArray<Entity> globalGridCellIndexedArray;
 
+    public void UpdatePathingMapVersion()
+    {
+        if (pathingMapVersion == uint.MaxValue)
+            pathingMapVersion = 0;
+        else
+            pathingMapVersion += 1;
+    }
 }
 
 /// <summary>
@@ -762,6 +664,8 @@ public struct FlowField : IComponentData
 
     /// <summary>Wether the flow field has been calculated.</summary>
     public bool isCalculated;
+    /// <summary>Pathing cost map versioning id to avoid reusing old flowfields without accounting for new buildings.</summary>
+    public uint pathingMapVersion;
 }
 
 /// <summary>
