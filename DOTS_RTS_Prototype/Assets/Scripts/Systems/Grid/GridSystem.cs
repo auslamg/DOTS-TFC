@@ -357,7 +357,10 @@ partial struct GridSystem : ISystem
                 // No need to add the footprint.
                 /* if (buildingFootprint.ValueRO.isAccountedFor) return; */
 
-                float3 origin = buildingFootprint.ValueRO.origin;
+                float3 origin = localTransform.ValueRO.Position;
+                origin.x -= (buildingFootprint.ValueRO.occlusionSize.x * gridData.gridCellSize / 2) - 1;
+                origin.z -= (buildingFootprint.ValueRO.occlusionSize.y * gridData.gridCellSize / 2) - 1;
+
                 int2 originCoords = GridUtil.WorldPositionToCoords(origin, gridData.gridCellSize);
                 int2 occlusionFootprint = buildingFootprint.ValueRO.occlusionSize;
 
