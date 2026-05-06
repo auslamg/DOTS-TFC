@@ -78,6 +78,10 @@ PrefabInstance:
       propertyPath: buildingKeyType
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6087457121680761858, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 633f2cca3a960574abe1f0cc65f612a3, type: 3}
     - target: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9

@@ -44,10 +44,6 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 1.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4967475436546243593, guid: 616218f3e2802d94895779b8242f89ba, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: ff20c38a6b472cd448c9bb4e88183c30, type: 3}
     - target: {fileID: 5805661747479173120, guid: 616218f3e2802d94895779b8242f89ba, type: 3}
       propertyPath: m_LocalScale.x
       value: 1

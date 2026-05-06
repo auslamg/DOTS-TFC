@@ -13,6 +13,10 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1459775456809195627, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: attackDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459775456809195627, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: projectilePrefabKey
       value: Arrow
       objectReference: {fileID: 0}

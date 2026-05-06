@@ -124,6 +124,14 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: 7604812526405283706, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7604812526405283706, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3
+      objectReference: {fileID: 0}
     - target: {fileID: 7676381735659029251, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
       propertyPath: m_Mesh
       value: 

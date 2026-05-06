@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: TentTrainRoster
   m_EditorClassIdentifier: Assembly-CSharp::TrainRosterSO
   unitKeys:
-  - Soldier
-  - Scout
+  - Footman
+  - Marksman
+  - Knight

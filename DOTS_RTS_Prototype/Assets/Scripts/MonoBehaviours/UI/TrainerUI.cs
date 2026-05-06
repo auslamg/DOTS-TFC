@@ -26,8 +26,6 @@ public class TrainerUI : MonoBehaviour
     [Tooltip("Currently selected trainer entity used as source for roster, queue, and progress UI.")]
     private Entity trainerEntity;
 
-    /* [SerializeField] private Button soldierButton; */
-
     [Header("Training roster")]
 
     /// <summary>

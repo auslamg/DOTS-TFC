@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BuildingHarvester
       objectReference: {fileID: 0}
+    - target: {fileID: 6087457121680761858, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 62f5dc0c4fb53d043ab9eada506d64bc, type: 3}
     - target: {fileID: 6859261061538670796, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       propertyPath: maxHealth
       value: 250
@@ -88,3 +92,4 @@ MonoBehaviour:
   harvestedResourceKey: Gold
   harvestInterval: 1
   harvestAmount: 5
+  harvestingRange: 0
