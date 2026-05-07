@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,6 +12,8 @@ public class GridDebugDisplay : MonoBehaviour
     private Transform gridCellGizmo;
     [SerializeField]
     private Transform gridChunkGizmo;
+    [SerializeField]
+    private Transform gridBorderGizmo;
     [SerializeField]
     private Sprite baseCell;
     [SerializeField]
@@ -79,6 +82,12 @@ public class GridDebugDisplay : MonoBehaviour
                 gridChunksArray[cx, cy] = chunk;
             }
         }
+
+        float2 gridWorldSpaceDimensions = new float2(gridData.width * gridData.gridCellSize, gridData.height * gridData.gridCellSize);
+        Transform borderGizmo = Instantiate(gridBorderGizmo, this.gameObject.transform);
+        borderGizmo.name = $"BorderGizmo-{gridData.width}x{gridData.height}";
+        GridBorderDebug border = borderGizmo.GetComponent<GridBorderDebug>();
+        border.Initialize(gridWorldSpaceDimensions.x, gridData.gridCellSize);
 
         isInitialized = true;
     }
