@@ -46,8 +46,8 @@ class BuildingBaker : Baker<BuildingAuthoring>
         if (authoring.GetComponent<BoxCollider>() != null)
         {
             return math.sqrt(
-                math.pow(authoring.GetComponent<BoxCollider>().size.x, 2) +
-                math.pow(authoring.GetComponent<BoxCollider>().size.z, 2)
+                math.pow(authoring.GetComponent<BoxCollider>().size.x / 2, 2) +
+                math.pow(authoring.GetComponent<BoxCollider>().size.z / 2, 2)
                 );
         }
         return 0f;

@@ -46,6 +46,7 @@ partial struct MeleeAttackSystem : ISystem
                 bool isWithinAttackDistance = distanceToTarget < meleeAttack.ValueRO.attackDistance;
 
                 //REVIEW: THIS MIGHT CATCH ISSUES WITH BUILDING ATTACKS
+                // Check if the sum of this unit plus its target's offset is enough for the melee attack to happen
                 bool isTouchingTarget = false;
                 if (!isWithinAttackDistance)
                 {
@@ -73,7 +74,7 @@ partial struct MeleeAttackSystem : ISystem
 
                 if (!isWithinAttackDistance && !isTouchingTarget)
                 {
-                    //Target is too far to attack
+                    //Target is too far to attack (normalized for unit wonky vertical jitter)
                     pathRequest.ValueRW.targetPosition = targetLocalTransform.Position * new float3(1, 0, 1);
                     pathRequest.ValueRW.postFormationPosition = targetLocalTransform.Position * new float3(1, 0, 1);
                     pathRequestEnabled.ValueRW = true;
@@ -89,11 +90,10 @@ partial struct MeleeAttackSystem : ISystem
                     // Attack cooldown timer
                     if (meleeAttack.ValueRW.attackCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
+                        // Rotate towards target when attacking
                         float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
                         aimDirection = math.normalize(aimDirection);
-
                         quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
-
                         localTransform.ValueRW.Rotation = aimRotation;
 
                         //Damage target

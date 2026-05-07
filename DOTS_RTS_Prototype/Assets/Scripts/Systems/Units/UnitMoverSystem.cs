@@ -264,7 +264,7 @@ public partial struct PathRequestJob : IJobEntity
             }
             else
             {
-                Debug.Log("Navigation UNREACHABLE. DON'T NAVIGATE.");
+                Debug.Log($"Navigation UNREACHABLE. DON'T NAVIGATE. {pathRequest.postFormationPosition}");
                 // Unwalkable position, simply don't navigate.
                 unitMover.targetPosition = localTransform.Position;
                 flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
