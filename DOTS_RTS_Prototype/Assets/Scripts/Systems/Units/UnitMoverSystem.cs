@@ -252,7 +252,7 @@ public partial struct PathRequestJob : IJobEntity
 
             if (IsWalkable(pathRequest.targetPosition, gridWidth, gridHeight, gridCellSize, pathingCostMap))
             {
-                Debug.Log("Navigation to walkable. UnitMover should check if unreachable.");
+                Debug.Log("Navigation to walkable. FollowFlowFieldJob should check if unreachable.");
                 // Walkable: ask for navigation.
                 // Unit mover will check if it's unreachable.
                 var flowFieldRequest = flowFieldRequestComponentLookup[entity];

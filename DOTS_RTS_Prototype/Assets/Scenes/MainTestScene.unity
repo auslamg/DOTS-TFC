@@ -5438,7 +5438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Scenes::Unity.Scenes.SubScene
   _SceneAsset: {fileID: 102900000, guid: 3e2d7e4b357ddca4da741383bb01f82a, type: 3}
-  _HierarchyColor: {r: 0.735849, g: 0.21867211, b: 0.21867211, a: 1}
+  _HierarchyColor: {r: 1, g: 0, b: 0, a: 1}
   AutoLoadScene: 1
   _SceneGUID:
     Value:
@@ -8115,8 +8115,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.52924, y: -150}
-  m_SizeDelta: {x: 725.0585, y: 280}
+  m_AnchoredPosition: {x: 372.50888, y: -150}
+  m_SizeDelta: {x: 725.01776, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:

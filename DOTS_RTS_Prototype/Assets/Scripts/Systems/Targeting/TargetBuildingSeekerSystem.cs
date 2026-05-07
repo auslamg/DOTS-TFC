@@ -23,11 +23,6 @@ partial struct TargetBuildingSeekerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        //Register CollisionWorld for physics queries
-        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
-
-        //Used for registering all available targets
-        NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
         foreach ((
             RefRW<TargetFinder> targetFinder,
             RefRW<Targetter> targetter,
