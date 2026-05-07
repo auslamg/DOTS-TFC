@@ -191,7 +191,7 @@ public partial struct PathRequestJob : IJobEntity
     {
         // Lookup local fetch for readability.
         PathRequest pathRequest = pathRequestComponentLookup[entity];
-        /* Debug.Log($"Resolving PATH REQUEST to {pathRequest.targetPosition} - {pathRequest.postFormationPosition}"); */
+        /* Debug.Log($"[PathingRequest] {entity.Index} Resolving PATH REQUEST to {pathRequest.targetPosition} - {pathRequest.postFormationPosition}"); */
 
         // If no formation required, set formation position to anchor position.
         if (pathRequest.postFormationPosition.Equals(float3.zero))
@@ -229,7 +229,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.postFormationPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            /* Debug.Log($"Going for STRAIGHT FORMATION: {unitMover.targetPosition}"); */
+            /* Debug.Log($"{entity.Index} Going for STRAIGHT FORMATION: {unitMover.targetPosition}"); */
         }
         else if (!collisionWorld.CastRay(targetRaycastInput))
         {
@@ -237,7 +237,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.targetPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            /* Debug.Log($"Going for STRAIGHT TARGET: {unitMover.targetPosition}"); */
+            /* Debug.Log($"{entity.Index} Going for STRAIGHT TARGET: {unitMover.targetPosition}"); */
         }
         else
         {
@@ -436,11 +436,13 @@ public partial struct MoveUnitJob : IJobEntity
     {
         // Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
+        /* Debug.Log($"Move direction: {moveDirection}"); */
+
 
         float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; // REVIEW: Take into account for melee attacks
         if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
-            /* Debug.Log("Target reached. STOP."); */
+            /* Debug.Log($"Target reached. STOP. {moveDirection}"); */
             // Reached target
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;

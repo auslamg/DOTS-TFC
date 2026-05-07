@@ -10,6 +10,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 /// <summary>
 /// Handles melee target chasing and timed melee damage application.
 /// </summary>
+[UpdateBefore(typeof(UnitMoverSystem))]
 partial struct MeleeAttackSystem : ISystem
 {
     /// <summary>
@@ -55,7 +56,7 @@ partial struct MeleeAttackSystem : ISystem
                             meleeAttack.ValueRO.attackDistance +
                             targetUnit.colliderOffsetRadius +
                             unit.ValueRO.colliderOffsetRadius +
-                            unitMover.ValueRO.targetReachedDistanceSquared;
+                            math.sqrt(unitMover.ValueRO.targetReachedDistanceSquared);
                         isTouchingTarget = distanceToTarget < minDistanceOffset;
                     }
                     else if (SystemAPI.HasComponent<Building>(targetter.ValueRO.targetEntity))
@@ -65,7 +66,7 @@ partial struct MeleeAttackSystem : ISystem
                             meleeAttack.ValueRO.attackDistance +
                             targetBuilding.colliderOffsetRadius +
                             unit.ValueRO.colliderOffsetRadius +
-                            unitMover.ValueRO.targetReachedDistanceSquared;
+                            math.sqrt(unitMover.ValueRO.targetReachedDistanceSquared);
                         isTouchingTarget = distanceToTarget < minDistanceOffset;
                     }
                 }
@@ -73,13 +74,16 @@ partial struct MeleeAttackSystem : ISystem
                 if (!isWithinAttackDistance && !isTouchingTarget)
                 {
                     //Target is too far to attack
-                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position;
+                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position * new float3(1,0,1);
+                    pathRequest.ValueRW.postFormationPosition = targetLocalTransform.Position * new float3(1, 0, 1);
                     pathRequestEnabled.ValueRW = true;
+                    /* Debug.Log("[Melee] Attacking path request"); */
                 }
                 else
                 {
                     //Target is close enough to attack
                     pathRequest.ValueRW.targetPosition = localTransform.ValueRO.Position;
+                    pathRequest.ValueRW.postFormationPosition = localTransform.ValueRO.Position;
                     pathRequestEnabled.ValueRW = true;
 
                     // Attack cooldown timer

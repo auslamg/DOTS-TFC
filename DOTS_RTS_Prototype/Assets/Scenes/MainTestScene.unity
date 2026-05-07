@@ -4120,6 +4120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridDebugDisplay
   gridCellGizmo: {fileID: 6013024706166131494, guid: 3c4c166ae9e40b546ae1342544573b18, type: 3}
   gridChunkGizmo: {fileID: 6317634183032696854, guid: 17c7e6ad466e5de419290dbdf2984530, type: 3}
+  gridBorderGizmo: {fileID: 6317634183032696854, guid: 3fe067408bf89124d890ed61cc5e74ef, type: 3}
   baseCell: {fileID: 21300000, guid: ab20380c79630574ebdf5e368be2e211, type: 3}
   arrowCell: {fileID: 21300000, guid: 12aa96462ea36734b9e7be75d069082e, type: 3}
   noPathCell: {fileID: 21300000, guid: af8d020146d6d2849a967e96a69a7da7, type: 3}
@@ -8114,8 +8115,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.50394, y: -150}
-  m_SizeDelta: {x: 725.0079, y: 280}
+  m_AnchoredPosition: {x: 372.52924, y: -150}
+  m_SizeDelta: {x: 725.0585, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:
