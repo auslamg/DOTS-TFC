@@ -201,7 +201,7 @@ public class BuildingPlacementManager : MonoBehaviour
         CollisionFilter buildingsFilter = new CollisionFilter
         {
             BelongsTo = ~0u, //All layers
-            CollidesWith = 1u << GameAssets.BUILDINGS_LAYER,
+            CollidesWith = 1u << GameAssets.BUILDINGS_LAYER | 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.OBSTRUCTION_LAYER,
             GroupIndex = 0
         };
 

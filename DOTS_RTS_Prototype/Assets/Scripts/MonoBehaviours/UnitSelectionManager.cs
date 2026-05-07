@@ -38,6 +38,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// </summary>
     public event EventHandler OnSelectionChange;
 
+    private bool startedOverUI = false;
 
     /// <summary>
     /// Mouse position where the current drag-selection started.
@@ -133,11 +134,19 @@ public class UnitSelectionManager : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0))
             {
+                startedOverUI = false;
                 selectionStartMousePosition = Input.mousePosition;
                 OnSelectionAreaStart?.Invoke(this, EventArgs.Empty);
             }
         }
-        if (Input.GetMouseButtonUp(0))
+        else
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                startedOverUI = true;
+            }
+        }
+        if (Input.GetMouseButtonUp(0) & !startedOverUI)
         {
             Vector2 selectionEndMousePosition = Input.mousePosition;
 

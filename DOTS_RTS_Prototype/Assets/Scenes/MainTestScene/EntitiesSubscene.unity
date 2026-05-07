@@ -1310,7 +1310,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6772418732354869564, guid: 9a69e7dc7ebc9284fb44e5ed124aba8e, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1637,6 +1637,10 @@ PrefabInstance:
     - target: {fileID: 4595463432875817075, guid: 747d0cf06033f3847bda819f9194bdbc, type: 3}
       propertyPath: m_Name
       value: Knight
+      objectReference: {fileID: 0}
+    - target: {fileID: 4595463432875817075, guid: 747d0cf06033f3847bda819f9194bdbc, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6180973519919782977, guid: 747d0cf06033f3847bda819f9194bdbc, type: 3}
       propertyPath: m_LocalPosition.x
