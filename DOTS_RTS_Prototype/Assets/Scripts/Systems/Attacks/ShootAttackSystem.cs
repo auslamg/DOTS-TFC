@@ -74,7 +74,6 @@ partial struct ShootAttackSystem : ISystem
                     float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
                     aimDirection = math.normalize(aimDirection);
 
-                    //TODO: Snip for example in documentation [rotate into vector direction]
                     quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
                     localTransform.ValueRW.Rotation =
                         math.slerp(localTransform.ValueRO.Rotation, aimRotation, SystemAPI.Time.DeltaTime * unitMover.ValueRO.rotationSpeed); //replace with aimRotation for no interpolation

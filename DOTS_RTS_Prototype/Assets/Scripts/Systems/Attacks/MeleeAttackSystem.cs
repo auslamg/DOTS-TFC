@@ -20,7 +20,7 @@ partial struct MeleeAttackSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         foreach ((
-            RefRO<LocalTransform> localTransform,
+            RefRW<LocalTransform> localTransform,
             RefRW<MeleeAttack> meleeAttack,
             RefRO<Targetter> targetter,
             RefRO<UnitMover> unitMover,
@@ -28,7 +28,7 @@ partial struct MeleeAttackSystem : ISystem
             EnabledRefRW<PathRequest> pathRequestEnabled,
             RefRO<Unit> unit)
                 in SystemAPI.Query<
-                RefRO<LocalTransform>,
+                RefRW<LocalTransform>,
                 RefRW<MeleeAttack>,
                 RefRO<Targetter>,
                 RefRO<UnitMover>,
@@ -74,7 +74,7 @@ partial struct MeleeAttackSystem : ISystem
                 if (!isWithinAttackDistance && !isTouchingTarget)
                 {
                     //Target is too far to attack
-                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position * new float3(1,0,1);
+                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position * new float3(1, 0, 1);
                     pathRequest.ValueRW.postFormationPosition = targetLocalTransform.Position * new float3(1, 0, 1);
                     pathRequestEnabled.ValueRW = true;
                     /* Debug.Log("[Melee] Attacking path request"); */
@@ -89,6 +89,13 @@ partial struct MeleeAttackSystem : ISystem
                     // Attack cooldown timer
                     if (meleeAttack.ValueRW.attackCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
+                        float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
+                        aimDirection = math.normalize(aimDirection);
+
+                        quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
+
+                        localTransform.ValueRW.Rotation = aimRotation;
+
                         //Damage target
                         RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                         targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;
