@@ -3,6 +3,9 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Harvests resources periodically based on harvester component settings.
+/// </summary>
 partial struct HarvesterSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)

@@ -1,6 +1,9 @@
 using Unity.Burst;
 using Unity.Entities;
 
+/// <summary>
+/// Handles disposal of singleton registries when the system is destroyed.
+/// </summary>
 partial struct RegistryDisposalSystem : ISystem
 {
     [BurstCompile]

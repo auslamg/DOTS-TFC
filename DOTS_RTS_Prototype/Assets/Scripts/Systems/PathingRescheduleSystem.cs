@@ -2,6 +2,9 @@ using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
 
+/// <summary>
+/// Reschedules pathfinding requests when the grid's pathing map is updated due to new obstacles.
+/// </summary>
 [UpdateBefore(typeof(GridSystem))]
 partial struct PathingRescheduleSystem : ISystem
 {

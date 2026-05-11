@@ -3,12 +3,12 @@ using Unity.Entities;
 using UnityEngine;
 
 /// <summary>
-/// Destroys entities once their <see cref="SelfDestroy.delay"/> timer expires.
+/// Logs periodic ticks for testing purposes.
 /// </summary>
 partial struct TestStructsSystem : ISystem
 {
     /// <summary>
-    /// Decrements self-destroy timers and queues expired entities for destruction.
+    /// Logs ticks when test timers expire.
     /// </summary>
     [BurstCompile]
     public void OnUpdate(ref SystemState state)

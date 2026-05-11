@@ -6,13 +6,18 @@ using UnityEngine;
 using System.Linq;
 
 /// <summary>
-/// Authoring component that bakes data into <see cref="GridDataParameters"/>.
+/// Managed component for the <see cref="GridDataParameters"/> unmanaged component.
 /// </summary>
 /// <remarks>
-/// Behaves as a scene singleton.
+/// These parameters are used just once to build the grid rather than to act as a component of an entity.
+/// The entity containing this data will be removed after grid construction.
 /// </remarks>
 class GridAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Reference to the grid parameters scriptable object.
+    /// </summary>
+    [Tooltip("Reference to the grid parameters scriptable object.")]
     public GridParametersSO gridParameters;
 
     /// <summary>

@@ -9,6 +9,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using static SaveLoadUtil;
 
 public class LoadManager : MonoBehaviour
 {
@@ -16,7 +17,18 @@ public class LoadManager : MonoBehaviour
     [SerializeField]
     private string fileName;
 
-    private string savePath => Path.Combine(Application.persistentDataPath, fileName);
+    private string jsonSavePath => 
+    Path.Combine(
+        Application.persistentDataPath,
+         Path.GetFileNameWithoutExtension(fileName) + ".json");
+    private string binarySavePath =>
+    Path.Combine(
+        Application.persistentDataPath,
+        Path.GetFileNameWithoutExtension(fileName) + ".dat");
+
+    [Header("Load file type: true for JSON, false for .dat.")]
+    [SerializeField]
+    private bool isJson;
 
     [Header("References")]
     /// <summary>
@@ -56,41 +68,220 @@ public class LoadManager : MonoBehaviour
         InitializeSingleton();
     }
 
-    public bool SaveFileExists()
+    public bool SaveFileExists(string path)
     {
-        return File.Exists(savePath);
+        return File.Exists(jsonSavePath);
     }
-
+   
     public bool LoadGame()
     {
         Debug.Log("[LoadManager] LOADING...");
 
-        if (!File.Exists(savePath))
+        //TODO: Switch
+        if (!SaveFileExists(jsonSavePath))
         {
-            Debug.LogWarning($"[LoadManager] No save file found at: {savePath}");
+            Debug.LogWarning($"[LoadManager] No save file found at: {jsonSavePath}");
             return false;
         }
 
-        string json = File.ReadAllText(savePath);
-        DtoGameData saveData = JsonUtility.FromJson<DtoGameData>(json);
+        if (!SaveFileExists(binarySavePath))
+        {
+            Debug.LogWarning($"[LoadManager] No save file found at: {jsonSavePath}");
+            return false;
+        }
 
-        OverwriteData(saveData);
-        UnitSelectionManager.Instance.TriggerOnSelectionChange();
-
-        Debug.Log("[LoadManager] Load complete.");
-        return true;
+        /* if (TryLoadBinary())
+            return true; */
+        return TryLoadBinary() || TryLoadJson();
     }
 
-    private void OverwriteData(DtoGameData save)
+    private bool TryLoadBinary()
     {
-        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        Debug.Log("[LoadManager] Trying binary load...");
 
-        ClearPreviousEntities();
+        if (!File.Exists(binarySavePath))
+            return false;
 
-        LoadManaged(save.managed);
-        LoadResources(save.resources);
-        LoadBuildings(save.buildings);
-        LoadUnits(save.units);
+        try
+        {
+            DtoGameData saveData = new DtoGameData();
+
+            using FileStream stream = new FileStream(binarySavePath, FileMode.Open);
+            using BinaryReader reader = new BinaryReader(stream);
+
+            // MANAGED
+            saveData.managed = new DtoManagedData
+            {
+                camPosition = ReadFloat3(reader),
+                camRotation = ReadQuaternion(reader)
+            };
+
+            // RESOURCES
+            int resCount = reader.ReadInt32();
+            saveData.resources = new DtoResourceData
+            {
+                resources = new List<DtoResourceData.SaveResourceEntry>()
+            };
+
+            for (int i = 0; i < resCount; i++)
+            {
+                saveData.resources.resources.Add(new DtoResourceData.SaveResourceEntry
+                {
+                    resourceKey = new ResourceKey { name = reader.ReadString() },
+                    amount = reader.ReadInt32()
+                });
+            }
+
+            // BUILDINGS
+            int buildingCount = reader.ReadInt32();
+            saveData.buildings = new List<DtoBuildingData>();
+
+            for (int i = 0; i < buildingCount; i++)
+            {
+                DtoBuildingData b = new DtoBuildingData
+                {
+                    prefabKey = reader.ReadString(),
+                    position = ReadFloat3(reader),
+                    rotation = ReadQuaternion(reader),
+                    ownerID = reader.ReadInt32(),
+                    factionID = reader.ReadUInt32(),
+                    selected = reader.ReadBoolean(),
+                    currentHealth = reader.ReadInt32()
+                };
+
+                bool hasTrainer = reader.ReadBoolean();
+
+                if (hasTrainer)
+                {
+                    DtoTrainerData t = new DtoTrainerData
+                    {
+                        currentProgress = reader.ReadSingle(),
+                        maxProgress = reader.ReadSingle(),
+                        activeUnitKey = reader.ReadString(),
+                        spawnPointOffset = new Float3Serializable(ReadFloat3(reader)),
+                        rallyPositionOffset = new Float3Serializable(ReadFloat3(reader)),
+                        onUnitQueueChange = reader.ReadBoolean(),
+                        trainingQueue = new List<string>()
+                    };
+
+                    int qCount = reader.ReadInt32();
+                    for (int q = 0; q < qCount; q++)
+                        t.trainingQueue.Add(reader.ReadString());
+
+                    b.trainerData = t;
+                }
+
+                saveData.buildings.Add(b);
+            }
+
+            // UNITS
+            int unitCount = reader.ReadInt32();
+            saveData.units = new List<DtoUnitData>();
+
+            for (int i = 0; i < unitCount; i++)
+            {
+                saveData.units.Add(new DtoUnitData
+                {
+                    prefabKey = reader.ReadString(),
+                    position = ReadFloat3(reader),
+                    rotation = ReadQuaternion(reader),
+                    ownerID = reader.ReadInt32(),
+                    factionID = reader.ReadUInt32(),
+                    selected = reader.ReadBoolean(),
+                    requirePathing = reader.ReadBoolean(),
+                    unitMoverPosition = ReadFloat3(reader),
+                    targetPosition = ReadFloat3(reader),
+                    postFormationPosition = ReadFloat3(reader),
+                    lastMoveVector = ReadFloat3(reader),
+                    targetEntity = new Entity
+                    {
+                        Index = reader.ReadInt32(),
+                        Version = reader.ReadInt32()
+                    },
+                    currentHealth = reader.ReadInt32()
+                });
+            }
+
+            OverwriteData(saveData);
+
+            Debug.Log("[LoadManager] Binary load successful.");
+            return true;
+        }
+        catch (EndOfStreamException e)
+        {
+            Debug.LogError($"[LoadManager] Binary file ended abruptly (corrupt or truncated save): {e.Message}");
+            return false;
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"[LoadManager] Binary IO error (disk issue, locked file, or read failure): {e.Message}");
+            return false;
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogError($"[LoadManager] No permission to read binary save: {e.Message}");
+            return false;
+        }
+        catch (FormatException e)
+        {
+            Debug.LogError($"[LoadManager] Binary format invalid (save structure mismatch): {e.Message}");
+            return false;
+        }
+        catch (ObjectDisposedException e)
+        {
+            Debug.LogError($"[LoadManager] Binary stream was disposed unexpectedly: {e.Message}");
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[LoadManager] Unexpected binary load error: {e}");
+            return false;
+        }
+    }
+
+    private bool TryLoadJson()
+    {
+        try
+        {
+            string json = File.ReadAllText(jsonSavePath);
+            DtoGameData saveData = JsonUtility.FromJson<DtoGameData>(json);
+
+            if (saveData.units == null && saveData.buildings == null)
+            {
+                Debug.LogError("[LoadManager] JSON parsed but data is null or invalid.");
+                return false;
+            }
+
+            OverwriteData(saveData);
+
+            Debug.Log("[LoadManager] JSON load successful.");
+            return true;
+        }
+        catch (FileNotFoundException e)
+        {
+            Debug.LogError($"[LoadManager] JSON file missing: {e.Message}");
+            return false;
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogError($"[LoadManager] No permission to read JSON: {e.Message}");
+            return false;
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"[LoadManager] IO error reading JSON: {e.Message}");
+            return false;
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogError($"[LoadManager] JSON path or content invalid: {e.Message}");
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[LoadManager] Unexpected JSON error: {e}");
+            return false;
+        }
     }
 
     private void ClearPreviousEntities()
@@ -116,6 +307,20 @@ public class LoadManager : MonoBehaviour
         {
             entityManager.DestroyEntity(buildingEntity);
         }
+    }
+
+    private void OverwriteData(DtoGameData save)
+    {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+        ClearPreviousEntities();
+
+        LoadManaged(save.managed);
+        LoadResources(save.resources);
+        LoadBuildings(save.buildings);
+        LoadUnits(save.units);
+
+        UnitSelectionManager.Instance.TriggerOnSelectionChange();
     }
 
     private void LoadUnits(List<DtoUnitData> units)
@@ -216,7 +421,7 @@ public class LoadManager : MonoBehaviour
             name = buildingData.prefabKey,
         };
         Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
-        Debug.Log($"Fetching Building: {entityPrefabKey.name}");
+        Debug.Log($"[LoadManager] Fetching Building: {entityPrefabKey.name}");
 
         // Rebuild the entity.
         Entity entity = entityManager.Instantiate(prefabEntity);

@@ -2,12 +2,28 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
+/// <summary>
+/// Managed component for the <see cref="Occluder"/> unmanaged component.
+/// </summary>
 class OccluderAuthoring : MonoBehaviour
 {
+    /// <summary>
+    /// Box collider defining the occlusion area.
+    /// </summary>
+    [Tooltip("Box collider defining the occlusion area.")]
+
     public BoxCollider occlusionBox;
+
+    /// <summary>
+    /// Reference to the grid parameters scriptable object.
+    /// </summary>
+    [Tooltip("Reference to the grid parameters scriptable object.")]
     public GridParametersSO gridParameters;
 }
 
+/// <summary>
+/// Baker for the <see cref="Occluder"/> unmanaged component.
+/// </summary>
 class OccluderBaker : Baker<OccluderAuthoring>
 {
     public override void Bake(OccluderAuthoring authoring)
@@ -59,9 +75,23 @@ class OccluderBaker : Baker<OccluderAuthoring>
     }
 }
 
+/// <summary>
+/// Component data for occlusion areas in the world grid.
+/// </summary>
 public struct Occluder : IComponentData
 {
+    /// <summary>
+    /// The size of the occlusion footprint in grid cells (X, Y).
+    /// </summary>
     public int2 occlusionFootprint;
+
+    /// <summary>
+    /// Whether this occluder has been accounted for in the grid.
+    /// </summary>
     public bool isAccountedFor;
+
+    /// <summary>
+    /// Whether this occluder is marked for deletion.
+    /// </summary>
     public bool markedForDeletion;
 }

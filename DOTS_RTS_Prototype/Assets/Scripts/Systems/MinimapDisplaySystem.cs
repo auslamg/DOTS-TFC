@@ -4,8 +4,13 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
+/// <summary>
+/// Updates minimap icon scales based on camera zoom level.
+/// </summary>
 partial struct MinimapDisplaySystem : ISystem
 {
+    private float previousValue;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -16,11 +21,15 @@ partial struct MinimapDisplaySystem : ISystem
     {
         float iconSize = GetIconSize(ref state);
 
-        foreach (var minimapDisplay in SystemAPI.Query<RefRW<MinimapDisplay>>())
+        if (iconSize != previousValue)
         {
-            RefRW<LocalTransform> iconLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(minimapDisplay.ValueRO.minimapIconEntity);
-            iconLocalTransform.ValueRW.Scale = iconSize / 32;
-            /* Debug.Log($"Setting icon size {iconLocalTransform.ValueRO.Scale}"); */
+            foreach (var minimapDisplay in SystemAPI.Query<RefRW<MinimapDisplay>>())
+            {
+                RefRW<LocalTransform> iconLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(minimapDisplay.ValueRO.minimapIconEntity);
+                iconLocalTransform.ValueRW.Scale = iconSize / 32;
+                /* Debug.Log($"Setting icon size {iconLocalTransform.ValueRO.Scale}"); */
+            }
+            previousValue = iconSize;
         }
     }
 

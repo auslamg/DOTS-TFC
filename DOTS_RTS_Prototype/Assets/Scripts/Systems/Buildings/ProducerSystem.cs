@@ -2,6 +2,9 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 
+/// <summary>
+/// Generates resources periodically based on producer component settings.
+/// </summary>
 partial struct ProducerSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)

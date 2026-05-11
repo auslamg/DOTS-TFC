@@ -9,6 +9,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using static SaveLoadUtil;
 
 public class SaveManager : MonoBehaviour
 {
@@ -21,7 +22,19 @@ public class SaveManager : MonoBehaviour
     [Tooltip("File name for the save file.")]
     private string fileName;
 
-    private string savePath => Path.Combine(Application.persistentDataPath, fileName);
+    private string jsonSavePath =>
+    Path.Combine(
+        Application.persistentDataPath,
+         Path.GetFileNameWithoutExtension(fileName) + ".json");
+
+    private string binarySavePath =>
+    Path.Combine(
+        Application.persistentDataPath,
+        Path.GetFileNameWithoutExtension(fileName) + ".dat");
+
+    [Header("Save file type: true for JSON, false for .dat.")]
+    [SerializeField]
+    private bool isJson;
 
     [Header("References")]
     /// <summary>
@@ -64,10 +77,149 @@ public class SaveManager : MonoBehaviour
         Debug.Log("[SaveManager] SAVING...");
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        return WriteSaveFile();
+        return isJson ? WriteJsonSaveFile() : WriteBinarySaveFile();
     }
 
-    private bool WriteSaveFile()
+    private bool WriteBinarySaveFile()
+    {
+        Debug.Log("[SaveManager] Writing binary save file...");
+
+        try
+        {
+            DtoGameData saveGame = new DtoGameData
+            {
+                units = new List<DtoUnitData>(GetAllUnitData()),
+                buildings = new List<DtoBuildingData>(GetAllBuildingData()),
+                resources = GetAllResourceData(),
+                managed = GetManagedData()
+            };
+
+            Directory.CreateDirectory(Path.GetDirectoryName(binarySavePath));
+
+            using FileStream stream = new FileStream(binarySavePath, FileMode.Create);
+            using BinaryWriter writer = new BinaryWriter(stream);
+
+            // MANAGED
+            WriteFloat3(writer, saveGame.managed.camPosition);
+            WriteQuaternion(writer, saveGame.managed.camRotation);
+
+            // RESOURCES
+            writer.Write(saveGame.resources.resources.Count);
+
+            foreach (var r in saveGame.resources.resources)
+            {
+                writer.Write(r.resourceKey.name.ToString());
+                writer.Write(r.amount);
+            }
+
+            // BUILDINGS
+            writer.Write(saveGame.buildings.Count);
+
+            foreach (var b in saveGame.buildings)
+            {
+                writer.Write(b.prefabKey);
+
+                WriteFloat3(writer, b.position);
+                WriteQuaternion(writer, b.rotation);
+
+                writer.Write(b.ownerID);
+                writer.Write(b.factionID);
+                writer.Write(b.selected);
+                writer.Write(b.currentHealth);
+
+                bool hasTrainer = b.trainerData.trainingQueue != null;
+                writer.Write(hasTrainer);
+
+                if (hasTrainer)
+                {
+                    writer.Write(b.trainerData.currentProgress);
+                    writer.Write(b.trainerData.maxProgress);
+                    writer.Write(b.trainerData.activeUnitKey ?? "");
+
+                    WriteFloat3(writer, b.trainerData.spawnPointOffset.ToFloat3());
+                    WriteFloat3(writer, b.trainerData.rallyPositionOffset.ToFloat3());
+
+                    writer.Write(b.trainerData.onUnitQueueChange);
+
+                    writer.Write(b.trainerData.trainingQueue.Count);
+
+                    foreach (var q in b.trainerData.trainingQueue)
+                        writer.Write(q);
+                }
+            }
+
+            // UNITS
+            writer.Write(saveGame.units.Count);
+
+            foreach (var u in saveGame.units)
+            {
+                writer.Write(u.prefabKey);
+
+                WriteFloat3(writer, u.position);
+                WriteQuaternion(writer, u.rotation);
+
+                writer.Write(u.ownerID);
+                writer.Write(u.factionID);
+                writer.Write(u.selected);
+                writer.Write(u.requirePathing);
+
+                WriteFloat3(writer, u.unitMoverPosition);
+                WriteFloat3(writer, u.targetPosition);
+                WriteFloat3(writer, u.postFormationPosition);
+                WriteFloat3(writer, u.lastMoveVector);
+
+                writer.Write(u.targetEntity.Index);
+                writer.Write(u.targetEntity.Version);
+
+                writer.Write(u.currentHealth);
+            }
+
+            Debug.Log($"[SaveManager] Binary save written: {binarySavePath}");
+            return true;
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - no write permission: {e.Message}");
+            return false;
+        }
+        catch (DirectoryNotFoundException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - invalid path: {e.Message}");
+            return false;
+        }
+        catch (PathTooLongException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - path too long: {e.Message}");
+            return false;
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - IO error (disk full / locked file): {e.Message}");
+            return false;
+        }
+        catch (NullReferenceException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - null data in DTO or ECS read: {e.Message}");
+            return false;
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - invalid argument or corrupted data: {e.Message}");
+            return false;
+        }
+        catch (ObjectDisposedException e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - stream disposed early: {e.Message}");
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveManager] Binary save failed - unexpected error: {e}");
+            return false;
+        }
+    }
+
+    private bool WriteJsonSaveFile()
     {
         Debug.Log("[SaveManager] Writing save file...");
 
@@ -84,16 +236,41 @@ public class SaveManager : MonoBehaviour
             string json = JsonUtility.ToJson(saveGame, true);
 
             // Ensure directory exists (important on first run / mobile)
-            Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+            Directory.CreateDirectory(Path.GetDirectoryName(jsonSavePath));
 
-            File.WriteAllText(savePath, json);
+            File.WriteAllText(jsonSavePath, json);
 
-            Debug.Log($"[SaveManager] Save written successfully to: {savePath}");
+            Debug.Log($"[SaveManager] Save written successfully to: {jsonSavePath}");
             return true;
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogError($"[SaveManager] JSON save failed - no write permission: {e.Message}");
+            return false;
+        }
+        catch (DirectoryNotFoundException e)
+        {
+            Debug.LogError($"[SaveManager] JSON save failed - invalid directory: {e.Message}");
+            return false;
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"[SaveManager] JSON save failed - IO issue (disk full / locked file): {e.Message}");
+            return false;
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogError($"[SaveManager] JSON save failed - invalid path or data: {e.Message}");
+            return false;
+        }
+        catch (NullReferenceException e)
+        {
+            Debug.LogError($"[SaveManager] JSON save failed - null DTO field: {e.Message}");
+            return false;
         }
         catch (Exception e)
         {
-            Debug.LogError($"[SaveManager] Failed to write save file: {e}");
+            Debug.LogError($"[SaveManager] JSON save failed - unexpected error: {e}");
             return false;
         }
     }

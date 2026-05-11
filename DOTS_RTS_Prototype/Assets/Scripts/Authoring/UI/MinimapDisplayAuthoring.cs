@@ -1,6 +1,9 @@
 using Unity.Entities;
 using UnityEngine;
 
+/// <summary>
+/// Managed component for the <see cref="MinimapDisplay"/> unmanaged component.
+/// </summary>
 class MinimapDisplayAuthoring : MonoBehaviour
 {
     /// <summary>
@@ -11,6 +14,9 @@ class MinimapDisplayAuthoring : MonoBehaviour
     public GameObject minimapIconGameObject;
 }
 
+/// <summary>
+/// Baker for the <see cref="MinimapDisplay"/> unmanaged component.
+/// </summary>
 class MinimapDisplayBaker : Baker<MinimapDisplayAuthoring>
 {
     public override void Bake(MinimapDisplayAuthoring authoring)
@@ -26,17 +32,17 @@ class MinimapDisplayBaker : Baker<MinimapDisplayAuthoring>
 }
 
 /// <summary>
-/// Selection state component used by selection and gizmo display systems.
+/// Component data for minimap display.
 /// </summary>
 public struct MinimapDisplay : IComponentData, IEnableableComponent
 {
     /// <summary>
-    /// 
+    /// The default color of the minimap icon.
     /// </summary>
     public Color defaultIconColor;
 
     /// <summary>
-    /// Reference to the selected entity's selection gizmo.
+    /// Reference to the minimap icon entity.
     /// </summary>
     public Entity minimapIconEntity;
 }

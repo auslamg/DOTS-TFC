@@ -2,6 +2,9 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 
+/// <summary>
+/// Marks occluder components for removal when their owning entities die.
+/// </summary>
 [UpdateAfter(typeof(HealthSystem))]
 [UpdateBefore(typeof(GridSystem))]
 partial struct OcclusionMarkerSystem : ISystem
