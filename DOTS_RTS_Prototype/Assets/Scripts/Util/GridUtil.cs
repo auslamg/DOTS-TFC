@@ -275,9 +275,9 @@ public static class GridUtil
     /// </summary>
     public static bool IsPathable(float3 currentPosition, FlowField flowfield, GridData gridData, ref SystemState state)
     {
-        Entity e = GetCurrentCellEntity(currentPosition, flowfield, gridData);
+        Entity entity = GetCurrentCellEntity(currentPosition, flowfield, gridData);
 
-        return IsPathable(state.EntityManager.GetComponentData<GridCell>(e));
+        return IsPathable(state.EntityManager.GetComponentData<GridCell>(entity));
     }
 
     public static Entity GetCurrentCellEntity(float3 currentPosition, FlowField flowfield, GridData gridData)
@@ -311,173 +311,76 @@ public static class GridUtil
     [BurstCompile]
     public static bool TryGetNearestNeighbouringCell(
     int2 origin,
-    int maxRadius,
+    int occluderSideSize,
     in GridData gridData,
     out int2 result)
     {
         int width = gridData.width;
         int height = gridData.height;
 
-        // Original cell valid
         if (!ValidateCoords(origin, width, height))
         {
             result = origin;
             return false;
         }
-        if (ValidateCoords(origin, width, height) &&
-            !IsObstructed(origin, gridData))
+
+        // Expand square by one layer
+        int expandedSize = occluderSideSize + 2;
+
+        // Convert square size to extent from center
+        int extent = expandedSize / 2;
+
+        int minX = origin.x - extent;
+        int maxX = origin.x + extent;
+
+        int minY = origin.y - extent;
+        int maxY = origin.y + extent;
+
+        // TOP + BOTTOM
+        for (int x = minX; x <= maxX; x++)
         {
-            result = origin;
-            return true;
-        }
+            int2 top = new int2(x, maxY);
 
-        // Expand outward ring-by-ring
-        for (int radius = 1; radius <= maxRadius; radius++)
-        {
-            int minX = origin.x - radius;
-            int maxX = origin.x + radius;
-
-            int minY = origin.y - radius;
-            int maxY = origin.y + radius;
-
-            // TOP + BOTTOM rows
-            for (int x = minX; x <= maxX; x++)
+            if (ValidateCoords(top, width, height) &&
+                !IsObstructed(top, gridData))
             {
-                // Top
-                int2 top = new int2(x, maxY);
-
-                if (ValidateCoords(top, width, height) &&
-                    !IsObstructed(top, gridData))
-                {
-                    result = top;
-                    return true;
-                }
-
-                // Bottom
-                int2 bottom = new int2(x, minY);
-
-                if (ValidateCoords(bottom, width, height) &&
-                    !IsObstructed(bottom, gridData))
-                {
-                    result = bottom;
-                    return true;
-                }
+                result = top;
+                return true;
             }
 
-            // LEFT + RIGHT columns
-            for (int y = minY + 1; y < maxY; y++)
+            int2 bottom = new int2(x, minY);
+
+            if (ValidateCoords(bottom, width, height) &&
+                !IsObstructed(bottom, gridData))
             {
-                // Left
-                int2 left = new int2(minX, y);
-
-                if (ValidateCoords(left, width, height) &&
-                    !IsObstructed(left, gridData))
-                {
-                    result = left;
-                    return true;
-                }
-
-                // Right
-                int2 right = new int2(maxX, y);
-
-                if (ValidateCoords(right, width, height) &&
-                    !IsObstructed(right, gridData))
-                {
-                    result = right;
-                    return true;
-                }
-            }
-        }
-
-        result = origin;
-        return false;
-    }
-
-    [BurstCompile]
-    public static bool TryGetNearestNeighbouringCell(
-    int2 origin,
-    int maxRadius,
-    int gridWidth,
-    int gridHeight,
-    NativeArray<byte> pathingCostMap,
-    out int2 result)
-    {
-        // Origin valid
-        if (ValidateCoords(origin, gridWidth, gridHeight))
-        {
-            int originIndex = CoordsToIndex(origin, gridWidth);
-
-            if (pathingCostMap[originIndex] != GridSystem.OBSTRUCTED_COST)
-            {
-                result = origin;
+                result = bottom;
                 return true;
             }
         }
 
-        // Expanding square rings
-        for (int radius = 1; radius <= maxRadius; radius++)
+        // LEFT + RIGHT
+        for (int y = minY + 1; y < maxY; y++)
         {
-            int minX = origin.x - radius;
-            int maxX = origin.x + radius;
+            int2 left = new int2(minX, y);
 
-            int minY = origin.y - radius;
-            int maxY = origin.y + radius;
-
-            // TOP + BOTTOM
-            for (int x = minX; x <= maxX; x++)
+            if (ValidateCoords(left, width, height) &&
+                !IsObstructed(left, gridData))
             {
-                // Top
-                if (TryCell(x, maxY, gridWidth, gridHeight, pathingCostMap, out result))
-                    return true;
-
-                // Bottom
-                if (TryCell(x, minY, gridWidth, gridHeight, pathingCostMap, out result))
-                    return true;
+                result = left;
+                return true;
             }
 
-            // LEFT + RIGHT
-            for (int y = minY + 1; y < maxY; y++)
-            {
-                // Left
-                if (TryCell(minX, y, gridWidth, gridHeight, pathingCostMap, out result))
-                    return true;
+            int2 right = new int2(maxX, y);
 
-                // Right
-                if (TryCell(maxX, y, gridWidth, gridHeight, pathingCostMap, out result))
-                    return true;
+            if (ValidateCoords(right, width, height) &&
+                !IsObstructed(right, gridData))
+            {
+                result = right;
+                return true;
             }
         }
 
         result = origin;
         return false;
-    }
-
-    [BurstCompile]
-    private static bool TryCell(
-        int x,
-        int y,
-        int gridWidth,
-        int gridHeight,
-        NativeArray<byte> pathingCostMap,
-        out int2 result)
-    {
-        // Unsigned bounds check = fastest version
-        if ((uint)x >= (uint)gridWidth ||
-            (uint)y >= (uint)gridHeight)
-        {
-            result = default;
-            return false;
-        }
-
-        int index = x + y * gridWidth;
-
-        if (pathingCostMap[index] == GridSystem.OBSTRUCTED_COST)
-        {
-            result = default;
-            return false;
-        }
-
-        result = new int2(x, y);
-        return true;
     }
 }

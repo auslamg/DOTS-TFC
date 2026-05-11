@@ -773,6 +773,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GoldDeposit
       objectReference: {fileID: 0}
+    - target: {fileID: 6284433680889554292, guid: 8cdc8728964121449ac89a648fc4e65b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1388,7 +1392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1132093315813226233, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1695445464946549131, guid: d4466c0e3149e5940915f1b129c58201, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1465,7 +1469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3748319392514815708, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5659836155350582995, guid: b2cce97ae411d2d4997e6eaf664ad139, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1621,6 +1625,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FarmProducer
       objectReference: {fileID: 0}
+    - target: {fileID: 4638855204955178881, guid: 1ba266c1959925545ac5e32d3e56f799, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1698,6 +1706,10 @@ PrefabInstance:
     - target: {fileID: 1693668972295213622, guid: a1a37b4af0b722a4ab9b2c6c08e89e31, type: 3}
       propertyPath: m_Name
       value: MineHarvester
+      objectReference: {fileID: 0}
+    - target: {fileID: 1693668972295213622, guid: a1a37b4af0b722a4ab9b2c6c08e89e31, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7858337882406773305, guid: a1a37b4af0b722a4ab9b2c6c08e89e31, type: 3}
       propertyPath: m_LocalPosition.x

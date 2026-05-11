@@ -5,7 +5,6 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-using RaycastHit = Unity.Physics.RaycastHit;
 
 /// <summary>
 /// Handles melee target chasing and timed melee damage application.
@@ -13,6 +12,11 @@ using RaycastHit = Unity.Physics.RaycastHit;
 [UpdateBefore(typeof(UnitMoverSystem))]
 partial struct MeleeAttackSystem : ISystem
 {
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<GridData>();
+    }
     /// <summary>
     /// Moves units into melee range and applies damage when attack cooldowns expire.
     /// </summary>
@@ -22,7 +26,7 @@ partial struct MeleeAttackSystem : ISystem
         foreach ((
             RefRW<LocalTransform> localTransform,
             RefRW<MeleeAttack> meleeAttack,
-            RefRO<Targetter> targetter,
+            RefRW<Targetter> targetter,
             RefRO<UnitMover> unitMover,
             RefRW<PathRequest> pathRequest,
             EnabledRefRW<PathRequest> pathRequestEnabled,
@@ -30,7 +34,7 @@ partial struct MeleeAttackSystem : ISystem
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<MeleeAttack>,
-                RefRO<Targetter>,
+                RefRW<Targetter>,
                 RefRO<UnitMover>,
                 RefRW<PathRequest>,
                 EnabledRefRW<PathRequest>,
@@ -71,18 +75,45 @@ partial struct MeleeAttackSystem : ISystem
                         isTouchingTarget = distanceToTarget < minDistanceOffset;
                     }
                 }
-
                 if (!isWithinAttackDistance && !isTouchingTarget)
                 {
-                    //Target is too far to attack (normalized for unit wonky vertical jitter)
-                    pathRequest.ValueRW.targetPosition = targetLocalTransform.Position * new float3(1, 0, 1);
-                    pathRequest.ValueRW.postFormationPosition = targetLocalTransform.Position * new float3(1, 0, 1);
-                    pathRequestEnabled.ValueRW = true;
-                    /* Debug.Log("[Melee] Attacking path request"); */
+                    // Target is too far to attack. Move to target if not currently moving.
+                    if (!unitMover.ValueRO.isMoving)
+                    {
+                        // Default target position (normalized for unit wonky vertical jitter).
+                        float3 targetPosition = targetLocalTransform.Position * new float3(1, 0, 1);
+
+                        GridData gridData = SystemAPI.GetSingleton<GridData>();
+                        int2 targetCoords = GridUtil.WorldPositionToCoords(targetLocalTransform.Position, gridData.gridCellSize);
+
+                        // If the target position is inside an obstructed cell & its a building.
+                        if (GridUtil.IsObstructed(targetCoords, gridData) &&
+                            SystemAPI.HasComponent<Building>(targetter.ValueRO.targetEntity))
+                        {
+                            // Get the building's occlusion size to optimize nearest cell search.
+                            Occluder occluder = SystemAPI.GetComponent<Occluder>(targetter.ValueRO.targetEntity);
+
+                            // If a nearest cell can be reached navigate to it
+                            if (GridUtil.TryGetNearestNeighbouringCell(
+                                    targetCoords,
+                                    occluder.occlusionFootprint.x,
+                                    gridData,
+                                    out var result))
+                            {
+                                targetPosition = GridUtil.CoordsToWorldPositionCenter(result, gridData.gridCellSize);
+                            }
+                            else targetter.ValueRW.targetEntity = Entity.Null;
+                        }
+
+                        pathRequest.ValueRW.targetPosition = targetPosition;
+                        pathRequest.ValueRW.postFormationPosition = targetPosition;
+                        pathRequestEnabled.ValueRW = true;
+                        /* Debug.Log("[Melee] Attacking path request"); */
+                    }
                 }
                 else
                 {
-                    //Target is close enough to attack
+                    //Target is close enough to attack: stop moving.
                     pathRequest.ValueRW.targetPosition = localTransform.ValueRO.Position;
                     pathRequest.ValueRW.postFormationPosition = localTransform.ValueRO.Position;
                     pathRequestEnabled.ValueRW = true;

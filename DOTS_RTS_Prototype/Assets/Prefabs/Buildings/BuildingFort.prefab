@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8897808650397929912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 265774613250543386}
+  m_Layer: 7
+  m_Name: ProjectileSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &265774613250543386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8897808650397929912}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297778677895542038}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8553006307806858309
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -70,12 +101,32 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 265774613250543386}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5114271408651382707}
+    - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8725056009836490280}
+    - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8389679668204614208}
+    - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8896555277420560798}
+    - targetCorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8813915308921896210}
   m_SourcePrefab: {fileID: 100100000, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+--- !u!4 &297778677895542038 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8256098444635470163, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
+  m_PrefabInstance: {fileID: 8553006307806858309}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9128407762969953561 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 584623067842398556, guid: 88b827ece7b96f447a29b285eb4a61aa, type: 3}
@@ -94,3 +145,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FortAuthoring
   gameOverMessage: 
+--- !u!114 &8725056009836490280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128407762969953561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b4b1fb7c3e8b324ea07acd58f4bf81b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetterAuthoring
+  testTargetGameObject: {fileID: 0}
+--- !u!114 &-8389679668204614208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128407762969953561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8425bb6f3b4f2e44b37da67de6e00fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ManualTargetAuthoring
+--- !u!114 &8896555277420560798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128407762969953561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5320d3555fca3a843abfc396b5808e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetFinderAuthoring
+  scanInterval: 0.2
+  targetRange: 30
+  swapTargetMinDistance: 5
+--- !u!114 &-8813915308921896210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9128407762969953561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2365f7cb8b2b20c4692c55d8244e813d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootAttackAuthoring
+  projectilePrefabKey: Arrow
+  onShootSpawnedEntityKey: 
+  attackInterval: 0.4
+  attackDistance: 30
+  damageAmount: 20
+  projectileSpawnPointTransform: {fileID: 1544517710400913710, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}

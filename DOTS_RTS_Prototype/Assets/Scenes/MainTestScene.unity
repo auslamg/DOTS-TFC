@@ -6806,7 +6806,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1145144248}
-  - component: {fileID: 1145144250}
   - component: {fileID: 1145144249}
   m_Layer: 5
   m_Name: ResourceManagerUI
@@ -6847,22 +6846,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7532cab0c97d44c46b070453ef6c01bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResetUIPosition
---- !u!114 &1145144250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1145144247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8410a59290a9caa469c425437e6c9891, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ResourceManagerUI
-  resourceFieldContainer: {fileID: 1952199357}
-  resourceFieldTemplate: {fileID: 1537536485}
-  resourceRegistrySO: {fileID: 11400000, guid: 591917c53f347194db96731e5d6f2f71, type: 2}
-  placeholderResourceIconImage: {fileID: 21300000, guid: 12aa96462ea36734b9e7be75d069082e, type: 3}
 --- !u!1 &1162456772
 GameObject:
   m_ObjectHideFlags: 0
@@ -8874,8 +8857,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 335, y: -150}
-  m_SizeDelta: {x: 650, y: 280}
+  m_AnchoredPosition: {x: 372.62808, y: -150}
+  m_SizeDelta: {x: 725.25616, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:
@@ -11879,6 +11862,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1952199357}
+  - component: {fileID: 1952199364}
   - component: {fileID: 1952199358}
   - component: {fileID: 1952199359}
   - component: {fileID: 1952199362}
@@ -12026,6 +12010,22 @@ MonoBehaviour:
   m_EffectColor: {r: 0.39607844, g: 0.2509804, b: 0.2, a: 1}
   m_EffectDistance: {x: 5, y: 5}
   m_UseGraphicAlpha: 1
+--- !u!114 &1952199364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952199356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8410a59290a9caa469c425437e6c9891, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ResourceManagerUI
+  resourceFieldContainer: {fileID: 1952199357}
+  resourceFieldTemplate: {fileID: 1537536485}
+  resourceRegistrySO: {fileID: 11400000, guid: 591917c53f347194db96731e5d6f2f71, type: 2}
+  placeholderResourceIconImage: {fileID: 21300000, guid: 12aa96462ea36734b9e7be75d069082e, type: 3}
 --- !u!1 &1956103806
 GameObject:
   m_ObjectHideFlags: 0
