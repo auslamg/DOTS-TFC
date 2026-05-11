@@ -30,43 +30,43 @@ partial struct AnimationStateSystem : ISystem
     {
         activeAnimationComponentLookup.Update(ref state);
 
-        IdleWalkingAnimationStateJob job = new IdleWalkingAnimationStateJob
+        MovementAnimationStateJob movementAnimStateJob = new MovementAnimationStateJob
         {
             activeAnimationComponentLookup = activeAnimationComponentLookup
         };
-        job.ScheduleParallel(); //TODO: Rename
+        movementAnimStateJob.ScheduleParallel();
 
-        AimShootAnimationStateJob job2 = new AimShootAnimationStateJob
+        ShootAttackAnimationStateJob shootAttackAnimStateJob = new ShootAttackAnimationStateJob
         {
             activeAnimationComponentLookup = activeAnimationComponentLookup
         };
-        job2.ScheduleParallel(); //TODO: Rename
+        shootAttackAnimStateJob.ScheduleParallel();
 
-        MeleeAttackAnimationStateJob job3 = new MeleeAttackAnimationStateJob
+        MeleeAttackAnimationStateJob meleeAttackAnimStateJob = new MeleeAttackAnimationStateJob
         {
             activeAnimationComponentLookup = activeAnimationComponentLookup
         };
-        job3.ScheduleParallel(); //TODO: Rename
+        meleeAttackAnimStateJob.ScheduleParallel();
     }
 }
 
 /// <summary>
 /// Applies idle or walk animation requests based on current movement state.
 /// </summary>
-public partial struct IdleWalkingAnimationStateJob : IJobEntity
+public partial struct MovementAnimationStateJob : IJobEntity
 {
     [NativeDisableParallelForRestriction] public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
 
     /// <summary>
     /// Sets the next animation key to walk while moving, otherwise idle.
     /// </summary>
-    public void Execute(in AnimatedMeshReference animatedMesh,
+    public void Execute(
+            in AnimatedMeshReference animatedMesh,
             in UnitMover unitMover,
             in UnitAnimations unitAnimations)
     {
         RefRW<ActiveAnimation> activeAnimation = activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);
 
-        //TODO: Refactor into fsm
         if (unitMover.isMoving)
         {
             activeAnimation.ValueRW.nextAnimationKey = unitAnimations.walkAnimationKey;
@@ -81,21 +81,20 @@ public partial struct IdleWalkingAnimationStateJob : IJobEntity
 /// <summary>
 /// Applies aiming and shooting animation requests for ranged units.
 /// </summary>
-public partial struct AimShootAnimationStateJob : IJobEntity
+public partial struct ShootAttackAnimationStateJob : IJobEntity
 {
     [NativeDisableParallelForRestriction] public ComponentLookup<ActiveAnimation> activeAnimationComponentLookup;
 
     /// <summary>
     /// Chooses aim when locked on target and shoot when a shot trigger event fires.
     /// </summary>
-    public void Execute(in AnimatedMeshReference animatedMesh,
+    public void Execute(
+            in AnimatedMeshReference animatedMesh,
             in UnitMover unitMover,
             in Targetter targetter,
             in ShootAttack shootAttack,
             in UnitAnimations unitAnimations)
     {
-        //FIX: Use utils method
-        //TODO: Refactor into fsm
         if (!unitMover.isMoving && targetter.targetEntity != Entity.Null)
         { 
             RefRW<ActiveAnimation> activeAnimation =
@@ -122,11 +121,11 @@ public partial struct MeleeAttackAnimationStateJob : IJobEntity
     /// <summary>
     /// Switches to the melee attack clip for the current frame when attack is triggered.
     /// </summary>
-    public void Execute(in AnimatedMeshReference animatedMesh,
+    public void Execute(
+            in AnimatedMeshReference animatedMesh,
             in MeleeAttack meleeAttack,
             in UnitAnimations unitAnimations)
     {
-        //TODO: Refactor into fsm
         if (meleeAttack.onAttack)
         {
             RefRW<ActiveAnimation> activeAnimation = activeAnimationComponentLookup.GetRefRW(animatedMesh.meshEntity);

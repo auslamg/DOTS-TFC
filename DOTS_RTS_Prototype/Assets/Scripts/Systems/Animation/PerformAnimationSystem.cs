@@ -8,7 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Advances active animation clips and updates mesh frames on animated entities.
 /// </summary>
-partial struct ActiveAnimationSystem : ISystem
+partial struct PerformAnimationSystem : ISystem
 {
     [ReadOnly] public ComponentLookup<Parent> parentComponentLookup;
     [ReadOnly] public ComponentLookup<UnitAnimations> unitAnimationsComponentLookup;
@@ -34,7 +34,7 @@ partial struct ActiveAnimationSystem : ISystem
         unitAnimationsComponentLookup.Update(ref state);
         AnimationDataRegistry animationDataRegistry = SystemAPI.GetSingleton<AnimationDataRegistry>();
 
-        ActiveAnimationJob job = new ActiveAnimationJob
+        PerformAnimationJob job = new PerformAnimationJob
         {
             deltaTime = SystemAPI.Time.DeltaTime,
             animationDataBlobArrayAssetReference = animationDataRegistry.animationDataBlobArrayReference,
@@ -49,7 +49,7 @@ partial struct ActiveAnimationSystem : ISystem
 /// <summary>
 /// Applies per-entity animation timing and writes the current frame mesh to rendering data.
 /// </summary>
-public partial struct ActiveAnimationJob : IJobEntity
+public partial struct PerformAnimationJob : IJobEntity
 {
     public float deltaTime;
     public BlobAssetReference<BlobArray<AnimationData>> animationDataBlobArrayAssetReference;

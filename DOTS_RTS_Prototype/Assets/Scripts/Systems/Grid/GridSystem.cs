@@ -260,14 +260,20 @@ partial struct GridSystem : ISystem
 
         gridCellComponentLookup.Update(ref state);
         GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
+        
+        CalculateOcclusion(ref state, ref gridData);
+        ResolvePathRequests(ref state, ref gridData);
+    }
 
-        // Account for occluders
+    [BurstCompile]
+    private void CalculateOcclusion(ref SystemState state, ref GridData gridData)
+    {
         foreach ((
-           RefRW<Occluder> occluder,
-           RefRO<LocalTransform> localTransform)
-               in SystemAPI.Query<
-               RefRW<Occluder>,
-               RefRO<LocalTransform>>())
+                   RefRW<Occluder> occluder,
+                   RefRO<LocalTransform> localTransform)
+                       in SystemAPI.Query<
+                       RefRW<Occluder>,
+                       RefRO<LocalTransform>>())
         {
             // No new buildings - no need to update the occlusion.
             if (occluder.ValueRO.isAccountedFor) continue;
@@ -303,25 +309,24 @@ partial struct GridSystem : ISystem
 
             /* Debug.Log($"[Occluder]: Loaded occlusion at {localTransform.ValueRO.Position}"); */
         }
+    }
 
-        // ===============================================
-        // PATHING START
-        // ===============================================
-
-        // Path requests
+    /* [BurstCompile] */
+    private SystemState ResolvePathRequests(ref SystemState state, ref GridData gridData)
+    {
         foreach ((
-            RefRW<FlowFieldRequest> flowFieldRequest,
-            EnabledRefRW<FlowFieldRequest> flowFieldRequestEnabled,
-            RefRW<FlowFieldFollower> flowFieldFollower,
-            EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled,
-            RefRW<UnitMover> unitMover)
-                in SystemAPI.Query<
-                RefRW<FlowFieldRequest>,
-                EnabledRefRW<FlowFieldRequest>,
-                RefRW<FlowFieldFollower>,
-                EnabledRefRW<FlowFieldFollower>,
-                RefRW<UnitMover>>().
-                WithPresent<FlowFieldFollower>())
+                    RefRW<FlowFieldRequest> flowFieldRequest,
+                    EnabledRefRW<FlowFieldRequest> flowFieldRequestEnabled,
+                    RefRW<FlowFieldFollower> flowFieldFollower,
+                    EnabledRefRW<FlowFieldFollower> flowFieldFollowerEnabled,
+                    RefRW<UnitMover> unitMover)
+                        in SystemAPI.Query<
+                        RefRW<FlowFieldRequest>,
+                        EnabledRefRW<FlowFieldRequest>,
+                        RefRW<FlowFieldFollower>,
+                        EnabledRefRW<FlowFieldFollower>,
+                        RefRW<UnitMover>>().
+                        WithPresent<FlowFieldFollower>())
         {
 
             int2 targetCoords = WorldPositionToCoords(flowFieldRequest.ValueRO.targetPosition, gridData.gridCellSize);
@@ -364,7 +369,7 @@ partial struct GridSystem : ISystem
             flowFieldFollowerEnabled.ValueRW = true;
 
             NativeArray<RefRW<GridCell>> gridCellArray =
-            new NativeArray<RefRW<GridCell>>(gridData.width * gridData.height, Allocator.Temp);
+                new NativeArray<RefRW<GridCell>>(gridData.width * gridData.height, Allocator.Temp);
 
             // Set all pathing costs to default values.
             {
@@ -394,7 +399,6 @@ partial struct GridSystem : ISystem
             // Account for occluders
 
             /* Debug.Log($"[Occluder]: Loading occlusion at {localTransform.ValueRO.Position}"); */
-            //TODO
             // Apply pathingCostMap to current flowfield
             for (int i = 0; i < gridData.pathingCostMap.Length; i++)
             {
@@ -465,6 +469,8 @@ partial struct GridSystem : ISystem
                 UpdateDebugVisual(gridData);
             }
         }
+
+        return state;
     }
 
     /// <summary>

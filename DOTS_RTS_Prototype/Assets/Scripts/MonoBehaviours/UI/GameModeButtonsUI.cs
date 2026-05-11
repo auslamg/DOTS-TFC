@@ -40,22 +40,43 @@ public class GameModeButtonsUI : MonoBehaviour
     RectTransform pauseMenuScreen;
 
     /// <summary>
+    /// Global singleton access to unit selection behavior.
+    /// </summary>
+    public static GameModeButtonsUI Instance { get; private set; }
+
+    /// <summary>
+    /// Initializes singleton instance state.
+    /// </summary>
+    private void InitializeSingleton()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogError("Multiple instances of singleton found on " + this.gameObject.name);
+            Destroy(this);
+        }
+    }
+
+    /// <summary>
     /// Wires button listeners to handle game mode switching and pause menu access.
     /// </summary>
     void Awake()
     {
+        InitializeSingleton();
+
         controlModeButton.onClick.AddListener(() =>
         {
-            UnitSelectionManager.Instance.gameObject.SetActive(true);
-            TouchCameraController.Instance.gameObject.SetActive(false);
+            GameModeManager.Instance.SetGameMode(GameMode.ControlMode);
             controlModeButton.interactable = false;
             viewModeButton.interactable = true;
 
         });
         viewModeButton.onClick.AddListener(() =>
         {
-            UnitSelectionManager.Instance.gameObject.SetActive(false);
-            TouchCameraController.Instance.gameObject.SetActive(true);
+            GameModeManager.Instance.SetGameMode(GameMode.ViewMode);
             viewModeButton.interactable = false;
             controlModeButton.interactable = true;
         });
@@ -64,5 +85,29 @@ public class GameModeButtonsUI : MonoBehaviour
             Time.timeScale = 0;
             pauseMenuScreen.gameObject.SetActive(true);
         });
+    }
+
+    public void UpdateGameModeUI(GameMode gameMode)
+    {
+        switch (gameMode)
+        {
+            case GameMode.ActionMode:
+                Debug.LogError("NOT IMPLEMENTED.");
+                return;
+            case GameMode.ControlMode:
+                controlModeButton.interactable = false;
+                viewModeButton.interactable = true;
+                return;
+            case GameMode.ViewMode:
+                viewModeButton.interactable = false;
+                controlModeButton.interactable = true;
+                return;
+            default:
+                Debug.LogError("Unexisting gameMode triggered.");
+                UnitSelectionManager.Instance.gameObject.SetActive(false);
+                UnitSelectionManager.Instance.gameObject.SetActive(false);
+                TouchCameraController.Instance.gameObject.SetActive(false);
+                return;
+        }
     }
 }

@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.Rendering;
 using UnityEngine;
 
-[UpdateBefore(typeof(ActiveAnimationSystem))]
+[UpdateBefore(typeof(PerformAnimationSystem))]
 /// <summary>
 /// Commits requested animation state changes before frame progression runs.
 /// </summary>
