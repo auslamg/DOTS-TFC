@@ -162,6 +162,7 @@ public class BuildingPlacementManager : MonoBehaviour
                     entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(placePosition));
 
                     ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
+                    activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
                 }
                 else
                 {

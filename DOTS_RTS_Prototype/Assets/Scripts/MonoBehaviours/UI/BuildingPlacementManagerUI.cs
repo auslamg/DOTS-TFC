@@ -53,8 +53,6 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     /// </summary>
     private Dictionary<BuildingDataSO, RectTransform> buildingButtonDictionary;
 
-
-
     private void Awake()
     {
         InitializeUI();
@@ -105,11 +103,10 @@ public class BuildingPlacementManagerUI : MonoBehaviour
                 Debug.LogWarning($"Couldn't show all building options in BuidlingPlacementManagerUI");
                 return;
             }
-
         }
 
         // Remaining empty buttons
-        for (var j = i; j < optionsGridSize + 1; j++)
+        for (var j = i; j < optionsGridSize + 2; j++)
         {
             Debug.Log($"Constructing building roster {j}");
             BuildEmptyButton();

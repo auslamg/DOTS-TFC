@@ -8784,7 +8784,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b123591f6ef481c4bac6e94b1631e3f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
-  fileName: save_game.json
+  fileName: save_game_1
+  isJson: 0
   cameraControllerGizmo: {fileID: 685637653}
 --- !u!4 &1416434634
 Transform:
@@ -8813,7 +8814,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d91c129bf1b56934b995d34e43909e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadManager
-  fileName: save_game.json
+  fileName: save_game_1
+  isJson: 0
   cameraControllerGizmo: {fileID: 685637653}
 --- !u!1 &1430788261
 GameObject:
