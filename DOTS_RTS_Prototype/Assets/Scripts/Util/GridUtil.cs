@@ -192,6 +192,21 @@ public static class GridUtil
     /// <summary>
     /// Returns true when the supplied grid coordinates are inside the grid bounds.
     /// </summary>
+    /// /// <remarks>
+    /// Decoupled call parameters override for job access since <see cref="GridData"/> is unavailable due to nested native collections.
+    /// </remarks>
+    public static bool ValidateCoords(int2 coords, int gridSize)
+    {
+        return
+            coords.x >= 0 &&
+            coords.y >= 0 &&
+            coords.x < gridSize &&
+            coords.y < gridSize;
+    }
+
+    /// <summary>
+    /// Returns true when the supplied grid coordinates are inside the grid bounds.
+    /// </summary>
     public static float3 GridVectorToWorldSpace(float2 vector)
     {
         return new float3(vector.x, 0, vector.y);

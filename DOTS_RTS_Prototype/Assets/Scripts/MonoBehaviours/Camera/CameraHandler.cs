@@ -43,6 +43,13 @@ public class CameraHandler : MonoBehaviour
     private CinemachineCamera cinemachineCamera;
 
     /// <summary>
+    /// Grid parameters ScriptableObject for camera move constraints.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Grid parameters ScriptableObject for camera move constraints.")]
+    private GridParametersSO gridParametersSO;
+
+    /// <summary>
     /// Target field of view angle the camera is currently transitioning toward via smoothing.
     /// </summary>
     private float targetFOV;
@@ -50,6 +57,23 @@ public class CameraHandler : MonoBehaviour
     void Awake()
     {
         targetFOV = cinemachineCamera.Lens.FieldOfView;
+    }
+
+    public void ClampToGridBounds()
+    {
+        if (!GridUtil.ValidateCoords(
+                GridUtil.WorldPositionToCoords(transform.position, gridParametersSO.gridCellSize),
+                gridParametersSO.size))
+        {
+            Debug.Log("Clamping position");
+            float x = transform.position.x;
+            float z = transform.position.z;
+
+            transform.position = new Vector3(
+                x: Mathf.Clamp(x, 0, gridParametersSO.gridCellSize * gridParametersSO.size),
+                y: transform.position.y,
+                z: Mathf.Clamp(z, 0, gridParametersSO.gridCellSize * gridParametersSO.size));
+        }
     }
 
     public void HandleZoom(float deltaZoom)

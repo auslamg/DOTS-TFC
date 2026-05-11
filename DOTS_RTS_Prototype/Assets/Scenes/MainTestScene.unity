@@ -3896,6 +3896,7 @@ GameObject:
   - component: {fileID: 685637653}
   - component: {fileID: 685637656}
   - component: {fileID: 685637655}
+  - component: {fileID: 685637657}
   m_Layer: 0
   m_Name: CameraController
   m_TagString: Untagged
@@ -3935,8 +3936,7 @@ MonoBehaviour:
   cameraMovementSpeed: 50
   cameraRotationSpeed: 1
   zoomStepMultiplier: 100
-  cinemachineCamera: {fileID: 265048877}
-  camHandler: {fileID: 0}
+  camHandler: {fileID: 685637656}
 --- !u!114 &685637656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3950,10 +3950,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraHandler
   minimumFOV: 10
-  maximumFOV: 70
+  maximumFOV: 40
   zoomStepMultiplier: 10
   zoomSmoothingMultiplier: 100
   cinemachineCamera: {fileID: 265048877}
+  gridParametersSO: {fileID: 11400000, guid: 792bcb9b3a3c1574baf943c87024ecc8, type: 2}
+--- !u!114 &685637657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685637652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b756320ca80bbb646a9d7bbd168031e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TouchCameraController
+  cameraMovementSpeed: 30
+  cameraRotationSpeed: 1
+  inertiaMaximumVelocity: 10
+  inertiaThresholdMinDistance: 1.5
+  inertiaFrictionFactor: 0.05
+  dragDebounceTime: 0.2
+  zoomStepMultiplier: 100
+  pivotGO: {fileID: 685637652}
+  camHandler: {fileID: 685637656}
 --- !u!1 &697636434
 GameObject:
   m_ObjectHideFlags: 0
@@ -8808,8 +8830,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.50037, y: -150}
-  m_SizeDelta: {x: 725.00073, y: 280}
+  m_AnchoredPosition: {x: 372.51282, y: -150}
+  m_SizeDelta: {x: 725.02563, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:
@@ -10036,7 +10058,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1674691595
 Transform:
   m_ObjectHideFlags: 0
@@ -10071,7 +10093,6 @@ MonoBehaviour:
   inertiaFrictionFactor: 0.05
   dragDebounceTime: 0.2
   zoomStepMultiplier: 100
-  cinemachineCamera: {fileID: 265048877}
   pivotGO: {fileID: 685637652}
   camHandler: {fileID: 0}
 --- !u!1 &1675474818

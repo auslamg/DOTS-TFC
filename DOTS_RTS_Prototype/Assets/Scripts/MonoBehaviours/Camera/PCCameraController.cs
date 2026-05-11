@@ -1,4 +1,6 @@
+using System;
 using Unity.Cinemachine;
+using Unity.Mathematics;
 using UnityEngine;
 
 //TODO: Document
@@ -31,16 +33,11 @@ public class PCCameraController : MonoBehaviour
     [SerializeField]
     [Tooltip("Amount of zoom applied per input step.")]
     float zoomStepMultiplier = 10f;
-    
+
 
     [Header("References")]
 
-    /// <summary>
-    /// Cinemachine camera used for controlling the view.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Cinemachine camera used for controlling the view.")]
-    private CinemachineCamera cinemachineCamera;
+    [Header("References")]
 
     [SerializeField]
     private CameraHandler camHandler;
@@ -75,7 +72,10 @@ public class PCCameraController : MonoBehaviour
         moveDirection.Normalize();
 
         transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+            camHandler.ClampToGridBounds();
     }
+
+    
 
     private static Vector2 GetMoveInput()
     {

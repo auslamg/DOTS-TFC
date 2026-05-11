@@ -95,13 +95,6 @@ public class TouchCameraController : MonoBehaviour
     [Header("References")]
 
     /// <summary>
-    /// Cinemachine camera component used for controlling the view and focus.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Cinemachine camera component used for controlling the view and focus.")]
-    private CinemachineCamera cinemachineCamera;
-
-    /// <summary>
     /// Game object pivot towards which the camera will look. Translations are applied on its transform.
     /// </summary>
     [SerializeField]
@@ -214,6 +207,7 @@ public class TouchCameraController : MonoBehaviour
         // Apply movement 
         Vector3 moveDirection = new Vector3(horizontalMoveDirection.x, 0, horizontalMoveDirection.y);
         pivotGO.transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+        camHandler.ClampToGridBounds();
     }
 
     /// <summary>
