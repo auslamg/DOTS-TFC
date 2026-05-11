@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// ScriptableObject describing gameplay and presentation data for one building type.
 /// </summary>
-[CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Buildings/BuildingDataSO")]
+[CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Scriptable Objects/Buildings/BuildingDataSO")]
 public class BuildingDataSO : ScriptableObject
 {
     /// <summary>

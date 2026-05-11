@@ -9,7 +9,7 @@ using UnityEngine;
 /// Maintains a runtime dictionary keyed by <see cref="BuildingKey"/> for fast managed lookups
 /// and keeps the serialized list sorted for deterministic baking and binary-search workflows.
 /// </remarks>
-[CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Buildings/BuildingDataRegistrySO")]
+[CreateAssetMenu(fileName = "BuildingDataRegistrySO", menuName = "Scriptable Objects/Buildings/BuildingDataRegistrySO")]
 public class BuildingDataRegistrySO : ScriptableObject
 {
     /// <summary>

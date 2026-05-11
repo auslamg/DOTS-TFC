@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// ScriptableObject representing one logical critical-entity group used by loss-condition tracking.
 /// </summary>
-[CreateAssetMenu(fileName = "CriticalEntityGroupSO", menuName = "LossConditions/CriticalEntityGroupSO")]
+[CreateAssetMenu(fileName = "CriticalEntityGroupSO", menuName = "Scriptable Objects/LossConditions/CriticalEntityGroupSO")]
 public class CriticalEntityGroupSO : ScriptableObject
 {
     /// <summary>

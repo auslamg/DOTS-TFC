@@ -9,7 +9,7 @@ using UnityEngine;
 /// Maintains a runtime dictionary keyed by <see cref="UnitKey"/> for fast managed lookups
 /// and keeps the serialized list sorted for deterministic baking and binary-search workflows.
 /// </remarks>
-[CreateAssetMenu(fileName = "UnitDataRegistrySO", menuName = "Units/UnitDataRegistrySO")]
+[CreateAssetMenu(fileName = "UnitDataRegistrySO", menuName = "Scriptable Objects/Units/UnitDataRegistrySO")]
 public class UnitDataRegistrySO : ScriptableObject
 {
     /// <summary>

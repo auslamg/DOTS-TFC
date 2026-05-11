@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GridParametersSO", menuName = "Misc/GridParametersSO")]
+[CreateAssetMenu(fileName = "GridParametersSO", menuName = "Scriptable Objects/Misc/GridParametersSO")]
 public class GridParametersSO : ScriptableObject
 {
     /// <summary>

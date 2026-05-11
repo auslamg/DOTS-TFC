@@ -52,7 +52,6 @@ public class MainMenuUI : MonoBehaviour
         loadButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene(1);
-            LoadManager.Instance.LoadGame();
 
             Time.timeScale = 1;
             gameObject.SetActive(false);

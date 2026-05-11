@@ -5,7 +5,7 @@ using System;
 /// <summary>
 /// ScriptableObject describing one animation clip represented as an array of baked mesh frames.
 /// </summary>
-[CreateAssetMenu(fileName = "AnimationDataSO", menuName = "AnimationData/AnimationDataSO")]
+[CreateAssetMenu(fileName = "AnimationDataSO", menuName = "Scriptable Objects/AnimationData/AnimationDataSO")]
 public class AnimationDataSO : ScriptableObject
 {
     /// <summary>

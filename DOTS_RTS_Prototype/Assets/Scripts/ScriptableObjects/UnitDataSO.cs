@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// <summary>
 /// ScriptableObject describing gameplay and UI data for one unit type.
 /// </summary>
-[CreateAssetMenu(fileName = "UnitDataSO", menuName = "Units/UnitDataSO")]
+[CreateAssetMenu(fileName = "UnitDataSO", menuName = "Scriptable Objects/Units/UnitDataSO")]
 public class UnitDataSO : ScriptableObject
 {
     /// <summary>

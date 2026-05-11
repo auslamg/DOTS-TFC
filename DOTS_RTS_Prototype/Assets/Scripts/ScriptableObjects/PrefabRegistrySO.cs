@@ -9,7 +9,7 @@ using UnityEngine;
 /// Builds a cached set of <see cref="EntityPrefabKey"/> values and keeps the serialized list sorted
 /// for deterministic baking and lookup behavior.
 /// </remarks>
-[CreateAssetMenu(fileName = "PrefabRegistrySO", menuName = "Editor/PrefabRegistrySO")]
+[CreateAssetMenu(fileName = "PrefabRegistrySO", menuName = "Scriptable Objects/Editor/PrefabRegistrySO")]
 public class PrefabRegistrySO : ScriptableObject
 {
     /// <summary>

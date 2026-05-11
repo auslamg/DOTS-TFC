@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// ScriptableObject defining which unit keys a trainer building is allowed to produce.
 /// </summary>
-[CreateAssetMenu(fileName = "TrainRosterSO", menuName = "Buildings/Trainer/TrainRoster")]
+[CreateAssetMenu(fileName = "TrainRosterSO", menuName = "Scriptable Objects/Buildings/Trainer/TrainRoster")]
 public class TrainRosterSO : ScriptableObject
 {
     /// <summary>

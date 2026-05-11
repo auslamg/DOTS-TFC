@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "ResourceDataSO", menuName = "Resources/Resource")]
+[CreateAssetMenu(fileName = "ResourceDataSO", menuName = "Scriptable Objects/Resources/Resource")]
 public class ResourceSO : ScriptableObject
 {
     /// <summary>

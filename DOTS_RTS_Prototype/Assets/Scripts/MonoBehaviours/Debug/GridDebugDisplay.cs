@@ -180,7 +180,7 @@ public class GridDebugDisplay : MonoBehaviour
         if (cell.stepCost == 0 && cell.bestPathCost == 0) // Target
         {
             cellDebug.SetSprite(baseCell);
-            cellDebug.SetColor(new Color(1, 1, 0, 1));
+            cellDebug.SetColor(new Color(0.4f, 1f, 0.3f, 1));
         }
         else
         {
