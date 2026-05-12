@@ -10,10 +10,13 @@ public class HordeClockUI : MonoBehaviour
         if (HordeManager.Instance == null)
             return;
 
-        if (!HordeManager.Instance.IsCountingDownToNextWave)
+        if (!HordeManager.Instance.isCountingDownToNextWave)
         {
-            timerText.text = $"WAVE {HordeManager.Instance.currentWaveIndex + 1}";
+            timerText.text = !HordeManager.Instance.finalWave ?
+                $"WAVE {HordeManager.Instance.currentWaveIndex + 1}" :
+                $"FINAL WAVE";
             return;
+
         }
 
         float time = HordeManager.Instance.remainingNextWaveTime;

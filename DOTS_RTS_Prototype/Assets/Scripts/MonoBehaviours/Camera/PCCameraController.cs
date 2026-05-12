@@ -71,7 +71,7 @@ public class PCCameraController : MonoBehaviour
         moveDirection.y = 0;
         moveDirection.Normalize();
 
-        transform.position += moveDirection * cameraMovementSpeed * Time.deltaTime;
+        transform.position += moveDirection * cameraMovementSpeed;
             camHandler.ClampToGridBounds();
     }
 

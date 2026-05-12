@@ -38,14 +38,14 @@ public class HordeManager : MonoBehaviour
 
     [SerializeField]
     [Tooltip(".")]
-    private bool finalWave = false;
+    public bool finalWave = false;
 
     [Header("Next Wave Timer")]
     [SerializeField] private LoopingTimer nextWaveTimer;
 
     public float remainingNextWaveTime => nextWaveTimer.Time;
 
-    public bool IsCountingDownToNextWave { get; private set; }
+    public bool isCountingDownToNextWave { get; private set; }
 
     public event EventHandler OnFinalWaveSpawn;
 
@@ -86,20 +86,20 @@ public class HordeManager : MonoBehaviour
         StartCoroutine(WaveLoop());
         UpdateWinCondition();
     }
-    
+
 
     private void UpdateWinCondition()
     {
-        if (currentWaveIndex >= hordeWaveRegistrySO.hordeWaveSOs.Count)
+        if (currentWaveIndex >= hordeWaveRegistrySO.hordeWaveSOs.Count - 1)
         {
-            finalWave = true;            
+            finalWave = true;
         }
     }
 
     private IEnumerator WaveLoop()
     {
         // Initial countdown before first wave
-        IsCountingDownToNextWave = true;
+        isCountingDownToNextWave = true;
 
         nextWaveTimer.Interval = initialWaveDelay;
         nextWaveTimer.Reset(false);
@@ -109,7 +109,7 @@ public class HordeManager : MonoBehaviour
             yield return null;
         }
 
-        IsCountingDownToNextWave = false;
+        isCountingDownToNextWave = false;
 
         while (currentWaveIndex < hordeWaveRegistrySO.hordeWaveSOs.Count)
         {
@@ -127,7 +127,7 @@ public class HordeManager : MonoBehaviour
             // Countdown until next wave
             if (!finalWave)
             {
-                IsCountingDownToNextWave = true;
+                isCountingDownToNextWave = true;
 
                 nextWaveTimer.Interval = wave.waveDuration;
                 nextWaveTimer.Reset(false);
@@ -137,7 +137,7 @@ public class HordeManager : MonoBehaviour
                     yield return null;
                 }
 
-                IsCountingDownToNextWave = false;
+                isCountingDownToNextWave = false;
             }
         }
 
@@ -179,7 +179,7 @@ public class HordeManager : MonoBehaviour
         );
 
         Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(EntityPrefabKey.From(entry.unitKey)));
-        
+
         // TODO: Write necessary component values
         var localTransform = entityManager.GetComponentData<LocalTransform>(spawnedEntity);
         localTransform.Position = spawnPoint.position;

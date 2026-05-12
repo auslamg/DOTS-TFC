@@ -16,4 +16,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2689e54848d95b949a4b68d423c52858, type: 2}
   - {fileID: 11400000, guid: 143717a8a6ecd2e43b3f2b6401ce2cd6, type: 2}
   entryInterval: 5
-  waveDuration: 40
+  waveDuration: 10
