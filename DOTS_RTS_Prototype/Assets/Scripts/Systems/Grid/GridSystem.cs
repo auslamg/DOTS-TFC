@@ -260,7 +260,7 @@ partial struct GridSystem : ISystem
 
         gridCellComponentLookup.Update(ref state);
         GridData gridData = SystemAPI.GetComponent<GridData>(state.SystemHandle);
-        
+
         CalculateOcclusion(ref state, ref gridData);
         ResolvePathRequests(ref state, ref gridData);
     }
@@ -538,6 +538,18 @@ partial struct GridSystem : ISystem
         return GetNeighbouringCellsRecursive(gridCell, gridData, gridCellArray, radius: 1);
     }
 
+    static readonly int2[] expansionDirections =
+    {
+        new(0,1),   // Up
+        new(1,0),   // Right
+        new(0,-1),  // Down
+        new(-1,0),  // Left
+        new(1,1),   // TopRight
+        new(1,-1),  // BotRight
+        new(-1,-1), // BotLeft
+        new(-1,1)   // TopLeft
+    };
+
     public static NativeList<RefRW<GridCell>> GetNeighbouringCellsRecursive(
     RefRW<GridCell> startCell,
     GridData gridData,
@@ -545,22 +557,7 @@ partial struct GridSystem : ISystem
     int radius)
     {
         NativeList<RefRW<GridCell>> result = new NativeList<RefRW<GridCell>>(Allocator.Temp);
-
         int2 startPos = new int2(startCell.ValueRO.x, startCell.ValueRO.y);
-
-        //IDEA: Extracting might imrpove performance
-        // Direction priority
-        NativeArray<int2> directions = new NativeArray<int2>(8, Allocator.Temp);
-        {
-            directions[0] = new int2(0, 1);   // Up
-            directions[1] = new int2(1, 0);   // Right
-            directions[2] = new int2(0, -1);  // Down
-            directions[3] = new int2(-1, 0);  // Left
-            directions[4] = new int2(1, 1);   // TopRight
-            directions[5] = new int2(1, -1);  // BotRight
-            directions[6] = new int2(-1, -1); // BotLeft
-            directions[7] = new int2(-1, 1);  // TopLeft
-        }
 
         // Track visited to avoid duplicates
         NativeHashSet<int> visited = new NativeHashSet<int>(gridData.width * gridData.height, Allocator.Temp);
@@ -569,11 +566,41 @@ partial struct GridSystem : ISystem
         {
             if (currentRadius > radius) return;
 
-            foreach (int2 dir in directions)
+            foreach (int2 dir in expansionDirections)
             {
                 int2 nextPos = currentPos + dir;
 
                 if (!ValidateCoords(nextPos, gridData)) continue;
+
+                // Prevent diagonal corner cutting
+                bool isDiagonal = dir.x != 0 && dir.y != 0;
+                if (isDiagonal)
+                {
+                    int2 sideA = currentPos + new int2(dir.x, 0);
+                    int2 sideB = currentPos + new int2(0, dir.y);
+
+                    if (!ValidateCoords(sideA, gridData) ||
+                        !ValidateCoords(sideB, gridData))
+                    {
+                        continue;
+                    }
+
+                    int sideAIndex = CoordsToIndex(sideA, gridData.width);
+                    int sideBIndex = CoordsToIndex(sideB, gridData.width);
+
+                    bool sideABlocked =
+                        gridCellArray[sideAIndex].ValueRO.stepCost == OBSTRUCTED_COST;
+
+                    bool sideBBlocked =
+                        gridCellArray[sideBIndex].ValueRO.stepCost == OBSTRUCTED_COST;
+
+                    // If either adjacent orthogonal tile is blocked,
+                    // disallow diagonal movement.
+                    if (sideABlocked || sideBBlocked)
+                    {
+                        continue;
+                    }
+                }
 
                 // Skip if already visited
                 int index = CoordsToIndex(nextPos, gridData.width);
@@ -591,7 +618,6 @@ partial struct GridSystem : ISystem
         Expand(startPos, 1);
 
         visited.Dispose();
-        directions.Dispose();
 
         return result;
     }
