@@ -411,3 +411,10 @@ public interface IEntityPrefabMappable
     /// </summary>
     FixedString64Bytes GetKey();
 }
+
+[Serializable]
+public struct ResourceQuantity
+{
+    public ResourceSO resourceSO;
+    public int amount;
+}

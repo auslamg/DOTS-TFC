@@ -13,7 +13,7 @@ partial struct HealthSystem : ISystem
 {
     /// <summary>
     /// Marks death events and schedules entity destruction through an end-simulation command buffer.
-    /// Triggers <see cref="UnitSelectionManager.OnSelectionChange"/> if a selected unit has died.
+    /// Triggers <see cref="SelectionManager.OnSelectionChange"/> if a selected unit has died.
     /// </summary>
     public void OnUpdate(ref SystemState state)
     {

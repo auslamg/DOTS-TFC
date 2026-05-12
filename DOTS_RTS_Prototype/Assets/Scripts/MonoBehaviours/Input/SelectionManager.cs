@@ -16,30 +16,8 @@ using SphereCollider = Unity.Physics.SphereCollider;
 /// This manager supports box selection, single-click selection, right-click move/attack commands,
 /// and formation position generation for multi-unit movement.
 /// </remarks>
-public class UnitSelectionManager : MonoBehaviour
+public class SelectionManager : MonoBehaviour
 {
-    /// <summary>
-    /// Global singleton access to unit selection behavior.
-    /// </summary>
-    public static UnitSelectionManager Instance { get; private set; }
-
-    /// <summary>
-    /// Raised when drag-selection starts.
-    /// </summary>
-    public event EventHandler OnSelectionAreaStart;
-
-    /// <summary>
-    /// Raised when drag-selection ends.
-    /// </summary>
-    public event EventHandler OnSelectionAreaEnd;
-
-    /// <summary>
-    /// Raised whenever selected entities change.
-    /// </summary>
-    public event EventHandler OnSelectionChange;
-
-    private bool startedOverUI = false;
-
     /// <summary>
     /// Mouse position where the current drag-selection started.
     /// </summary>
@@ -91,6 +69,34 @@ public class UnitSelectionManager : MonoBehaviour
     private int unitsPerRing = 3;
 
     /// <summary>
+    /// Raised when drag-selection starts.
+    /// </summary>
+    public event EventHandler OnSelectionAreaStart;
+
+    /// <summary>
+    /// Raised when drag-selection ends.
+    /// </summary>
+    public event EventHandler OnSelectionAreaEnd;
+
+    /// <summary>
+    /// Raised whenever selected entities change.
+    /// </summary>
+    public event EventHandler OnSelectionChange;
+
+    /// <summary>
+    /// Indicates if the current selection drag started over a UI element.
+    /// </summary>
+    private bool startedOverUI = false;
+    /// <summary>
+    /// Entity manager for interacting with ECS entities.
+    /// </summary>
+    private EntityManager entityManager;
+    /// <summary>
+    /// Global singleton access to unit selection behavior.
+    /// </summary>
+    public static SelectionManager Instance { get; private set; }
+
+    /// <summary>
     /// Initializes singleton instance state.
     /// </summary>
     private void InitializeSingleton()
@@ -106,16 +112,28 @@ public class UnitSelectionManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes the singleton instance.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
     }
 
+    /// <summary>
+    /// Subscribes to events and initializes the entity manager.
+    /// </summary>
     void Start()
     {
         DOTSEventManager.Instance.OnSelectedDeath += DOTSEventManager_OnSelectedDeath;
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
+    /// <summary>
+    /// Handles the event when a selected unit dies, triggering a selection change.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The event arguments.</param>
     private void DOTSEventManager_OnSelectedDeath(object sender, EventArgs e)
     {
         TriggerOnSelectionChange();
@@ -149,8 +167,6 @@ public class UnitSelectionManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0) & !startedOverUI)
         {
             Vector2 selectionEndMousePosition = Input.mousePosition;
-
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             //TODO: Extract into DeselectAll() method
             //Query all entities with the Selected component to disable it
@@ -201,7 +217,7 @@ public class UnitSelectionManager : MonoBehaviour
             //TODO: Extract into SelectSingle() method
             else
             {
-                Entity hitEntity = ClickSphereCastForEntity(entityManager);
+                Entity hitEntity = ClickSphereCastForEntity();
                 if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
                 {
                     //An entity was hit
@@ -219,13 +235,10 @@ public class UnitSelectionManager : MonoBehaviour
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
             OnSelectionChange?.Invoke(this, EventArgs.Empty);
         }
-        //TODO: Extract to ControlsManager.cs
         if (Input.GetMouseButtonDown(1))
         {
-            EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
             //Check if the click landed on an entity
-            Entity hitEntity = ClickRayCastForEntity(entityManager);
+            Entity hitEntity = ClickRayCastForEntity();
             bool isAttackingAnEntity =
                 EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
                 entityManager.HasComponent<Health>(hitEntity);
@@ -233,21 +246,20 @@ public class UnitSelectionManager : MonoBehaviour
 
             if (isAttackingAnEntity)
             {
-                SetTargetOnSelectedUnits(entityManager, hitEntity);
+                SetTargetOnSelectedUnits(hitEntity);
             }
             else
             {
-                SetDestinationOnSelectedUnits(entityManager);
+                SetDestinationOnSelectedUnits();
             }
-            SetRallyPositionOffset(entityManager);
+            SetRallyPositionOffset();
         }
     }
 
     /// <summary>
     /// Updates rally offsets for selected trainers based on the current mouse position.
     /// </summary>
-    /// <param name="entityManager">Entity manager used to query and update trainer data.</param>
-    private void SetRallyPositionOffset(EntityManager entityManager)
+    private void SetRallyPositionOffset()
     {
         // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
@@ -273,7 +285,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// <remarks>
     /// The target will only be set for units of a valid faction (different from the target Unit).
     /// </remarks>
-    private void SetTargetOnSelectedUnits(EntityManager entityManager, Entity hitEntity)
+    private void SetTargetOnSelectedUnits(Entity hitEntity)
     {
         //Query all entities with the UnitMover and Selected components to set their target
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
@@ -308,8 +320,7 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Sets movement destinations for selected units and clears manual targets.
     /// </summary>
-    /// <param name="entityManager">Entity manager used to query and update unit command data.</param>
-    private void SetDestinationOnSelectedUnits(EntityManager entityManager)
+    private void SetDestinationOnSelectedUnits()
     {
         Vector3 targetPosition = mouseWorldPosition;
         targetPosition.y = 0f;
@@ -372,9 +383,8 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Retrieves a clicked-on Entity in the scene (if any) through a SphereCollider cast.
     /// </summary>
-    /// <param name="entityManager">Entity manager used to validate and read hit entities.</param>
     /// <returns>Hit entity when valid; otherwise <see cref="Entity.Null"/>.</returns>
-    private unsafe Entity ClickSphereCastForEntity(EntityManager entityManager)
+    private unsafe Entity ClickSphereCastForEntity()
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
@@ -438,9 +448,8 @@ public class UnitSelectionManager : MonoBehaviour
     /// <summary>
     /// Retrieves a clicked-on Entity in the scene (if any) through a Ray cast.
     /// </summary>
-    /// <param name="entityManager">Entity manager used to validate and read hit entities.</param>
     /// <returns>Hit entity when valid; otherwise <see cref="Entity.Null"/>.</returns>
-    private Entity ClickRayCastForEntity(EntityManager entityManager)
+    private Entity ClickRayCastForEntity()
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 

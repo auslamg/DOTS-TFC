@@ -22,11 +22,24 @@ public class BuildingPlacementManager : MonoBehaviour
     [Tooltip("Currently selected building definition used for ghost preview and placement rules.")]
     private BuildingDataSO buildingDataSO;
 
+    /// <summary>
+    /// Entity manager for interacting with ECS entities.
+    /// </summary>
     private EntityManager entityManager;
+
+    /// <summary>
+    /// Grid data used for snapping building positions to the grid.
+    /// </summary>
     private GridData gridData;
 
+    /// <summary>
+    /// Current placement position snapped to the grid.
+    /// </summary>
     Vector3 placePosition => GridUtil.SnapWorldPosition(mouseWorldPosition, gridData.gridCellSize);
 
+    /// <summary>
+    /// Gets or sets the active building data scriptable object, updating the ghost preview accordingly.
+    /// </summary>
     public BuildingDataSO activeBuildingDataSO
     {
         get => buildingDataSO;
@@ -99,12 +112,19 @@ public class BuildingPlacementManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes the singleton instance and retrieves the entity manager.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
+    /// <summary>
+    /// Sets the grid data used for snapping building positions.
+    /// </summary>
+    /// <param name="gridData">The grid data to use.</param>
     public void SetGridData(GridData gridData)
     {
         this.gridData = gridData;
@@ -289,6 +309,10 @@ public class BuildingPlacementManager : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Sets the ghost preview color based on placement validity.
+    /// </summary>
+    /// <param name="placeable">True if the building can be placed; false otherwise.</param>
     private void SetGhostColor(bool placeable)
     {
         foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())

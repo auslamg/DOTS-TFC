@@ -104,8 +104,8 @@ public class GameModeButtonsUI : MonoBehaviour
                 return;
             default:
                 Debug.LogError("Unexisting gameMode triggered.");
-                UnitSelectionManager.Instance.gameObject.SetActive(false);
-                UnitSelectionManager.Instance.gameObject.SetActive(false);
+                SelectionManager.Instance.gameObject.SetActive(false);
+                SelectionManager.Instance.gameObject.SetActive(false);
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 return;
         }

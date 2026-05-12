@@ -129,7 +129,7 @@ public class TrainerUI : MonoBehaviour
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        UnitSelectionManager.Instance.OnSelectionChange += UnitSelectionManager_OnSelectionChange;
+        SelectionManager.Instance.OnSelectionChange += UnitSelectionManager_OnSelectionChange;
         DOTSEventManager.Instance.OnTrainerUnitQueueChange += DOTSEventManager_OnUnitQueueChange;
         ResourceManager.Instance.OnResourceValueChange += ResourceManager_OnResourceValueChange;
 

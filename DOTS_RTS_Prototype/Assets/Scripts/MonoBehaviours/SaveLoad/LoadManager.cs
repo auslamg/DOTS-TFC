@@ -320,7 +320,7 @@ public class LoadManager : MonoBehaviour
         LoadBuildings(save.buildings);
         LoadUnits(save.units);
 
-        UnitSelectionManager.Instance.TriggerOnSelectionChange();
+        SelectionManager.Instance.TriggerOnSelectionChange();
     }
 
     private void LoadUnits(List<DtoUnitData> units)

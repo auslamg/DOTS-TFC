@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Renders and updates the drag-selection rectangle used by <see cref="UnitSelectionManager"/>.
+/// Renders and updates the drag-selection rectangle used by <see cref="SelectionManager"/>.
 /// </summary>
 /// <remarks>
 /// This component listens to selection start/end events, toggles rectangle visibility,
@@ -30,8 +30,8 @@ public class UnitSelectionManagerUI : MonoBehaviour
     /// </summary>
     void Start()
     {
-        UnitSelectionManager.Instance.OnSelectionAreaStart += UnitSelectionManager_OnSelectionAreaStart;
-        UnitSelectionManager.Instance.OnSelectionAreaEnd += UnitSelectionManager_OnSelectionAreaEnd;
+        SelectionManager.Instance.OnSelectionAreaStart += UnitSelectionManager_OnSelectionAreaStart;
+        SelectionManager.Instance.OnSelectionAreaEnd += UnitSelectionManager_OnSelectionAreaEnd;
 
         selectionAreaRectTransform.gameObject.SetActive(false);
     }
@@ -75,7 +75,7 @@ public class UnitSelectionManagerUI : MonoBehaviour
     /// </summary>
     private void UpdateVisual()
     {
-        Rect selectionAreaRect = UnitSelectionManager.Instance.GetSelectionAreaRect();
+        Rect selectionAreaRect = SelectionManager.Instance.GetSelectionAreaRect();
 
         float canvasScale = canvas.transform.localScale.x;
         selectionAreaRectTransform.anchoredPosition = new Vector2(selectionAreaRect.x, selectionAreaRect.y) / canvasScale;
