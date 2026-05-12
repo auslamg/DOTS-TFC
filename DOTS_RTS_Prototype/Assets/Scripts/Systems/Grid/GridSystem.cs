@@ -556,10 +556,10 @@ partial struct GridSystem : ISystem
             directions[1] = new int2(1, 0);   // Right
             directions[2] = new int2(0, -1);  // Down
             directions[3] = new int2(-1, 0);  // Left
-            /* directions[4] = new int2(1, 1);   // TopRight
+            directions[4] = new int2(1, 1);   // TopRight
             directions[5] = new int2(1, -1);  // BotRight
             directions[6] = new int2(-1, -1); // BotLeft
-            directions[7] = new int2(-1, 1);  // TopLeft */
+            directions[7] = new int2(-1, 1);  // TopLeft
         }
 
         // Track visited to avoid duplicates
@@ -611,8 +611,6 @@ public partial struct InitializeFlowFieldJob : IJobEntity
         {
             return;
         }
-
-        /* gridCellArray[index] = gridCell; */
 
         gridCell.flowVector = new Vector2(0, 1); // Safety measure for in-clipping spawns.
         if (gridCell.x == targetCoords.x &&

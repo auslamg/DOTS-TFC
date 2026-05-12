@@ -34,11 +34,18 @@ public class HordeManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     [Tooltip(".")]
-    private int currentWaveIndex = 0;
+    public int currentWaveIndex = 0;
 
     [SerializeField]
     [Tooltip(".")]
     private bool finalWave = false;
+
+    [Header("Next Wave Timer")]
+    [SerializeField] private LoopingTimer nextWaveTimer;
+
+    public float remainingNextWaveTime => nextWaveTimer.Time;
+
+    public bool IsCountingDownToNextWave { get; private set; }
 
     public event EventHandler OnFinalWaveSpawn;
 
@@ -91,7 +98,18 @@ public class HordeManager : MonoBehaviour
 
     private IEnumerator WaveLoop()
     {
-        yield return new WaitForSeconds(initialWaveDelay);
+        // Initial countdown before first wave
+        IsCountingDownToNextWave = true;
+
+        nextWaveTimer.Interval = initialWaveDelay;
+        nextWaveTimer.Reset(false);
+
+        while (!nextWaveTimer.Tick(Time.deltaTime))
+        {
+            yield return null;
+        }
+
+        IsCountingDownToNextWave = false;
 
         while (currentWaveIndex < hordeWaveRegistrySO.hordeWaveSOs.Count)
         {
@@ -104,10 +122,27 @@ public class HordeManager : MonoBehaviour
 
             currentWaveIndex++;
 
-            yield return new WaitForSeconds(wave.waveDuration);
+            UpdateWinCondition();
+
+            // Countdown until next wave
+            if (!finalWave)
+            {
+                IsCountingDownToNextWave = true;
+
+                nextWaveTimer.Interval = wave.waveDuration;
+                nextWaveTimer.Reset(false);
+
+                while (!nextWaveTimer.Tick(Time.deltaTime))
+                {
+                    yield return null;
+                }
+
+                IsCountingDownToNextWave = false;
+            }
         }
 
         Debug.Log("All waves completed.");
+
         finalWave = true;
 
         TriggerFinalWaveSpawned();
