@@ -12,14 +12,21 @@ using UnityEngine.UI;
 public class GameModeButtonsUI : MonoBehaviour
 {
     /// <summary>
-    /// Button to enable control mode with unit selection and disable camera view mode.
+    /// Button to enable action mode with active selection and disable camera view mode and unit selection.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to enable control mode with unit selection and disable camera view mode.")]
+    Button actionModeButton;
+
+    /// <summary>
+    /// Button to enable control mode with unit selection and disable camera view mode and selection actions.
     /// </summary>
     [SerializeField]
     [Tooltip("Button to enable control mode with unit selection and disable camera view mode.")]
     Button controlModeButton;
 
     /// <summary>
-    /// Button to enable view mode with camera control and disable unit selection.
+    /// Button to enable view mode with camera control and disable unit selection and selection actions.
     /// </summary>
     [SerializeField]
     [Tooltip("Button to enable view mode with camera control and disable unit selection.")]
@@ -66,19 +73,17 @@ public class GameModeButtonsUI : MonoBehaviour
     void Awake()
     {
         InitializeSingleton();
-
+        actionModeButton.onClick.AddListener(() =>
+        {
+            GameModeManager.Instance.SetGameMode(GameMode.ActionMode);
+        });
         controlModeButton.onClick.AddListener(() =>
         {
             GameModeManager.Instance.SetGameMode(GameMode.ControlMode);
-            controlModeButton.interactable = false;
-            viewModeButton.interactable = true;
-
         });
         viewModeButton.onClick.AddListener(() =>
         {
             GameModeManager.Instance.SetGameMode(GameMode.ViewMode);
-            viewModeButton.interactable = false;
-            controlModeButton.interactable = true;
         });
         pauseMenuButton.onClick.AddListener(() =>
         {
@@ -92,13 +97,17 @@ public class GameModeButtonsUI : MonoBehaviour
         switch (gameMode)
         {
             case GameMode.ActionMode:
-                Debug.LogError("NOT IMPLEMENTED.");
+                actionModeButton.interactable = false;
+                controlModeButton.interactable = true;
+                viewModeButton.interactable = true;
                 return;
             case GameMode.ControlMode:
+                actionModeButton.interactable = true;
                 controlModeButton.interactable = false;
                 viewModeButton.interactable = true;
                 return;
             case GameMode.ViewMode:
+                actionModeButton.interactable = true;
                 viewModeButton.interactable = false;
                 controlModeButton.interactable = true;
                 return;

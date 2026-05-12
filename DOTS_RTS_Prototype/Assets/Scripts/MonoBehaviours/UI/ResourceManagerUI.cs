@@ -80,6 +80,7 @@ public class ResourceManagerUI : MonoBehaviour
     private void InitializeUI_PostBake()
     {
         ResourceManager.Instance.OnResourceValueChange += ResourceManager_OnResourceValueChange;
+        UpdateResourceValues();
     }
 
     /// <summary>

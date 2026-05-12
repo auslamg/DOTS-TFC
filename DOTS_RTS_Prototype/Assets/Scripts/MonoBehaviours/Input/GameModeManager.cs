@@ -51,13 +51,17 @@ public class GameModeManager : MonoBehaviour
         switch (gameMode)
         {
             case GameMode.ActionMode:
-                Debug.LogError("NOT IMPLEMENTED.");
+                ActionManager.Instance.gameObject.SetActive(true);
+                SelectionManager.Instance.gameObject.SetActive(false);
+                TouchCameraController.Instance.gameObject.SetActive(false);
                 break;
             case GameMode.ControlMode:
+                ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(true);
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 break;
             case GameMode.ViewMode:
+                ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(false);
                 TouchCameraController.Instance.gameObject.SetActive(true);
                 break;
