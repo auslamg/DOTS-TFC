@@ -20,9 +20,7 @@ MonoBehaviour:
   buildingGhostPrefab: {fileID: 3070632413876166947, guid: ec2b14f971ee88640a9dd3784a7eba3e, type: 3}
   constructionCost:
   - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
-    amount: 0
-  - resourceSO: {fileID: 11400000, guid: 779afe0b696758744bd966e62f0d64a9, type: 2}
-    amount: 0
+    amount: 500
   cachedKey:
     name:
       utf8LengthInBytes: 10

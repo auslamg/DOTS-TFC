@@ -19,8 +19,8 @@ MonoBehaviour:
   imageCard: {fileID: 21300000, guid: 25eb1ed949abec1479bbebf943693398, type: 3}
   buildingGhostPrefab: {fileID: 4931908436955704107, guid: 26a28a26719538a4ebc4072fce768349, type: 3}
   constructionCost:
-  - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
-    value: 150
+  - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
+    amount: 50
   cachedKey:
     name:
       utf8LengthInBytes: 12

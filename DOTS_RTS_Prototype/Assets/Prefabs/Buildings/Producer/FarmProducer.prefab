@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 4104210104362035291, guid: ad5fe1611537b784f886f9398b4897ae, type: 3}
     - target: {fileID: 1771611190550319447, guid: 4580ecb155b8d8e49946dc1b8a7ed547, type: 3}
       propertyPath: m_Name
-      value: FarmProducer Variant
+      value: FarmProducer
       objectReference: {fileID: 0}
     - target: {fileID: 3544670873555188390, guid: 4580ecb155b8d8e49946dc1b8a7ed547, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 0b41e9d4be69aa842a0c4b1b3985a498, type: 2}
     - target: {fileID: 5142359023169005498, guid: 4580ecb155b8d8e49946dc1b8a7ed547, type: 3}
       propertyPath: productionAmount
-      value: 25
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5142359023169005498, guid: 4580ecb155b8d8e49946dc1b8a7ed547, type: 3}
       propertyPath: productionInterval

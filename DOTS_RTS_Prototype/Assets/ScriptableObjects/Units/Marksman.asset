@@ -17,9 +17,7 @@ MonoBehaviour:
   imageCard: {fileID: 21300000, guid: ca0f3a2431193e246a32fa80136afdbe, type: 3}
   constructionCost:
   - resourceSO: {fileID: 11400000, guid: 607a0b39fe7b5554cb9c2f46eafc27aa, type: 2}
-    amount: 0
-  - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
-    amount: 0
+    amount: 50
   cachedKey:
     name:
       utf8LengthInBytes: 8

@@ -20,12 +20,12 @@ MonoBehaviour:
   buildingGhostPrefab: {fileID: 3070632413876166947, guid: ec2b14f971ee88640a9dd3784a7eba3e, type: 3}
   constructionCost:
   - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
-    value: 2000
+    amount: 500
   - resourceSO: {fileID: 11400000, guid: 779afe0b696758744bd966e62f0d64a9, type: 2}
-    value: 2000
+    amount: 0
   cachedKey:
     name:
-      utf8LengthInBytes: 10
+      utf8LengthInBytes: 18
       bytes:
         offset0000:
           byte0000: 67
@@ -34,19 +34,19 @@ MonoBehaviour:
           byte0003: 116
           byte0004: 108
           byte0005: 101
-          byte0006: 70
-          byte0007: 111
-          byte0008: 114
-          byte0009: 116
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
+          byte0006: 80
+          byte0007: 114
+          byte0008: 111
+          byte0009: 100
+          byte0010: 117
+          byte0011: 99
+          byte0012: 101
+          byte0013: 114
+          byte0014: 70
+          byte0015: 111
         offset0016:
-          byte0000: 0
-          byte0001: 0
+          byte0000: 114
+          byte0001: 116
           byte0002: 0
           byte0003: 0
           byte0004: 0

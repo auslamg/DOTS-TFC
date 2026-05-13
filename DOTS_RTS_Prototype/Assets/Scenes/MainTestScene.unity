@@ -9309,8 +9309,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.57593, y: -150}
-  m_SizeDelta: {x: 725.15186, y: 280}
+  m_AnchoredPosition: {x: 372.6592, y: -150}
+  m_SizeDelta: {x: 725.3184, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:
@@ -9769,10 +9769,6 @@ MonoBehaviour:
   - resourceSO: {fileID: 11400000, guid: 607a0b39fe7b5554cb9c2f46eafc27aa, type: 2}
     amount: 200
   - resourceSO: {fileID: 11400000, guid: 15fcd678bab3d4e42a014e6363db5302, type: 2}
-    amount: 200
-  - resourceSO: {fileID: 11400000, guid: 779afe0b696758744bd966e62f0d64a9, type: 2}
-    amount: 200
-  - resourceSO: {fileID: 11400000, guid: a64d382b5ca010948bd0336104664c0d, type: 2}
     amount: 200
   resourceRegistrySO: {fileID: 11400000, guid: 591917c53f347194db96731e5d6f2f71, type: 2}
 --- !u!1 &1489333133
@@ -13291,6 +13287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf6299f7add6eb94787a4d77e22246e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActionManager
+  gridParametersSO: {fileID: 11400000, guid: 792bcb9b3a3c1574baf943c87024ecc8, type: 2}
   sphereCastColliderRadius: 1
   unitOffset: 1.6
   ringOffset: 1.8
