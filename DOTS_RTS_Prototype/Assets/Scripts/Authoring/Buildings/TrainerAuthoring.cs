@@ -5,7 +5,6 @@ using UnityEngine;
 /// <summary>
 /// Managed component for the <see cref="Trainer"/> unmanaged component.
 /// </summary>
-//TODO: Implement owners with ID's as Data
 public class TrainerAuthoring : MonoBehaviour
 {
     /// <summary>

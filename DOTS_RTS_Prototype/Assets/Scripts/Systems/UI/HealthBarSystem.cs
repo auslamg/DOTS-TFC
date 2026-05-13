@@ -70,11 +70,9 @@ public partial struct HealthBarJob : IJobEntity
         RefRW<LocalTransform> localTransform = localTransformComponentLookup.GetRefRW(entity);
         //Turn healthbar towards camera converting global camera direction into local
         LocalTransform parentLocalTransform = localTransformComponentLookup[healthBar.healthEntity];
-        //TODO: Extract or implement additional conditions //AND unit is not selected AND setting is enabled
         if (localTransform.ValueRO.Scale == 1f)
         {
             //Healthbar is visible
-            //TODO: Take this out if the entire conditional check doesn't happen here
             localTransform.ValueRW.Rotation = parentLocalTransform.InverseTransformRotation(quaternion.LookRotation(cameraForward, math.up()));
         }
 
@@ -84,17 +82,11 @@ public partial struct HealthBarJob : IJobEntity
         {
             float healthNormalized = (float)health.currentHealth / health.maxHealth;
 
-            //TODO: Extract or implement additional conditions //AND unit is not selected AND setting is enabled
             //Make bar invisible if at full health
             localTransform.ValueRW.Scale = healthNormalized == 1 ? 0 : 1;
 
             RefRW<PostTransformMatrix> visualBarPostTransformMatrix = postTransformMatrixComponentLookup.GetRefRW(healthBar.visualBarEntity);
             visualBarPostTransformMatrix.ValueRW.Value = float4x4.Scale(healthNormalized, 1, 1);
-
-            //[Deprecated]
-            //Alternative for TransformFlags.Dynamic (no scale PostTransformMatrix operations but uniform scale)
-            /* RefRW<LocalTransform> visualBarLocalTransform = SystemAPI.GetComponentRW<LocalTransform>(healthbar.ValueRO.visualBarEntity);
-            visualBarLocalTransform.ValueRW.Scale = healthNormalized; */
         }
 
     }

@@ -41,39 +41,34 @@ partial struct ProjectileMoverSystem : ISystem
                 Shootable targetShootable = SystemAPI.GetComponent<Shootable>(targetter.ValueRO.targetEntity);
                 float3 targetPosition = targetLocalTransform.TransformPoint(targetShootable.hitPointPosition);
 
-                //Position previous to moving, used for calculating if the projectile overshot the target
+                // Position previous to moving, used for calculating if the projectile overshot the target
                 float distanceBeforeMovingSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
-                // Calculate move direction
                 float3 moveDirection = targetPosition - localTransform.ValueRO.Position;
                 moveDirection = math.normalize(moveDirection);
 
-                // Rotate projectile to face movement direction
-                localTransform.ValueRW.Rotation = quaternion.LookRotationSafe(moveDirection, math.up());
-                // Move towards target
                 localTransform.ValueRW.Position += moveDirection * projectile.ValueRO.speed * SystemAPI.Time.DeltaTime;
+                localTransform.ValueRW.Rotation = quaternion.LookRotationSafe(moveDirection, math.up());
 
                 //Position after moving, used for calculating if the projectile overshot the target
                 float distanceAfterMovingSquared = math.distancesq(localTransform.ValueRO.Position, targetPosition);
 
-                //Target overshoot countermeasure
+                //Target overshoot countermeasure.
                 if (distanceBeforeMovingSquared < distanceAfterMovingSquared)
                 {
-                    //Setting the projectile's position to the target's will count as hitting the target
                     localTransform.ValueRW.Position = targetPosition;
                 }
 
-                //Destroy projectile and apply effects when close enough to target
+                // Destroy projectile and apply effects when close enough to target.
                 float destroyDistanceSquared = .2f;
                 if (math.distancesq(localTransform.ValueRO.Position, targetPosition) <= destroyDistanceSquared)
                 {
-                    //Damage target
+                    // Damage target.
                     RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                     targetHealth.ValueRW.currentHealth -= projectile.ValueRO.damageAmount;
                     targetHealth.ValueRW.onHealthChanged = true;
 
-                    //If the target has no target themselves set it to the shooter for retribution
-                    //TODO: reuse for MeleeAttackSystem
+                    // If the target has no target themselves set it to the shooter for retribution.
                     if (SystemAPI.HasComponent<Targetter>(targetter.ValueRO.targetEntity))
                     {
                         RefRW<Targetter> targetOwnTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
@@ -82,7 +77,6 @@ partial struct ProjectileMoverSystem : ISystem
                             targetOwnTargetter.ValueRW.targetEntity = projectile.ValueRO.shooterEntity;
                         }
                     }
-
 
                     entityCommandBuffer.DestroyEntity(entity);
                 }

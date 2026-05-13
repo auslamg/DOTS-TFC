@@ -435,7 +435,6 @@ public class ActionManager : MonoBehaviour
 
     /// <summary>
     /// Calculates individual movement positions for each selected unit in a formation of the requested size.
-    ///TODO: Implement additional formations like Line, Square and Wedge.
     /// </summary>
     /// <param name="startPosition">Average start position of selected entities.</param>
     /// <param name="targetPosition">Command target position.</param>
@@ -454,7 +453,6 @@ public class ActionManager : MonoBehaviour
             return positionArray;
         }
 
-        //TODO: Implement formations.
         /* return CalculateLineFormation(positionArray, startPosition, targetPosition, positionCount); */
         return CalculateCircleFormation(positionArray, targetPosition, positionCount);
 
@@ -468,39 +466,42 @@ public class ActionManager : MonoBehaviour
     /// <param name="targetPosition">Command target position.</param>
     /// <param name="positionCount">Number of movement slots to fill.</param>
     /// <returns>Destination array populated with line-formation positions.</returns>
-    private NativeArray<float3> CalculateLineFormation(NativeArray<float3> positionArray, float3 startPosition, float3 targetPosition, int positionCount)
+    private NativeArray<float3> CalculateLineFormation(
+    NativeArray<float3> positionArray,
+    float3 startPosition,
+    float3 targetPosition,
+    int positionCount)
     {
-        float offest = unitOffset;
+        float offset = unitOffset;
         float3 targetDirection = targetPosition - startPosition;
+
         int positionIndex = 0;
 
-        //Calculate angle for proper orientation
+        // Calculate angle for proper orientation
         float3 directionNormalized = math.normalize(targetDirection);
         float angle = math.atan2(directionNormalized.x, directionNormalized.z);
 
         while (positionIndex < positionCount)
         {
-            //Used for offsetting center
-            bool isEvenCount = positionIndex % 2 == 0;
-            //Decide right or left
-            bool isRight = positionIndex % 2 == 0;
+            float3 currentTargetVector =
+                math.rotate(
+                    quaternion.RotateY(angle),
+                    new float3(offset * positionIndex, 0, 0));
 
-            float3 currentTargetVector = math.rotate(quaternion.RotateY(angle), new float3(unitOffset * positionIndex, 0, 0));
-            float3 centerOffset = math.rotate(quaternion.RotateY(angle), new float3(-unitOffset * positionCount / 2, 0, 0));
+            float3 centerOffset =
+                math.rotate(
+                    quaternion.RotateY(angle),
+                    new float3(-offset * positionCount / 2, 0, 0));
 
-
-            //Posicion final
-            float3 currentTargetPosition = targetPosition + currentTargetVector + centerOffset;
+            // Final position
+            float3 currentTargetPosition =
+                targetPosition + currentTargetVector + centerOffset;
 
             positionArray[positionIndex] = currentTargetPosition;
-            positionIndex++;
 
-            //TODO: Refactor to avoid break usage.
-            if (positionIndex >= positionCount)
-            {
-                break;
-            }
+            positionIndex++;
         }
+
         return positionArray;
     }
 
@@ -512,7 +513,10 @@ public class ActionManager : MonoBehaviour
     /// <param name="targetPosition">Command target position.</param>
     /// <param name="positionCount">Number of movement slots to fill.</param>
     /// <returns>Destination array populated with circle-formation positions.</returns>
-    private NativeArray<float3> CalculateCircleFormation(NativeArray<float3> positionArray, float3 targetPosition, int positionCount)
+    private NativeArray<float3> CalculateCircleFormation(
+    NativeArray<float3> positionArray,
+    float3 targetPosition,
+    int positionCount)
     {
         float ringRadius = ringOffset;
         int ringIndex = 0;
@@ -522,24 +526,25 @@ public class ActionManager : MonoBehaviour
         {
             int ringPositionCount = centerUnits + ringIndex * unitsPerRing;
 
-            for (int i = 0; i < ringPositionCount; i++)
+            for (int i = 0; i < ringPositionCount && positionIndex < positionCount; i++)
             {
                 float angle = i * (math.PI2 / ringPositionCount);
-                float3 currentTargetVectorFromCenter = math.rotate(quaternion.RotateY(angle), new float3(ringRadius * (ringIndex + 1), 0, 0));
-                float3 currentTargetPosition = targetPosition + currentTargetVectorFromCenter;
+
+                float3 currentTargetVectorFromCenter =
+                    math.rotate(
+                        quaternion.RotateY(angle),
+                        new float3(ringRadius * (ringIndex + 1), 0, 0));
+
+                float3 currentTargetPosition =
+                    targetPosition + currentTargetVectorFromCenter;
 
                 positionArray[positionIndex] = currentTargetPosition;
                 positionIndex++;
-
-                //TODO: Refactor to avoid break usage.
-                if (positionIndex >= positionCount)
-                {
-                    break;
-                }
-
             }
+
             ringIndex++;
         }
+
         return positionArray;
     }
 }

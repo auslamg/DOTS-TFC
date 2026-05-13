@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// </summary>
 /// <remarks>
 /// This component provides pause menu functionality including game time management and scene navigation.
-/// Resume resumes gameplay, save and load have placeholder implementations (TODO), and main menu navigation
+/// Resume resumes gameplay, save and load persist or load the game from/to a file, and main menu navigation
 /// returns to the title screen.
 /// </remarks>
 public class PauseMenuUI : MonoBehaviour

@@ -30,7 +30,8 @@ partial struct MeleeAttackSystem : ISystem
             RefRO<UnitMover> unitMover,
             RefRW<PathRequest> pathRequest,
             EnabledRefRW<PathRequest> pathRequestEnabled,
-            RefRO<Unit> unit)
+            RefRO<Unit> unit,
+            Entity entity)
                 in SystemAPI.Query<
                 RefRW<LocalTransform>,
                 RefRW<MeleeAttack>,
@@ -40,7 +41,8 @@ partial struct MeleeAttackSystem : ISystem
                 EnabledRefRW<PathRequest>,
                 RefRO<Unit>>().
                 WithDisabled<ManualMove>().
-                WithPresent<PathRequest>())
+                WithPresent<PathRequest>().
+                WithEntityAccess())
         {
             if (EntityUtil.ExistsAndPersists(ref state, targetter.ValueRO.targetEntity))
             {
@@ -118,21 +120,31 @@ partial struct MeleeAttackSystem : ISystem
                     pathRequest.ValueRW.postFormationPosition = localTransform.ValueRO.Position;
                     pathRequestEnabled.ValueRW = true;
 
-                    // Attack cooldown timer
+                    // Attack cooldown timer.
                     if (meleeAttack.ValueRW.attackCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
                     {
-                        // Rotate towards target when attacking
+                        // Rotate towards target when attacking.
                         float3 aimDirection = targetLocalTransform.Position - localTransform.ValueRO.Position;
                         aimDirection = math.normalize(aimDirection);
                         quaternion aimRotation = quaternion.LookRotation(aimDirection, math.up());
                         localTransform.ValueRW.Rotation = aimRotation;
 
-                        //Damage target
+                        // Damage target.
                         RefRW<Health> targetHealth = SystemAPI.GetComponentRW<Health>(targetter.ValueRO.targetEntity);
                         targetHealth.ValueRW.currentHealth -= meleeAttack.ValueRO.damageAmount;
                         targetHealth.ValueRW.onHealthChanged = true;
 
                         meleeAttack.ValueRW.onAttack = true;
+
+                        // If the target has no target themselves set it to the attacker for retribution.
+                        if (SystemAPI.HasComponent<Targetter>(targetter.ValueRO.targetEntity))
+                        {
+                            RefRW<Targetter> targetOwnTargetter = SystemAPI.GetComponentRW<Targetter>(targetter.ValueRO.targetEntity);
+                            if (!EntityUtil.ExistsAndPersists(ref state, targetOwnTargetter.ValueRO.targetEntity))
+                            {
+                                targetOwnTargetter.ValueRW.targetEntity = entity;
+                            }
+                        }
                     }
                 }
             }

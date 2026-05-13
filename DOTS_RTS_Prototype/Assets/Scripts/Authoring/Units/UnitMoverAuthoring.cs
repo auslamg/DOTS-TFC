@@ -71,7 +71,7 @@ public struct UnitMover : IComponentData
     public float3 targetPosition;
 
     /// <summary>
-    /// Determines whether the entity is currently moving. //TODO: Use for FSM
+    /// Determines whether the entity is currently moving.
     /// </summary>
     public bool isMoving;
     /// <summary>

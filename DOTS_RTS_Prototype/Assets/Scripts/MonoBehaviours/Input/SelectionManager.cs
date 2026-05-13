@@ -168,216 +168,87 @@ public class SelectionManager : MonoBehaviour
         {
             Vector2 selectionEndMousePosition = Input.mousePosition;
 
-            //TODO: Extract into DeselectAll() method
             //Query all entities with the Selected component to disable it
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
+            EntityQuery selectableQuery = new EntityQueryBuilder(Allocator.Temp).
                 WithAll<Selected>().
                 Build(entityManager);
 
-            NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-            NativeArray<Selected> selectedArray = query.ToComponentDataArray<Selected>(Allocator.Temp);
-            for (int i = 0; i < entityArray.Length; i++)
-            {
-                entityManager.SetComponentEnabled<Selected>(entityArray[i], false);
-                Selected selected = selectedArray[i];
-                selected.onDeselected = true;
-                entityManager.SetComponentData(entityArray[i], selected);
-            }
+            NativeArray<Entity> entityArray = selectableQuery.ToEntityArray(Allocator.Temp);
+            DeselectAllEntities(selectableQuery, ref entityArray);
 
+            // Distinguish between single select and Rect select
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
             bool isMultipleSelection = selectionAreaSize >= multipleSelectionSizeMinimum;
-
-            //TODO: Extract into SelectArea() method
+            
             if (isMultipleSelection)
             {
-                //Query all entities with the UnitMover and Selected components to check if they're inside the SelectionAreaRect
-                query = new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform>().WithPresent<Selected>().Build(entityManager);
-
-                //Register entities and components to access LocalTransform component and Entity memory adress
-                entityArray = query.ToEntityArray(Allocator.Temp);
-                NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-                for (int i = 0; i < localTransformArray.Length; i++)
-                {
-                    //Convert unit LocalTransform position into screen position to check if it is within the SelectionAreaRect
-                    LocalTransform unitLocalTransform = localTransformArray[i];
-                    Vector2 entityScreenPosition = Camera.main.WorldToScreenPoint(unitLocalTransform.Position);
-
-                    //Unit inside of selection area
-                    if (selectionAreaRect.Contains(entityScreenPosition))
-                    {
-                        entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
-                        Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
-                        selected.onSelected = true;
-                        entityManager.SetComponentData(entityArray[i], selected);
-                    }
-                }
+                SelectInArea(selectionAreaRect);
             }
-            //TODO: Extract into SelectSingle() method
             else
             {
-                Entity hitEntity = ClickSphereCastForEntity();
-                if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
-                {
-                    //An entity was hit
-                    if (entityManager.HasComponent<Faction>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
-                    {
-                        //A Faction entity was hit > Select unit
-                        entityManager.SetComponentEnabled<Selected>(hitEntity, true);
-                        Selected selected = entityManager.GetComponentData<Selected>(hitEntity);
-                        selected.onSelected = true;
-                        entityManager.SetComponentData(hitEntity, selected);
-                    }
-                }
+                SelectSingle();
             }
 
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
             OnSelectionChange?.Invoke(this, EventArgs.Empty);
         }
-        if (Input.GetMouseButtonDown(1))
-        {
-            //Check if the click landed on an entity
-            Entity hitEntity = ClickRayCastForEntity();
-            bool isAttackingAnEntity =
-                EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
-                entityManager.HasComponent<Health>(hitEntity);
-            //NOTE: Health is used a common ground for attackable units and buildings
+    }
 
-            if (isAttackingAnEntity)
-            {
-                SetTargetOnSelectedUnits(hitEntity);
-            }
-            else
-            {
-                SetDestinationOnSelectedUnits();
-            }
-            SetRallyPositionOffset();
+    private void DeselectAllEntities(EntityQuery query, ref NativeArray<Entity> entityArray)
+    {
+        NativeArray<Selected> selectedArray = query.ToComponentDataArray<Selected>(Allocator.Temp);
+        for (int i = 0; i < entityArray.Length; i++)
+        {
+            entityManager.SetComponentEnabled<Selected>(entityArray[i], false);
+            Selected selected = selectedArray[i];
+            selected.onDeselected = true;
+            entityManager.SetComponentData(entityArray[i], selected);
         }
     }
 
-    /// <summary>
-    /// Updates rally offsets for selected trainers based on the current mouse position.
-    /// </summary>
-    private void SetRallyPositionOffset()
+    private void SelectSingle()
     {
-        // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Selected, Trainer, LocalTransform>().
-            Build(entityManager);
-
-        // Register entities and components to modify in order to run Set on the original struct
-        NativeArray<Trainer> trainerArray = query.ToComponentDataArray<Trainer>(Allocator.Temp);
-        NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-
-        for (int i = 0; i < trainerArray.Length; i++)
+        Entity hitEntity = ClickSphereCastForEntity();
+        if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
         {
-            Trainer trainer = trainerArray[i];
-            trainer.rallyPositionOffset = (float3)mouseWorldPosition - localTransformArray[i].Position;
-            trainerArray[i] = trainer;
+            //An entity was hit
+            if (entityManager.HasComponent<Faction>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
+            {
+                //A Faction entity was hit > Select unit
+                entityManager.SetComponentEnabled<Selected>(hitEntity, true);
+                Selected selected = entityManager.GetComponentData<Selected>(hitEntity);
+                selected.onSelected = true;
+                entityManager.SetComponentData(hitEntity, selected);
+            }
         }
-        query.CopyFromComponentDataArray(trainerArray);
     }
 
-    /// <summary>
-    /// Sets the target for all TargetOverride Units selected
-    /// </summary>
-    /// <remarks>
-    /// The target will only be set for units of a valid faction (different from the target Unit).
-    /// </remarks>
-    private void SetTargetOnSelectedUnits(Entity hitEntity)
+    private void SelectInArea(Rect selectionAreaRect)
     {
-        //Query all entities with the UnitMover and Selected components to set their target
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Selected, Faction>().
-            WithPresent<ManualTarget>().
-            Build(entityManager);
+        //Query all entities with the UnitMover and Selected components to check if they're inside the SelectionAreaRect
+        EntityQuery query = 
+            new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform>().WithPresent<Selected>().Build(entityManager);
 
-        //Register entities and components to modify in order to run Set on the original struct
+        //Register entities and components to access LocalTransform component and Entity memory adress
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-        if (entityArray.Length < 1) return; //No entities = no operations to perform
-        NativeArray<Faction> factionArray = query.ToComponentDataArray<Faction>(Allocator.Temp);
-        NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
-
-        //Get faction for targeted unit
-        Faction targetedFaction = entityManager.GetComponentData<Faction>(hitEntity);
-
-        for (int i = 0; i < manualTargetArray.Length; i++)
-        {
-            //Copy of value, not reference. Setter must use entityManager.SetComponentData()
-            ManualTarget newManualTarget = manualTargetArray[i];
-
-            if (factionArray[i].factionID != targetedFaction.factionID)
-            {
-                newManualTarget.targetEntity = hitEntity;
-            }
-            manualTargetArray[i] = newManualTarget;
-            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], false);
-        }
-        query.CopyFromComponentDataArray(manualTargetArray); //Remove when implementing single-entity instructions
-    }
-
-    /// <summary>
-    /// Sets movement destinations for selected units and clears manual targets.
-    /// </summary>
-    private void SetDestinationOnSelectedUnits()
-    {
-        Vector3 targetPosition = mouseWorldPosition;
-        targetPosition.y = 0f;
-
-        //Query all entities with the UnitMover and Selected components to set their target
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Selected>().
-            WithPresent<ManualMove, ManualTarget, LocalTransform, PathRequest, FlowFieldRequest, FlowFieldFollower>().
-            Build(entityManager);
-
-        //Register entities and components to modify in order to run Set on the original struct
-        NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
-        if (entityArray.Length < 1) return; //No entities = no operations to perform
-        NativeArray<ManualMove> manualMoveArray = query.ToComponentDataArray<ManualMove>(Allocator.Temp);
-        NativeArray<ManualTarget> manualTargetArray = query.ToComponentDataArray<ManualTarget>(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
-        NativeArray<PathRequest> pathRequestArray = query.ToComponentDataArray<PathRequest>(Allocator.Temp);
-
-        //Get average position of all entities queried to send it as start position to formation methods
-        float3 avgPosition = AveragePositionXZ(localTransformArray);
-
-        //Calculate offset for each selected Unit inside a set formation.
-        NativeArray<float3> formationPositionsArray = GenerateFormationPositionsArray(avgPosition, targetPosition, entityArray.Length);
-
-        for (int i = 0; i < manualMoveArray.Length; i++)
+        for (int i = 0; i < localTransformArray.Length; i++)
         {
-            //New ManualMove values
-            ManualMove newManualMove = manualMoveArray[i];
-            newManualMove.targetPosition = targetPosition;
-            newManualMove.postFormationPosition = formationPositionsArray[i];
-            manualMoveArray[i] = newManualMove;
-            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
+            //Convert unit LocalTransform position into screen position to check if it is within the SelectionAreaRect
+            LocalTransform unitLocalTransform = localTransformArray[i];
+            Vector2 entityScreenPosition = Camera.main.WorldToScreenPoint(unitLocalTransform.Position);
 
-            //New ManualTarget values
-            ManualTarget newManualTarget = manualTargetArray[i];
-            newManualTarget.targetEntity = Entity.Null;
-            manualTargetArray[i] = newManualTarget;
-            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
-
-            //New PathRequest values
-            PathRequest newPathRequest = pathRequestArray[i];
-            newPathRequest.targetPosition = targetPosition;
-            newPathRequest.postFormationPosition = formationPositionsArray[i];
-            pathRequestArray[i] = newPathRequest;
-            // Enable path request to start pathing.
-            entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
-
-            Debug.Log("Sending path request");
-
-            // Disable FlowField initially, in case it's not necessary.
-            entityManager.SetComponentEnabled<FlowFieldRequest>(entityArray[i], false);
-            entityManager.SetComponentEnabled<FlowFieldFollower>(entityArray[i], false);
+            //Unit inside of selection area
+            if (selectionAreaRect.Contains(entityScreenPosition))
+            {
+                entityManager.SetComponentEnabled<Selected>(entityArray[i], true);
+                Selected selected = entityManager.GetComponentData<Selected>(entityArray[i]);
+                selected.onSelected = true;
+                entityManager.SetComponentData(entityArray[i], selected);
+            }
         }
-        // Copy to original fields since this is not using reference types but value types
-        query.CopyFromComponentDataArray(manualMoveArray);
-        query.CopyFromComponentDataArray(manualTargetArray);
-        query.CopyFromComponentDataArray(pathRequestArray);
     }
 
     /// <summary>
@@ -541,116 +412,6 @@ public class SelectionManager : MonoBehaviour
             width: upperRightCorner.x - lowerLeftCorner.x,
             height: upperRightCorner.y - lowerLeftCorner.y
         );
-    }
-
-    /// <summary>
-    /// Calculates individual movement positions for each selected unit in a formation of the requested size.
-    ///TODO: Implement additional formations like Line, Square and Wedge.
-    /// </summary>
-    /// <param name="startPosition">Average start position of selected entities.</param>
-    /// <param name="targetPosition">Command target position.</param>
-    /// <param name="positionCount">Number of movement slots to generate.</param>
-    /// <returns>Array of destination positions for each selected entity.</returns>
-    private NativeArray<float3> GenerateFormationPositionsArray(float3 startPosition, float3 targetPosition, int positionCount)
-    {
-        NativeArray<float3> positionArray = new NativeArray<float3>(positionCount, Allocator.Temp);
-        if (positionCount == 0)
-        {
-            return positionArray;
-        }
-        positionArray[0] = targetPosition;
-        if (positionCount == 1)
-        {
-            return positionArray;
-        }
-
-        //TODO: Implement formations.
-        /* return CalculateLineFormation(positionArray, startPosition, targetPosition, positionCount); */
-        return CalculateCircleFormation(positionArray, targetPosition, positionCount);
-
-    }
-
-    /// <summary>
-    /// Calculates the array of individual movement positions in a Line formation.
-    /// </summary>
-    /// <param name="positionArray">Destination output array.</param>
-    /// <param name="startPosition">Average start position of selected entities.</param>
-    /// <param name="targetPosition">Command target position.</param>
-    /// <param name="positionCount">Number of movement slots to fill.</param>
-    /// <returns>Destination array populated with line-formation positions.</returns>
-    private NativeArray<float3> CalculateLineFormation(NativeArray<float3> positionArray, float3 startPosition, float3 targetPosition, int positionCount)
-    {
-        float offest = unitOffset;
-        float3 targetDirection = targetPosition - startPosition;
-        int positionIndex = 0;
-
-        //Calculate angle for proper orientation
-        float3 directionNormalized = math.normalize(targetDirection);
-        float angle = math.atan2(directionNormalized.x, directionNormalized.z);
-
-        while (positionIndex < positionCount)
-        {
-            //Used for offsetting center
-            bool isEvenCount = positionIndex % 2 == 0;
-            //Decide right or left
-            bool isRight = positionIndex % 2 == 0;
-
-            float3 currentTargetVector = math.rotate(quaternion.RotateY(angle), new float3(unitOffset * positionIndex, 0, 0));
-            float3 centerOffset = math.rotate(quaternion.RotateY(angle), new float3(-unitOffset * positionCount / 2, 0, 0));
-
-
-            //Posicion final
-            float3 currentTargetPosition = targetPosition + currentTargetVector + centerOffset;
-
-            positionArray[positionIndex] = currentTargetPosition;
-            positionIndex++;
-
-            //TODO: Refactor to avoid break usage.
-            if (positionIndex >= positionCount)
-            {
-                break;
-            }
-        }
-        return positionArray;
-    }
-
-
-    /// <summary>
-    /// Calculates the array of individual movement positions in a Circle formation.
-    /// </summary>
-    /// <param name="positionArray">Destination output array.</param>
-    /// <param name="targetPosition">Command target position.</param>
-    /// <param name="positionCount">Number of movement slots to fill.</param>
-    /// <returns>Destination array populated with circle-formation positions.</returns>
-    private NativeArray<float3> CalculateCircleFormation(NativeArray<float3> positionArray, float3 targetPosition, int positionCount)
-    {
-        float ringRadius = ringOffset;
-        int ringIndex = 0;
-        int positionIndex = 1;
-
-        while (positionIndex < positionCount)
-        {
-            int ringPositionCount = centerUnits + ringIndex * unitsPerRing;
-
-            for (int i = 0; i < ringPositionCount; i++)
-            {
-                float angle = i * (math.PI2 / ringPositionCount);
-                float3 currentTargetVectorFromCenter = math.rotate(quaternion.RotateY(angle), new float3(ringRadius * (ringIndex + 1), 0, 0));
-                float3 currentTargetPosition = targetPosition + currentTargetVectorFromCenter;
-
-                positionArray[positionIndex] = currentTargetPosition;
-                positionIndex++;
-
-                //TODO: Refactor to avoid break usage.
-                if (positionIndex >= positionCount)
-                {
-                    break;
-                }
-
-            }
-            ringIndex++;
-        }
-        return positionArray;
     }
 
     /// <summary>

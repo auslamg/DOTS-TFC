@@ -180,7 +180,6 @@ public class HordeManager : MonoBehaviour
 
         Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(EntityPrefabKey.From(entry.unitKey)));
 
-        // TODO: Write necessary component values
         var localTransform = entityManager.GetComponentData<LocalTransform>(spawnedEntity);
         localTransform.Position = spawnPoint.position;
         entityManager.SetComponentData(spawnedEntity, localTransform);
