@@ -41,7 +41,6 @@ partial struct PathingRescheduleSystem : ISystem
                     SystemAPI.SetComponentEnabled<PathRequest>(entity, true);
                 }
             }
-            
         }
     }
 }

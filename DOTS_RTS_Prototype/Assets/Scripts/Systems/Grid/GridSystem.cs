@@ -54,19 +54,19 @@ partial struct GridSystem : ISystem
     [BurstDiscard]
     private static void InitializeDebugVisual(GridData gridData)
     {
-        GridDebugDisplay.Instance?.InitializeGrid(gridData);
+        GridGrizmoDisplay.Instance?.InitializeGrid(gridData);
     }
 
     [BurstDiscard]
     private static void UpdateDebugVisual(GridData gridData)
     {
-        GridDebugDisplay.Instance?.UpdateGridVisual(gridData);
+        GridGrizmoDisplay.Instance?.UpdateGridVisual(gridData);
     }
 
     [BurstDiscard]
     private static void UpdateDebugVisual(GridData gridData, int i)
     {
-        GridDebugDisplay.Instance?.UpdateGridVisual(gridData, i);
+        GridGrizmoDisplay.Instance?.UpdateGridVisual(gridData, i);
     }
 
     [BurstDiscard]

@@ -24,6 +24,12 @@ public class UnitMoverAuthoring : MonoBehaviour
     [SerializeField]
     [Tooltip("Arrival threshold distance to consider the movement target reached.")]
     public float targetReachedDistanceSquared = 2f;
+    /// <summary>
+    /// Time interval between target position conflict checks.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Time interval between target position conflict checks.")]
+    public float conflictCheckInterval = 5f;
 }
 
 /// <summary>
@@ -40,7 +46,11 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
             rotationSpeed = authoring.rotationSpeed,
             targetReachedDistanceSquared = authoring.targetReachedDistanceSquared,
             targetPosition = authoring.transform.position,
-            hasStartedTargetPosition = false
+            hasStartedTargetPosition = false,
+            conflictCheckTimer = new LoopingTimer
+            {
+                Interval = authoring.conflictCheckInterval
+            }
         });
     }
 }
@@ -78,5 +88,9 @@ public struct UnitMover : IComponentData
     /// Determines whether the entity's target has been reset from 0,0,0 after spawning.
     /// </summary>
     public bool hasStartedTargetPosition;
+    /// <summary>
+    /// Looping timer used to check if there are target position conflicts in order to avoid units pushing eachother indefinitely.
+    /// </summary>
+    public LoopingTimer conflictCheckTimer;
 }
 

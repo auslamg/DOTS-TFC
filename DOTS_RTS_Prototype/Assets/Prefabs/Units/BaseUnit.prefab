@@ -474,6 +474,7 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 10
   targetReachedDistanceSquared: 0.2
+  conflictCheckInterval: 2
 --- !u!114 &-8969996158608910852
 MonoBehaviour:
   m_ObjectHideFlags: 0

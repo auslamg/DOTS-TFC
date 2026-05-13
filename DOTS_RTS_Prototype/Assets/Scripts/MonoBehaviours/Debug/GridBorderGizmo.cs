@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using static GridUtil;
 
-public class GridBorderDebug : MonoBehaviour
+public class GridBorderGizmo : MonoBehaviour
 {
     private int size;
     private byte data;

@@ -22,14 +22,23 @@ partial struct UnitMoverSystem : ISystem
     /// <summary>Component lookup for <see cref="PathRequest"/> components. Used to access and modify pathfinding requests on entities.</summary>
     public ComponentLookup<PathRequest> pathRequestComponentLookup;
 
-    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to access and modify flow field navigation state on entities.</summary>
-    public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
-
     /// <summary>Component lookup for <see cref="FlowFieldRequest"/> components. Used to access and modify flow field navigation requests on entities.</summary>
     public ComponentLookup<FlowFieldRequest> flowFieldRequestComponentLookup;
 
+    /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to access and modify flow field navigation state on entities.</summary>
+    public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
+
     /// <summary>Component lookup for <see cref="ManualMove"/> components. Used to access and modify manual movement state on entities.</summary>
     public ComponentLookup<ManualMove> manualMoveComponentLookup;
+
+    /// <summary>Component lookup for <see cref="Targetter"/> components. Used to access and read targets on entities.</summary>
+    public ComponentLookup<Targetter> targetterComponentLookup;
+
+    /// <summary>Component lookup for <see cref="Targetter"/> components. Used to read building entities.</summary>
+    public ComponentLookup<Building> buildingComponentLookup;
+
+    /// <summary>Component lookup for <see cref="LocalTransform"/> components. Used to access building positions.</summary>
+    public ComponentLookup<LocalTransform> localTransformComponentLookup;
 
     /// <summary>Component lookup for <see cref="GridCell"/> components. Used to access grid cell data for navigation and pathfinding.</summary>
     public ComponentLookup<GridCell> gridCellComponentLookup;
@@ -49,6 +58,9 @@ partial struct UnitMoverSystem : ISystem
         flowFieldFollowerComponentLookup = SystemAPI.GetComponentLookup<FlowFieldFollower>(isReadOnly: false);
         flowFieldRequestComponentLookup = SystemAPI.GetComponentLookup<FlowFieldRequest>(isReadOnly: false);
         manualMoveComponentLookup = SystemAPI.GetComponentLookup<ManualMove>(isReadOnly: false);
+        targetterComponentLookup = SystemAPI.GetComponentLookup<Targetter>(isReadOnly: true);
+        buildingComponentLookup = SystemAPI.GetComponentLookup<Building>(isReadOnly: true);
+        localTransformComponentLookup = SystemAPI.GetComponentLookup<LocalTransform>(isReadOnly: true);
         gridCellComponentLookup = SystemAPI.GetComponentLookup<GridCell>(isReadOnly: false);
     }
 
@@ -68,6 +80,9 @@ partial struct UnitMoverSystem : ISystem
         flowFieldFollowerComponentLookup.Update(ref state);
         flowFieldRequestComponentLookup.Update(ref state);
         manualMoveComponentLookup.Update(ref state);
+        targetterComponentLookup.Update(ref state);
+        buildingComponentLookup.Update(ref state);
+        localTransformComponentLookup.Update(ref state);
         gridCellComponentLookup.Update(ref state);
 
         // Initialize target position so that units don't go to (0,0,0) world position by default.
@@ -93,6 +108,9 @@ partial struct UnitMoverSystem : ISystem
         CheckStraightPathJob checkStraightPathJob = new CheckStraightPathJob
         {
             flowFieldFollowerComponentLookup = flowFieldFollowerComponentLookup,
+            targetterComponentLookup = targetterComponentLookup,
+            buildingComponentLookup = buildingComponentLookup,
+            localTransformComponentLookup = localTransformComponentLookup,
             collisionWorld = collisionWorld
         };
         checkStraightPathJob.ScheduleParallel();
@@ -199,6 +217,25 @@ public partial struct PathRequestJob : IJobEntity
             pathRequest.postFormationPosition = pathRequest.targetPosition;
         }
 
+        // Check if valid position
+        if (!ValidateCoords(
+                WorldPositionToCoords(pathRequest.targetPosition, gridCellSize),
+                gridWidth))
+        {
+            Debug.Log("INVALID COORDS");
+            pathRequest.targetPosition = localTransform.Position;
+            pathRequest.postFormationPosition = localTransform.Position;
+            unitMover.targetPosition = localTransform.Position;
+
+            if (manualMoveComponentLookup.HasComponent(entity))
+            {
+                manualMoveComponentLookup.SetComponentEnabled(entity, false);
+            }
+
+            pathRequestComponentLookup.SetComponentEnabled(entity, false);
+            return;
+        }
+
         // Check if a straight path to target is available. If not, request navigation.
         RaycastInput targetRaycastInput = new RaycastInput
         {
@@ -298,45 +335,87 @@ public partial struct CheckStraightPathJob : IJobEntity
     /// <summary>Component lookup for <see cref="FlowFieldFollower"/> components. Used to enable/disable flow field navigation on entities.</summary>
     [NativeDisableParallelForRestriction] public ComponentLookup<FlowFieldFollower> flowFieldFollowerComponentLookup;
 
+    /// <summary>Component lookup for <see cref="Targetter"/> components. Used to check if the target is a building.</summary>
+    [ReadOnly] public ComponentLookup<Targetter> targetterComponentLookup;
+
+    /// <summary>Component lookup for <see cref="Building"/> components. Used to check if the target is a building.</summary>
+    [ReadOnly] public ComponentLookup<Building> buildingComponentLookup;
+
+    /* /// <summary>Component lookup for <see cref="Unit"/> components. Used to check if the target is a unit.</summary>
+    [ReadOnly] public ComponentLookup<Unit> unitComponentLookup; */
+
+    /// <summary>Component lookup for <see cref="LocalTransform"/> components. Used to get building position.</summary>
+    [ReadOnly] public ComponentLookup<LocalTransform> localTransformComponentLookup;
+
     /// <summary>Collision world for physics raycasts to check for obstructions.</summary>
     [ReadOnly] public CollisionWorld collisionWorld;
-    public void Execute(in LocalTransform localTransform, ref UnitMover unitMover, Entity entity)
+    public void Execute(ref UnitMover unitMover, Entity entity)
     {
         // Lookup local fetch for readability.
         FlowFieldFollower flowFieldFollower = flowFieldFollowerComponentLookup[entity];
+        LocalTransform localTransform = localTransformComponentLookup[entity];
 
-        RaycastInput raycastInput = new RaycastInput
+        // Target straight path rechecks
+        if (targetterComponentLookup.HasComponent(entity))
         {
-            Start = localTransform.Position,
-            End = flowFieldFollower.targetPosition,
-            Filter = new CollisionFilter
+            var targetter = targetterComponentLookup[entity];
+
+            if (buildingComponentLookup.HasComponent(targetter.targetEntity))
             {
-                BelongsTo = ~0u,
-                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
+                var buildingPosition = localTransformComponentLookup[targetter.targetEntity].Position;
+                RaycastInput buildingRaycastInput = new RaycastInput
+                {
+                    Start = localTransform.Position,
+                    End = buildingPosition,
+                    Filter = new CollisionFilter
+                    {
+                        BelongsTo = ~0u,
+                        CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                        GroupIndex = 0
+                    }
+                };
 
-                GroupIndex = 0
+
+                if (!collisionWorld.CastRay(buildingRaycastInput))
+                {
+                    // Hit nothing. Take a straight path
+                    unitMover.targetPosition = buildingPosition;
+                    flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+                    Debug.Log($"Recheck STRAIGHT BUILDING. {unitMover.targetPosition}");
+                }
             }
-        };
-
-        RaycastInput formationRaycastInput = new RaycastInput
-        {
-            Start = localTransform.Position,
-            End = flowFieldFollower.postFormationPosition,
-            Filter = new CollisionFilter
+            else if (true)
             {
-                BelongsTo = ~0u,
-                CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
-                GroupIndex = 0
+                
             }
-        };
 
-        if (!collisionWorld.CastRay(formationRaycastInput))
-        {
-            // Hit nothing. Take a straight path
-            unitMover.targetPosition = flowFieldFollower.postFormationPosition;
-            flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            Debug.Log("Recheck STRAIGHT FORMATION");
+            return;
         }
+
+        // Target position straight path recheck
+        {
+            RaycastInput formationRaycastInput = new RaycastInput
+            {
+                Start = localTransform.Position,
+                End = flowFieldFollower.postFormationPosition,
+                Filter = new CollisionFilter
+                {
+                    BelongsTo = ~0u,
+                    CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
+                    GroupIndex = 0
+                }
+            };
+
+            if (!collisionWorld.CastRay(formationRaycastInput))
+            {
+                // Hit nothing. Take a straight path
+                unitMover.targetPosition = flowFieldFollower.postFormationPosition;
+                flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+                Debug.Log("Recheck STRAIGHT FORMATION");
+            }
+        }
+
+
         /* else if (!collisionWorld.CastRay(raycastInput))
         {
             // Hit nothing. Take a straight path

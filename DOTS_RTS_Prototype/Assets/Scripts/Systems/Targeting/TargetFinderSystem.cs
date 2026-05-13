@@ -21,11 +21,11 @@ partial struct TargetFinderSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        //Register CollisionWorld for physics queries
+        // Register CollisionWorld for physics queries.
         CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
         EntityManager entityManager = state.EntityManager;
 
-        //Used for registering all available targets
+        // Used for registering all available targets.
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
         foreach ((
             RefRO<LocalTransform> localTransform,
@@ -40,13 +40,11 @@ partial struct TargetFinderSystem : ISystem
                 RefRO<Faction>,
                 RefRO<ManualTarget>>())
         {
-            // Target scan interval timer
             if (targetFinder.ValueRW.scanCooldownTimer.Tick(SystemAPI.Time.DeltaTime))
             {
                 // Manual targets take priority over automatic scan results
                 if (EntityUtil.ExistsAndPersists(ref state, manualTarget.ValueRO.targetEntity))
                 {
-                    //There's a manual target, don't try to find a new one
                     targetter.ValueRW.targetEntity = manualTarget.ValueRO.targetEntity;
                 }
                 else // No manual target — run overlap query and select closest valid enemy
@@ -79,7 +77,7 @@ partial struct TargetFinderSystem : ISystem
                         foreach (DistanceHit distanceHit in distanceHitList)
                         {
                             //If an entity was hit
-                            if (EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity) || SystemAPI.HasComponent<Faction>(distanceHit.Entity))
+                            if (EntityUtil.ExistsAndPersists(ref state, distanceHit.Entity) && SystemAPI.HasComponent<Faction>(distanceHit.Entity))
                             {
                                 //Valid target with valid faction
                                 Faction targetFaction = SystemAPI.GetComponent<Faction>(distanceHit.Entity);

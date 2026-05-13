@@ -6,7 +6,7 @@ using UnityEngine;
 using static GridSystem;
 using static GridUtil;
 
-public class GridDebugDisplay : MonoBehaviour
+public class GridGrizmoDisplay : MonoBehaviour
 {
     [SerializeField]
     private Transform gridCellGizmo;
@@ -24,13 +24,13 @@ public class GridDebugDisplay : MonoBehaviour
     private Sprite baseChunk;
 
     private bool isInitialized = false;
-    private GridCellDebug[,] gridCellsArray;
-    private GridChunkDebug[,] gridChunksArray;
+    private GridCellGizmo[,] gridCellsArray;
+    private GridChunkGizmo[,] gridChunksArray;
 
     /// <summary>
     /// Scene singleton instance for managed-side access.
     /// </summary>
-    public static GridDebugDisplay Instance { get; private set; }
+    public static GridGrizmoDisplay Instance { get; private set; }
 
     /// <summary>
     /// Initializes singleton instance state.
@@ -55,28 +55,28 @@ public class GridDebugDisplay : MonoBehaviour
 
     public void InitializeGrid(GridData gridData)
     {
-        gridCellsArray = new GridCellDebug[gridData.width, gridData.height];
+        gridCellsArray = new GridCellGizmo[gridData.width, gridData.height];
         for (int x = 0; x < gridData.width; x++)
         {
             for (int y = 0; y < gridData.height; y++)
             {
                 Transform cellGizmo = Instantiate(gridCellGizmo, this.gameObject.transform);
                 cellGizmo.name = $"CellGizmo-{x},{y}";
-                GridCellDebug cell = cellGizmo.GetComponent<GridCellDebug>();
+                GridCellGizmo cell = cellGizmo.GetComponent<GridCellGizmo>();
                 cell.Initialize(x, y, gridData.gridCellSize);
 
                 gridCellsArray[x, y] = cell;
             }
         }
 
-        gridChunksArray = new GridChunkDebug[gridData.width / CHUNK_MAX_SIZE, gridData.height / CHUNK_MAX_SIZE];
+        gridChunksArray = new GridChunkGizmo[gridData.width / CHUNK_MAX_SIZE, gridData.height / CHUNK_MAX_SIZE];
         for (int cx = 0; cx < gridData.width / CHUNK_MAX_SIZE; cx++)
         {
             for (int cy = 0; cy < gridData.width / CHUNK_MAX_SIZE; cy++)
             {
                 Transform chunkGizmo = Instantiate(gridChunkGizmo, this.gameObject.transform);
                 chunkGizmo.name = $"ChunkGizmo-{cx},{cy}";
-                GridChunkDebug chunk = chunkGizmo.GetComponent<GridChunkDebug>();
+                GridChunkGizmo chunk = chunkGizmo.GetComponent<GridChunkGizmo>();
                 chunk.Initialize(cx, cy, gridData.gridCellSize, CHUNK_MAX_SIZE);
 
                 gridChunksArray[cx, cy] = chunk;
@@ -86,7 +86,7 @@ public class GridDebugDisplay : MonoBehaviour
         float2 gridWorldSpaceDimensions = new float2(gridData.width * gridData.gridCellSize, gridData.height * gridData.gridCellSize);
         Transform borderGizmo = Instantiate(gridBorderGizmo, this.gameObject.transform);
         borderGizmo.name = $"BorderGizmo-{gridData.width}x{gridData.height}";
-        GridBorderDebug border = borderGizmo.GetComponent<GridBorderDebug>();
+        GridBorderGizmo border = borderGizmo.GetComponent<GridBorderGizmo>();
         border.Initialize(gridWorldSpaceDimensions.x, gridData.gridCellSize);
 
         isInitialized = true;
@@ -168,7 +168,7 @@ public class GridDebugDisplay : MonoBehaviour
 
     public void UpdateCellVisual(GridCell cell)
     {
-        GridCellDebug cellDebug = gridCellsArray[cell.x, cell.y];
+        GridCellGizmo cellDebug = gridCellsArray[cell.x, cell.y];
 
         cellDebug.SetSpriteRotation(Quaternion.LookRotation(
                     new Vector3(
@@ -216,7 +216,7 @@ public class GridDebugDisplay : MonoBehaviour
 
     public void UpdateChunkVisual(GridChunk chunk)
     {
-        GridChunkDebug chunkDebug = gridChunksArray[chunk.cx, chunk.cy];
+        GridChunkGizmo chunkDebug = gridChunksArray[chunk.cx, chunk.cy];
         if (chunk.obstructed) // Target
         {
             chunkDebug.SetSprite(baseChunk);

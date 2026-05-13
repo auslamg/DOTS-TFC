@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using static GridUtil;
 
-public class GridChunkDebug : MonoBehaviour
+public class GridChunkGizmo : MonoBehaviour
 {
     private int x;
     private int y;
