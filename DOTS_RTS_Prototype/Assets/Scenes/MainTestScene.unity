@@ -4586,7 +4586,7 @@ GameObject:
   - component: {fileID: 742358626}
   - component: {fileID: 742358625}
   m_Layer: 0
-  m_Name: GridDebugDisplay
+  m_Name: GridGizmoDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4605,8 +4605,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridDebugDisplay
   gridCellGizmo: {fileID: 6013024706166131494, guid: 3c4c166ae9e40b546ae1342544573b18, type: 3}
+  showCells: 0
   gridChunkGizmo: {fileID: 6317634183032696854, guid: 17c7e6ad466e5de419290dbdf2984530, type: 3}
+  showChunks: 0
   gridBorderGizmo: {fileID: 6317634183032696854, guid: 3fe067408bf89124d890ed61cc5e74ef, type: 3}
+  showBorder: 1
   baseCell: {fileID: 21300000, guid: ab20380c79630574ebdf5e368be2e211, type: 3}
   arrowCell: {fileID: 21300000, guid: 12aa96462ea36734b9e7be75d069082e, type: 3}
   noPathCell: {fileID: 21300000, guid: af8d020146d6d2849a967e96a69a7da7, type: 3}

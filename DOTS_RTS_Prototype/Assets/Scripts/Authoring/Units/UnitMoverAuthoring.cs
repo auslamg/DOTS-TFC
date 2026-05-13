@@ -50,8 +50,37 @@ public class UnitMoverBaker : Baker<UnitMoverAuthoring>
             conflictCheckTimer = new LoopingTimer
             {
                 Interval = authoring.conflictCheckInterval
-            }
+            },
+            conflictResoultionOffset = GenerateOffset(entity)
         });
+    }
+
+    private float3 GenerateOffset(Entity entity)
+    {
+        // Create deterministic seed from entity identity
+        uint seed = math.hash(new int2(entity.Index, entity.Version));
+
+        // Random requires non-zero seed
+        if (seed == 0)
+            seed = 1;
+
+        Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
+
+        // Random direction on XZ plane
+        float angle = random.NextFloat(0f, math.PI * 2f);
+
+        // Optional random distance
+        float distance = random.NextFloat(1.5f, 3f);
+
+        float2 direction = math.float2(
+            math.cos(angle),
+            math.sin(angle));
+
+        return new float3(
+            direction.x * distance,
+            0f,
+            direction.y * distance
+        );
     }
 }
 
@@ -88,9 +117,15 @@ public struct UnitMover : IComponentData
     /// Determines whether the entity's target has been reset from 0,0,0 after spawning.
     /// </summary>
     public bool hasStartedTargetPosition;
+
     /// <summary>
     /// Looping timer used to check if there are target position conflicts in order to avoid units pushing eachother indefinitely.
     /// </summary>
     public LoopingTimer conflictCheckTimer;
+
+    /// <summary>
+    /// Position offset to apply to the unit for pathing target conflicts resolution.
+    /// </summary>
+    public float3 conflictResoultionOffset;
 }
 

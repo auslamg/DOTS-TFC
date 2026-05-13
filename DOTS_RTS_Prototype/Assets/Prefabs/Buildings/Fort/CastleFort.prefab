@@ -54,11 +54,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 404069109837729515, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Size.x
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 404069109837729515, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Size.y
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2582768362592015294, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_LocalScale.x
@@ -135,6 +135,18 @@ PrefabInstance:
     - target: {fileID: 5114271408651382707, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: gameOverMessage
       value: You lost your fort!
+      objectReference: {fileID: 0}
+    - target: {fileID: 5730196066864078283, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5730196066864078283, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5730196066864078283, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6067405504591206418, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Size.x

@@ -8,18 +8,40 @@ using static GridUtil;
 
 public class GridGrizmoDisplay : MonoBehaviour
 {
+    [Header("Cell gizmos")]
+
     [SerializeField]
     private Transform gridCellGizmo;
+
+    [SerializeField]
+    public bool showCells = true;
+
+    [Header("Cell gizmos")]
+
     [SerializeField]
     private Transform gridChunkGizmo;
+
+    [SerializeField]
+    public bool showChunks = true;
+
+    [Header("Border gizmo")]
+
     [SerializeField]
     private Transform gridBorderGizmo;
     [SerializeField]
+    public bool showBorder = true;
+
+    [Header("Sprites")]
+
+    [SerializeField]
     private Sprite baseCell;
+
     [SerializeField]
     private Sprite arrowCell;
+
     [SerializeField]
     private Sprite noPathCell;
+
     [SerializeField]
     private Sprite baseChunk;
 
@@ -55,39 +77,48 @@ public class GridGrizmoDisplay : MonoBehaviour
 
     public void InitializeGrid(GridData gridData)
     {
-        gridCellsArray = new GridCellGizmo[gridData.width, gridData.height];
-        for (int x = 0; x < gridData.width; x++)
+        if (showCells)
         {
-            for (int y = 0; y < gridData.height; y++)
+            gridCellsArray = new GridCellGizmo[gridData.width, gridData.height];
+            for (int x = 0; x < gridData.width; x++)
             {
-                Transform cellGizmo = Instantiate(gridCellGizmo, this.gameObject.transform);
-                cellGizmo.name = $"CellGizmo-{x},{y}";
-                GridCellGizmo cell = cellGizmo.GetComponent<GridCellGizmo>();
-                cell.Initialize(x, y, gridData.gridCellSize);
+                for (int y = 0; y < gridData.height; y++)
+                {
+                    Transform cellGizmo = Instantiate(gridCellGizmo, this.gameObject.transform);
+                    cellGizmo.name = $"CellGizmo-{x},{y}";
+                    GridCellGizmo cell = cellGizmo.GetComponent<GridCellGizmo>();
+                    cell.Initialize(x, y, gridData.gridCellSize);
 
-                gridCellsArray[x, y] = cell;
+                    gridCellsArray[x, y] = cell;
+                }
             }
         }
 
-        gridChunksArray = new GridChunkGizmo[gridData.width / CHUNK_MAX_SIZE, gridData.height / CHUNK_MAX_SIZE];
-        for (int cx = 0; cx < gridData.width / CHUNK_MAX_SIZE; cx++)
+        if (showChunks)
         {
-            for (int cy = 0; cy < gridData.width / CHUNK_MAX_SIZE; cy++)
+            gridChunksArray = new GridChunkGizmo[gridData.width / CHUNK_MAX_SIZE, gridData.height / CHUNK_MAX_SIZE];
+            for (int cx = 0; cx < gridData.width / CHUNK_MAX_SIZE; cx++)
             {
-                Transform chunkGizmo = Instantiate(gridChunkGizmo, this.gameObject.transform);
-                chunkGizmo.name = $"ChunkGizmo-{cx},{cy}";
-                GridChunkGizmo chunk = chunkGizmo.GetComponent<GridChunkGizmo>();
-                chunk.Initialize(cx, cy, gridData.gridCellSize, CHUNK_MAX_SIZE);
+                for (int cy = 0; cy < gridData.width / CHUNK_MAX_SIZE; cy++)
+                {
+                    Transform chunkGizmo = Instantiate(gridChunkGizmo, this.gameObject.transform);
+                    chunkGizmo.name = $"ChunkGizmo-{cx},{cy}";
+                    GridChunkGizmo chunk = chunkGizmo.GetComponent<GridChunkGizmo>();
+                    chunk.Initialize(cx, cy, gridData.gridCellSize, CHUNK_MAX_SIZE);
 
-                gridChunksArray[cx, cy] = chunk;
+                    gridChunksArray[cx, cy] = chunk;
+                }
             }
         }
 
-        float2 gridWorldSpaceDimensions = new float2(gridData.width * gridData.gridCellSize, gridData.height * gridData.gridCellSize);
-        Transform borderGizmo = Instantiate(gridBorderGizmo, this.gameObject.transform);
-        borderGizmo.name = $"BorderGizmo-{gridData.width}x{gridData.height}";
-        GridBorderGizmo border = borderGizmo.GetComponent<GridBorderGizmo>();
-        border.Initialize(gridWorldSpaceDimensions.x, gridData.gridCellSize);
+        if (showBorder)
+        {
+            float2 gridWorldSpaceDimensions = new float2(gridData.width * gridData.gridCellSize, gridData.height * gridData.gridCellSize);
+            Transform borderGizmo = Instantiate(gridBorderGizmo, this.gameObject.transform);
+            borderGizmo.name = $"BorderGizmo-{gridData.width}x{gridData.height}";
+            GridBorderGizmo border = borderGizmo.GetComponent<GridBorderGizmo>();
+            border.Initialize(gridWorldSpaceDimensions.x, gridData.gridCellSize);
+        }
 
         isInitialized = true;
     }
@@ -132,42 +163,53 @@ public class GridGrizmoDisplay : MonoBehaviour
 
     public void UpdateGridVisual(GridData gridData, int flowFieldIndex)
     {
-        for (int x = 0; x < gridData.width; x++)
+        if (showCells)
         {
-            for (int y = 0; y < gridData.height; y++)
+            for (int x = 0; x < gridData.width; x++)
             {
-                // Retrieve the unmanaged data for this cell
-                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                if (flowFieldIndex <= 0)
+                for (int y = 0; y < gridData.height; y++)
                 {
-                    flowFieldIndex = 0;
+                    // Retrieve the unmanaged data for this cell
+                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                    if (flowFieldIndex <= 0)
+                    {
+                        flowFieldIndex = 0;
+                    }
+
+                    int cellIndex = CoordsToIndex(x, y, gridData.width);
+                    Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[cellIndex];
+                    GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
+
+                    UpdateCellVisual(cell);
                 }
-
-                int cellIndex = CoordsToIndex(x, y, gridData.width);
-                Entity cellEntity = gridData.flowFieldArray[flowFieldIndex].gridCellEntityArray[cellIndex];
-                GridCell cell = entityManager.GetComponentData<GridCell>(cellEntity);
-
-                UpdateCellVisual(cell);
             }
         }
 
-        for (int x = 0; x < gridData.width / CHUNK_MAX_SIZE; x++)
+        if (showChunks)
         {
-            for (int y = 0; y < gridData.height / CHUNK_MAX_SIZE; y++)
+            for (int x = 0; x < gridData.width / CHUNK_MAX_SIZE; x++)
             {
-                // Retrieve the unmanaged data for this cell
-                EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                for (int y = 0; y < gridData.height / CHUNK_MAX_SIZE; y++)
+                {
+                    // Retrieve the unmanaged data for this cell
+                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-                int chunkIndex = ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
-                GridChunk gridChunk = gridData.chunkArray[chunkIndex];
+                    int chunkIndex = ChunkCoordsToIndex(x, y, gridData.width, CHUNK_MAX_SIZE);
+                    GridChunk gridChunk = gridData.chunkArray[chunkIndex];
 
-                UpdateChunkVisual(gridChunk);
+                    UpdateChunkVisual(gridChunk);
+                }
             }
         }
     }
 
     public void UpdateCellVisual(GridCell cell)
     {
+        if (!showCells)
+        {
+            return;
+        }
+
         GridCellGizmo cellDebug = gridCellsArray[cell.x, cell.y];
 
         cellDebug.SetSpriteRotation(Quaternion.LookRotation(
@@ -216,6 +258,11 @@ public class GridGrizmoDisplay : MonoBehaviour
 
     public void UpdateChunkVisual(GridChunk chunk)
     {
+        if (!showChunks)
+        {
+            return;
+        }
+        
         GridChunkGizmo chunkDebug = gridChunksArray[chunk.cx, chunk.cy];
         if (chunk.obstructed) // Target
         {
