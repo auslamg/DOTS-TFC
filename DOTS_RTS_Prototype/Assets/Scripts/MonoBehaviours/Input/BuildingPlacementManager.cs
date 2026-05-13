@@ -139,13 +139,17 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             ghostPrefab.transform.position = placePosition;
 
-            if (CanPlaceBuilding())
+            if (CanPlaceBuilding() && ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
             {
-                SetGhostColor(true);
+                SetGhostColor(new Color(0, 0.5f, 1, 0.25f));
+            }
+            else if (CanPlaceBuilding())
+            {
+                SetGhostColor(new Color(1, 1, 0, 0.25f));
             }
             else
             {
-                SetGhostColor(false);
+                SetGhostColor(new Color(1, 0, 0, 0.25f));
             }
         }
         // Ignore placement clicks while the cursor is interacting with UI.
@@ -176,7 +180,7 @@ public class BuildingPlacementManager : MonoBehaviour
                         name = activeBuildingDataSO.name
                     };
 
-                    Debug.Log($"Placing buildings: {buildingKey.name}");
+                    Debug.Log($"[BuildingPlacer] Placing buildings: {buildingKey.name}");
 
                     Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
                     entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(placePosition));
@@ -191,7 +195,7 @@ public class BuildingPlacementManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Insufficient funds.");
+                Debug.Log("[BuildingPlacer] Insufficient funds.");
             }
         }
 
@@ -252,7 +256,7 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             foreach (DistanceHit distanceHit in hitList)
             {
-                Debug.Log($"Checked entity at radius: {buildingDataSO.minDistanceToSimilar}");
+                /* Debug.Log($"Checked entity at radius: {buildingDataSO.minDistanceToSimilar}"); */
                 if (entityManager.HasComponent<BuildingDataSOHolder>(distanceHit.Entity))
                 {
                     BuildingDataSOHolder buildingData = entityManager.GetComponentData<BuildingDataSOHolder>(distanceHit.Entity);
@@ -263,7 +267,6 @@ public class BuildingPlacementManager : MonoBehaviour
                 }
             }
         }
-
 
         CollisionFilter resourceSourcesFilter = new CollisionFilter
         {
@@ -276,7 +279,7 @@ public class BuildingPlacementManager : MonoBehaviour
         if (buildingDataSO.buildingType == BuildingType.Harvester)
         {
             bool validResource = false;
-            Debug.Log("Checking for harvester proximity");
+            /* Debug.Log("Checking for harvester proximity"); */
             Entity harvesterEntity =
                     LookupEntityPrefab.FetchEntityPrefab(EntityPrefabKey.From(buildingDataSO.buildingKey));
             Harvester harvester = entityManager.GetComponentData<Harvester>(harvesterEntity);
@@ -289,14 +292,14 @@ public class BuildingPlacementManager : MonoBehaviour
             {
                 foreach (DistanceHit distanceHit in hitList)
                 {
-                    Debug.Log($"{distanceHit.Entity}");
+                    /* Debug.Log($"{distanceHit.Entity}"); */
                     if (entityManager.HasComponent<ResourceSource>(distanceHit.Entity))
                     {
-                        Debug.Log("Checking resource compat");
+                        /* Debug.Log("Checking resource compat"); */
                         ResourceSource resourceSource = entityManager.GetComponentData<ResourceSource>(distanceHit.Entity);
                         if (harvester.harvestedResourceKey == resourceSource.generatedResourceKey)
                         {
-                            Debug.Log("Found harvester resource");
+                            /* Debug.Log("Found harvester resource"); */
                             validResource = true;
                             break;
                         }
@@ -312,14 +315,12 @@ public class BuildingPlacementManager : MonoBehaviour
     /// <summary>
     /// Sets the ghost preview color based on placement validity.
     /// </summary>
-    /// <param name="placeable">True if the building can be placed; false otherwise.</param>
-    private void SetGhostColor(bool placeable)
+    /// <param name="color">Color of the ghost.</param>
+    private void SetGhostColor(Color color)
     {
         foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())
         {
-            mesh.material.color = placeable ?
-                new Color(0, 0.5f, 1, 0.25f) :
-                new Color(1, 0, 0, 0.25f);
+            mesh.material.color = color;
         }
     }
 }
