@@ -10,14 +10,13 @@ using UnityEngine;
 [UpdateBefore(typeof(PathingRescheduleSystem))]
 partial struct PathConflictResolutionSystem : ISystem
 {
-
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
-
         // Used for registering all nearby units
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
+        
+        CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
 
         foreach ((
             RefRW<UnitMover> unitMover,
@@ -58,7 +57,7 @@ partial struct PathConflictResolutionSystem : ISystem
                             UnitMover otherUnitMover = SystemAPI.GetComponent<UnitMover>(distanceHit.Entity);
                             if (otherUnitMover.targetPosition.Equals(unitMover.ValueRO.targetPosition))
                             {
-                                otherUnitMover.targetPosition += GenerateOffset(distanceHit.Entity);
+                                otherUnitMover.targetPosition += otherUnitMover.conflictResoultionOffset;
                                 SystemAPI.SetComponent(distanceHit.Entity, otherUnitMover);
                             }
 
@@ -70,44 +69,14 @@ partial struct PathConflictResolutionSystem : ISystem
 
                                 if (otherFlowFieldFollower.postFormationPosition.Equals(flowFieldFollower.targetPosition))
                                 {
-                                    otherFlowFieldFollower.postFormationPosition += GenerateOffset(distanceHit.Entity);
+                                    otherFlowFieldFollower.postFormationPosition += otherUnitMover.conflictResoultionOffset;
                                     SystemAPI.SetComponent(distanceHit.Entity, otherUnitMover);
                                 }
                             }
-
-
                         }
                     }
                 }
             }
         }
-    }
-
-    private float3 GenerateOffset(Entity entity)
-    {
-        // Create deterministic seed from entity identity
-        uint seed = math.hash(new int2(entity.Index, entity.Version));
-
-        // Random requires non-zero seed
-        if (seed == 0)
-            seed = 1;
-
-        Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
-
-        // Random direction on XZ plane
-        float angle = random.NextFloat(0f, math.PI * 2f);
-
-        // Optional random distance
-        float distance = random.NextFloat(1.5f, 3f);
-
-        float2 direction = math.float2(
-            math.cos(angle),
-            math.sin(angle));
-
-        return new float3(
-            direction.x * distance,
-            0f,
-            direction.y * distance
-        );
     }
 }
