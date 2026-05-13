@@ -28,6 +28,8 @@ public class ActionManager : MonoBehaviour
     /// </summary>
     private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
 
+    public GridParametersSO gridParametersSO;
+
 
     [Header("SphereCast parameters")]
     /// <summary>
@@ -67,21 +69,6 @@ public class ActionManager : MonoBehaviour
     [SerializeField]
     [Tooltip("Additional unit slots added for each subsequent ring in circle formation.")]
     private int unitsPerRing = 3;
-
-    /// <summary>
-    /// Raised when drag-selection starts.
-    /// </summary>
-    public event EventHandler OnSelectionAreaStart;
-
-    /// <summary>
-    /// Raised when drag-selection ends.
-    /// </summary>
-    public event EventHandler OnSelectionAreaEnd;
-
-    /// <summary>
-    /// Raised whenever selected entities change.
-    /// </summary>
-    public event EventHandler OnSelectionChange;
 
     /// <summary>
     /// Indicates if the current selection drag started over a UI element.
@@ -137,36 +124,33 @@ public class ActionManager : MonoBehaviour
         {
             return;
         }
-        if (!EventSystem.current.IsPointerOverGameObject())
+
+        if (EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                startedOverUI = false;
-            }
+            startedOverUI = true;
         }
-        else
+        else if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                startedOverUI = true;
-            }
+            startedOverUI = false;
         }
+
         if (Input.GetMouseButtonDown(0) && !startedOverUI)
         {
-            //Check if the click landed on an entity
-            Entity hitEntity = ClickRayCastForEntity();
+            //Check if the click landed on an entity. The entity is attackable if it has health.
+            Entity hitEntity = ClickSphereCastForEntity();
             bool isAttackingAnEntity =
                 EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity) &&
                 entityManager.HasComponent<Health>(hitEntity);
-            //NOTE: Health is used a common ground for attackable units and buildings
 
             if (isAttackingAnEntity)
             {
                 SetTargetOnSelectedUnits(hitEntity);
+                Debug.Log($"[Action] Attacking entity {hitEntity.Index}");
             }
             else
             {
                 SetDestinationOnSelectedUnits();
+                Debug.Log($"[Action] Sending path request: {mouseWorldPosition}");
             }
             SetRallyPositionOffset();
         }
@@ -177,6 +161,14 @@ public class ActionManager : MonoBehaviour
     /// </summary>
     private void SetRallyPositionOffset()
     {
+        if (!GridUtil.ValidateCoords(
+                GridUtil.WorldPositionToCoords(mouseWorldPosition, gridParametersSO.gridCellSize),
+                gridParametersSO.size))
+        {
+            Debug.Log("[Action] Unreachable rally point.");
+            return;
+        }
+
         // Query all entities with the Trainer and Selected components to set their rally position offset to the clicked position minus their own position
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
             WithAll<Selected, Trainer, LocalTransform>().
@@ -193,6 +185,7 @@ public class ActionManager : MonoBehaviour
             trainerArray[i] = trainer;
         }
         query.CopyFromComponentDataArray(trainerArray);
+        Debug.Log($"[Action] Setting rally point: {mouseWorldPosition}");
     }
 
     /// <summary>
@@ -283,8 +276,6 @@ public class ActionManager : MonoBehaviour
             pathRequestArray[i] = newPathRequest;
             // Enable path request to start pathing.
             entityManager.SetComponentEnabled<PathRequest>(entityArray[i], true);
-
-            Debug.Log("Sending path request");
 
             // Disable FlowField initially, in case it's not necessary.
             entityManager.SetComponentEnabled<FlowFieldRequest>(entityArray[i], false);

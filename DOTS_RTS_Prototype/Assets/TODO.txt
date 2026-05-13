@@ -70,10 +70,7 @@ Aesthetic/UX addons
     - OnTargetSelect: cross-swords / crosshair
     - OnKillUnit: skull / crossbones
 - UI: Change selected gizmo for buildings
-- UI: Add a UIStateMachine / UI manager to switch out different UIs
 - UI: Add a SelectedUI to display selected elements
-- UI: Building ghosts should display valid placement in real time by changing colors
-- UI: TODO/IMPORTANT Add a OS selector that distinguishes between Win/Android and activates respective components (Camera controller, selector, etc.)
 - FIX: Camera pinch bug: releasing both touches in quick succesion counts as a super-fast drag
 - FEATURE: Setting trainer rally point to an unreachable/ unwalkable position shouldn't be allowed
 - REFACTOR UI: Make Unit roster train buttons and queue buttons their own subclasses to reduce BuildingTrainerUI file size and increase clarity.
@@ -113,9 +110,7 @@ Performance/data features
 
 AI features
 - FEATURE: FSM bot enemy? Check for DOTS compatibility
-- FEATURE: FlowField pathfinding (requires grid)
 - FEATURE: Non-seeking, calculated projectiles (Catapult style?)
-- FIX: Building colliders dont disappear on destruction, being clickable and making units float
 
 - GDD: Full targetting behaviour
 - GDD: Targets dont swap if they dont pass the threshold
@@ -127,10 +122,6 @@ Refactors
 - REFACTOR: Change ALL Instantiate references to EntityCommandBuffer pattern
 - REFACTOR: Implement hard requirements for dependencies in authoring files during baking process for unmanaged components (Investigate)
 
-- REFACTOR: FSM for animation states
-- REFACTOR: Standardize jobs schedulling and lookups
-- REFACTOR: Rename Walk animatiobs to Move
-- REFACTOR: Rename Hostile animations to appropiate enemy name
 - REFACTOR: Implement SO-Oriented attributes (health, damage, etc.) and retrieve from those during entity baking
 - REFACTOR/OPTIMIZE: Pathfinding time complexity / scalability.
     - IDEA: Add Leaders-Followers optimization to Pathing system: FlowField request should save input coordinate (pre-formation calculation) and group it with other entities with the same coordinate. Select a leader and calculate the FlowField once, then through straight path requests relocate positions to calculated formation.
@@ -177,3 +168,23 @@ DONE: REFACTOR: Replace component/system timer fields by Timer common struct {fl
 
 DONE: REFACTOR/OPTIMIZE: Add Leaders-Followers optimization to Pathing system: FlowField request should save input coordinate (pre-formation calculation) and group it with other entities with the same coordinate. Select a leader and calculate the FlowField once, then through straight path requests relocate positions to calculated formation.
     Athough not exactly executed that way, the idea that one single flowfield is calculated regardless of army size has been efectively implemented already.
+
+- DONE: UI: Add a UIStateMachine / UI manager to switch out different UIs
+- DONE: UI: Building ghosts should display valid placement in real time by changing colors
+
+
+
+- Attack detection QOL
+- Deselect all button
+- OnSelect > ActionMode
+- Selection cast priority
+- Attack action collider instead of ray
+- ManualMove bugs
+
+- Adjust resources and costs
+- Adjsut waves and duration and win condition
+
+- Check for target conflicts ~CHECK
+- Check out of map validation ~CHECK
+
+- Load from MainMenu
