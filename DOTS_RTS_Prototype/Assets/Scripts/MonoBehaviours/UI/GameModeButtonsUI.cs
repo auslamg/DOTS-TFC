@@ -79,7 +79,7 @@ public class GameModeButtonsUI : MonoBehaviour
         });
         controlModeButton.onClick.AddListener(() =>
         {
-            GameModeManager.Instance.SetGameMode(GameMode.ControlMode);
+            GameModeManager.Instance.SetGameMode(GameMode.SelectionMode);
         });
         viewModeButton.onClick.AddListener(() =>
         {
@@ -101,7 +101,7 @@ public class GameModeButtonsUI : MonoBehaviour
                 controlModeButton.interactable = true;
                 viewModeButton.interactable = true;
                 return;
-            case GameMode.ControlMode:
+            case GameMode.SelectionMode:
                 actionModeButton.interactable = true;
                 controlModeButton.interactable = false;
                 viewModeButton.interactable = true;
@@ -111,11 +111,16 @@ public class GameModeButtonsUI : MonoBehaviour
                 viewModeButton.interactable = false;
                 controlModeButton.interactable = true;
                 return;
+            case GameMode.BuildMode:
+                actionModeButton.interactable = true;
+                viewModeButton.interactable = true;
+                controlModeButton.interactable = true;
+                return;
             default:
                 Debug.LogError("Unexisting gameMode triggered.");
-                SelectionManager.Instance.gameObject.SetActive(false);
-                SelectionManager.Instance.gameObject.SetActive(false);
-                TouchCameraController.Instance.gameObject.SetActive(false);
+                actionModeButton.interactable = true;
+                viewModeButton.interactable = true;
+                controlModeButton.interactable = true;
                 return;
         }
     }

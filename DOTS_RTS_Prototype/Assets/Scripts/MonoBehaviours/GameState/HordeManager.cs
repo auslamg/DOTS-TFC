@@ -129,7 +129,7 @@ public class HordeManager : MonoBehaviour
             {
                 isCountingDownToNextWave = true;
 
-                nextWaveTimer.Interval = wave.waveDuration;
+                nextWaveTimer.Interval = wave.nextWaveDelay;
                 nextWaveTimer.Reset(false);
 
                 while (!nextWaveTimer.Tick(Time.deltaTime))

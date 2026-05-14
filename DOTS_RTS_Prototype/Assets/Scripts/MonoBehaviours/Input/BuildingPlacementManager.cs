@@ -167,7 +167,7 @@ public class BuildingPlacementManager : MonoBehaviour
 
 
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0))
         {
             if (ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
             {

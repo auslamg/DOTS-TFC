@@ -169,19 +169,14 @@ public class SelectionManager : MonoBehaviour
             Vector2 selectionEndMousePosition = Input.mousePosition;
 
             //Query all entities with the Selected component to disable it
-            EntityQuery selectableQuery = new EntityQueryBuilder(Allocator.Temp).
-                WithAll<Selected>().
-                Build(entityManager);
-
-            NativeArray<Entity> entityArray = selectableQuery.ToEntityArray(Allocator.Temp);
-            DeselectAllEntities(selectableQuery, ref entityArray);
+            DeselectAll();
 
             // Distinguish between single select and Rect select
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
             bool isMultipleSelection = selectionAreaSize >= multipleSelectionSizeMinimum;
-            
+
             if (isMultipleSelection)
             {
                 SelectInArea(selectionAreaRect);
@@ -193,12 +188,20 @@ public class SelectionManager : MonoBehaviour
 
             OnSelectionAreaEnd?.Invoke(this, EventArgs.Empty);
             OnSelectionChange?.Invoke(this, EventArgs.Empty);
+
         }
     }
 
-    private void DeselectAllEntities(EntityQuery query, ref NativeArray<Entity> entityArray)
+    public void DeselectAll()
     {
-        NativeArray<Selected> selectedArray = query.ToComponentDataArray<Selected>(Allocator.Temp);
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        EntityQuery selectableQuery =
+            new EntityQueryBuilder(Allocator.Temp).
+            WithAll<Selected>().
+            Build(entityManager);
+
+        NativeArray<Entity> entityArray = selectableQuery.ToEntityArray(Allocator.Temp);
+        NativeArray<Selected> selectedArray = selectableQuery.ToComponentDataArray<Selected>(Allocator.Temp);
         for (int i = 0; i < entityArray.Length; i++)
         {
             entityManager.SetComponentEnabled<Selected>(entityArray[i], false);
@@ -228,7 +231,7 @@ public class SelectionManager : MonoBehaviour
     private void SelectInArea(Rect selectionAreaRect)
     {
         //Query all entities with the UnitMover and Selected components to check if they're inside the SelectionAreaRect
-        EntityQuery query = 
+        EntityQuery query =
             new EntityQueryBuilder(Allocator.Temp).WithAll<LocalTransform>().WithPresent<Selected>().Build(entityManager);
 
         //Register entities and components to access LocalTransform component and Entity memory adress

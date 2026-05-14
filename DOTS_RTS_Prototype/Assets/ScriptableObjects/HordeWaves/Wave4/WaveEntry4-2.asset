@@ -9,27 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ce2cabbd44ed704a8e72bbbe0fbddf1, type: 3}
-  m_Name: __None
-  m_EditorClassIdentifier: Assembly-CSharp::BuildingSO
-  buildingType: 0
-  prefabGO: {fileID: 0}
-  minDistanceToSimilar: 0
-  isBuildable: 0
-  imageCard: {fileID: 21300000, guid: af8d020146d6d2849a967e96a69a7da7, type: 3}
-  buildingGhostPrefab: {fileID: 0}
-  constructionCost: []
-  cachedKey:
+  m_Script: {fileID: 11500000, guid: b4c95350df8ddb147893ee87ba53496b, type: 3}
+  m_Name: WaveEntry4-2
+  m_EditorClassIdentifier: Assembly-CSharp::HordeEntrySO
+  spawnedUnitKey: Orc
+  spawnedAmount: 7
+  spawnDirection: 2
+  spawnInterval: 0.3
+  postSpawnCooldown: 12
+  cachedUnitKey:
     name:
-      utf8LengthInBytes: 6
+      utf8LengthInBytes: 3
       bytes:
         offset0000:
-          byte0000: 95
-          byte0001: 95
-          byte0002: 78
-          byte0003: 111
-          byte0004: 110
-          byte0005: 101
+          byte0000: 79
+          byte0001: 114
+          byte0002: 99
+          byte0003: 0
+          byte0004: 0
+          byte0005: 0
           byte0006: 0
           byte0007: 0
           byte0008: 0

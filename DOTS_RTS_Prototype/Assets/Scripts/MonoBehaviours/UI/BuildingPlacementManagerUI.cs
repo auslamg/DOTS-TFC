@@ -28,6 +28,13 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private RectTransform buildingButtonTemplate;
 
     /// <summary>
+    /// Button to deselect all selection and cancel selected building.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Button to deselect all selection and cancel selected building.")]
+    private RectTransform cancelButtonTemplate;
+
+    /// <summary>
     /// Registry containing all building definitions used to populate the UI.
     /// </summary>
     [SerializeField]
@@ -80,7 +87,18 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private void InitializeUI_PostBake()
     {
         BuildingPlacementManager.Instance.OnActiveBuildingDataChange += BuildingPlacementManager_OnActiveBuildingDataChange;
+        ConstructCanvelButton();
         UpdateSelectedVisual();
+    }
+
+    private void ConstructCanvelButton()
+    {
+        Button button = cancelButtonTemplate.GetComponent<Button>();
+        button.onClick.AddListener(() =>
+        {
+            SelectionManager.Instance.DeselectAll();
+            BuildingPlacementManager.Instance.activeBuildingDataSO = buildingDataRegistrySO.none;
+        });
     }
 
     private void ConstructBuildingRoster()
@@ -93,7 +111,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
             if (i < optionsGridSize)
             {
                 i++;
-                if (buildingDataSO.isBuildable)
+                if (buildingDataSO.isBuildable && buildingDataSO.buildingType != BuildingType.None)
                 {
                     BuildButton(buildingDataSO);
                 }
@@ -176,6 +194,8 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         Button button = buildingButton.GetComponent<Button>();
         button.onClick.AddListener(() =>
         {
+            GameModeManager.Instance.SetGameMode(GameMode.BuildMode);
+            SelectionManager.Instance.DeselectAll();
             BuildingPlacementManager.Instance.activeBuildingDataSO = buildingData;
         });
     }
@@ -189,10 +209,13 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         {
             SetSelected(buildingButton, false);
         }
-        RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.activeBuildingDataSO];
-        if (selectedBuildingButton != null)
+        if (BuildingPlacementManager.Instance.activeBuildingDataSO.buildingType != BuildingType.None)
         {
-            SetSelected(selectedBuildingButton, true);
+            RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.activeBuildingDataSO];
+            if (selectedBuildingButton != null)
+            {
+                SetSelected(selectedBuildingButton, true);
+            }
         }
     }
 

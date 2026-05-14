@@ -19,9 +19,9 @@ public class HordeWaveSO : ScriptableObject
     public float entryInterval;
 
     /// <summary>
-    /// Time duration of the wave in seconds (time before next wave).
+    /// Time before the next wave starts in seconds.
     /// </summary>
-    [Tooltip("Time duration of the wave in seconds (time before next wave).")]
-    public float waveDuration;
+    [Tooltip("Time before the next wave starts in seconds.")]
+    public float nextWaveDelay;
 }
 

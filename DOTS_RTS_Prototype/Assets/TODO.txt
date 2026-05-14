@@ -175,13 +175,13 @@ DONE: REFACTOR/OPTIMIZE: Add Leaders-Followers optimization to Pathing system: F
 
 
 - Attack detection QOL
-- Deselect all button
-- OnSelect > ActionMode
+- Deselect all button DONE
+- OnSelect > ActionMode DONE
 - Selection cast priority
-- Attack action collider instead of ray
-- ManualMove bugs
+- Attack action collider instead of ray DONE
+- ManualMove targetting bugs
 
-- Adjust resources and costs
+- Adjust resources and costs DONE
 - Adjsut waves and duration and win condition
 
 - Check for target conflicts ~CHECK
