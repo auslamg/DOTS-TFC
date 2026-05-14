@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d22bb4e8606401640ba0ef30f99cb836, type: 3}
-  m_Name: _Wave3
+  m_Name: _WaveRandomTest
   m_EditorClassIdentifier: Assembly-CSharp::HordeWaveSO
   spawnEntries:
-  - {fileID: 11400000, guid: 5a46f64811abd3146b1e852b085aa159, type: 2}
-  - {fileID: 11400000, guid: 5a46f64811abd3146b1e852b085aa159, type: 2}
-  - {fileID: 11400000, guid: 5a46f64811abd3146b1e852b085aa159, type: 2}
-  entryInterval: 6
+  - {fileID: 11400000, guid: b25180d3845e6ab46931b988b2dd80f7, type: 2}
+  - {fileID: 11400000, guid: b25180d3845e6ab46931b988b2dd80f7, type: 2}
+  - {fileID: 11400000, guid: b25180d3845e6ab46931b988b2dd80f7, type: 2}
+  - {fileID: 11400000, guid: b25180d3845e6ab46931b988b2dd80f7, type: 2}
+  - {fileID: 11400000, guid: b25180d3845e6ab46931b988b2dd80f7, type: 2}
+  entryInterval: 3
   nextWaveDelay: 60

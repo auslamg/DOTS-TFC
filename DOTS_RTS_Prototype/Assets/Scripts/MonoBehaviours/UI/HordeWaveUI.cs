@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -5,6 +6,18 @@ public class HordeWaveUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private TextMeshProUGUI subText;
+
+    [SerializeField] private int remainingKills;
+
+    void Start()
+    {
+        WinConditionManager.Instance.OnRemainingEnemiesChange += Hapapa;
+    }
+
+    private void Hapapa(object sender, RemainingEnemiesEventArgs e)
+    {
+        remainingKills = e.remainingEnemies - e.maxEnemiesToWin;
+    }
 
     private void Update()
     {
@@ -18,7 +31,7 @@ public class HordeWaveUI : MonoBehaviour
                 $"FINAL WAVE";
             subText.text = !HordeManager.Instance.finalWave ?
             $"Survive the horde!" :
-            $"Eliminate all remaining orcs";
+            $"Eliminate all remaining orcs: {remainingKills}";
             return;
 
         }

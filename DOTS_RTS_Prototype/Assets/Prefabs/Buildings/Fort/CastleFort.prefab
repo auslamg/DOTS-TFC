@@ -196,6 +196,14 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 271639858590900601, guid: c345eccebac5d534bb99d51461daaa98, type: 3}
+    - target: {fileID: 8074365295503249998, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8074365295503249998, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
+      propertyPath: m_Size.z
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 9128407762969953561, guid: 4e39a8a5b79bed943bb44d3049abef41, type: 3}
       propertyPath: m_Name
       value: CastleFort

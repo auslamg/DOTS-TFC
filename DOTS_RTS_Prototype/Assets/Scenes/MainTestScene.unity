@@ -5541,7 +5541,7 @@ MonoBehaviour:
   - {fileID: 808504392}
   lairSpawnPoints: []
   hordeWaveRegistrySO: {fileID: 11400000, guid: 55223e308c50590498f55609b37c75e3, type: 2}
-  initialWaveDelay: 30
+  initialWaveDelay: 90
   currentWaveIndex: 0
   finalWave: 0
   nextWaveTimer:

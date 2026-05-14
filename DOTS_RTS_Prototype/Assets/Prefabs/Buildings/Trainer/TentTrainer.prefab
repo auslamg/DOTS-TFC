@@ -156,6 +156,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: TentTrainer
       objectReference: {fileID: 0}
+    - target: {fileID: 9159091068473503583, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9159091068473503583, guid: c8d863e8f20a06f4e8c1fab857962f07, type: 3}
+      propertyPath: m_Size.z
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

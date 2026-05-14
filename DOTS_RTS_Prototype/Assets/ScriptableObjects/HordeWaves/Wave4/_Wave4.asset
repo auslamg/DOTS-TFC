@@ -20,4 +20,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0a88977e2f6603e4fad34af69452f98f, type: 2}
   - {fileID: 11400000, guid: 0a88977e2f6603e4fad34af69452f98f, type: 2}
   entryInterval: 12
-  waveDuration: 10
+  nextWaveDelay: 90

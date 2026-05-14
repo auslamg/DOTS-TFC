@@ -270,7 +270,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.postFormationPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            Debug.Log($"{entity.Index} Going for STRAIGHT FORMATION: {unitMover.targetPosition}");
+            /* Debug.Log($"{entity.Index} Going for STRAIGHT FORMATION: {unitMover.targetPosition}"); */
         }
         else if (!collisionWorld.CastRay(targetRaycastInput))
         {
@@ -278,7 +278,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.targetPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            Debug.Log($"{entity.Index} Going for STRAIGHT TARGET: {unitMover.targetPosition}");
+            /* Debug.Log($"{entity.Index} Going for STRAIGHT TARGET: {unitMover.targetPosition}"); */
         }
         else
         {

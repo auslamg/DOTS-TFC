@@ -124,6 +124,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: StoneTower
       objectReference: {fileID: 0}
+    - target: {fileID: 7584711516094113359, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Size.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7584711516094113359, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
+      propertyPath: m_Size.z
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8675040760019951436, guid: 5a645a984d52f034f9cac8ff380479e5, type: 3}
       propertyPath: m_Size.x
       value: 4
