@@ -3,15 +3,25 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Controls the victory screen UI shown when the player wins the game.
+/// </summary>
+/// <remarks>
+/// Subscribes to win-condition events, toggles visibility of the victory panel,
+/// and provides navigation back to the main menu.
+/// </remarks>
 public class VictoryScreenUI : MonoBehaviour
 {
     /// <summary>
-    /// Button to go back to the main menu.
+    /// Button to return to the main menu scene.
     /// </summary>
     [SerializeField]
     [Tooltip("Button to go back to the main menu.")]
     Button mainMenuButton;
 
+    /// <summary>
+    /// Registers UI button callbacks.
+    /// </summary>
     void Awake()
     {
         mainMenuButton.onClick.AddListener(() =>
@@ -22,7 +32,7 @@ public class VictoryScreenUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Subscribes to game-over events and hides the panel until needed.
+    /// Subscribes to victory events and initializes the UI as hidden.
     /// </summary>
     void Start()
     {
@@ -31,17 +41,17 @@ public class VictoryScreenUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Shows game-over UI, pauses time, and applies event message text when provided.
+    /// Handles victory event by displaying the victory screen.
     /// </summary>
     /// <param name="sender">Unused event sender.</param>
-    /// <param name="e">Event args containing optional game-over message text.</param>
+    /// <param name="e">Event arguments (not used).</param>
     private void WinConditionManager_OnVictory(object sender, EventArgs e)
     {
         SetVisible(true);
     }
 
     /// <summary>
-    /// Toggles visibility of the game-over panel.
+    /// Toggles the visibility of the victory panel.
     /// </summary>
     /// <param name="value"><see langword="true"/> to show the panel; otherwise <see langword="false"/>.</param>
     private void SetVisible(bool value)

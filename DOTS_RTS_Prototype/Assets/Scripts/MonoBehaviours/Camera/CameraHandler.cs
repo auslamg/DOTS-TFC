@@ -1,13 +1,16 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
+/// <summary>
+/// Controls camera movement, rotation, zoom, and grid boundary enforcement for a top-down or RTS-style camera system.
+/// Integrates with Cinemachine for lens control and uses grid constraints to prevent out-of-bounds movement.
+/// </summary>
 public class CameraHandler : MonoBehaviour
 {
-    [Header("Zoom Settings")]
-
     /// <summary>
     /// Minimum field of view angle (in degrees) when zooming in.
     /// </summary>
+    [Header("Zoom Settings")]
     [SerializeField]
     [Tooltip("Minimum field of view angle when zooming in.")]
     float minimumFOV = 10f;
@@ -27,38 +30,44 @@ public class CameraHandler : MonoBehaviour
     float zoomStepMultiplier = 10f;
 
     /// <summary>
-    /// Smoothing speed for field of view interpolation toward the target zoom level. Higher values result in faster zoom transitions.
+    /// Smoothing multiplier controlling how quickly the field of view interpolates toward the target zoom level.
+    /// Higher values result in slower, smoother transitions.
     /// </summary>
     [SerializeField]
     [Tooltip("Smoothing speed for field of view interpolation toward the target zoom level. Higher values result in faster zoom transitions.")]
     float zoomSmoothingMultiplier = 100;
 
-    [Header("References")]
-
     /// <summary>
-    /// Cinemachine camera component used for controlling the view and focus.
+    /// Cinemachine camera component used for controlling the view and lens parameters.
     /// </summary>
+    [Header("References")]
     [SerializeField]
     [Tooltip("Cinemachine camera component used for controlling the view and focus.")]
     private CinemachineCamera cinemachineCamera;
 
     /// <summary>
-    /// Grid parameters ScriptableObject for camera move constraints.
+    /// Grid parameters used to define world bounds and camera movement constraints.
     /// </summary>
     [SerializeField]
     [Tooltip("Grid parameters ScriptableObject for camera move constraints.")]
     private GridParametersSO gridParametersSO;
 
     /// <summary>
-    /// Target field of view angle the camera is currently transitioning toward via smoothing.
+    /// Target field of view the camera smoothly interpolates toward.
     /// </summary>
     private float targetFOV;
 
+    /// <summary>
+    /// Initializes the camera state and caches the initial field of view as the starting target value.
+    /// </summary>
     void Awake()
     {
         targetFOV = cinemachineCamera.Lens.FieldOfView;
     }
 
+    /// <summary>
+    /// Clamps the camera position to the defined grid bounds to prevent out-of-range movement.
+    /// </summary>
     public void ClampToGridBounds()
     {
         if (!GridUtil.ValidateCoords(
@@ -76,6 +85,10 @@ public class CameraHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Applies zoom input by adjusting the target field of view and smoothing the transition.
+    /// </summary>
+    /// <param name="deltaZoom">Input zoom delta value (positive or negative).</param>
     public void HandleZoom(float deltaZoom)
     {
         // Initialize targetFOV if needed
@@ -91,6 +104,10 @@ public class CameraHandler : MonoBehaviour
             Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, 10 / zoomSmoothingMultiplier);
     }
 
+    /// <summary>
+    /// Rotates the camera around the Y-axis based on input rotation delta.
+    /// </summary>
+    /// <param name="deltaRotation">Rotation amount in degrees to apply this frame.</param>
     public void HandleRotation(float deltaRotation)
     {
         transform.eulerAngles += new Vector3(0, deltaRotation, 0);

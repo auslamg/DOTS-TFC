@@ -59,7 +59,7 @@ public class TrainerUI : MonoBehaviour
     private Button productionQueueButtonTemplate;
 
     /// <summary>
-    /// Template used for queued-unit buttons.
+    /// Template used for remainder/overflow queue indicator button.
     /// </summary>
     [SerializeField]
     [Tooltip("Template button used for each queued unit entry.")]
@@ -95,7 +95,6 @@ public class TrainerUI : MonoBehaviour
     [Tooltip("UI Grid max size.")]
     private int optionsGridMaxSize = 5;
 
-
     /// <summary>
     /// Cached EntityManager used for reading and writing trainer ECS data.
     /// </summary>
@@ -109,13 +108,15 @@ public class TrainerUI : MonoBehaviour
         InitializeUI();
     }
 
+    /// <summary>
+    /// Disables UI prefabs so they can be used as templates without appearing in the scene.
+    /// </summary>
     private void InitializeUI()
     {
         trainingButtonTemplate.gameObject.SetActive(false);
         productionQueueButtonTemplate.gameObject.SetActive(false);
         remainderQueueButtonTemplate.gameObject.SetActive(false);
     }
-
 
     void Start()
     {
@@ -136,13 +137,16 @@ public class TrainerUI : MonoBehaviour
         SetVisible(false);
     }
 
+    /// <summary>
+    /// Placeholder handler for resource updates (not yet implemented).
+    /// </summary>
     private void ResourceManager_OnResourceValueChange(object sender, EventArgs e)
     {
         /* throw new NotImplementedException(); */
     }
 
     /// <summary>
-    /// Handles trainer queue-change events and refreshes UI when the active trainer changed.
+    /// Handles trainer queue-change events and refreshes UI when the active trainer matches the event source.
     /// </summary>
     /// <param name="sender">Trainer entity that triggered the event.</param>
     /// <param name="e">Unused event payload.</param>
@@ -156,7 +160,7 @@ public class TrainerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the progress bar every frame to keep visual progress in sync.
+    /// Updates the progress bar every frame to keep visual progress in sync with ECS state.
     /// </summary>
     private void Update()
     {
@@ -229,6 +233,9 @@ public class TrainerUI : MonoBehaviour
         ConstructUnitRoster();
     }
 
+    /// <summary>
+    /// Removes all runtime-generated roster buttons while preserving template objects.
+    /// </summary>
     private void ScrapUnitRoster()
     {
         foreach (Transform child in trainingRosterContainer)
@@ -245,6 +252,9 @@ public class TrainerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Constructs roster buttons from available trainable entries up to the UI limit.
+    /// </summary>
     private void ConstructUnitRoster()
     {
         DynamicBuffer<TrainableEntry> trainableRosterBuffer =
@@ -266,6 +276,10 @@ public class TrainerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Instantiates a single trainable unit button and binds its data and logic.
+    /// </summary>
+    /// <param name="queuedUnit">Trainable entry represented by the button.</param>
     private void BuildUnitButton(TrainableEntry queuedUnit)
     {
         Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingRosterContainer);
@@ -290,14 +304,12 @@ public class TrainerUI : MonoBehaviour
             UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(queuedUnit.unitKey);
             if (ResourceManager.Instance.CanSpendResourceValues(unitDataSO.constructionCost))
             {
-                // Enables Unit queue.
                 entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
                 {
                     unitKey = queuedUnit.unitKey
                 });
                 entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
 
-                // Consumes construction cost.
                 ResourceManager.Instance.SpendResourceValues(unitDataSO.constructionCost);
             }
         });
@@ -312,6 +324,9 @@ public class TrainerUI : MonoBehaviour
         ConstructUnitQueue();
     }
 
+    /// <summary>
+    /// Removes all runtime-generated queue buttons while preserving template objects.
+    /// </summary>
     private void ScrapUnitQueue()
     {
         foreach (Transform child in productionQueueContainer)
@@ -329,6 +344,9 @@ public class TrainerUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Constructs queue UI elements from ECS buffer, including overflow indicator when needed.
+    /// </summary>
     private void ConstructUnitQueue()
     {
         DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
@@ -336,7 +354,6 @@ public class TrainerUI : MonoBehaviour
 
         for (int queueIndex = 0; queueIndex < trainerQueueBuffer.Length; queueIndex++)
         {
-            // If queue exceeds max size, draw a remainder button
             if (queueIndex == optionsGridMaxSize - 1 &&
                 trainerQueueBuffer.Length > optionsGridMaxSize)
             {
@@ -347,9 +364,12 @@ public class TrainerUI : MonoBehaviour
             else
                 BuildQueueButton(ref trainerQueueBuffer, queueIndex);
         }
-
     }
 
+    /// <summary>
+    /// Builds an overflow queue indicator showing remaining hidden items.
+    /// </summary>
+    /// <param name="remainingElements">Number of hidden queued units.</param>
     private void BuildRemainderQueueButton(int remainingElements)
     {
         Button remainderQueueButton = Instantiate(remainderQueueButtonTemplate, parent: productionQueueContainer);
@@ -358,6 +378,11 @@ public class TrainerUI : MonoBehaviour
         remainderQueueButton.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Builds a single queue button for a queued unit entry.
+    /// </summary>
+    /// <param name="trainerQueueBuffer">Queue buffer reference.</param>
+    /// <param name="queueIndex">Index of queued unit.</param>
     private void BuildQueueButton(ref DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer, int queueIndex)
     {
         QueuedUnitBuffer queuedUnit = trainerQueueBuffer[queueIndex];
@@ -388,18 +413,14 @@ public class TrainerUI : MonoBehaviour
             DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
                 entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: false);
 
-            // If actually inside the buffer.
             if (queueIndex >= 0 && queueIndex < trainerQueueBuffer.Length)
             {
-                // Refund construction cost.
                 UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(trainerQueueBuffer[queueIndex].unitKey);
                 ResourceManager.Instance.AddResourceValues(unitDataSO.constructionCost);
 
-                // Remove unit from buffer.
                 trainerQueueBuffer.RemoveAt(queueIndex);
             }
 
-            // Reset progress if the unit currently training is cancelled
             if (queueIndex == 0)
             {
                 SetProgressToZero();
@@ -448,12 +469,18 @@ public class TrainerUI : MonoBehaviour
         gameObject.SetActive(value);
     }
 
+    /// <summary>
+    /// Clears runtime-generated UI elements when disabled.
+    /// </summary>
     void OnDisable()
     {
         ScrapUnitRoster();
         ScrapUnitQueue();
     }
 
+    /// <summary>
+    /// Clears runtime-generated UI elements when destroyed.
+    /// </summary>
     void OnDestroy()
     {
         ScrapUnitRoster();

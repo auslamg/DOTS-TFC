@@ -2,20 +2,23 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Manages the current game mode, controlling which input systems are active
-/// and updating the UI to reflect the current mode.
+/// Manages the current game mode, enabling or disabling input systems and updating UI
+/// to reflect the active interaction state.
 /// </summary>
 public class GameModeManager : MonoBehaviour
 {
     /// <summary>
-    /// Global singleton access to the game mode manager.
+    /// Global singleton instance for accessing the active GameModeManager.
     /// </summary>
     public static GameModeManager Instance { get; private set; }
 
+    /// <summary>
+    /// Currently active game mode.
+    /// </summary>
     private GameMode activeGameMode;
 
     /// <summary>
-    /// Initializes singleton instance state.
+    /// Ensures singleton instance validity.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -29,23 +32,28 @@ public class GameModeManager : MonoBehaviour
             Destroy(this);
         }
     }
+
     /// <summary>
-    /// Initializes the singleton instance.
+    /// Unity lifecycle method. Initializes singleton instance.
     /// </summary>
-    void Awake()
+    private void Awake()
     {
         InitializeSingleton();
     }
 
     /// <summary>
-    /// Sets the initial game mode to ViewMode.
+    /// Unity lifecycle method. Sets initial game mode and subscribes to selection events.
     /// </summary>
-    void Start()
+    private void Start()
     {
         SetGameMode(GameMode.ViewMode);
         SelectionManager.Instance.OnSelectionChange += SelectionManager_OnSelectionChange;
     }
 
+    /// <summary>
+    /// Callback triggered when selection state changes.
+    /// Automatically transitions from SelectionMode to ActionMode if applicable.
+    /// </summary>
     private void SelectionManager_OnSelectionChange(object sender, EventArgs e)
     {
         if (activeGameMode == GameMode.SelectionMode)
@@ -55,9 +63,10 @@ public class GameModeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the current game mode, activating/deactivating relevant systems and updating the UI.
+    /// Sets the active game mode and enables/disables associated systems accordingly.
+    /// Also updates the UI to reflect the current mode.
     /// </summary>
-    /// <param name="gameMode">The game mode to switch to.</param>
+    /// <param name="gameMode">Target game mode to activate.</param>
     public void SetGameMode(GameMode gameMode)
     {
         switch (gameMode)
@@ -68,27 +77,31 @@ public class GameModeManager : MonoBehaviour
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 activeGameMode = GameMode.ActionMode;
                 break;
+
             case GameMode.SelectionMode:
                 ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(true);
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 activeGameMode = GameMode.SelectionMode;
                 break;
+
             case GameMode.ViewMode:
                 ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(false);
                 TouchCameraController.Instance.gameObject.SetActive(true);
                 activeGameMode = GameMode.ViewMode;
                 break;
+
             case GameMode.BuildMode:
                 ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(false);
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 activeGameMode = GameMode.BuildMode;
                 break;
+
             default:
                 Debug.LogError("Unexisting gameMode triggered.");
-                SelectionManager.Instance.gameObject.SetActive(false);
+                ActionManager.Instance.gameObject.SetActive(false);
                 SelectionManager.Instance.gameObject.SetActive(false);
                 TouchCameraController.Instance.gameObject.SetActive(false);
                 break;
@@ -99,27 +112,27 @@ public class GameModeManager : MonoBehaviour
 }
 
 /// <summary>
-/// Enumeration of available game modes.
+/// Defines available gameplay interaction modes.
 /// </summary>
 public enum GameMode
 {
     /// <summary>
-    /// Action mode for performing specific actions (not yet implemented).
+    /// Mode for direct unit actions and commands.
     /// </summary>
     ActionMode,
 
     /// <summary>
-    /// Control mode for unit selection and commanding.
+    /// Mode for selecting and issuing commands to units.
     /// </summary>
     SelectionMode,
 
     /// <summary>
-    /// View mode for camera movement and observation.
+    /// Mode focused on camera movement and world observation.
     /// </summary>
     ViewMode,
 
     /// <summary>
-    /// Building mode for building placement without inconveniencies. Unavailable from game mode buttons.
+    /// Mode for placing buildings in the world.
     /// </summary>
     BuildMode,
 }

@@ -11,7 +11,7 @@ using UnityEngine;
 public class MouseWorldPosition : MonoBehaviour
 {
     /// <summary>
-    /// Global singleton access to mouse world-position services.
+    /// Global singleton instance for accessing mouse world-position services.
     /// </summary>
     public static MouseWorldPosition Instance { get; private set; }
 
@@ -23,14 +23,14 @@ public class MouseWorldPosition : MonoBehaviour
     private bool usePhysics = false;
 
     /// <summary>
-    /// Key used to log the current mouse world position.
+    /// Key used to log the current mouse world position for debugging purposes.
     /// </summary>
     [SerializeField]
     [Tooltip("Key used to log the current mouse world position.")]
     private KeyCode debugKey = KeyCode.M;
 
     /// <summary>
-    /// Initializes singleton instance state.
+    /// Ensures singleton instance validity and enforces a single active instance.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -45,15 +45,18 @@ public class MouseWorldPosition : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes the singleton instance during object initialization.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
     }
 
     /// <summary>
-    /// Debug hook that logs the current mouse world position when pressing the debug key.
+    /// Debug utility that logs the current mouse world position when the configured key is pressed.
     /// </summary>
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(debugKey))
         {
@@ -62,25 +65,31 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the mouse world position using the currently selected projection mode.
+    /// Retrieves the mouse world position using the currently selected projection mode.
     /// </summary>
-    /// <returns>Projected mouse world position, or <see cref="Vector3.zero"/> when projection fails.</returns>
+    /// <returns>
+    /// The projected world position of the mouse, or <see cref="Vector3.zero"/> if projection fails.
+    /// </returns>
     public Vector3 GetPosition()
     {
         return usePhysics ? GetPositionPhysics() : GetPositionFlat();
     }
 
     /// <summary>
-    /// Returns mouse world position projected onto a mathematical flat ground plane.
+    /// Projects the mouse position onto a flat horizontal plane at Y = 0.
     /// </summary>
     /// <remarks>
-    /// Uses a plane intersection instead of physics for performance and to avoid DOTS/Physics overlap concerns.
+    /// This method avoids physics queries for performance and deterministic behavior,
+    /// making it suitable for RTS-style terrain interaction.
     /// </remarks>
-    /// <returns>Projected mouse world position, or <see cref="Vector3.zero"/> when projection fails.</returns>
+    /// <returns>
+    /// The projected world position of the mouse, or <see cref="Vector3.zero"/> if projection fails.
+    /// </returns>
     private Vector3 GetPositionFlat()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, Vector3.zero);
+
         if (plane.Raycast(mouseCameraRay, out float distance))
         {
             return mouseCameraRay.GetPoint(distance);
@@ -92,14 +101,17 @@ public class MouseWorldPosition : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns mouse world position using a physics raycast against scene colliders.
+    /// Projects the mouse position into the world using a physics raycast.
     /// </summary>
-    /// <returns>Raycast hit point, or <see cref="Vector3.zero"/> when no collider is hit.</returns>
+    /// <remarks>
+    /// This method depends on scene colliders and may be more expensive than flat projection.
+    /// </remarks>
+    /// <returns>
+    /// The hit point of the raycast, or <see cref="Vector3.zero"/> if no collider is hit.
+    /// </returns>
     private Vector3 GetPositionPhysics()
     {
         Ray mouseCameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        //TODO: Add layerMask
 
         if (Physics.Raycast(mouseCameraRay, out RaycastHit hit))
         {
@@ -109,6 +121,5 @@ public class MouseWorldPosition : MonoBehaviour
         {
             return Vector3.zero;
         }
-
     }
 }

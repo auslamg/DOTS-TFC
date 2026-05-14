@@ -13,7 +13,7 @@ public class WinConditionManager : MonoBehaviour
     [Header("Win conditions")]
 
     /// <summary>
-    /// Indicates whether the game has entered the final wave phase.
+    /// Indicates whether the game is currently in the final wave phase.
     /// When true, win conditions begin evaluating against a dynamic threshold.
     /// </summary>
     [SerializeField]
@@ -34,38 +34,42 @@ public class WinConditionManager : MonoBehaviour
     private int maxEnemiesToWin = 0;
 
     /// <summary>
-    /// Reference to the ECS EntityManager used to query active entities in the world.
+    /// ECS EntityManager reference used for querying active entities in the world.
     /// </summary>
     private EntityManager entityManager;
 
     /// <summary>
-    /// Tracks whether the victory condition has already been achieved.
-    /// Prevents multiple victory triggers.
+    /// Indicates whether victory has already been achieved.
+    /// Prevents repeated win triggers.
     /// </summary>
     private bool hasWon = false;
 
     /// <summary>
-    /// Event triggered when victory conditions are met.
+    /// Event triggered when victory conditions are satisfied.
     /// </summary>
     public event EventHandler OnVictory;
 
     /// <summary>
-    /// Event triggered whenever the number of remaining enemies changes.
-    /// Provides updated enemy count information.
+    /// Event triggered when the remaining enemy count or win threshold changes.
     /// </summary>
     public event EventHandler<RemainingEnemiesEventArgs> OnRemainingEnemiesChange;
 
     /// <summary>
     /// Singleton instance of the WinConditionManager.
-    /// Provides global access to the active manager instance.
     /// </summary>
     public static WinConditionManager Instance { get; private set; }
 
+    /// <summary>
+    /// Unity lifecycle method. Initializes singleton instance.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
     }
 
+    /// <summary>
+    /// Unity lifecycle method. Initializes ECS access, subscribes to events, and starts win condition loops.
+    /// </summary>
     private void Start()
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -77,7 +81,7 @@ public class WinConditionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ensures only one instance of this manager exists in the scene.
+    /// Ensures only one instance of this manager exists.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -93,15 +97,17 @@ public class WinConditionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Marks the game as being in the final wave when triggered by the HordeManager.
+    /// Callback invoked when the final wave begins.
     /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">Event arguments.</param>
     private void HordeManager_OnFinalWaveSpawn(object sender, EventArgs e)
     {
         finalWave = true;
     }
 
     /// <summary>
-    /// Continuously evaluates win conditions once per second until victory is achieved.
+    /// Continuously evaluates win conditions at fixed intervals until victory is achieved.
     /// </summary>
     private IEnumerator WinConditionLoop()
     {
@@ -121,7 +127,7 @@ public class WinConditionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Gradually increases the allowed enemy threshold during the final wave phase.
+    /// Gradually increases the allowable enemy threshold during the final wave phase.
     /// </summary>
     private IEnumerator WinThresholdRampLoop()
     {
@@ -130,7 +136,9 @@ public class WinConditionManager : MonoBehaviour
             if (finalWave)
             {
                 maxEnemiesToWin++;
-                OnRemainingEnemiesChange?.Invoke(this, new RemainingEnemiesEventArgs(remainingEnemies, maxEnemiesToWin));
+                OnRemainingEnemiesChange?.Invoke(
+                    this,
+                    new RemainingEnemiesEventArgs(remainingEnemies, maxEnemiesToWin));
             }
 
             yield return new WaitForSeconds(15f);
@@ -138,17 +146,17 @@ public class WinConditionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Evaluates whether win conditions are currently satisfied.
+    /// Evaluates whether current game state satisfies win conditions.
     /// </summary>
+    /// <returns>True if victory conditions are met.</returns>
     private bool CheckWinConditions()
     {
-        // Dynamic threshold instead of fixed value
         return finalWave && remainingEnemies <= maxEnemiesToWin;
     }
 
     /// <summary>
-    /// Counts remaining enemy entities using an ECS query and updates internal state.
-    /// Triggers an event if the enemy count changes.
+    /// Queries the ECS world to count remaining enemy entities and updates internal state.
+    /// Raises an event if the enemy count changes.
     /// </summary>
     private void CheckForRemainingEnemies()
     {
@@ -173,7 +181,9 @@ public class WinConditionManager : MonoBehaviour
 
         if (enemyCount != remainingEnemies)
         {
-            OnRemainingEnemiesChange?.Invoke(this, new RemainingEnemiesEventArgs(enemyCount, maxEnemiesToWin));
+            OnRemainingEnemiesChange?.Invoke(
+                this,
+                new RemainingEnemiesEventArgs(enemyCount, maxEnemiesToWin));
         }
 
         remainingEnemies = enemyCount;
@@ -181,20 +191,25 @@ public class WinConditionManager : MonoBehaviour
 }
 
 /// <summary>
-/// Event argument container for passing updated enemy count values.
+/// Event arguments containing updated enemy count and win threshold information.
 /// </summary>
 public class RemainingEnemiesEventArgs : EventArgs
 {
     /// <summary>
-    /// The updated number of remaining enemy units.
+    /// Current number of remaining enemy units.
     /// </summary>
     public int remainingEnemies { get; }
 
     /// <summary>
-    /// The updated number of remaining enemy units to account for a victory.
+    /// Current maximum allowed enemy threshold for victory conditions.
     /// </summary>
     public int maxEnemiesToWin { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the event arguments.
+    /// </summary>
+    /// <param name="remainingEnemies">Current enemy count.</param>
+    /// <param name="maxEnemiesToWin">Current win threshold.</param>
     public RemainingEnemiesEventArgs(int remainingEnemies, int maxEnemiesToWin)
     {
         this.remainingEnemies = remainingEnemies;

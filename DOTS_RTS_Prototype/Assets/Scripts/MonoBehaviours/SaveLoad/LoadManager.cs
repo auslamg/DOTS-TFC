@@ -11,44 +11,65 @@ using Unity.Transforms;
 using UnityEngine;
 using static SaveLoadUtil;
 
+/// <summary>
+/// Handles loading of persisted game state from JSON or binary save files and reconstructs ECS entities accordingly.
+/// </summary>
+/// <remarks>
+/// Responsible for deserializing save data, clearing existing world state, and rebuilding units, buildings, resources, and managed camera state.
+/// </remarks>
 public class LoadManager : MonoBehaviour
 {
     [Header("Save path settings")]
+    /// <summary>
+    /// Base file name used to construct JSON and binary save paths.
+    /// </summary>
     [SerializeField]
     private string fileName;
 
+    /// <summary>
+    /// Full path to JSON save file derived from <see cref="fileName"/>.
+    /// </summary>
     private string jsonSavePath =>
-    Path.Combine(
-        Application.persistentDataPath,
-        Path.GetFileNameWithoutExtension(fileName) + ".json");
+        Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(fileName) + ".json");
+
+    /// <summary>
+    /// Full path to binary save file derived from <see cref="fileName"/>.
+    /// </summary>
     private string binarySavePath =>
-    Path.Combine(
-        Application.persistentDataPath,
-        Path.GetFileNameWithoutExtension(fileName) + ".dat");
+        Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(fileName) + ".dat");
 
     [Header("Load file type: true for JSON, false for .dat.")]
+    /// <summary>
+    /// Determines whether JSON is preferred over binary when loading.
+    /// </summary>
     [SerializeField]
     private bool isJson;
 
     [Header("References")]
     /// <summary>
-    /// Camera controller gizmo for camera position storage.
+    /// Camera controller transform used to restore saved camera position and rotation.
     /// </summary>
     [SerializeField]
     [Tooltip("Camera controller gizmo for camera position storage.")]
     private Transform cameraControllerGizmo;
 
+    /// <summary>
+    /// Cached ECS entity manager used for spawning and modifying entities during load.
+    /// </summary>
     private EntityManager entityManager;
 
     [Header("References")]
-
     /// <summary>
-    /// Global singleton access to the DOTS event bridge.
+    /// Global singleton instance of <see cref="LoadManager"/>.
     /// </summary>
     public static LoadManager Instance { get; private set; }
 
     /// <summary>
-    /// Initializes singleton instance state.
+    /// Ensures singleton instance validity.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -63,16 +84,27 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Unity Awake callback. Initializes singleton instance.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
     }
 
+    /// <summary>
+    /// Checks whether a save file exists for the currently configured save type.
+    /// </summary>
+    /// <param name="path">Unused parameter (legacy; existence check uses internal path selection).</param>
+    /// <returns>True if save file exists; otherwise false.</returns>
     public bool SaveFileExists(string path)
     {
         return isJson ? File.Exists(jsonSavePath) : File.Exists(binarySavePath);
     }
 
+    /// <summary>
+    /// Checks whether a JSON save file exists for the specified save name.
+    /// </summary>
     public static bool JsonSaveFileExists(string name)
     {
         return File.Exists(Path.Combine(
@@ -80,6 +112,9 @@ public class LoadManager : MonoBehaviour
             Path.GetFileNameWithoutExtension(name) + ".json"));
     }
 
+    /// <summary>
+    /// Checks whether a binary save file exists for the specified save name.
+    /// </summary>
     public static bool BinarySaveFileExists(string name)
     {
         return File.Exists(Path.Combine(
@@ -87,6 +122,10 @@ public class LoadManager : MonoBehaviour
             Path.GetFileNameWithoutExtension(name) + ".dat"));
     }
 
+    /// <summary>
+    /// Loads game state from disk using either binary or JSON format.
+    /// </summary>
+    /// <returns>True if loading succeeds; otherwise false.</returns>
     public bool LoadGame()
     {
         Debug.Log("[LoadManager] LOADING...");
@@ -105,11 +144,13 @@ public class LoadManager : MonoBehaviour
             return false;
         }
 
-        /* if (TryLoadBinary())
-            return true; */
         return TryLoadBinary() || TryLoadJson();
     }
 
+    /// <summary>
+    /// Attempts to load game state from binary save file.
+    /// </summary>
+    /// <returns>True if successful; otherwise false.</returns>
     private bool TryLoadBinary()
     {
         Debug.Log("[LoadManager] Trying binary load...");
@@ -254,6 +295,10 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Attempts to load game state from JSON save file.
+    /// </summary>
+    /// <returns>True if successful; otherwise false.</returns>
     private bool TryLoadJson()
     {
         try
@@ -299,13 +344,16 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Destroys all existing unit and building entities before loading new state.
+    /// </summary>
     private void ClearPreviousEntities()
     {
         Debug.Log("[LoadManager] Clearing units and buildings...");
 
-        EntityQuery unitQuery = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Unit>().
-            Build(entityManager);
+        EntityQuery unitQuery = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<Unit>()
+            .Build(entityManager);
 
         using var unitArray = unitQuery.ToEntityArray(Allocator.Temp);
         foreach (var unitEntity in unitArray)
@@ -313,9 +361,9 @@ public class LoadManager : MonoBehaviour
             entityManager.DestroyEntity(unitEntity);
         }
 
-        EntityQuery buildingQuery = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Building>().
-            Build(entityManager);
+        EntityQuery buildingQuery = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<Building>()
+            .Build(entityManager);
 
         using var buildingArray = buildingQuery.ToEntityArray(Allocator.Temp);
         foreach (var buildingEntity in buildingArray)
@@ -324,6 +372,10 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Replaces current world state with loaded save data.
+    /// </summary>
+    /// <param name="save">Loaded game data.</param>
     private void OverwriteData(DtoGameData save)
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
@@ -338,6 +390,9 @@ public class LoadManager : MonoBehaviour
         SelectionManager.Instance.TriggerOnSelectionChange();
     }
 
+    /// <summary>
+    /// Loads all units from save data.
+    /// </summary>
     private void LoadUnits(List<DtoUnitData> units)
     {
         Debug.Log($"[LoadManager] Loading UNITS: {units.Count}");
@@ -348,19 +403,19 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Constructs a unit ECS entity from serialized data.
+    /// </summary>
     private void ConstructUnit(DtoUnitData unitData)
     {
-        // Fetch prefab.
         EntityPrefabKey entityPrefabKey = new EntityPrefabKey
         {
             name = unitData.prefabKey,
         };
-        Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
 
-        // Rebuild the entity.
+        Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
         Entity entity = entityManager.Instantiate(prefabEntity);
 
-        // Save post-write data.
         LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
 
         Unit unit = entityManager.GetComponentData<Unit>(entity);
@@ -375,49 +430,43 @@ public class LoadManager : MonoBehaviour
 
         Health health = entityManager.GetComponentData<Health>(entity);
 
-        // Value assignments.
-        {
-            localTransform.Position = unitData.position;
-            localTransform.Rotation = unitData.rotation;
+        localTransform.Position = unitData.position;
+        localTransform.Rotation = unitData.rotation;
 
-            unit.ownerID = unitData.ownerID;
-            faction.factionID = unitData.factionID;
-            selected.onSelected = isSelected;
+        unit.ownerID = unitData.ownerID;
+        faction.factionID = unitData.factionID;
+        selected.onSelected = isSelected;
 
-            unitMover.targetPosition = unitData.unitMoverPosition;
-            unitMover.hasStartedTargetPosition = true;
+        unitMover.targetPosition = unitData.unitMoverPosition;
+        unitMover.hasStartedTargetPosition = true;
 
-            manualMove.targetPosition = unitData.targetPosition;
-            manualMove.postFormationPosition = unitData.postFormationPosition;
+        manualMove.targetPosition = unitData.targetPosition;
+        manualMove.postFormationPosition = unitData.postFormationPosition;
 
-            pathRequest.targetPosition = unitData.targetPosition;
-            pathRequest.postFormationPosition = unitData.postFormationPosition;
+        pathRequest.targetPosition = unitData.targetPosition;
+        pathRequest.postFormationPosition = unitData.postFormationPosition;
 
-            flowFieldFollower.lastMoveVector = unitData.lastMoveVector;
+        flowFieldFollower.lastMoveVector = unitData.lastMoveVector;
 
-            health.currentHealth = unitData.currentHealth;
-        }
+        health.currentHealth = unitData.currentHealth;
 
-        // Copy values.
-        {
-            entityManager.SetComponentData(entity, localTransform);
+        entityManager.SetComponentData(entity, localTransform);
+        entityManager.SetComponentData(entity, unit);
+        entityManager.SetComponentData(entity, faction);
+        entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+        entityManager.SetComponentData(entity, selected);
+        entityManager.SetComponentData(entity, unitMover);
+        entityManager.SetComponentData(entity, manualMove);
+        entityManager.SetComponentData(entity, pathRequest);
+        entityManager.SetComponentData(entity, flowFieldFollower);
+        entityManager.SetComponentData(entity, health);
 
-            entityManager.SetComponentData(entity, unit);
-            entityManager.SetComponentData(entity, faction);
-            entityManager.SetComponentEnabled<Selected>(entity, isSelected);
-            entityManager.SetComponentData(entity, selected);
-
-            entityManager.SetComponentData(entity, unitMover);
-            entityManager.SetComponentData(entity, manualMove);
-            entityManager.SetComponentData(entity, pathRequest);
-            entityManager.SetComponentData(entity, flowFieldFollower);
-
-            entityManager.SetComponentData(entity, health);
-
-            entityManager.SetComponentEnabled<PathRequest>(entity, unitData.requirePathing);
-        }
+        entityManager.SetComponentEnabled<PathRequest>(entity, unitData.requirePathing);
     }
 
+    /// <summary>
+    /// Loads all buildings from save data.
+    /// </summary>
     private void LoadBuildings(List<DtoBuildingData> buildings)
     {
         Debug.Log($"[LoadManager] Loading BUILDINGS: {buildings.Count}");
@@ -428,61 +477,49 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Constructs a building ECS entity from serialized data.
+    /// </summary>
     private void ConstructBuilding(DtoBuildingData buildingData)
     {
-        // Fetch prefab.
         EntityPrefabKey entityPrefabKey = new EntityPrefabKey
         {
             name = buildingData.prefabKey,
         };
+
         Entity prefabEntity = LookupEntityPrefab.FetchEntityPrefab(entityPrefabKey);
         Debug.Log($"[LoadManager] Fetching Building: {entityPrefabKey.name}");
 
-        // Rebuild the entity.
         Entity entity = entityManager.Instantiate(prefabEntity);
 
-        // Save post-write data.
-        {
-            LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
+        LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
 
-            Building building = entityManager.GetComponentData<Building>(entity);
-            Faction faction = entityManager.GetComponentData<Faction>(entity);
-            bool isSelected = buildingData.selected;
-            Selected selected = entityManager.GetComponentData<Selected>(entity);
+        Building building = entityManager.GetComponentData<Building>(entity);
+        Faction faction = entityManager.GetComponentData<Faction>(entity);
+        bool isSelected = buildingData.selected;
+        Selected selected = entityManager.GetComponentData<Selected>(entity);
+        Health health = entityManager.GetComponentData<Health>(entity);
 
-            Health health = entityManager.GetComponentData<Health>(entity);
+        localTransform.Position = buildingData.position;
+        localTransform.Rotation = buildingData.rotation;
 
-            // Value assignments.
-            {
-                localTransform.Position = buildingData.position;
-                localTransform.Rotation = buildingData.rotation;
+        building.ownerID = buildingData.ownerID;
+        faction.factionID = buildingData.factionID;
+        selected.onSelected = isSelected;
+        health.currentHealth = buildingData.currentHealth;
 
-                building.ownerID = buildingData.ownerID;
-                faction.factionID = buildingData.factionID;
-                selected.onSelected = isSelected;
+        entityManager.SetComponentData(entity, localTransform);
+        entityManager.SetComponentData(entity, building);
+        entityManager.SetComponentData(entity, faction);
+        entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+        entityManager.SetComponentData(entity, selected);
+        entityManager.SetComponentData(entity, health);
 
-                health.currentHealth = buildingData.currentHealth;
-            }
-
-            // Copy values.
-            {
-                entityManager.SetComponentData(entity, localTransform);
-
-                entityManager.SetComponentData(entity, building);
-                entityManager.SetComponentData(entity, faction);
-                entityManager.SetComponentEnabled<Selected>(entity, isSelected);
-                entityManager.SetComponentData(entity, selected);
-
-                entityManager.SetComponentData(entity, health);
-            }
-        }
-
-        // Read trainer buffer data if necessary.
         if (entityManager.HasComponent<Trainer>(entity) &&
             entityManager.HasBuffer<QueuedUnitBuffer>(entity))
         {
             DynamicBuffer<QueuedUnitBuffer> unitQueueBuffer =
-                    entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: false);
+                entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: false);
 
             Trainer trainer = buildingData.trainerData.ToTrainer();
             buildingData.trainerData.RewriteQueuedUnitBuffer(unitQueueBuffer);
@@ -491,6 +528,9 @@ public class LoadManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Loads resource values into the ResourceManager.
+    /// </summary>
     private void LoadResources(DtoResourceData resources)
     {
         Debug.Log("[LoadManager] Loading RESOURCES...");
@@ -498,6 +538,9 @@ public class LoadManager : MonoBehaviour
         ResourceManager.Instance.OverrideDict(resources.ToDictionary());
     }
 
+    /// <summary>
+    /// Restores non-ECS managed state such as camera transform.
+    /// </summary>
     private void LoadManaged(DtoManagedData managed)
     {
         Debug.Log("[LoadManager] Loading MANAGED DATA...");

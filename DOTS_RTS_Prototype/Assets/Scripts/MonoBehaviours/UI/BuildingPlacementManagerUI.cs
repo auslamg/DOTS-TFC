@@ -28,10 +28,10 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private RectTransform buildingButtonTemplate;
 
     /// <summary>
-    /// Button to deselect all selection and cancel selected building.
+    /// Button used to cancel the current building selection and clear selection state.
     /// </summary>
     [SerializeField]
-    [Tooltip("Button to deselect all selection and cancel selected building.")]
+    [Tooltip("Button used to cancel the current building selection and clear selection state.")]
     private RectTransform cancelButtonTemplate;
 
     /// <summary>
@@ -49,10 +49,10 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     private Sprite placeholderBuildingButtonImage;
 
     /// <summary>
-    /// UI Grid size.
+    /// Maximum number of building options displayed in the UI grid.
     /// </summary>
     [SerializeField]
-    [Tooltip("UI Grid size.")]
+    [Tooltip("UI grid size defining how many building options can be displayed.")]
     private int optionsGridSize = 9;
 
     /// <summary>
@@ -60,6 +60,9 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     /// </summary>
     private Dictionary<BuildingDataSO, RectTransform> buildingButtonDictionary;
 
+    /// <summary>
+    /// Unity Awake callback. Initializes the UI before runtime interaction begins.
+    /// </summary>
     private void Awake()
     {
         InitializeUI();
@@ -76,6 +79,9 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         ConstructBuildingRoster();
     }
 
+    /// <summary>
+    /// Unity Start callback. Subscribes to runtime events and finalizes UI setup.
+    /// </summary>
     private void Start()
     {
         InitializeUI_PostBake();
@@ -91,6 +97,9 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         UpdateSelectedVisual();
     }
 
+    /// <summary>
+    /// Configures the cancel button to clear selection and reset active building state.
+    /// </summary>
     private void ConstructCanvelButton()
     {
         Button button = cancelButtonTemplate.GetComponent<Button>();
@@ -101,6 +110,9 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// Builds the roster of available building buttons from the registry.
+    /// </summary>
     private void ConstructBuildingRoster()
     {
         int i = 0;
@@ -132,9 +144,8 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantiates and wires a single building card button.
+    /// Instantiates an empty UI slot used to fill unused grid space.
     /// </summary>
-    /// <param name="buildingDataSo">Building definition represented by the button.</param>
     private void BuildEmptyButton()
     {
         RectTransform buildingButton = Instantiate(buildingButtonTemplate, buildingButtonContainer);
@@ -144,7 +155,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantiates and wires a single building card button.
+    /// Instantiates and configures a building selection button.
     /// </summary>
     /// <param name="buildingDataSo">Building definition represented by the button.</param>
     private void BuildButton(BuildingDataSO buildingDataSo)
@@ -177,7 +188,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Refreshes button selection visuals when the active building changes.
+    /// Event handler invoked when the active building selection changes.
     /// </summary>
     private void BuildingPlacementManager_OnActiveBuildingDataChange(object sender, System.EventArgs e)
     {
@@ -201,7 +212,7 @@ public class BuildingPlacementManagerUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Clears all selected states and highlights the currently active building button.
+    /// Updates selection visuals for all building buttons based on the active building state.
     /// </summary>
     private void UpdateSelectedVisual()
     {
@@ -209,9 +220,12 @@ public class BuildingPlacementManagerUI : MonoBehaviour
         {
             SetSelected(buildingButton, false);
         }
+
         if (BuildingPlacementManager.Instance.activeBuildingDataSO.buildingType != BuildingType.None)
         {
-            RectTransform selectedBuildingButton = buildingButtonDictionary[BuildingPlacementManager.Instance.activeBuildingDataSO];
+            RectTransform selectedBuildingButton =
+                buildingButtonDictionary[BuildingPlacementManager.Instance.activeBuildingDataSO];
+
             if (selectedBuildingButton != null)
             {
                 SetSelected(selectedBuildingButton, true);

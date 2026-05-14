@@ -2,23 +2,30 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// ScriptableObject registry that stores and provides fast lookup access to <see cref="ResourceSO"/> assets
+/// using a <see cref="ResourceKey"/> identifier.
+/// </summary>
 [CreateAssetMenu(fileName = "ResourceRegistrySO", menuName = "Scriptable Objects/Resources/ResourceRegistrySO")]
 public class ResourceRegistrySO : ScriptableObject
 {
     /// <summary>
-    /// Serialized resource data entries that populate this registry.
+    /// Serialized collection of all resource definitions included in this registry.
+    /// Used as the source of truth for rebuilding runtime lookup data.
     /// </summary>
     [SerializeField]
     [Tooltip("Resource data entries included in this registry.")]
     public List<ResourceSO> resourceSOList;
 
     /// <summary>
-    /// Runtime dictionary for fast key-based lookups.
+    /// Runtime lookup table for fast access to resources by key.
+    /// Rebuilt on asset load or when verification fails.
     /// </summary>
     private Dictionary<ResourceKey, ResourceSO> resourceDictionary;
 
     /// <summary>
-    /// Rebuilds cached lookup structures when the asset is loaded.
+    /// Unity callback invoked when the ScriptableObject is loaded or reloaded.
+    /// Ensures runtime lookup structures are initialized.
     /// </summary>
     private void OnEnable()
     {
@@ -26,7 +33,8 @@ public class ResourceRegistrySO : ScriptableObject
     }
 
     /// <summary>
-    /// Rebuilds runtime lookup structures from serialized list data.
+    /// Builds or rebuilds the runtime dictionary from the serialized resource list.
+    /// Also applies a deterministic ordering to the serialized list.
     /// </summary>
     private void Construct()
     {
@@ -51,9 +59,12 @@ public class ResourceRegistrySO : ScriptableObject
     }
 
     /// <summary>
-    /// Indicates whether cached dictionary state matches the serialized list.
+    /// Checks whether the runtime dictionary is initialized and matches the serialized list size.
     /// </summary>
-    /// <returns><see langword="true"/> when cache and list counts match; otherwise <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if the dictionary exists and is in sync with the serialized list;
+    /// otherwise <see langword="false"/>.
+    /// </returns>
     private bool IsVerified()
     {
         return
@@ -62,9 +73,12 @@ public class ResourceRegistrySO : ScriptableObject
     }
 
     /// <summary>
-    /// Ensures lookup cache is fully constructed and synchronized with serialized data.
+    /// Ensures that the runtime lookup structures are constructed and synchronized with serialized data.
     /// </summary>
-    /// <returns><see langword="true"/> when cache verification succeeds; otherwise <see langword="false"/>.</returns>
+    /// <returns>
+    /// <see langword="true"/> if the registry is successfully verified after construction;
+    /// otherwise <see langword="false"/>.
+    /// </returns>
     public bool VerifyConstruction()
     {
         if (IsVerified())
@@ -79,10 +93,12 @@ public class ResourceRegistrySO : ScriptableObject
     }
 
     /// <summary>
-    /// Retrieves a resource data asset by key.
+    /// Retrieves a <see cref="ResourceSO"/> associated with the specified <see cref="ResourceKey"/>.
     /// </summary>
-    /// <param name="resourceKey">Resource key to retrieve.</param>
-    /// <returns>Matching resource data asset, or <see langword="null"/> when not found.</returns>
+    /// <param name="resourceKey">The key identifying the requested resource.</param>
+    /// <returns>
+    /// The matching <see cref="ResourceSO"/> if found; otherwise <see langword="null"/>.
+    /// </returns>
     public ResourceSO GetResourceSO(ResourceKey resourceKey)
     {
         if (!IsVerified())

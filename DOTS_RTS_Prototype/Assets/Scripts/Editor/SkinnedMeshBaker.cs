@@ -12,10 +12,29 @@ using System.IO;
 /// </summary>
 public class SkinnedMeshBaker : EditorWindow
 {
+    /// <summary>
+    /// Label content for the source object field.
+    /// </summary>
     private static readonly GUIContent SourceObjectLabel = new GUIContent("Source Object", "Root GameObject containing the SkinnedMeshRenderer to bake.");
+
+    /// <summary>
+    /// Label content for the animation clip field.
+    /// </summary>
     private static readonly GUIContent ClipLabel = new GUIContent("Animation Clip", "AnimationClip sampled during baking.");
+
+    /// <summary>
+    /// Label content for the output name field.
+    /// </summary>
     private static readonly GUIContent OutputNameLabel = new GUIContent("Output Name", "Base name used for generated mesh assets and prefabs.");
+
+    /// <summary>
+    /// Label content for the frames-per-second field.
+    /// </summary>
     private static readonly GUIContent FpsLabel = new GUIContent("FPS", "Sampling rate used to bake the animation. Higher values generate more frames.");
+
+    /// <summary>
+    /// Label content for the output path field.
+    /// </summary>
     private static readonly GUIContent OutputPathLabel = new GUIContent("Output Path", "Project-relative Assets folder where baked meshes and prefabs are saved.");
 
     /// <summary>
@@ -55,7 +74,7 @@ public class SkinnedMeshBaker : EditorWindow
     string outputPath = "Assets/BakedMeshes";
 
     /// <summary>
-    /// Adds a menu item that opens the bake window.
+    /// Opens the skinned mesh baker editor window.
     /// </summary>
     [MenuItem("Tools/DOTS/Bake Skinned Mesh Animation")]
     static void Open()
@@ -85,8 +104,8 @@ public class SkinnedMeshBaker : EditorWindow
     }
 
     /// <summary>
-    /// Samples the animation clip and writes each baked mesh and prefab to the output path.
-    /// Supports multiple materials.
+    /// Samples the animation clip and writes baked meshes and prefabs to the configured output path.
+    /// Supports skinned meshes using multiple materials.
     /// </summary>
     void Bake()
     {

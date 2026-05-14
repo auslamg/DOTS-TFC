@@ -5,26 +5,81 @@ using UnityEngine;
 
 namespace Dto.Units
 {
+    /// <summary>
+    /// Represents serialized unit state data.
+    /// </summary>
     [Serializable]
     public struct DtoUnitData
     {
+        /// <summary>
+        /// The unit world position.
+        /// </summary>
         public float3 position;
+
+        /// <summary>
+        /// The unit world rotation.
+        /// </summary>
         public quaternion rotation;
+
+        /// <summary>
+        /// The prefab identifier used to recreate the unit.
+        /// </summary>
         public string prefabKey;
+
+        /// <summary>
+        /// The owning player identifier.
+        /// </summary>
         public int ownerID;
+
+        /// <summary>
+        /// The faction identifier.
+        /// </summary>
         public uint factionID;
 
+        /// <summary>
+        /// Indicates whether the unit is currently selected.
+        /// </summary>
         public bool selected;
+
+        /// <summary>
+        /// Indicates whether the unit currently requires pathfinding.
+        /// </summary>
         public bool requirePathing;
 
+        /// <summary>
+        /// The current unit mover position.
+        /// </summary>
         public float3 unitMoverPosition;
+
+        /// <summary>
+        /// The current movement target position.
+        /// </summary>
         public float3 targetPosition;
+
+        /// <summary>
+        /// The assigned post-formation position.
+        /// </summary>
         public float3 postFormationPosition;
+
+        /// <summary>
+        /// The last recorded movement direction vector.
+        /// </summary>
         public float3 lastMoveVector;
 
+        /// <summary>
+        /// The current target entity.
+        /// </summary>
         public Entity targetEntity;
+
+        /// <summary>
+        /// The unit's current health value.
+        /// </summary>
         public int currentHealth;
 
+        /// <summary>
+        /// Returns a formatted string representation of the unit data.
+        /// </summary>
+        /// <returns>A formatted unit data string.</returns>
         public override string ToString()
         {
             return $"UnitSaveData(" +
@@ -43,6 +98,10 @@ namespace Dto.Units
                    $"currentHealth: {currentHealth})";
         }
 
+        /// <summary>
+        /// Serializes the unit data into JSON format.
+        /// </summary>
+        /// <returns>A formatted JSON string.</returns>
         public string ToJson()
         {
             var serializable = new SerializableUnitData
@@ -68,6 +127,11 @@ namespace Dto.Units
             return JsonUtility.ToJson(serializable, true);
         }
 
+        /// <summary>
+        /// Deserializes unit data from JSON.
+        /// </summary>
+        /// <param name="json">The JSON string to deserialize.</param>
+        /// <returns>A populated <see cref="DtoUnitData"/> instance.</returns>
         public static DtoUnitData FromJson(string json)
         {
             var data = JsonUtility.FromJson<SerializableUnitData>(json);
@@ -114,25 +178,75 @@ namespace Dto.Units
             };
         }
 
+        /// <summary>
+        /// Internal serializable representation of unit data.
+        /// </summary>
         [Serializable]
         private struct SerializableUnitData
         {
+            /// <summary>
+            /// Serialized unit position.
+            /// </summary>
             public Float3Serializable position;
+
+            /// <summary>
+            /// Serialized unit rotation.
+            /// </summary>
             public QuaternionSerializable rotation;
 
+            /// <summary>
+            /// Serialized prefab identifier.
+            /// </summary>
             public string prefabKey;
+
+            /// <summary>
+            /// Serialized owner identifier.
+            /// </summary>
             public int unitOwner;
+
+            /// <summary>
+            /// Serialized faction identifier.
+            /// </summary>
             public uint factionID;
 
+            /// <summary>
+            /// Serialized selection state.
+            /// </summary>
             public bool selected;
+
+            /// <summary>
+            /// Serialized pathfinding requirement state.
+            /// </summary>
             public bool requirePathing;
 
+            /// <summary>
+            /// Serialized mover position.
+            /// </summary>
             public Float3Serializable unitMoverPosition;
+
+            /// <summary>
+            /// Serialized movement target position.
+            /// </summary>
             public Float3Serializable movePosition;
+
+            /// <summary>
+            /// Serialized formation position.
+            /// </summary>
             public Float3Serializable postFormationPosition;
+
+            /// <summary>
+            /// Serialized movement vector.
+            /// </summary>
             public Float3Serializable lastMoveVector;
 
+            /// <summary>
+            /// Serialized target entity reference.
+            /// </summary>
             public EntitySerializable targetEntity;
+
+            /// <summary>
+            /// Serialized health value.
+            /// </summary>
             public int currentHealth;
         }
     }

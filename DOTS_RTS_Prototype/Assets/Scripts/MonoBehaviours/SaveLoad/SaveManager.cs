@@ -11,48 +11,66 @@ using Unity.Transforms;
 using UnityEngine;
 using static SaveLoadUtil;
 
+/// <summary>
+/// Responsible for serializing current game state (ECS world + managed systems) into persistent storage.
+/// </summary>
+/// <remarks>
+/// Supports both JSON and binary formats. Extracts data from ECS entities and writes DTO representations for units, buildings, resources, and managed camera state.
+/// </remarks>
 public class SaveManager : MonoBehaviour
 {
     [Header("Save path settings")]
 
     /// <summary>
-    /// File name for the save file.
+    /// Base file name used to construct save file paths.
     /// </summary>
     [SerializeField]
     [Tooltip("File name for the save file.")]
     private string fileName;
 
+    /// <summary>
+    /// Full path for JSON save file derived from <see cref="fileName"/>.
+    /// </summary>
     private string jsonSavePath =>
-    Path.Combine(
-        Application.persistentDataPath,
-         Path.GetFileNameWithoutExtension(fileName) + ".json");
+        Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(fileName) + ".json");
 
+    /// <summary>
+    /// Full path for binary save file derived from <see cref="fileName"/>.
+    /// </summary>
     private string binarySavePath =>
-    Path.Combine(
-        Application.persistentDataPath,
-        Path.GetFileNameWithoutExtension(fileName) + ".dat");
+        Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(fileName) + ".dat");
 
     [Header("Save file type: true for JSON, false for .dat.")]
+    /// <summary>
+    /// Determines whether JSON format is used instead of binary format.
+    /// </summary>
     [SerializeField]
     private bool isJson;
 
     [Header("References")]
     /// <summary>
-    /// Camera controller gizmo for camera position storage.
+    /// Camera transform used to persist camera position and rotation.
     /// </summary>
     [SerializeField]
     [Tooltip("Camera controller gizmo for camera position storage.")]
     private Transform cameraControllerGizmo;
 
-    EntityManager entityManager;
+    /// <summary>
+    /// Cached ECS entity manager used to query and extract game state.
+    /// </summary>
+    private EntityManager entityManager;
 
     /// <summary>
-    /// Global singleton access to the DOTS event bridge.
+    /// Global singleton instance of <see cref="SaveManager"/>.
     /// </summary>
     public static SaveManager Instance { get; private set; }
 
     /// <summary>
-    /// Initializes singleton instance state.
+    /// Ensures singleton instance validity.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -67,11 +85,18 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Unity Awake callback. Initializes singleton instance.
+    /// </summary>
     private void Awake()
     {
         InitializeSingleton();
     }
 
+    /// <summary>
+    /// Saves the current game state to disk using the configured format (JSON or binary).
+    /// </summary>
+    /// <returns>True if save succeeded; otherwise false.</returns>
     public bool SaveGame()
     {
         Debug.Log("[SaveManager] SAVING...");
@@ -80,6 +105,9 @@ public class SaveManager : MonoBehaviour
         return isJson ? WriteJsonSaveFile() : WriteBinarySaveFile();
     }
 
+    /// <summary>
+    /// Writes game state to a binary file.
+    /// </summary>
     private bool WriteBinarySaveFile()
     {
         Debug.Log("[SaveManager] Writing binary save file...");
@@ -140,7 +168,6 @@ public class SaveManager : MonoBehaviour
                     WriteFloat3(writer, b.trainerData.rallyPositionOffset.ToFloat3());
 
                     writer.Write(b.trainerData.onUnitQueueChange);
-
                     writer.Write(b.trainerData.trainingQueue.Count);
 
                     foreach (var q in b.trainerData.trainingQueue)
@@ -219,6 +246,9 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Writes game state to a JSON file.
+    /// </summary>
     private bool WriteJsonSaveFile()
     {
         Debug.Log("[SaveManager] Writing save file...");
@@ -235,9 +265,7 @@ public class SaveManager : MonoBehaviour
 
             string json = JsonUtility.ToJson(saveGame, true);
 
-            // Ensure directory exists (important on first run / mobile)
             Directory.CreateDirectory(Path.GetDirectoryName(jsonSavePath));
-
             File.WriteAllText(jsonSavePath, json);
 
             Debug.Log($"[SaveManager] Save written successfully to: {jsonSavePath}");
@@ -275,42 +303,39 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Extracts all unit entities from ECS and converts them into DTO format.
+    /// </summary>
     private List<DtoUnitData> GetAllUnitData()
     {
         Debug.Log("[SaveManager] Reading UNITS...");
 
-        // Query all entities with the Unit component.
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Unit>().
-            Build(entityManager);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<Unit>()
+            .Build(entityManager);
 
         List<DtoUnitData> savedUnitsSet = new List<DtoUnitData>();
 
-        // Read all entities.
         using var entityArray = query.ToEntityArray(Allocator.Temp);
         foreach (var entity in entityArray)
         {
-            // Get prefab.
             UnitDataSOHolder unitDataSOHolder = entityManager.GetComponentData<UnitDataSOHolder>(entity);
 
-            // Save dynamic data.
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
-
             Unit unit = entityManager.GetComponentData<Unit>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
             bool selected = entityManager.IsComponentEnabled<Selected>(entity);
 
             bool requirePathing =
-                            entityManager.IsComponentEnabled<ManualMove>(entity) ||
-                            entityManager.IsComponentEnabled<FlowFieldFollower>(entity);
+                entityManager.IsComponentEnabled<ManualMove>(entity) ||
+                entityManager.IsComponentEnabled<FlowFieldFollower>(entity);
+
             UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
             ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
             FlowFieldFollower flowFieldFollower = entityManager.GetComponentData<FlowFieldFollower>(entity);
-            
             ManualTarget manualTarget = entityManager.GetComponentData<ManualTarget>(entity);
             Health health = entityManager.GetComponentData<Health>(entity);
-            
-            // Construct unit data structure.
+
             DtoUnitData unitData = new DtoUnitData
             {
                 position = localTransform.Position,
@@ -331,7 +356,6 @@ public class SaveManager : MonoBehaviour
                 currentHealth = health.currentHealth,
             };
 
-            // Add to save set.
             savedUnitsSet.Add(unitData);
             Debug.Log($"[SaveManager] Saving unit: {unitData}");
         }
@@ -339,34 +363,30 @@ public class SaveManager : MonoBehaviour
         return savedUnitsSet;
     }
 
+    /// <summary>
+    /// Extracts all building entities from ECS and converts them into DTO format.
+    /// </summary>
     private List<DtoBuildingData> GetAllBuildingData()
     {
         Debug.Log("[SaveManager] Reading BUILDINGS...");
 
-        // Query all entities with the Building component.
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).
-            WithAll<Building>().
-            Build(entityManager);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<Building>()
+            .Build(entityManager);
 
         List<DtoBuildingData> savedBuildingsSet = new List<DtoBuildingData>();
 
-        // Read all entities.
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
         foreach (var entity in entityArray)
         {
-            // Get prefab.
             BuildingDataSOHolder buildingDataSOHolder = entityManager.GetComponentData<BuildingDataSOHolder>(entity);
 
-            // Save dynamic data.
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
-
             Building building = entityManager.GetComponentData<Building>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
             bool selected = entityManager.IsComponentEnabled<Selected>(entity);
-
             Health health = entityManager.GetComponentData<Health>(entity);
 
-            // Construct unit data structure.
             DtoBuildingData buildingData = new DtoBuildingData
             {
                 position = localTransform.Position,
@@ -380,17 +400,16 @@ public class SaveManager : MonoBehaviour
                 currentHealth = health.currentHealth,
             };
 
-            // Read trainer data if necessary
-            if (entityManager.HasComponent<Trainer>(entity) && 
+            if (entityManager.HasComponent<Trainer>(entity) &&
                 entityManager.HasBuffer<QueuedUnitBuffer>(entity))
             {
                 Trainer trainer = entityManager.GetComponentData<Trainer>(entity);
                 DynamicBuffer<QueuedUnitBuffer> unitQueueBuffer =
-                        entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: true);
-                buildingData.trainerData = DtoTrainerData.FromTrainer(trainer, unitQueueBuffer);
-            }           
+                    entityManager.GetBuffer<QueuedUnitBuffer>(entity, isReadOnly: true);
 
-            // Add to save set.
+                buildingData.trainerData = DtoTrainerData.FromTrainer(trainer, unitQueueBuffer);
+            }
+
             savedBuildingsSet.Add(buildingData);
             Debug.Log($"[SaveManager] Saving building: {buildingData}");
         }
@@ -398,13 +417,18 @@ public class SaveManager : MonoBehaviour
         return savedBuildingsSet;
     }
 
+    /// <summary>
+    /// Extracts all resource values from the ResourceManager.
+    /// </summary>
     private DtoResourceData GetAllResourceData()
     {
         var resourceAmountDictionary = ResourceManager.Instance.resourceAmountDictionary;
-
         return DtoResourceData.FromDictionary(resourceAmountDictionary);
     }
 
+    /// <summary>
+    /// Extracts managed (non-ECS) game state such as camera transform.
+    /// </summary>
     private DtoManagedData GetManagedData()
     {
         float3 camPosition = cameraControllerGizmo.position;
@@ -415,7 +439,6 @@ public class SaveManager : MonoBehaviour
             camPosition = camPosition,
             camRotation = camRotation
         };
-
 
         Debug.Log($"[SaveManager] Saving managed data: {saveManagedData}");
         return saveManagedData;

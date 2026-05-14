@@ -42,21 +42,21 @@ public class PauseMenuUI : MonoBehaviour
     Button mainMenuButton;
 
     /// <summary>
-    /// Game mode ui reference for disabling when paused.
+    /// Reference to the game mode UI container that is hidden while the game is paused.
     /// </summary>
     [SerializeField]
     [Tooltip("Game mode ui reference for disabling when paused.")]
     RectTransform gameModeButtonsUI;
 
     /// <summary>
-    /// Save file name for path checking.
+    /// Name of the save file used to determine whether a valid save exists.
     /// </summary>
     [SerializeField]
     [Tooltip("Save file name for path checking.")]
     string saveFileName;
 
     /// <summary>
-    /// Wires button listeners to handle pause menu interactions.
+    /// Wires button listeners to handle pause menu interactions and initializes default state.
     /// </summary>
     void Awake()
     {
@@ -66,10 +66,12 @@ public class PauseMenuUI : MonoBehaviour
             gameModeButtonsUI.gameObject.SetActive(true);
             gameObject.SetActive(false);
         });
+
         saveButton.onClick.AddListener(() =>
         {
             SaveManager.Instance.SaveGame();
         });
+
         loadButton.onClick.AddListener(() =>
         {
             LoadManager.Instance.LoadGame();
@@ -78,6 +80,7 @@ public class PauseMenuUI : MonoBehaviour
             gameModeButtonsUI.gameObject.SetActive(true);
             gameObject.SetActive(false);
         });
+
         mainMenuButton.onClick.AddListener(() =>
         {
             Time.timeScale = 1;
@@ -87,6 +90,9 @@ public class PauseMenuUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Updates the availability of the load button based on whether a save file exists.
+    /// </summary>
     void Update()
     {
         if (!LoadManager.BinarySaveFileExists(saveFileName) &&

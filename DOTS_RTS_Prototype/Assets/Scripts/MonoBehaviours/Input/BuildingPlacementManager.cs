@@ -10,36 +10,44 @@ using BoxCollider = UnityEngine.BoxCollider;
 using Ray = UnityEngine.Ray;
 
 /// <summary>
-/// Manages player-driven building placement by validating the target position
-/// against existing structures and spawning the selected building entity.
+/// Manages player-driven building placement, including ghost preview rendering,
+/// placement validation, and ECS entity instantiation.
 /// </summary>
+/// <remarks>
+/// Handles grid snapping, collision validation, resource cost checks, and special rules
+/// such as harvester-resource proximity requirements.
+/// </remarks>
 public class BuildingPlacementManager : MonoBehaviour
 {
     /// <summary>
-    /// Scriptable object containing prefab and placement rules for the current building type.
+    /// Scriptable object defining the currently selected building type, prefab, and rules.
     /// </summary>
     [SerializeField]
     [Tooltip("Currently selected building definition used for ghost preview and placement rules.")]
     private BuildingDataSO buildingDataSO;
 
     /// <summary>
-    /// Entity manager for interacting with ECS entities.
+    /// ECS entity manager used for instantiating and configuring building entities.
     /// </summary>
     private EntityManager entityManager;
 
     /// <summary>
-    /// Grid data used for snapping building positions to the grid.
+    /// Grid configuration used for snapping building placement to world coordinates.
     /// </summary>
     private GridData gridData;
 
     /// <summary>
-    /// Current placement position snapped to the grid.
+    /// Current snapped placement position derived from mouse world position and grid rules.
     /// </summary>
-    Vector3 placePosition => GridUtil.SnapWorldPosition(mouseWorldPosition, gridData.gridCellSize);
+    private Vector3 placePosition => GridUtil.SnapWorldPosition(mouseWorldPosition, gridData.gridCellSize);
 
     /// <summary>
-    /// Gets or sets the active building data scriptable object, updating the ghost preview accordingly.
+    /// Gets or sets the active building type and updates the ghost preview accordingly.
     /// </summary>
+    /// <remarks>
+    /// Setting this value destroys the previous ghost instance and creates a new one
+    /// if the assigned building is valid.
+    /// </remarks>
     public BuildingDataSO activeBuildingDataSO
     {
         get => buildingDataSO;
@@ -55,6 +63,7 @@ public class BuildingPlacementManager : MonoBehaviour
             if (!buildingDataSO.IsNone())
             {
                 ghostPrefab = Instantiate(buildingDataSO.buildingGhostPrefab);
+
                 foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())
                 {
                     mesh.material = GameAssets.Instance.validGhostMaterial;
@@ -66,15 +75,15 @@ public class BuildingPlacementManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Runtime ghost preview object displayed at the current mouse world position.
+    /// Runtime ghost preview instance shown at the current placement position.
     /// </summary>
     [SerializeField]
     [Tooltip("Runtime ghost preview object shown while placing buildings.")]
     private GameObject ghostPrefab;
 
     /// <summary>
-    /// Multiplier applied to the building collider extents when checking for overlaps.
-    /// Higher values make placement validation more conservative.
+    /// Multiplier applied to collider bounds during placement validation.
+    /// Higher values make placement stricter.
     /// </summary>
     [SerializeField]
     [Range(1, 3)]
@@ -82,22 +91,22 @@ public class BuildingPlacementManager : MonoBehaviour
     private float placingExtentsOffset = 1.1f;
 
     /// <summary>
-    /// Raised when <see cref="activeBuildingDataSO"/> changes.
+    /// Event triggered when the active building selection changes.
     /// </summary>
     public event EventHandler OnActiveBuildingDataChange;
 
     /// <summary>
-    /// Retrieves the current mouse position projected into world space.
+    /// Current world-space mouse position from the input system.
     /// </summary>
     private Vector3 mouseWorldPosition => MouseWorldPosition.Instance.GetPosition();
 
     /// <summary>
-    /// Global access point for the active building placement manager.
+    /// Singleton instance of the BuildingPlacementManager.
     /// </summary>
     public static BuildingPlacementManager Instance { get; private set; }
 
     /// <summary>
-    /// Initializes singleton instance state.
+    /// Ensures singleton instance validity.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -113,7 +122,7 @@ public class BuildingPlacementManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Initializes the singleton instance and retrieves the entity manager.
+    /// Unity lifecycle method. Initializes singleton and ECS references.
     /// </summary>
     private void Awake()
     {
@@ -122,24 +131,25 @@ public class BuildingPlacementManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the grid data used for snapping building positions.
+    /// Assigns grid data used for placement snapping.
     /// </summary>
-    /// <param name="gridData">The grid data to use.</param>
+    /// <param name="gridData">Grid configuration data.</param>
     public void SetGridData(GridData gridData)
     {
         this.gridData = gridData;
     }
 
     /// <summary>
-    /// Updates building ghost position and handles left/right-click placement controls.
+    /// Updates ghost preview position and handles placement input logic each frame.
     /// </summary>
-    void Update()
+    private void Update()
     {
         if (ghostPrefab != null)
         {
             ghostPrefab.transform.position = placePosition;
 
-            if (CanPlaceBuilding() && ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
+            if (CanPlaceBuilding() &&
+                ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
             {
                 SetGhostColor(new Color(0, 0.5f, 1, 0.25f));
             }
@@ -152,20 +162,16 @@ public class BuildingPlacementManager : MonoBehaviour
                 SetGhostColor(new Color(1, 0, 0, 0.25f));
             }
         }
-        // Ignore placement clicks while the cursor is interacting with UI.
+
         if (EventSystem.current.IsPointerOverGameObject())
         {
-
             return;
         }
 
         if (activeBuildingDataSO.IsNone())
         {
-
             return;
         }
-
-
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -173,8 +179,6 @@ public class BuildingPlacementManager : MonoBehaviour
             {
                 if (CanPlaceBuilding())
                 {
-                    // Create the prefab lookup key expected by the ECS data layer.
-                    // Retrieve key from active buildingData
                     EntityPrefabKey buildingKey = new EntityPrefabKey
                     {
                         name = activeBuildingDataSO.name
@@ -182,15 +186,15 @@ public class BuildingPlacementManager : MonoBehaviour
 
                     Debug.Log($"[BuildingPlacer] Placing buildings: {buildingKey.name}");
 
-                    Entity spawnedEntity = entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
-                    entityManager.SetComponentData(spawnedEntity, LocalTransform.FromPosition(placePosition));
+                    Entity spawnedEntity =
+                        entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
+
+                    entityManager.SetComponentData(
+                        spawnedEntity,
+                        LocalTransform.FromPosition(placePosition));
 
                     ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
                     activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
-                }
-                else
-                {
-                    /* Debug.Log($"Cannot place building: {buildingKey} at {mouseWorldPosition}"); */
                 }
             }
             else
@@ -201,40 +205,41 @@ public class BuildingPlacementManager : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            //On left click set no active building
             activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
         }
-
     }
 
     /// <summary>
-    /// Checks whether a building can be placed at the current mouse position.
-    /// Placement fails if the building would overlap any structure or if it is too close
-    /// to another building of the same type.
+    /// Validates whether the current placement position is valid for building placement.
     /// </summary>
-    /// <returns>
-    /// <c>true</c> when placement is valid; otherwise, <c>false</c>.
-    /// </returns>
+    /// <returns>True if placement is allowed; otherwise false.</returns>
+    /// <remarks>
+    /// Checks for collisions, spacing constraints, and special rules such as harvester resource proximity.
+    /// </remarks>
     private bool CanPlaceBuilding()
     {
         if (buildingDataSO.IsNone())
         {
             return false;
         }
+
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
         CollisionFilter buildingsFilter = new CollisionFilter
         {
-            BelongsTo = ~0u, //All layers
-            CollidesWith = 1u << GameAssets.BUILDINGS_LAYER | 1u << GameAssets.UNITS_LAYER | 1u << GameAssets.OBSTRUCTION_LAYER,
+            BelongsTo = ~0u,
+            CollidesWith =
+                1u << GameAssets.BUILDINGS_LAYER |
+                1u << GameAssets.UNITS_LAYER |
+                1u << GameAssets.OBSTRUCTION_LAYER,
             GroupIndex = 0
         };
 
         BoxCollider boxCollider = buildingDataSO.prefabGO.GetComponent<BoxCollider>();
         float colliderOffsetMultiplier = placingExtentsOffset >= 1 ? placingExtentsOffset : 1;
+
         NativeList<DistanceHit> hitList = new NativeList<DistanceHit>(Allocator.Temp);
 
-        // Reject the placement if the building footprint overlaps any existing building.
         if (collisionWorld.OverlapBox(
                 center: placePosition,
                 orientation: Quaternion.identity,
@@ -247,7 +252,6 @@ public class BuildingPlacementManager : MonoBehaviour
 
         hitList.Clear();
 
-        // Enforce minimum spacing between buildings of the same type.
         if (collisionWorld.OverlapSphere(
                 position: placePosition,
                 radius: buildingDataSO.minDistanceToSimilar,
@@ -256,10 +260,11 @@ public class BuildingPlacementManager : MonoBehaviour
         {
             foreach (DistanceHit distanceHit in hitList)
             {
-                /* Debug.Log($"Checked entity at radius: {buildingDataSO.minDistanceToSimilar}"); */
                 if (entityManager.HasComponent<BuildingDataSOHolder>(distanceHit.Entity))
                 {
-                    BuildingDataSOHolder buildingData = entityManager.GetComponentData<BuildingDataSOHolder>(distanceHit.Entity);
+                    BuildingDataSOHolder buildingData =
+                        entityManager.GetComponentData<BuildingDataSOHolder>(distanceHit.Entity);
+
                     if (buildingDataSO.buildingType == buildingData.buildingKeyType)
                     {
                         return false;
@@ -270,42 +275,42 @@ public class BuildingPlacementManager : MonoBehaviour
 
         CollisionFilter resourceSourcesFilter = new CollisionFilter
         {
-            BelongsTo = ~0u, //All layers
+            BelongsTo = ~0u,
             CollidesWith = 1u << GameAssets.RESOURCE_SOURCES_LAYER,
             GroupIndex = 0
         };
 
-        // Enforce resource sources in range for harvesters.
         if (buildingDataSO.buildingType == BuildingType.Harvester)
         {
             bool validResource = false;
-            /* Debug.Log("Checking for harvester proximity"); */
+
             Entity harvesterEntity =
-                    LookupEntityPrefab.FetchEntityPrefab(EntityPrefabKey.From(buildingDataSO.buildingKey));
+                LookupEntityPrefab.FetchEntityPrefab(EntityPrefabKey.From(buildingDataSO.buildingKey));
+
             Harvester harvester = entityManager.GetComponentData<Harvester>(harvesterEntity);
 
             if (collisionWorld.OverlapSphere(
-                position: placePosition,
-                radius: harvester.harvestingRange,
-                ref hitList,
-                resourceSourcesFilter))
+                    position: placePosition,
+                    radius: harvester.harvestingRange,
+                    ref hitList,
+                    resourceSourcesFilter))
             {
                 foreach (DistanceHit distanceHit in hitList)
                 {
-                    /* Debug.Log($"{distanceHit.Entity}"); */
                     if (entityManager.HasComponent<ResourceSource>(distanceHit.Entity))
                     {
-                        /* Debug.Log("Checking resource compat"); */
-                        ResourceSource resourceSource = entityManager.GetComponentData<ResourceSource>(distanceHit.Entity);
+                        ResourceSource resourceSource =
+                            entityManager.GetComponentData<ResourceSource>(distanceHit.Entity);
+
                         if (harvester.harvestedResourceKey == resourceSource.generatedResourceKey)
                         {
-                            /* Debug.Log("Found harvester resource"); */
                             validResource = true;
                             break;
                         }
                     }
                 }
             }
+
             return validResource;
         }
 
@@ -313,9 +318,9 @@ public class BuildingPlacementManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the ghost preview color based on placement validity.
+    /// Applies a color tint to the ghost preview to indicate placement validity.
     /// </summary>
-    /// <param name="color">Color of the ghost.</param>
+    /// <param name="color">Target ghost preview color.</param>
     private void SetGhostColor(Color color)
     {
         foreach (MeshRenderer mesh in ghostPrefab.GetComponentsInChildren<MeshRenderer>())

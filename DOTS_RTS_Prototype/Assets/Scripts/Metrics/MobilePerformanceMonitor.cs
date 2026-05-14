@@ -4,35 +4,80 @@ using Unity.Profiling;
 using System.Collections.Generic;
 
 /// <summary>
-/// Renders an on-screen performance overlay showing FPS, rolling average, job thread usage, and GPU frame time.
+/// Renders an on-screen performance overlay displaying FPS, averaged FPS over time,
+/// Unity job system thread usage, and GPU frame time information.
 /// </summary>
 public class MobilePerformanceMonitor : MonoBehaviour
 {
+    /// <summary>
+    /// Font size used for all on-screen performance labels.
+    /// </summary>
     [Tooltip("Font size used for all on-screen performance labels.")]
     [SerializeField] int fontSize = 24;
 
+    /// <summary>
+    /// Time interval (in seconds) used to sample instantaneous FPS.
+    /// </summary>
     [Tooltip("Time window (in seconds) used to sample FPS.")]
     [SerializeField] float fpsSampleInterval = 0.1f;
 
+    /// <summary>
+    /// Current sampled FPS value.
+    /// </summary>
     float fps;
+
+    /// <summary>
+    /// Rolling average FPS over a fixed time window.
+    /// </summary>
     float avgFps;
 
+    /// <summary>
+    /// Time window used for rolling average FPS calculation.
+    /// </summary>
     const float AvgWindow = 10f;
+
+    /// <summary>
+    /// Queue storing frame delta times for rolling average calculation.
+    /// </summary>
     Queue<float> frameTimes = new Queue<float>();
+
+    /// <summary>
+    /// Accumulated frame time sum used for rolling average computation.
+    /// </summary>
     float frameTimeSum = 0f;
 
-    // FPS sampling
+    /// <summary>
+    /// Timer used to accumulate FPS sampling interval.
+    /// </summary>
     float fpsTimer = 0f;
+
+    /// <summary>
+    /// Number of frames counted within the current FPS sampling window.
+    /// </summary>
     int fpsFrameCount = 0;
 
+    /// <summary>
+    /// Maximum number of worker threads available to Unity Job System.
+    /// </summary>
     int maxWorkerThreads;
+
+    /// <summary>
+    /// Profiler recorder used to track active Unity Job System threads.
+    /// </summary>
     ProfilerRecorder jobThreadRecorder;
 
+    /// <summary>
+    /// Buffer used to retrieve GPU frame timing data.
+    /// </summary>
     FrameTiming[] frameTimings = new FrameTiming[1];
+
+    /// <summary>
+    /// Last recorded GPU frame time in milliseconds.
+    /// </summary>
     double gpuFrameTime;
 
     /// <summary>
-    /// Caches worker thread count and starts the job thread profiler recorder.
+    /// Initializes job system thread tracking and profiler recorder.
     /// </summary>
     void Start()
     {
@@ -45,7 +90,7 @@ public class MobilePerformanceMonitor : MonoBehaviour
     }
 
     /// <summary>
-    /// Samples FPS over a configurable interval, maintains the rolling average window, and captures GPU frame timing.
+    /// Updates FPS metrics, rolling averages, and GPU timing data each frame.
     /// </summary>
     void Update()
     {
@@ -82,7 +127,7 @@ public class MobilePerformanceMonitor : MonoBehaviour
     }
 
     /// <summary>
-    /// Draws the performance overlay using immediate-mode GUI.
+    /// Renders the performance overlay using Unity IMGUI.
     /// </summary>
     void OnGUI()
     {
@@ -124,7 +169,7 @@ public class MobilePerformanceMonitor : MonoBehaviour
     }
 
     /// <summary>
-    /// Releases the profiler recorder when the component is disabled.
+    /// Releases profiler resources when the component is disabled.
     /// </summary>
     void OnDisable()
     {

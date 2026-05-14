@@ -8,7 +8,7 @@ using UnityEngine;
 /// This component listens to selection start/end events, toggles rectangle visibility,
 /// and continuously updates anchored position/size while dragging.
 /// </remarks>
-public class UnitSelectionManagerUI : MonoBehaviour
+public class SelectionRectUI : MonoBehaviour
 {
     /// <summary>
     /// UI rectangle used to visualize the current selection area.

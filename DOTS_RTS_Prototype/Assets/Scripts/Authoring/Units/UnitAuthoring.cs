@@ -32,23 +32,36 @@ class UnitBaker : Baker<UnitAuthoring>
         });
     }
 
+    /// <summary>
+    /// Calculates the collision offset radius for a unit based on its attached collider.
+    /// </summary>
+    /// <param name="authoring">
+    /// The unit authoring component containing collider data.
+    /// </param>
+    /// <returns>
+    /// The calculated offset value derived from the detected collider type.
+    /// Returns <c>0f</c> if no supported collider is found.
+    /// </returns>
     private float GetOffset(UnitAuthoring authoring)
     {
         if (authoring.GetComponent<CapsuleCollider>() != null)
         {
             return authoring.GetComponent<CapsuleCollider>().radius;
         }
+
         if (authoring.GetComponent<SphereCollider>() != null)
         {
             return authoring.GetComponent<SphereCollider>().radius;
         }
+
         if (authoring.GetComponent<BoxCollider>() != null)
         {
             return math.sqrt(
                 math.pow(authoring.GetComponent<BoxCollider>().size.x, 2) +
                 math.pow(authoring.GetComponent<BoxCollider>().size.y, 2)
-                );
+            );
         }
+
         return 0f;
     }
 }

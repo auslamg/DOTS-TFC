@@ -28,9 +28,24 @@ public class FlowFieldFollowerBaker : Baker<FlowFieldFollowerAuthoring>
 /// </summary>
 public struct FlowFieldFollower : IComponentData, IEnableableComponent
 {
+    /// <summary>
+    /// The current destination position of the entity.
+    /// </summary>
     public float3 targetPosition;
+
+    /// <summary>
+    /// The last movement direction applied to the entity.
+    /// </summary>
     public float3 lastMoveVector;
+
+    /// <summary>
+    /// The calculated formation-adjusted position.
+    /// </summary>
     public float3 postFormationPosition;
+
+    /// <summary>
+    /// The index of the assigned flow field.
+    /// </summary>
     public int flowFieldIndex;
 }
 

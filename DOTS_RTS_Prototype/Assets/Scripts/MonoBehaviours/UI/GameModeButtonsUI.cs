@@ -2,52 +2,52 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Manages game mode switching UI between control mode and view mode, with pause menu access.
+/// Manages game mode switching UI between control mode, view mode, and build mode, as well as pause menu access.
 /// </summary>
 /// <remarks>
-/// This component provides buttons to switch between unit control mode and camera view mode,
-/// as well as access to the pause menu. It manages the activation of related systems and UI panels
-/// when switching modes or pausing the game.
+/// This component provides UI buttons to switch between gameplay modes (action, selection, view, build)
+/// and to open the pause menu. It synchronizes button interactability with the current game mode state
+/// managed by <see cref="GameModeManager"/>.
 /// </remarks>
 public class GameModeButtonsUI : MonoBehaviour
 {
     /// <summary>
-    /// Button to enable action mode with active selection and disable camera view mode and unit selection.
+    /// Button used to switch into action mode (active unit actions).
     /// </summary>
     [SerializeField]
-    [Tooltip("Button to enable control mode with unit selection and disable camera view mode.")]
+    [Tooltip("Button to enable action mode with unit actions.")]
     Button actionModeButton;
 
     /// <summary>
-    /// Button to enable control mode with unit selection and disable camera view mode and selection actions.
+    /// Button used to switch into selection mode (unit selection and commands).
     /// </summary>
     [SerializeField]
-    [Tooltip("Button to enable control mode with unit selection and disable camera view mode.")]
+    [Tooltip("Button to enable selection mode with unit selection and commands.")]
     Button controlModeButton;
 
     /// <summary>
-    /// Button to enable view mode with camera control and disable unit selection and selection actions.
+    /// Button used to switch into view mode (camera-only control).
     /// </summary>
     [SerializeField]
-    [Tooltip("Button to enable view mode with camera control and disable unit selection.")]
+    [Tooltip("Button to enable view mode with camera control.")]
     Button viewModeButton;
 
     /// <summary>
-    /// Button to pause the game and open the pause menu.
+    /// Button used to open the pause menu and pause the game simulation.
     /// </summary>
     [SerializeField]
-    [Tooltip("Button to pause the game and open the pause menu.")]
+    [Tooltip("Button to open the pause menu.")]
     Button pauseMenuButton;
 
     /// <summary>
-    /// Pause menu screen panel reference, shown when pause is activated.
+    /// UI panel representing the pause menu screen.
     /// </summary>
     [SerializeField]
     [Tooltip("Pause menu screen panel reference, shown when pause is activated.")]
     RectTransform pauseMenuScreen;
 
     /// <summary>
-    /// Global singleton access to unit selection behavior.
+    /// Global singleton instance for accessing the UI controller.
     /// </summary>
     public static GameModeButtonsUI Instance { get; private set; }
 
@@ -68,23 +68,27 @@ public class GameModeButtonsUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Wires button listeners to handle game mode switching and pause menu access.
+    /// Unity Awake callback. Registers button listeners and initializes singleton instance.
     /// </summary>
-    void Awake()
+    private void Awake()
     {
         InitializeSingleton();
+
         actionModeButton.onClick.AddListener(() =>
         {
             GameModeManager.Instance.SetGameMode(GameMode.ActionMode);
         });
+
         controlModeButton.onClick.AddListener(() =>
         {
             GameModeManager.Instance.SetGameMode(GameMode.SelectionMode);
         });
+
         viewModeButton.onClick.AddListener(() =>
         {
             GameModeManager.Instance.SetGameMode(GameMode.ViewMode);
         });
+
         pauseMenuButton.onClick.AddListener(() =>
         {
             Time.timeScale = 0;
@@ -92,6 +96,10 @@ public class GameModeButtonsUI : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// Updates UI interactability based on the currently active game mode.
+    /// </summary>
+    /// <param name="gameMode">Current active game mode.</param>
     public void UpdateGameModeUI(GameMode gameMode)
     {
         switch (gameMode)
@@ -101,21 +109,25 @@ public class GameModeButtonsUI : MonoBehaviour
                 controlModeButton.interactable = true;
                 viewModeButton.interactable = true;
                 return;
+
             case GameMode.SelectionMode:
                 actionModeButton.interactable = true;
                 controlModeButton.interactable = false;
                 viewModeButton.interactable = true;
                 return;
+
             case GameMode.ViewMode:
                 actionModeButton.interactable = true;
                 viewModeButton.interactable = false;
                 controlModeButton.interactable = true;
                 return;
+
             case GameMode.BuildMode:
                 actionModeButton.interactable = true;
                 viewModeButton.interactable = true;
                 controlModeButton.interactable = true;
                 return;
+
             default:
                 Debug.LogError("Unexisting gameMode triggered.");
                 actionModeButton.interactable = true;

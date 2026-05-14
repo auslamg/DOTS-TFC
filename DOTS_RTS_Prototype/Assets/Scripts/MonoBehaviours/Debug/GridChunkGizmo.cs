@@ -3,44 +3,79 @@ using Unity.Mathematics;
 using UnityEngine;
 using static GridUtil;
 
+/// <summary>
+/// Visual representation of a grid chunk used for higher-level debugging visualization.
+/// </summary>
 public class GridChunkGizmo : MonoBehaviour
 {
+    /// <summary>
+    /// Chunk X coordinate.
+    /// </summary>
     private int x;
+
+    /// <summary>
+    /// Chunk Y coordinate.
+    /// </summary>
     private int y;
+
+    /// <summary>
+    /// Unused runtime size cache.
+    /// </summary>
     private int size;
+
+    /// <summary>
+    /// Unused runtime data cache.
+    /// </summary>
     private byte data;
 
+    /// <summary>
+    /// Visual transform for the chunk sprite.
+    /// </summary>
     [SerializeField] private Transform visual;
 
+    /// <summary>
+    /// Initializes the chunk gizmo.
+    /// </summary>
+    /// <param name="x">Chunk X.</param>
+    /// <param name="y">Chunk Y.</param>
+    /// <param name="cellSize">Cell size.</param>
+    /// <param name="chunkSize">Chunk size in cells.</param>
     public void Initialize(int x, int y, float cellSize, float chunkSize)
     {
-        // Data
         this.x = x;
         this.y = y;
-        visual = gameObject.transform.GetChild(0);
 
-        //Adjust world position based on cell size
+        visual = transform.GetChild(0);
+
         transform.position = CoordsToWorldPositionCorner(x, y, cellSize * chunkSize);
-        visual.transform.position = visual.transform.position + new Vector3(-cellSize / 2, 0.2f, -cellSize / 2);
+        visual.transform.position += new Vector3(-cellSize / 2, 0.2f, -cellSize / 2);
 
-        //Adjust visual scale based on cell size
-        /* visual.localScale = new Vector3(cellSize * chunkSize, cellSize * chunkSize, cellSize * chunkSize); */
-        visual.gameObject.GetComponent<SpriteRenderer>().size = Vector2.one * (cellSize * chunkSize);
+        visual.GetComponent<SpriteRenderer>().size = Vector2.one * (cellSize * chunkSize);
     }
 
+    /// <summary>
+    /// Sets chunk color.
+    /// </summary>
     public void SetColor(Color color)
     {
-        visual.gameObject.GetComponent<SpriteRenderer>().color = color;
+        visual.GetComponent<SpriteRenderer>().color = color;
     }
 
+    /// <summary>
+    /// Sets chunk sprite.
+    /// </summary>
     public void SetSprite(Sprite sprite)
     {
-        visual.gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
+        visual.GetComponent<SpriteRenderer>().sprite = sprite;
     }
 
+    /// <summary>
+    /// Sets chunk sprite rotation.
+    /// </summary>
     public void SetSpriteRotation(Quaternion rotation)
     {
-        visual.gameObject.GetComponent<SpriteRenderer>().transform.rotation = rotation;
-        visual.gameObject.GetComponent<SpriteRenderer>().transform.rotation *= Quaternion.Euler(90, 0, 0);
+        var srTransform = visual.GetComponent<SpriteRenderer>().transform;
+        srTransform.rotation = rotation;
+        srTransform.rotation *= Quaternion.Euler(90, 0, 0);
     }
 }

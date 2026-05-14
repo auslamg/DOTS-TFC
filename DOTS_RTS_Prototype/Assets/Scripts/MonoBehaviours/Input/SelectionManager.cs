@@ -10,16 +10,16 @@ using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
 
 /// <summary>
-/// Handles RTS-style unit selection and command dispatch (move/attack/rally) for selected entities.
+/// Handles RTS-style unit selection and command dispatch for selected entities.
+/// Supports single-click selection, drag selection, and prioritised selection rules (Units > Buildings).
 /// </summary>
 /// <remarks>
-/// This manager supports box selection, single-click selection, right-click commands,
-/// and formation position generation for multi-unit movement.
+/// Selection is performed using Unity Physics queries (sphere casts and screen-space projection).
 /// </remarks>
 public class SelectionManager : MonoBehaviour
 {
     /// <summary>
-    /// Mouse position where the current drag-selection started.
+    /// Screen-space position where the current drag-selection started.
     /// </summary>
     private Vector2 selectionStartMousePosition;
 
@@ -31,7 +31,7 @@ public class SelectionManager : MonoBehaviour
     [Header("SphereCast parameters")]
 
     /// <summary>
-    /// Radius used by single-click sphere cast selection.
+    /// Radius used for single-click sphere cast selection.
     /// </summary>
     [SerializeField]
     [Tooltip("Radius used by single-click sphere cast when selecting entities.")]
@@ -40,7 +40,7 @@ public class SelectionManager : MonoBehaviour
     [Header("Line formation parameters")]
 
     /// <summary>
-    /// Horizontal spacing used by line-formation calculations.
+    /// Horizontal spacing used by line formation (unused in current logic but reserved for formation systems).
     /// </summary>
     [SerializeField]
     [Tooltip("Spacing used between units when line formation is enabled.")]
@@ -49,7 +49,7 @@ public class SelectionManager : MonoBehaviour
     [Header("Ring formation parameters")]
 
     /// <summary>
-    /// Radius step used between rings in circle formation.
+    /// Radius step between concentric rings in circle formation (unused directly in selection logic).
     /// </summary>
     [SerializeField]
     [Tooltip("Radius increment used between rings in circle formation.")]
@@ -63,44 +63,44 @@ public class SelectionManager : MonoBehaviour
     private int centerUnits = 3;
 
     /// <summary>
-    /// Additional unit slots added per ring as ring index increases.
+    /// Additional slots per ring in circle formation.
     /// </summary>
     [SerializeField]
     [Tooltip("Additional unit slots added for each subsequent ring in circle formation.")]
     private int unitsPerRing = 3;
 
     /// <summary>
-    /// Raised when drag-selection starts.
+    /// Raised when drag selection begins.
     /// </summary>
     public event EventHandler OnSelectionAreaStart;
 
     /// <summary>
-    /// Raised when drag-selection ends.
+    /// Raised when drag selection ends.
     /// </summary>
     public event EventHandler OnSelectionAreaEnd;
 
     /// <summary>
-    /// Raised whenever the selected entity set changes.
+    /// Raised whenever the selection state changes.
     /// </summary>
     public event EventHandler OnSelectionChange;
 
     /// <summary>
-    /// Indicates whether the current selection drag started over a UI element.
+    /// Indicates whether the selection drag started over a UI element.
     /// </summary>
     private bool startedOverUI = false;
 
     /// <summary>
-    /// Cached ECS EntityManager used to interact with entities.
+    /// Cached ECS EntityManager used for querying and modifying entities.
     /// </summary>
     private EntityManager entityManager;
 
     /// <summary>
-    /// Global singleton instance for selection management.
+    /// Global singleton instance of the SelectionManager.
     /// </summary>
     public static SelectionManager Instance { get; private set; }
 
     /// <summary>
-    /// Initializes singleton instance state and enforces single instance rule.
+    /// Ensures singleton instance validity.
     /// </summary>
     private void InitializeSingleton()
     {
@@ -124,28 +124,26 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity Start callback. Subscribes to events and initializes ECS entity manager.
+    /// Unity Start callback. Subscribes to external events and initializes ECS references.
     /// </summary>
-    void Start()
+    private void Start()
     {
         DOTSEventManager.Instance.OnSelectedDeath += DOTSEventManager_OnSelectedDeath;
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
     }
 
     /// <summary>
-    /// Handles event when a selected unit dies and triggers selection update.
+    /// Handles external notification that a selected entity has been destroyed.
     /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event arguments.</param>
     private void DOTSEventManager_OnSelectedDeath(object sender, EventArgs e)
     {
         TriggerOnSelectionChange();
     }
 
     /// <summary>
-    /// Processes input each frame for drag selection and single-click selection.
+    /// Per-frame input handling for selection interactions.
     /// </summary>
-    void Update()
+    private void Update()
     {
         if (!BuildingPlacementManager.Instance.activeBuildingDataSO.IsNone())
         {
@@ -173,10 +171,8 @@ public class SelectionManager : MonoBehaviour
         {
             Vector2 selectionEndMousePosition = Input.mousePosition;
 
-            // Deselect all currently selected entities before applying new selection.
             DeselectAll();
 
-            // Distinguish between single select and rectangle select.
             Rect selectionAreaRect = GetSelectionAreaRect();
             float selectionAreaSize = selectionAreaRect.width + selectionAreaRect.height;
             float multipleSelectionSizeMinimum = 40f;
@@ -197,7 +193,7 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Deselects all currently selected entities in the world.
+    /// Deselects all currently selected entities in the ECS world.
     /// </summary>
     public void DeselectAll()
     {
@@ -221,7 +217,7 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Performs single-entity selection using a sphere cast under the cursor.
+    /// Selects a single entity using a sphere cast under the mouse cursor.
     /// </summary>
     private void SelectSingle()
     {
@@ -229,10 +225,9 @@ public class SelectionManager : MonoBehaviour
 
         if (EntityUtil.ExistsAndPersists(ref entityManager, ref hitEntity))
         {
-            // An entity was hit.
-            if (entityManager.HasComponent<Faction>(hitEntity) && entityManager.HasComponent<Selected>(hitEntity))
+            if (entityManager.HasComponent<Faction>(hitEntity) &&
+                entityManager.HasComponent<Selected>(hitEntity))
             {
-                // A valid selectable faction entity was hit.
                 entityManager.SetComponentEnabled<Selected>(hitEntity, true);
                 Selected selected = entityManager.GetComponentData<Selected>(hitEntity);
                 selected.onSelected = true;
@@ -242,19 +237,17 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Selects multiple entities inside a drag-selection rectangle.
-    /// Applies priority rules: Units > Buildings > None.
+    /// Selects multiple entities within a drag-selection rectangle.
+    /// Applies priority: Units > Buildings.
     /// </summary>
     private void SelectInArea(Rect selectionAreaRect)
     {
-        // Query all entities with the LocalTransform and Selected components.
         EntityQuery query =
             new EntityQueryBuilder(Allocator.Temp)
             .WithAll<LocalTransform>()
             .WithPresent<Selected>()
             .Build(entityManager);
 
-        // Register entities and components to access LocalTransform and entity references.
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
         NativeArray<LocalTransform> localTransformArray = query.ToComponentDataArray<LocalTransform>(Allocator.Temp);
 
@@ -265,16 +258,12 @@ public class SelectionManager : MonoBehaviour
 
         for (int i = 0; i < localTransformArray.Length; i++)
         {
-            // Convert world position into screen position to check if inside selection rectangle.
-            LocalTransform unitLocalTransform = localTransformArray[i];
-            Vector2 entityScreenPosition = cam.WorldToScreenPoint(unitLocalTransform.Position);
+            Vector2 entityScreenPosition = cam.WorldToScreenPoint(localTransformArray[i].Position);
 
-            // Entity is inside selection area.
             if (selectionAreaRect.Contains(entityScreenPosition))
             {
                 Entity e = entityArray[i];
 
-                // Priority classification: separate units and buildings.
                 if (entityManager.HasComponent<Unit>(e))
                 {
                     units.Add(e);
@@ -286,15 +275,12 @@ public class SelectionManager : MonoBehaviour
             }
         }
 
-        // Selection priority filtering.
         NativeArray<Entity> finalSelection;
 
-        // If any units exist, select ONLY units.
         if (units.Length > 0)
         {
             finalSelection = units.AsArray();
         }
-        // If no units exist but buildings exist, select ONLY buildings.
         else if (buildings.Length > 0)
         {
             finalSelection = buildings.AsArray();
@@ -321,9 +307,9 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Performs a sphere-cast under the mouse cursor and returns the hit entity.
+    /// Performs a physics sphere cast under the cursor to retrieve a selectable entity.
     /// </summary>
-    /// <returns>Hit entity if valid; otherwise <see cref="Entity.Null"/>.</returns>
+    /// <returns>Hit entity or <see cref="Entity.Null"/>.</returns>
     private unsafe Entity ClickSphereCastForEntity()
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
@@ -333,12 +319,10 @@ public class SelectionManager : MonoBehaviour
         float3 start = cameraRay.GetPoint(0f);
         float3 end = cameraRay.GetPoint(5000f);
 
-        float radius = sphereCastColliderRadius;
-
         SphereGeometry sphereGeometry = new SphereGeometry
         {
             Center = float3.zero,
-            Radius = radius
+            Radius = sphereCastColliderRadius
         };
 
         CollisionFilter filter = new CollisionFilter
@@ -384,14 +368,13 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Performs a raycast under the mouse cursor and returns the hit entity.
+    /// Performs a physics raycast under the cursor to retrieve a selectable entity.
     /// </summary>
-    /// <returns>Hit entity if valid; otherwise <see cref="Entity.Null"/>.</returns>
+    /// <returns>Hit entity or <see cref="Entity.Null"/>.</returns>
     private Entity ClickRayCastForEntity()
     {
         CollisionWorld collisionWorld = entityManager.GetCollisionWorld();
 
-        // Build raycast from mouse position using physics collision layers.
         UnityEngine.Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         RaycastInput raycastInput = new RaycastInput
@@ -406,7 +389,6 @@ public class SelectionManager : MonoBehaviour
             }
         };
 
-        // Query physics world for raycast hit.
         if (collisionWorld.CastRay(raycastInput, out Unity.Physics.RaycastHit raycastHit))
         {
             Entity hitEntity = raycastHit.Entity;
@@ -414,19 +396,14 @@ public class SelectionManager : MonoBehaviour
             if (entityManager.Exists(hitEntity) &&
                 entityManager.HasComponent<LocalTransform>(hitEntity))
             {
-                // Physics world may be slightly out of sync; ignore invalid hits.
                 if (!entityManager.HasComponent<PhysicsCollider>(hitEntity))
-                {
                     return Entity.Null;
-                }
 
                 if (entityManager.HasComponent<Health>(hitEntity))
                 {
                     Health hitHealth = entityManager.GetComponentData<Health>(hitEntity);
                     if (hitHealth.currentHealth <= 0)
-                    {
                         return Entity.Null;
-                    }
                 }
 
                 return hitEntity;
@@ -437,10 +414,8 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Calculates the average world position of a set of LocalTransform components (XZ plane only).
+    /// Computes the average world position (XZ plane only) of a set of transforms.
     /// </summary>
-    /// <param name="localTransformArray">Array of transforms to average.</param>
-    /// <returns>The average position projected onto the XZ plane.</returns>
     private static float3 AveragePositionXZ(NativeArray<LocalTransform> localTransformArray)
     {
         if (localTransformArray.Length == 0)
@@ -460,9 +435,9 @@ public class SelectionManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Computes the rectangle used for drag-selection in screen space.
+    /// Computes the screen-space rectangle used for drag selection.
     /// </summary>
-    /// <returns>The screen-space selection rectangle.</returns>
+    /// <returns>Selection rectangle.</returns>
     public Rect GetSelectionAreaRect()
     {
         Vector2 selectionEndMousePosition = Input.mousePosition;
@@ -480,13 +455,13 @@ public class SelectionManager : MonoBehaviour
         return new Rect(
             lowerLeftCorner.x,
             lowerLeftCorner.y,
-            width: upperRightCorner.x - lowerLeftCorner.x,
-            height: upperRightCorner.y - lowerLeftCorner.y
+            upperRightCorner.x - lowerLeftCorner.x,
+            upperRightCorner.y - lowerLeftCorner.y
         );
     }
 
     /// <summary>
-    /// Triggers the selection change event externally.
+    /// Triggers the selection change event manually from external systems.
     /// </summary>
     public void TriggerOnSelectionChange()
     {

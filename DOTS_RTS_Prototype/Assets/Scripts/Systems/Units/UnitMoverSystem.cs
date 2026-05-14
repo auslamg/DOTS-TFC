@@ -134,6 +134,7 @@ partial struct UnitMoverSystem : ISystem
         // Apply final calculated movement on units.
         MoveUnitJob moveUnitJob = new MoveUnitJob
         {
+            manualMoveComponentLookup = manualMoveComponentLookup,
             deltaTime = SystemAPI.Time.DeltaTime
         };
         moveUnitJob.ScheduleParallel();
@@ -508,19 +509,26 @@ public partial struct FollowFlowFieldJob : IJobEntity
 [BurstCompile]
 public partial struct MoveUnitJob : IJobEntity
 {
+    /// <summary>Component lookup for <see cref="ManualMove"/> components. Used to access and modify manual movement state on entities.</summary>
+    [NativeDisableParallelForRestriction] public ComponentLookup<ManualMove> manualMoveComponentLookup;
+
     /// <summary>
     /// Delta time for movement calculations.
     /// </summary>
     [ReadOnly] public float deltaTime;
 
-    public void Execute(ref LocalTransform localTransform, ref UnitMover unitMover, ref PhysicsVelocity physicsVelocity)
+    public void Execute(
+        ref LocalTransform localTransform,
+        ref UnitMover unitMover,
+        ref PhysicsVelocity physicsVelocity,
+        Entity entity)
     {
         // Desired normalized move direction based on positional difference
         float3 moveDirection = unitMover.targetPosition - localTransform.Position;
         /* Debug.Log($"Move direction: {moveDirection}"); */
 
 
-        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; // REVIEW: Take into account for melee attacks
+        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; 
         if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
             /* Debug.Log($"Target reached. STOP. {moveDirection}"); */
@@ -528,6 +536,8 @@ public partial struct MoveUnitJob : IJobEntity
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;
             unitMover.isMoving = false;
+            
+            manualMoveComponentLookup.SetComponentEnabled(entity, false);
             return;
         }
         unitMover.isMoving = true;

@@ -19,66 +19,66 @@ using Random = UnityEngine.Random;
 public class HordeManager : MonoBehaviour
 {
     /// <summary>
-    /// Reference to the Unity ECS EntityManager used for instantiating and modifying entities.
+    /// ECS EntityManager used for instantiating and modifying entities at runtime.
     /// </summary>
     private EntityManager entityManager;
 
     /// <summary>
-    /// List of spawn points located in the northern region of the map.
+    /// Spawn points located in the northern region of the map.
     /// </summary>
     [Header("Horde spawn points")]
     [SerializeField] private List<Transform> northSpawnPoints;
 
     /// <summary>
-    /// List of spawn points located in the western region of the map.
+    /// Spawn points located in the western region of the map.
     /// </summary>
     [SerializeField] private List<Transform> westSpawnPoints;
 
     /// <summary>
-    /// List of spawn points located in the southern region of the map.
+    /// Spawn points located in the southern region of the map.
     /// </summary>
     [SerializeField] private List<Transform> southSpawnPoints;
 
     /// <summary>
-    /// List of spawn points located in the eastern region of the map.
+    /// Spawn points located in the eastern region of the map.
     /// </summary>
     [SerializeField] private List<Transform> eastSpawnPoints;
 
     /// <summary>
-    /// List of spawn points used for building or lair placement.
+    /// Spawn points used for lair or building placement.
     /// </summary>
     [Header("Building spawn points")]
     [SerializeField] private List<Transform> lairSpawnPoints;
 
     /// <summary>
-    /// Registry containing all configured horde wave definitions.
+    /// Registry containing all wave definitions used by the horde system.
     /// </summary>
     [Header("Waves")]
     [SerializeField] private HordeWaveRegistrySO hordeWaveRegistrySO;
 
     /// <summary>
-    /// Initial delay (in seconds) before the first wave begins.
+    /// Initial delay before the first wave begins.
     /// </summary>
     [SerializeField] private float initialWaveDelay = 10f;
 
     /// <summary>
-    /// Index of the currently active wave in the wave registry.
+    /// Current wave index in the wave registry.
     /// </summary>
     public int currentWaveIndex = 0;
 
     /// <summary>
-    /// Indicates whether the final wave condition has been reached.
+    /// Indicates whether the final wave has been reached.
     /// </summary>
     public bool finalWave = false;
 
     /// <summary>
-    /// Timer controlling the delay between waves.
+    /// Timer controlling delay between waves.
     /// </summary>
     [Header("Next Wave Timer")]
     [SerializeField] private LoopingTimer nextWaveTimer;
 
     /// <summary>
-    /// Remaining time until the next wave begins.
+    /// Remaining time until the next wave starts.
     /// </summary>
     public float remainingNextWaveTime => nextWaveTimer.Time;
 
@@ -88,7 +88,7 @@ public class HordeManager : MonoBehaviour
     public bool isCountingDownToNextWave { get; private set; }
 
     /// <summary>
-    /// Event invoked when the final wave has completed spawning.
+    /// Invoked when the final wave has completed spawning.
     /// </summary>
     public event EventHandler OnFinalWaveSpawn;
 
@@ -98,17 +98,17 @@ public class HordeManager : MonoBehaviour
     public static HordeManager Instance { get; private set; }
 
     /// <summary>
-    /// Tracks the last selected random spawn pool index to prevent immediate repetition.
+    /// Tracks last selected random spawn pool index to avoid repetition.
     /// </summary>
     private int lastPoolIndex = -1;
 
     /// <summary>
-    /// Tracks the last selected spawn index per spawn pool to avoid repeating the same spawn point consecutively.
+    /// Tracks last selected spawn index per pool to avoid repeating spawn points.
     /// </summary>
     private Dictionary<List<Transform>, int> lastSpawnIndexPerPool = new();
 
     /// <summary>
-    /// Ensures singleton integrity and prevents multiple instances of HordeManager.
+    /// Ensures singleton instance integrity.
     /// </summary>
     private void Awake()
     {
@@ -121,7 +121,7 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Initializes ECS references and starts the wave loop coroutine.
+    /// Initializes ECS references and starts the wave progression loop.
     /// </summary>
     private void Start()
     {
@@ -132,7 +132,7 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates whether the current wave is the final wave based on registry progress.
+    /// Updates whether the final wave condition has been reached.
     /// </summary>
     private void UpdateWinCondition()
     {
@@ -141,7 +141,7 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Main coroutine controlling wave progression, including delays and transitions.
+    /// Main coroutine controlling wave progression and inter-wave delays.
     /// </summary>
     private IEnumerator WaveLoop()
     {
@@ -187,9 +187,9 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Executes all spawn entries within a single wave sequentially.
+    /// Executes all spawn entries for a given wave sequentially.
     /// </summary>
-    /// <param name="wave">The wave definition containing spawn entries.</param>
+    /// <param name="wave">Wave definition containing spawn entries.</param>
     private IEnumerator RunWave(HordeWaveSO wave)
     {
         foreach (WaveSpawnEntrySO entry in wave.spawnEntries)
@@ -200,9 +200,9 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Executes a single spawn entry, spawning multiple units over time.
+    /// Executes a single spawn entry, spawning units over time.
     /// </summary>
-    /// <param name="entry">The spawn entry defining unit type and spawn behavior.</param>
+    /// <param name="entry">Spawn entry definition.</param>
     private IEnumerator RunEntry(WaveSpawnEntrySO entry)
     {
         for (int i = 0; i < entry.spawnedAmount; i++)
@@ -215,9 +215,9 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawns a single unit at a selected spawn point and assigns its ECS position.
+    /// Spawns a single ECS unit at a selected spawn point.
     /// </summary>
-    /// <param name="entry">The spawn entry defining which unit to spawn.</param>
+    /// <param name="entry">Spawn entry defining unit type.</param>
     private void SpawnUnit(WaveSpawnEntrySO entry)
     {
         Transform spawnPoint = GetSpawnPoint(entry.spawnDirection);
@@ -233,10 +233,11 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Retrieves a spawn point based on the specified spawn direction, ensuring reduced repetition.
+    /// Returns a spawn point based on direction or randomized pool selection.
+    /// Ensures reduced repetition of spawn locations.
     /// </summary>
-    /// <param name="direction">The directional spawn configuration.</param>
-    /// <returns>A valid Transform representing a spawn location.</returns>
+    /// <param name="direction">Requested spawn direction.</param>
+    /// <returns>Valid spawn transform.</returns>
     private Transform GetSpawnPoint(WaveSpawnPoint direction)
     {
         List<Transform> pool = (direction == WaveSpawnPoint.Random)
@@ -269,10 +270,10 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the spawn pool corresponding to a specific direction.
+    /// Returns spawn pool for a given directional input.
     /// </summary>
-    /// <param name="direction">The requested spawn direction.</param>
-    /// <returns>A list of transforms representing spawn points.</returns>
+    /// <param name="direction">Spawn direction.</param>
+    /// <returns>Directional spawn pool.</returns>
     private List<Transform> GetDirectionalPool(WaveSpawnPoint direction)
     {
         return direction switch
@@ -286,9 +287,9 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Randomly selects a spawn pool while avoiding immediate repetition of the previous pool.
+    /// Randomly selects a spawn pool while avoiding immediate repetition.
     /// </summary>
-    /// <returns>A randomly selected spawn pool.</returns>
+    /// <returns>Random spawn pool.</returns>
     private List<Transform> GetRandomSpawnPool()
     {
         List<Transform>[] pools =
@@ -323,10 +324,10 @@ public class HordeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns a human-readable name for a given spawn pool, primarily for debugging.
+    /// Returns human-readable name of a spawn pool for debugging purposes.
     /// </summary>
-    /// <param name="pool">The spawn pool to evaluate.</param>
-    /// <returns>A string representing the pool's directional identity.</returns>
+    /// <param name="pool">Spawn pool.</param>
+    /// <returns>Pool name string.</returns>
     private string GetPoolName(List<Transform> pool)
     {
         if (pool == northSpawnPoints) return "North";
@@ -337,6 +338,9 @@ public class HordeManager : MonoBehaviour
     }
 }
 
+/// <summary>
+/// Defines possible spawn directions for horde waves.
+/// </summary>
 public enum WaveSpawnPoint
 {
     Random,
