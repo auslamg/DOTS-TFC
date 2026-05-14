@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -48,6 +49,13 @@ public class PauseMenuUI : MonoBehaviour
     RectTransform gameModeButtonsUI;
 
     /// <summary>
+    /// Save file name for path checking.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Save file name for path checking.")]
+    string saveFileName;
+
+    /// <summary>
     /// Wires button listeners to handle pause menu interactions.
     /// </summary>
     void Awake()
@@ -77,5 +85,14 @@ public class PauseMenuUI : MonoBehaviour
         });
 
         gameObject.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (!LoadManager.BinarySaveFileExists(saveFileName) &&
+            !LoadManager.JsonSaveFileExists(saveFileName))
+        {
+            loadButton.interactable = false;
+        }
     }
 }

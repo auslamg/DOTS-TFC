@@ -1,4 +1,5 @@
 
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -27,18 +28,25 @@ public class MainMenuUI : MonoBehaviour
     Button loadButton;
 
     /// <summary>
-    /// Sends the player to the credits screen.
-    /// </summary>
-    [SerializeField]
-    [Tooltip("Sends the player to the credits screen.")]
-    Button creditsButton;
-
-    /// <summary>
     /// Button to quit the application.
     /// </summary>
     [SerializeField]
     [Tooltip("Button to quit the application.")]
     Button quitButton;
+
+    /// <summary>
+    /// Prefab of Load Request game object.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Prefab of Load Request game object.")]
+    GameObject loadRequestPrefab;
+
+    /// <summary>
+    /// Save file name for path checking.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Save file name for path checking.")]
+    string saveFileName;
 
     /// <summary>
     /// Wires button listeners to handle play and quit actions.
@@ -51,19 +59,18 @@ public class MainMenuUI : MonoBehaviour
         });
         loadButton.onClick.AddListener(() =>
         {
+            Instantiate(loadRequestPrefab);
             SceneManager.LoadScene(1);
-
-            Time.timeScale = 1;
-            gameObject.SetActive(false);
-        });
-        creditsButton.onClick.AddListener(() =>
-        {
-            // TODO: Implement
-            /* LoadGame */
         });
         quitButton.onClick.AddListener(() =>
         {
             Application.Quit();
         });
+
+        if (!LoadManager.BinarySaveFileExists(saveFileName) &&
+            !LoadManager.JsonSaveFileExists(saveFileName))
+        {
+            loadButton.interactable = false;
+        }
     }
 }

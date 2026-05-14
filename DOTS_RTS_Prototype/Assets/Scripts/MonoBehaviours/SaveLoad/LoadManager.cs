@@ -17,10 +17,10 @@ public class LoadManager : MonoBehaviour
     [SerializeField]
     private string fileName;
 
-    private string jsonSavePath => 
+    private string jsonSavePath =>
     Path.Combine(
         Application.persistentDataPath,
-         Path.GetFileNameWithoutExtension(fileName) + ".json");
+        Path.GetFileNameWithoutExtension(fileName) + ".json");
     private string binarySavePath =>
     Path.Combine(
         Application.persistentDataPath,
@@ -70,12 +70,27 @@ public class LoadManager : MonoBehaviour
 
     public bool SaveFileExists(string path)
     {
-        return File.Exists(jsonSavePath);
+        return isJson ? File.Exists(jsonSavePath) : File.Exists(binarySavePath);
     }
-   
+
+    public static bool JsonSaveFileExists(string name)
+    {
+        return File.Exists(Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(name) + ".json"));
+    }
+
+    public static bool BinarySaveFileExists(string name)
+    {
+        return File.Exists(Path.Combine(
+            Application.persistentDataPath,
+            Path.GetFileNameWithoutExtension(name) + ".dat"));
+    }
+
     public bool LoadGame()
     {
         Debug.Log("[LoadManager] LOADING...");
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         //TODO: Switch
         if (!SaveFileExists(jsonSavePath))
