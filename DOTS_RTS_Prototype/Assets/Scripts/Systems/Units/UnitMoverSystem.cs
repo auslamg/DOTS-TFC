@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 using static GridUtil;
@@ -12,6 +13,8 @@ using static GridUtil;
 /// <summary>
 /// System responsible for scheduling and managing unit movement simulation jobs.
 /// </summary>
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateAfter(typeof(BuildPhysicsWorld))]
 partial struct UnitMoverSystem : ISystem
 {
     /// <summary>
@@ -71,6 +74,7 @@ partial struct UnitMoverSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        state.Dependency.Complete();
         // Get data for jobs.
         GridData gridData = SystemAPI.GetSingleton<GridData>();
         CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
@@ -97,7 +101,7 @@ partial struct UnitMoverSystem : ISystem
             flowFieldRequestComponentLookup = flowFieldRequestComponentLookup,
             manualMoveComponentLookup = manualMoveComponentLookup,
             pathingCostMap = gridData.pathingCostMap,
-            collisionWorld = collisionWorld,
+            collisionWorld = state.EntityManager.GetCollisionWorld(),
             gridWidth = gridData.width,
             gridHeight = gridData.height,
             gridCellSize = gridData.gridCellSize
@@ -266,7 +270,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.postFormationPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            /* Debug.Log($"{entity.Index} Going for STRAIGHT FORMATION: {unitMover.targetPosition}"); */
+            Debug.Log($"{entity.Index} Going for STRAIGHT FORMATION: {unitMover.targetPosition}");
         }
         else if (!collisionWorld.CastRay(targetRaycastInput))
         {
@@ -274,7 +278,7 @@ public partial struct PathRequestJob : IJobEntity
             unitMover.targetPosition = pathRequest.targetPosition;
             flowFieldRequestComponentLookup.SetComponentEnabled(entity, false);
             flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-            /* Debug.Log($"{entity.Index} Going for STRAIGHT TARGET: {unitMover.targetPosition}"); */
+            Debug.Log($"{entity.Index} Going for STRAIGHT TARGET: {unitMover.targetPosition}");
         }
         else
         {
@@ -370,23 +374,21 @@ public partial struct CheckStraightPathJob : IJobEntity
                     Filter = new CollisionFilter
                     {
                         BelongsTo = ~0u,
-                        CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER,
+                        CollidesWith = 1u << GameAssets.OBSTRUCTION_LAYER | 1u << GameAssets.BUILDINGS_LAYER,
                         GroupIndex = 0
                     }
                 };
 
-
-                if (!collisionWorld.CastRay(buildingRaycastInput))
+                if (collisionWorld.CastRay(buildingRaycastInput, out var hit))
                 {
-                    // Hit nothing. Take a straight path
-                    unitMover.targetPosition = buildingPosition;
-                    flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
-                    Debug.Log($"Recheck STRAIGHT BUILDING. {unitMover.targetPosition}");
+                    if (hit.Entity == targetter.targetEntity)
+                    {
+                        // Hit nothing. Take a straight path
+                        unitMover.targetPosition = buildingPosition;
+                        flowFieldFollowerComponentLookup.SetComponentEnabled(entity, false);
+                        Debug.Log($"Recheck STRAIGHT BUILDING. {unitMover.targetPosition}");
+                    }
                 }
-            }
-            else if (true)
-            {
-                
             }
 
             return;

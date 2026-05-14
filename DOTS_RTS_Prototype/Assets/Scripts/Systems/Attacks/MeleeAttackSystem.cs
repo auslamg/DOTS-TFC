@@ -106,10 +106,19 @@ partial struct MeleeAttackSystem : ISystem
                             }
                             else targetter.ValueRW.targetEntity = Entity.Null;
                         }
+                        // Else it's navigable, get position
+                        {
+                            var offsetPosition =
+                                GetAttackSlotPosition(
+                                    entity,
+                                    targetter.ValueRO.targetEntity,
+                                    targetPosition,
+                                    meleeAttack.ValueRO.attackDistance);
 
-                        pathRequest.ValueRW.targetPosition = targetPosition;
-                        pathRequest.ValueRW.postFormationPosition = targetPosition;
-                        pathRequestEnabled.ValueRW = true;
+                            pathRequest.ValueRW.targetPosition = targetPosition;
+                            pathRequest.ValueRW.postFormationPosition = offsetPosition;
+                            pathRequestEnabled.ValueRW = true;
+                        }
                         /* Debug.Log("[Melee] Attacking path request"); */
                     }
                 }
@@ -149,5 +158,31 @@ partial struct MeleeAttackSystem : ISystem
                 }
             }
         }
+    }
+
+    public static float3 GetAttackSlotPosition(
+        Entity attacker,
+        Entity target,
+        float3 targetPosition,
+        float attackRadius)
+    {
+        // Deterministic hash
+        uint hash = math.hash(new int2(
+            attacker.Index,
+            target.Index));
+
+        // Random angle from hash
+        float angle =
+            (hash / (float)uint.MaxValue) *
+            math.PI * 2f;
+
+        // Position around target
+        float3 offset = new float3(
+            math.cos(angle),
+            0,
+            math.sin(angle)
+        ) * attackRadius;
+
+        return targetPosition + offset;
     }
 }

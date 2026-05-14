@@ -34,7 +34,6 @@ partial struct ManualMoveSystem : ISystem
             else
             {
                 //Reached move override position
-                /* SystemAPI.SetComponentEnabled<MoveOverride>(false, entity); */
                 manualMoveEnabled.ValueRW = false;
             }
         }

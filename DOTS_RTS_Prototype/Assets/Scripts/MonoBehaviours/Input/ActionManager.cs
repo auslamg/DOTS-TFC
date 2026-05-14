@@ -267,7 +267,7 @@ public class ActionManager : MonoBehaviour
             ManualTarget newManualTarget = manualTargetArray[i];
             newManualTarget.targetEntity = Entity.Null;
             manualTargetArray[i] = newManualTarget;
-            entityManager.SetComponentEnabled<ManualMove>(entityArray[i], true);
+            /* entityManager.SetComponentEnabled<ManualTarget>(entityArray[i], true); */
 
             //New PathRequest values
             PathRequest newPathRequest = pathRequestArray[i];

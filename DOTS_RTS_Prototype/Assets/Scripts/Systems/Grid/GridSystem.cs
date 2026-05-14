@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 using static GridUtil;
@@ -16,6 +17,8 @@ using static GridUtil;
 /// Grid creation is deferred until the first update frame because the baked <see cref="GridDataParameters"/> singleton
 /// may not be available yet during conversion and editor bake execution.
 /// </remarks>
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateAfter(typeof(BuildPhysicsWorld))]
 [BurstCompile]
 partial struct GridSystem : ISystem
 {

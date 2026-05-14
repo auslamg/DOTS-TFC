@@ -13,7 +13,7 @@ partial struct PathConflictResolutionSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        // Used for registering all nearby units
+       /*  // Used for registering all nearby units
         NativeList<DistanceHit> distanceHitList = new NativeList<DistanceHit>(Allocator.Temp); //Kept external to avoid excesive lists
         
         CollisionWorld collisionWorld = state.EntityManager.GetCollisionWorld();
@@ -77,6 +77,6 @@ partial struct PathConflictResolutionSystem : ISystem
                     }
                 }
             }
-        }
+        } */
     }
 }
