@@ -9,7 +9,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static SaveLoadUtil;
+using static SerializationUtil;
+using static SaveGameSerializer;
 
 /// <summary>
 /// Handles loading of persisted game state from JSON or binary save files and reconstructs ECS entities accordingly.
@@ -160,103 +161,8 @@ public class LoadManager : MonoBehaviour
 
         try
         {
-            DtoGameData saveData = new DtoGameData();
-
             using FileStream stream = new FileStream(binarySavePath, FileMode.Open);
-            using BinaryReader reader = new BinaryReader(stream);
-
-            // MANAGED
-            saveData.managed = new DtoManagedData
-            {
-                camPosition = ReadFloat3(reader),
-                camRotation = ReadQuaternion(reader)
-            };
-
-            // RESOURCES
-            int resCount = reader.ReadInt32();
-            saveData.resources = new DtoResourceData
-            {
-                resources = new List<DtoResourceData.SaveResourceEntry>()
-            };
-
-            for (int i = 0; i < resCount; i++)
-            {
-                saveData.resources.resources.Add(new DtoResourceData.SaveResourceEntry
-                {
-                    resourceKey = new ResourceKey { name = reader.ReadString() },
-                    amount = reader.ReadInt32()
-                });
-            }
-
-            // BUILDINGS
-            int buildingCount = reader.ReadInt32();
-            saveData.buildings = new List<DtoBuildingData>();
-
-            for (int i = 0; i < buildingCount; i++)
-            {
-                DtoBuildingData b = new DtoBuildingData
-                {
-                    prefabKey = reader.ReadString(),
-                    position = ReadFloat3(reader),
-                    rotation = ReadQuaternion(reader),
-                    ownerID = reader.ReadInt32(),
-                    factionID = reader.ReadUInt32(),
-                    selected = reader.ReadBoolean(),
-                    currentHealth = reader.ReadInt32()
-                };
-
-                bool hasTrainer = reader.ReadBoolean();
-
-                if (hasTrainer)
-                {
-                    DtoTrainerData t = new DtoTrainerData
-                    {
-                        currentProgress = reader.ReadSingle(),
-                        maxProgress = reader.ReadSingle(),
-                        activeUnitKey = reader.ReadString(),
-                        spawnPointOffset = new Float3Serializable(ReadFloat3(reader)),
-                        rallyPositionOffset = new Float3Serializable(ReadFloat3(reader)),
-                        onUnitQueueChange = reader.ReadBoolean(),
-                        trainingQueue = new List<string>()
-                    };
-
-                    int qCount = reader.ReadInt32();
-                    for (int q = 0; q < qCount; q++)
-                        t.trainingQueue.Add(reader.ReadString());
-
-                    b.trainerData = t;
-                }
-
-                saveData.buildings.Add(b);
-            }
-
-            // UNITS
-            int unitCount = reader.ReadInt32();
-            saveData.units = new List<DtoUnitData>();
-
-            for (int i = 0; i < unitCount; i++)
-            {
-                saveData.units.Add(new DtoUnitData
-                {
-                    prefabKey = reader.ReadString(),
-                    position = ReadFloat3(reader),
-                    rotation = ReadQuaternion(reader),
-                    ownerID = reader.ReadInt32(),
-                    factionID = reader.ReadUInt32(),
-                    selected = reader.ReadBoolean(),
-                    requirePathing = reader.ReadBoolean(),
-                    unitMoverPosition = ReadFloat3(reader),
-                    targetPosition = ReadFloat3(reader),
-                    postFormationPosition = ReadFloat3(reader),
-                    lastMoveVector = ReadFloat3(reader),
-                    targetEntity = new Entity
-                    {
-                        Index = reader.ReadInt32(),
-                        Version = reader.ReadInt32()
-                    },
-                    currentHealth = reader.ReadInt32()
-                });
-            }
+            DtoGameData saveData = SaveGameSerializer.DeserializeFromBinary(stream);
 
             OverwriteData(saveData);
 
@@ -304,7 +210,7 @@ public class LoadManager : MonoBehaviour
         try
         {
             string json = File.ReadAllText(jsonSavePath);
-            DtoGameData saveData = JsonUtility.FromJson<DtoGameData>(json);
+            DtoGameData saveData = SaveGameSerializer.DeserializeFromJson(json);
 
             if (saveData.units == null && saveData.buildings == null)
             {

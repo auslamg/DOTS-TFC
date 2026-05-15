@@ -1,8 +1,9 @@
 using System.IO;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
-public static class SaveLoadUtil
+public static class SerializationUtil
 {
     public static void WriteFloat3(BinaryWriter writer, float3 value)
     {
@@ -34,5 +35,20 @@ public static class SaveLoadUtil
             reader.ReadSingle(),
             reader.ReadSingle(),
             reader.ReadSingle());
+    }
+
+    public static void WriteEntity(BinaryWriter writer, Entity entity)
+    {
+        writer.Write(entity.Index);
+        writer.Write(entity.Version);
+    }
+
+    public static Entity ReadEntity(BinaryReader reader)
+    {
+        return new Entity
+        {
+            Index = reader.ReadInt32(),
+            Version = reader.ReadInt32()
+        };
     }
 }
