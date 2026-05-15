@@ -75,10 +75,10 @@ PlayerSettings:
   androidResizeableActivity: 1
   androidDefaultWindowWidth: 1920
   androidDefaultWindowHeight: 1080
-  androidMinimumWindowWidth: 400
-  androidMinimumWindowHeight: 300
+  androidMinimumWindowWidth: 800
+  androidMinimumWindowHeight: 600
   androidFullscreenMode: 1
-  androidAutoRotationBehavior: 1
+  androidAutoRotationBehavior: 2
   androidPredictiveBackSupport: 1
   androidApplicationEntry: 2
   defaultIsNativeResolution: 1
@@ -144,7 +144,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 0.1.0
+  bundleVersion: Demo 1.0.0
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   metroInputSource: 0
@@ -302,7 +302,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 4dac0781e5aa7b647904d84bd8e1466e, type: 3}
+      m_Icon: {fileID: 2800000, guid: 49f88312b8959ae46af8ca18057565bb, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

@@ -65,7 +65,6 @@ class BuildingDataRegistryBaker : Baker<BuildingDataRegistryAuthoring>
             .OrderBy((BuildingDataSO so) => so.buildingKey)
             .ToArray();
 
-
         BlobAssetReference<BlobArray<BuildingData>> blobAssetReference;
         //BlobBuilder resources
         using (BlobBuilder blobBuilder = new BlobBuilder(Allocator.Temp))

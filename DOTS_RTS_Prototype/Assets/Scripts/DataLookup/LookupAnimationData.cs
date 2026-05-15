@@ -6,7 +6,7 @@ using UnityEngine;
 /// Provides binary-search utilities for retrieving <see cref="AnimationData"/> entries by key.
 /// </summary>
 [BurstCompile]
-public class LookupAnimationData
+public static class LookupAnimationData
 {
     /// <summary>
     /// Retrieves an <see cref="AnimationData"/> entry from the registry blob array.

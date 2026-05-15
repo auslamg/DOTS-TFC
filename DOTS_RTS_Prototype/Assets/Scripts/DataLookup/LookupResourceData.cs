@@ -6,7 +6,7 @@ using UnityEngine;
 /// Provides binary-search utilities for retrieving <see cref="ResourceData"/> entries by key.
 /// </summary>
 [BurstCompile]
-public class LookupResourceData
+public static class LookupResourceData
 {
     /// <summary>
     /// Retrieves a <see cref="ResourceData"/> entry from the registry blob array.

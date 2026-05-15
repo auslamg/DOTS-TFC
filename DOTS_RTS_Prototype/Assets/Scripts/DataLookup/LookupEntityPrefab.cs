@@ -7,7 +7,7 @@ using UnityEngine;
 /// Provides binary-search lookup utilities for <see cref="EntityPrefab"/> mappings.
 /// </summary>
 [BurstCompile]
-public class LookupEntityPrefab
+public static class LookupEntityPrefab
 {
     /// <summary>
     /// Attempts to get the index of an <see cref="EntityPrefab"/> entry in a sorted registry buffer.
