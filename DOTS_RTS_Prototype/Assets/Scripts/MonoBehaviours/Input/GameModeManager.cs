@@ -15,7 +15,7 @@ public class GameModeManager : MonoBehaviour
     /// <summary>
     /// Currently active game mode.
     /// </summary>
-    private GameMode activeGameMode;
+    public GameMode activeGameMode { get; private set; }
 
     /// <summary>
     /// Ensures singleton instance validity.

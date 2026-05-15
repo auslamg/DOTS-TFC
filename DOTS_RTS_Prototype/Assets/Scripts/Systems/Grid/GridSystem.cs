@@ -624,7 +624,6 @@ partial struct GridSystem : ISystem
 
         return result;
     }
-
 }
 
 [BurstCompile]

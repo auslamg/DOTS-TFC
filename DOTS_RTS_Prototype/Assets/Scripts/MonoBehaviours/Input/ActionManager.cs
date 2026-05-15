@@ -127,7 +127,7 @@ public class ActionManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (!BuildingPlacementManager.Instance.activeBuildingDataSO.IsNone())
+        if (GameModeManager.Instance.activeGameMode == GameMode.BuildMode)
         {
             return;
         }

@@ -145,7 +145,7 @@ public class SelectionManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (!BuildingPlacementManager.Instance.activeBuildingDataSO.IsNone())
+        if (GameModeManager.Instance.activeGameMode == GameMode.BuildMode)
         {
             return;
         }

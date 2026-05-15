@@ -175,27 +175,25 @@ public class BuildingPlacementManager : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost))
+            if (ResourceManager.Instance.CanSpendResourceValues(activeBuildingDataSO.constructionCost) &&
+                CanPlaceBuilding())
             {
-                if (CanPlaceBuilding())
+                EntityPrefabKey buildingKey = new EntityPrefabKey
                 {
-                    EntityPrefabKey buildingKey = new EntityPrefabKey
-                    {
-                        name = activeBuildingDataSO.name
-                    };
+                    name = activeBuildingDataSO.name
+                };
 
-                    Debug.Log($"[BuildingPlacer] Placing buildings: {buildingKey.name}");
+                Debug.Log($"[BuildingPlacer] Placing buildings: {buildingKey.name}");
 
-                    Entity spawnedEntity =
-                        entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
+                Entity spawnedEntity =
+                    entityManager.Instantiate(DataLookup.FetchEntityPrefab(buildingKey));
 
-                    entityManager.SetComponentData(
-                        spawnedEntity,
-                        LocalTransform.FromPosition(placePosition));
+                entityManager.SetComponentData(
+                    spawnedEntity,
+                    LocalTransform.FromPosition(placePosition));
 
-                    ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
-                    activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
-                }
+                ResourceManager.Instance.SpendResourceValues(activeBuildingDataSO.constructionCost);
+                activeBuildingDataSO = GameAssets.Instance.buildingDataRegistrySO.none;
             }
             else
             {
