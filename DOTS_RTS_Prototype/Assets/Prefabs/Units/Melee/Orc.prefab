@@ -44,6 +44,10 @@ PrefabInstance:
       propertyPath: factionID
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 5387428607248588541, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5797222689594016361, guid: bc3a61b8d6f724e4e92a3a8d3ee31b4e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
