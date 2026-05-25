@@ -44,8 +44,24 @@ public static class SaveGameSerializer
         using BinaryWriter writer = new BinaryWriter(stream);
 
         // MANAGED
-        WriteFloat3(writer, data.managed.camPosition);
-        WriteQuaternion(writer, data.managed.camRotation);
+        WriteFloat3(writer, data.managed.camera.camPosition);
+        WriteQuaternion(writer, data.managed.camera.camRotation);
+
+        // HORDE
+        writer.Write(data.managed.horde.currentWaveIndex);
+        writer.Write(data.managed.horde.currentState);
+        writer.Write(data.managed.horde.currentStateTimer);
+        writer.Write(data.managed.horde.currentTimerInterval);
+        writer.Write(data.managed.horde.isCountingDownToNextWave);
+        writer.Write(data.managed.horde.remainingNextWaveTime);
+        writer.Write(data.managed.horde.nextWaveInterval);
+        writer.Write(data.managed.horde.currentSpawnEntryIndex);
+        writer.Write(data.managed.horde.currentEntryIndex);
+        writer.Write(data.managed.horde.currentSpawnedInEntry);
+        writer.Write(data.managed.horde.spawnEntryRemainingInterval);
+        writer.Write(data.managed.horde.spawnEntryPostCooldownRemaining);
+        writer.Write(data.managed.horde.finalWave);
+        writer.Write(data.managed.horde.lastPoolIndex);
 
         // RESOURCES
         writer.Write(data.resources.resources.Count);
@@ -119,8 +135,28 @@ public static class SaveGameSerializer
         // MANAGED
         data.managed = new DtoManagedData
         {
-            camPosition = ReadFloat3(reader),
-            camRotation = ReadQuaternion(reader)
+            camera = new DtoCameraData
+            {
+                camPosition = ReadFloat3(reader),
+                camRotation = ReadQuaternion(reader)
+            },
+            horde = new DtoHordeData
+            {
+                currentWaveIndex = reader.ReadInt32(),
+                currentState = reader.ReadInt32(),
+                currentStateTimer = reader.ReadSingle(),
+                currentTimerInterval = reader.ReadSingle(),
+                isCountingDownToNextWave = reader.ReadBoolean(),
+                remainingNextWaveTime = reader.ReadSingle(),
+                nextWaveInterval = reader.ReadSingle(),
+                currentSpawnEntryIndex = reader.ReadInt32(),
+                currentEntryIndex = reader.ReadInt32(),
+                currentSpawnedInEntry = reader.ReadInt32(),
+                spawnEntryRemainingInterval = reader.ReadSingle(),
+                spawnEntryPostCooldownRemaining = reader.ReadSingle(),
+                finalWave = reader.ReadBoolean(),
+                lastPoolIndex = reader.ReadInt32()
+            }
         };
 
         // RESOURCES
@@ -133,7 +169,7 @@ public static class SaveGameSerializer
         {
             var entry = new DtoResourceData.SaveResourceEntry
             {
-                resourceKey = new ResourceKey { name = reader.ReadString() },
+                resourceKey = new ResourceKey { name = ParseFixedString64Bytes(reader.ReadString()) },
                 amount = reader.ReadInt32()
             };
             data.resources.resources.Add(entry);

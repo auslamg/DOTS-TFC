@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -83,5 +85,38 @@ public static class SerializationUtil
             Index = reader.ReadInt32(),
             Version = reader.ReadInt32()
         };
+    }
+
+    /// <summary>
+    /// Converts a regular string into a <see cref="FixedString64Bytes"/> value in a safe way.
+    /// </summary>
+    /// <param name="value">The source string value.</param>
+    /// <returns>A <see cref="FixedString64Bytes"/> representation of the string that fits the size limit.</returns>
+    public static FixedString64Bytes ParseFixedString64Bytes(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return default;
+
+        try
+        {
+            return new FixedString64Bytes(value);
+        }
+        catch (ArgumentException)
+        {
+            int length = value.Length;
+            while (length > 0)
+            {
+                try
+                {
+                    return new FixedString64Bytes(value.Substring(0, length));
+                }
+                catch (ArgumentException)
+                {
+                    length--;
+                }
+            }
+
+            return default;
+        }
     }
 }

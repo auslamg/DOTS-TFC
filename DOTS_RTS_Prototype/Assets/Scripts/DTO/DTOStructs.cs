@@ -151,14 +151,14 @@ namespace Dto
     public struct DtoManagedData
     {
         /// <summary>
-        /// The serialized camera position.
+        /// Camera-related managed data.
         /// </summary>
-        public float3 camPosition;
+        public DtoCameraData camera;
 
         /// <summary>
-        /// The serialized camera rotation.
+        /// Horde / wave progression managed data.
         /// </summary>
-        public quaternion camRotation;
+        public DtoHordeData horde;
 
         /// <summary>
         /// Returns a formatted string representation of the managed data.
@@ -166,9 +166,7 @@ namespace Dto
         /// <returns>A formatted managed data string.</returns>
         public override string ToString()
         {
-            return $"SaveManagedData(" +
-                   $"camPosition: ({camPosition.x}, {camPosition.y}, {camPosition.z}), " +
-                   $"camRotation: ({camRotation.value.x}, {camRotation.value.y}, {camRotation.value.z}, {camRotation.value.w}))";
+            return $"SaveManagedData(camera: {camera.ToString()}, horde: {horde.ToString()})";
         }
 
         /// <summary>
@@ -179,8 +177,28 @@ namespace Dto
         {
             var serializable = new SerializableManagedData
             {
-                position = new Float3Serializable(camPosition),
-                rotation = new QuaternionSerializable(camRotation)
+                camera = new SerializableCamera
+                {
+                    position = new Float3Serializable(camera.camPosition),
+                    rotation = new QuaternionSerializable(camera.camRotation)
+                },
+                horde = new SerializableHorde
+                {
+                    currentWaveIndex = horde.currentWaveIndex,
+                    currentState = horde.currentState,
+                    currentStateTimer = horde.currentStateTimer,
+                    currentTimerInterval = horde.currentTimerInterval,
+                    isCountingDownToNextWave = horde.isCountingDownToNextWave,
+                    remainingNextWaveTime = horde.remainingNextWaveTime,
+                    nextWaveInterval = horde.nextWaveInterval,
+                    currentSpawnEntryIndex = horde.currentSpawnEntryIndex,
+                    currentEntryIndex = horde.currentEntryIndex,
+                    currentSpawnedInEntry = horde.currentSpawnedInEntry,
+                    spawnEntryRemainingInterval = horde.spawnEntryRemainingInterval,
+                    spawnEntryPostCooldownRemaining = horde.spawnEntryPostCooldownRemaining,
+                    finalWave = horde.finalWave,
+                    lastPoolIndex = horde.lastPoolIndex
+                }
             };
 
             return JsonUtility.ToJson(serializable, true);
@@ -197,8 +215,28 @@ namespace Dto
 
             return new DtoManagedData
             {
-                camPosition = data.position.ToFloat3(),
-                camRotation = data.rotation.ToQuaternion()
+                camera = new DtoCameraData
+                {
+                    camPosition = data.camera.position.ToFloat3(),
+                    camRotation = data.camera.rotation.ToQuaternion()
+                },
+                horde = new DtoHordeData
+                {
+                    currentWaveIndex = data.horde.currentWaveIndex,
+                    currentState = data.horde.currentState,
+                    currentStateTimer = data.horde.currentStateTimer,
+                    currentTimerInterval = data.horde.currentTimerInterval,
+                    isCountingDownToNextWave = data.horde.isCountingDownToNextWave,
+                    remainingNextWaveTime = data.horde.remainingNextWaveTime,
+                    nextWaveInterval = data.horde.nextWaveInterval,
+                    currentSpawnEntryIndex = data.horde.currentSpawnEntryIndex,
+                    currentEntryIndex = data.horde.currentEntryIndex,
+                    currentSpawnedInEntry = data.horde.currentSpawnedInEntry,
+                    spawnEntryRemainingInterval = data.horde.spawnEntryRemainingInterval,
+                    spawnEntryPostCooldownRemaining = data.horde.spawnEntryPostCooldownRemaining,
+                    finalWave = data.horde.finalWave,
+                    lastPoolIndex = data.horde.lastPoolIndex
+                }
             };
         }
 
@@ -211,12 +249,70 @@ namespace Dto
             /// <summary>
             /// Serialized camera position.
             /// </summary>
-            public Float3Serializable position;
+            public SerializableCamera camera;
+            public SerializableHorde horde;
+        }
 
-            /// <summary>
-            /// Serialized camera rotation.
-            /// </summary>
+        [Serializable]
+        private struct SerializableCamera
+        {
+            public Float3Serializable position;
             public QuaternionSerializable rotation;
+        }
+
+        [Serializable]
+        private struct SerializableHorde
+        {
+            public int currentWaveIndex;
+            public int currentState;
+            public float currentStateTimer;
+            public float currentTimerInterval;
+            public bool isCountingDownToNextWave;
+            public float remainingNextWaveTime;
+            public float nextWaveInterval;
+            public int currentSpawnEntryIndex;
+            public int currentEntryIndex;
+            public int currentSpawnedInEntry;
+            public float spawnEntryRemainingInterval;
+            public float spawnEntryPostCooldownRemaining;
+            public bool finalWave;
+            public int lastPoolIndex;
+        }
+    }
+
+    [Serializable]
+    public struct DtoCameraData
+    {
+        public float3 camPosition;
+        public quaternion camRotation;
+
+        public override string ToString()
+        {
+            return $"Camera(pos: ({camPosition.x},{camPosition.y},{camPosition.z}), rot: ({camRotation.value.x},{camRotation.value.y},{camRotation.value.z},{camRotation.value.w}))";
+        }
+    }
+
+    [Serializable]
+    public struct DtoHordeData
+    {
+        public int currentWaveIndex;
+        public int currentState;
+        public float currentStateTimer;
+        public float currentTimerInterval;
+        public bool isCountingDownToNextWave;
+        public float remainingNextWaveTime;
+        public float nextWaveInterval;
+        public int currentSpawnEntryIndex;
+        public int currentEntryIndex;
+        public int currentSpawnedInEntry;
+        public float spawnEntryRemainingInterval;
+        public float spawnEntryPostCooldownRemaining;
+        public bool finalWave;
+        public int lastPoolIndex;
+
+        public override string ToString()
+        {
+            return $"Horde(wave:{currentWaveIndex}, state:{currentState}, counting:{isCountingDownToNextWave}, remainingNext:{remainingNextWaveTime})";
         }
     }
 
