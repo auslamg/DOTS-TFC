@@ -250,7 +250,8 @@ public class SaveManager : MonoBehaviour
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
             Unit unit = entityManager.GetComponentData<Unit>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
-            bool selected = entityManager.IsComponentEnabled<Selected>(entity);
+            bool selected = entityManager.HasComponent<Selected>(entity) &&
+                entityManager.IsComponentEnabled<Selected>(entity);
 
             bool requirePathing =
                 entityManager.IsComponentEnabled<ManualMove>(entity) ||
@@ -310,7 +311,8 @@ public class SaveManager : MonoBehaviour
             LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(entity);
             Building building = entityManager.GetComponentData<Building>(entity);
             Faction faction = entityManager.GetComponentData<Faction>(entity);
-            bool selected = entityManager.IsComponentEnabled<Selected>(entity);
+            bool selected = entityManager.HasComponent<Selected>(entity) &&
+                entityManager.IsComponentEnabled<Selected>(entity);
             Health health = entityManager.GetComponentData<Health>(entity);
 
             DtoBuildingData buildingData = new DtoBuildingData
@@ -359,14 +361,63 @@ public class SaveManager : MonoBehaviour
     {
         float3 camPosition = cameraControllerGizmo.position;
         quaternion camRotation = cameraControllerGizmo.rotation;
-
         DtoManagedData saveManagedData = new DtoManagedData
         {
-            camPosition = camPosition,
-            camRotation = camRotation
+            camera = new DtoCameraData
+            {
+                camPosition = camPosition,
+                camRotation = camRotation
+            },
+            horde = GetHordeData()
         };
 
         Debug.Log($"[SaveManager] Saving managed data: {saveManagedData}");
         return saveManagedData;
+    }
+
+    /// <summary>
+    /// Builds a DtoHordeData object from the current HordeManager state.
+    /// </summary>
+    private DtoHordeData GetHordeData()
+    {
+        if (HordeManager.Instance == null)
+        {
+            return new DtoHordeData
+            {
+                currentWaveIndex = 0,
+                currentState = 0,
+                currentStateTimer = 0f,
+                currentTimerInterval = 0f,
+                isCountingDownToNextWave = false,
+                remainingNextWaveTime = 0f,
+                nextWaveInterval = 0f,
+                currentSpawnEntryIndex = -1,
+                currentEntryIndex = -1,
+                currentSpawnedInEntry = 0,
+                spawnEntryRemainingInterval = 0f,
+                spawnEntryPostCooldownRemaining = 0f,
+                finalWave = false,
+                lastPoolIndex = -1
+            };
+        }
+
+        var hm = HordeManager.Instance;
+        return new DtoHordeData
+        {
+            currentWaveIndex = hm.currentWaveIndex,
+            currentState = hm.CurrentState,
+            currentStateTimer = hm.CurrentStateTimer,
+            currentTimerInterval = hm.CurrentTimerInterval,
+            isCountingDownToNextWave = hm.isCountingDownToNextWave,
+            remainingNextWaveTime = hm.remainingNextWaveTime,
+            nextWaveInterval = hm.nextWaveInterval,
+            currentSpawnEntryIndex = hm.currentSpawnEntryIndex,
+            currentEntryIndex = hm.currentEntryIndex,
+            currentSpawnedInEntry = hm.currentSpawnedInEntry,
+            spawnEntryRemainingInterval = hm.spawnEntryRemainingInterval,
+            spawnEntryPostCooldownRemaining = hm.spawnEntryPostCooldownRemaining,
+            finalWave = hm.finalWave,
+            lastPoolIndex = hm.LastPoolIndex
+        };
     }
 }

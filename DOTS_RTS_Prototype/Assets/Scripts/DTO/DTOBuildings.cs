@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using static SerializationUtil;
 
 namespace Dto.Buildings
 {
@@ -246,7 +247,7 @@ namespace Dto.Buildings
                 maxProgress = maxProgress,
                 activeUnitKey = new UnitKey
                 {
-                    name = new FixedString64Bytes(activeUnitKey)
+                    name = ParseFixedString64Bytes(activeUnitKey)
                 },
                 spawnPointOffset = spawnPointOffset.ToFloat3(),
                 rallyPositionOffset = rallyPositionOffset.ToFloat3(),
@@ -271,7 +272,7 @@ namespace Dto.Buildings
                 {
                     unitKey = new UnitKey
                     {
-                        name = new FixedString64Bytes(key)
+                        name = ParseFixedString64Bytes(key)
                     }
                 });
             }

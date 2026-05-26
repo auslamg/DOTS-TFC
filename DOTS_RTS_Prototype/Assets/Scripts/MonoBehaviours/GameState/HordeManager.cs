@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Dto;
 
 /// <summary>
 /// Manages the full lifecycle of horde-based wave spawning, including wave progression,
@@ -23,10 +23,11 @@ public class HordeManager : MonoBehaviour
     /// </summary>
     private EntityManager entityManager;
 
+    [Header("Horde spawn points")]
+
     /// <summary>
     /// Spawn points located in the northern region of the map.
     /// </summary>
-    [Header("Horde spawn points")]
     [SerializeField] private List<Transform> northSpawnPoints;
 
     /// <summary>
@@ -50,16 +51,19 @@ public class HordeManager : MonoBehaviour
     [Header("Building spawn points")]
     [SerializeField] private List<Transform> lairSpawnPoints;
 
+    [Header("Waves")]
+
     /// <summary>
     /// Registry containing all wave definitions used by the horde system.
     /// </summary>
-    [Header("Waves")]
     [SerializeField] private HordeWaveRegistrySO hordeWaveRegistrySO;
 
     /// <summary>
     /// Initial delay before the first wave begins.
     /// </summary>
     [SerializeField] private float initialWaveDelay = 10f;
+
+    [Header("Debug")]
 
     /// <summary>
     /// Current wave index in the wave registry.
@@ -72,20 +76,19 @@ public class HordeManager : MonoBehaviour
     public bool finalWave = false;
 
     /// <summary>
-    /// Timer controlling delay between waves.
+    /// Indicates whether the system is currently counting down to the next wave.
     /// </summary>
-    [Header("Next Wave Timer")]
-    [SerializeField] private LoopingTimer nextWaveTimer;
+    public bool isCountingDownToNextWave => currentState == HordeState.WaitingForWaveStart && HasRemainingWaves();
 
     /// <summary>
     /// Remaining time until the next wave starts.
     /// </summary>
-    public float remainingNextWaveTime => nextWaveTimer.Time;
+    public float remainingNextWaveTime => isCountingDownToNextWave ? stateTimer.Time : 0f;
 
     /// <summary>
-    /// Indicates whether the system is currently counting down to the next wave.
+    /// Exposes the interval used by the current timer state.
     /// </summary>
-    public bool isCountingDownToNextWave { get; private set; }
+    public float nextWaveInterval => stateTimer.Interval;
 
     /// <summary>
     /// Invoked when the final wave has completed spawning.
@@ -93,19 +96,49 @@ public class HordeManager : MonoBehaviour
     public event EventHandler OnFinalWaveSpawn;
 
     /// <summary>
-    /// Singleton instance of the HordeManager.
-    /// </summary>
-    public static HordeManager Instance { get; private set; }
-
-    /// <summary>
     /// Tracks last selected random spawn pool index to avoid repetition.
     /// </summary>
     private int lastPoolIndex = -1;
 
     /// <summary>
+    /// Exposes the last random pool index used for spawning.
+    /// </summary>
+    public int LastPoolIndex => lastPoolIndex;
+
+    /// <summary>
     /// Tracks last selected spawn index per pool to avoid repeating spawn points.
     /// </summary>
     private Dictionary<List<Transform>, int> lastSpawnIndexPerPool = new();
+
+    // --- Runtime progress tracking (persisted in managed save data) ---
+    /// <summary>
+    /// Index of the currently active spawn entry within the current wave (-1 when none).
+    /// </summary>
+    public int currentSpawnEntryIndex = -1;
+
+    /// <summary>
+    /// How many units have been spawned so far for the active spawn entry.
+    /// </summary>
+    public int currentSpawnedInEntry = 0;
+
+    /// <summary>
+    /// Remaining time until the next unit spawn in the current entry.
+    /// </summary>
+    public float spawnEntryRemainingInterval = 0f;
+
+    /// <summary>
+    /// Remaining post-spawn cooldown for the current entry.
+    /// </summary>
+    public float spawnEntryPostCooldownRemaining = 0f;
+
+    private HordeState currentState = HordeState.Uninitialized;
+    private LoopingTimer stateTimer = new LoopingTimer();
+    public int currentEntryIndex = -1;
+
+    /// <summary>
+    /// Singleton instance of the HordeManager.
+    /// </summary>
+    public static HordeManager Instance { get; private set; }
 
     /// <summary>
     /// Ensures singleton instance integrity.
@@ -127,7 +160,9 @@ public class HordeManager : MonoBehaviour
     {
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        StartCoroutine(WaveLoop());
+        if (currentState == HordeState.Uninitialized)
+            BeginWaveCountdown(initialWaveDelay);
+
         UpdateWinCondition();
     }
 
@@ -136,82 +171,283 @@ public class HordeManager : MonoBehaviour
     /// </summary>
     private void UpdateWinCondition()
     {
-        if (currentWaveIndex >= hordeWaveRegistrySO.hordeWaveSOs.Count - 1)
+        if (hordeWaveRegistrySO == null || hordeWaveRegistrySO.hordeWaveSOs.Count == 0)
+        {
             finalWave = true;
+            return;
+        }
+
+        finalWave = currentWaveIndex >= hordeWaveRegistrySO.hordeWaveSOs.Count - 1;
     }
 
     /// <summary>
-    /// Main coroutine controlling wave progression and inter-wave delays.
+    /// Unity update loop for the horde state machine.
     /// </summary>
-    private IEnumerator WaveLoop()
+    private void Update()
     {
-        isCountingDownToNextWave = true;
+        if (currentState == HordeState.Uninitialized || currentState == HordeState.Completed)
+            return;
 
-        nextWaveTimer.Interval = initialWaveDelay;
-        nextWaveTimer.Reset(false);
-
-        while (!nextWaveTimer.Tick(Time.deltaTime))
-            yield return null;
-
-        isCountingDownToNextWave = false;
-
-        while (currentWaveIndex < hordeWaveRegistrySO.hordeWaveSOs.Count)
+        if (stateTimer.Tick(Time.deltaTime))
         {
-            HordeWaveSO wave = hordeWaveRegistrySO.hordeWaveSOs[currentWaveIndex];
-
-            Debug.Log($"[Horde] Starting Wave {currentWaveIndex}");
-
-            yield return StartCoroutine(RunWave(wave));
-
-            currentWaveIndex++;
-            UpdateWinCondition();
-
-            if (!finalWave)
-            {
-                isCountingDownToNextWave = true;
-
-                nextWaveTimer.Interval = wave.nextWaveDelay;
-                nextWaveTimer.Reset(false);
-
-                while (!nextWaveTimer.Tick(Time.deltaTime))
-                    yield return null;
-
-                isCountingDownToNextWave = false;
-            }
+            AdvanceState();
         }
 
-        Debug.Log("[Horde] All waves completed.");
-        finalWave = true;
+        UpdateDebugIntervals();
+    }
 
+    /// <summary>
+    /// Updates the exposed timer fields used by save state and UI.
+    /// </summary>
+    private void UpdateDebugIntervals()
+    {
+        spawnEntryRemainingInterval = currentState == HordeState.SpawningEntry ? stateTimer.Time : 0f;
+        spawnEntryPostCooldownRemaining = currentState == HordeState.WaitingForPostEntryCooldown ? stateTimer.Time : 0f;
+    }
+
+    /// <summary>
+    /// Begins waiting for the next wave to start.
+    /// </summary>
+    /// <param name="delay">Delay before the wave begins.</param>
+    private void BeginWaveCountdown(float delay)
+    {
+        currentState = HordeState.WaitingForWaveStart;
+        stateTimer = new LoopingTimer { Time = delay, Interval = delay };
+        currentEntryIndex = -1;
+        currentSpawnEntryIndex = -1;
+        currentSpawnedInEntry = 0;
+        spawnEntryRemainingInterval = 0f;
+        spawnEntryPostCooldownRemaining = 0f;
+    }
+
+    /// <summary>
+    /// Drives the state machine when the current timer reaches zero.
+    /// </summary>
+    private void AdvanceState()
+    {
+        switch (currentState)
+        {
+            case HordeState.WaitingForWaveStart:
+                StartWave();
+                break;
+            case HordeState.SpawningEntry:
+                AdvanceSpawnEntry();
+                break;
+            case HordeState.WaitingForEntryInterval:
+                BeginNextEntry();
+                break;
+            case HordeState.WaitingForPostEntryCooldown:
+                CompleteCurrentEntry();
+                break;
+            case HordeState.Completed:
+            case HordeState.Uninitialized:
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Starts the current wave and begins the first spawn entry.
+    /// </summary>
+    private void StartWave()
+    {
+        if (!HasRemainingWaves())
+        {
+            CompleteHorde();
+            return;
+        }
+
+        UpdateWinCondition();
+        currentEntryIndex = 0;
+        currentSpawnEntryIndex = 0;
+        currentSpawnedInEntry = 0;
+        currentState = HordeState.SpawningEntry;
+        AdvanceSpawnEntry();
+    }
+
+    /// <summary>
+    /// Advances the current spawn entry by spawning the next unit or moving to cooldown.
+    /// </summary>
+    private void AdvanceSpawnEntry()
+    {
+        HordeWaveSO wave = CurrentWave;
+        if (wave == null || currentEntryIndex < 0 || currentEntryIndex >= wave.spawnEntries.Count)
+        {
+            CompleteWave();
+            return;
+        }
+
+        WaveSpawnEntrySO entry = wave.spawnEntries[currentEntryIndex];
+
+        if (currentSpawnedInEntry < entry.spawnedAmount)
+        {
+            SpawnUnit(entry);
+            currentSpawnedInEntry++;
+            currentSpawnEntryIndex = currentEntryIndex;
+
+            if (currentSpawnedInEntry < entry.spawnedAmount)
+            {
+                currentState = HordeState.SpawningEntry;
+                stateTimer = new LoopingTimer { Time = entry.spawnInterval, Interval = entry.spawnInterval };
+            }
+            else
+            {
+                currentState = HordeState.WaitingForPostEntryCooldown;
+                stateTimer = new LoopingTimer { Time = entry.postSpawnCooldown, Interval = entry.postSpawnCooldown };
+            }
+
+            return;
+        }
+
+        CompleteCurrentEntry();
+    }
+
+    /// <summary>
+    /// Finishes the current entry and transitions to either the next entry or the next wave.
+    /// </summary>
+    private void CompleteCurrentEntry()
+    {
+        HordeWaveSO wave = CurrentWave;
+        if (wave == null)
+        {
+            CompleteWave();
+            return;
+        }
+
+        if (currentEntryIndex + 1 < wave.spawnEntries.Count)
+        {
+            currentState = HordeState.WaitingForEntryInterval;
+            stateTimer = new LoopingTimer { Time = wave.entryInterval, Interval = wave.entryInterval };
+            currentSpawnEntryIndex = -1;
+        }
+        else
+        {
+            CompleteWave();
+        }
+    }
+
+    /// <summary>
+    /// Begins the next entry after the configured inter-entry delay.
+    /// </summary>
+    private void BeginNextEntry()
+    {
+        HordeWaveSO wave = CurrentWave;
+        if (wave == null)
+        {
+            CompleteWave();
+            return;
+        }
+
+        currentEntryIndex++;
+        if (currentEntryIndex >= wave.spawnEntries.Count)
+        {
+            CompleteWave();
+            return;
+        }
+
+        currentSpawnEntryIndex = currentEntryIndex;
+        currentSpawnedInEntry = 0;
+        currentState = HordeState.SpawningEntry;
+        AdvanceSpawnEntry();
+    }
+
+    /// <summary>
+    /// Completes the current wave and schedules the next one if available.
+    /// </summary>
+    private void CompleteWave()
+    {
+        currentSpawnEntryIndex = -1;
+        currentSpawnedInEntry = 0;
+        currentEntryIndex = -1;
+
+        currentWaveIndex++;
+        UpdateWinCondition();
+
+        if (HasRemainingWaves())
+        {
+            float nextDelay = CurrentWave.nextWaveDelay;
+            BeginWaveCountdown(nextDelay);
+        }
+        else
+        {
+            CompleteHorde();
+        }
+    }
+
+    /// <summary>
+    /// Marks the entire horde progression as complete.
+    /// </summary>
+    private void CompleteHorde()
+    {
+        currentState = HordeState.Completed;
+        finalWave = true;
+        currentSpawnEntryIndex = -1;
+        currentSpawnedInEntry = 0;
+        currentEntryIndex = -1;
+        spawnEntryRemainingInterval = 0f;
+        spawnEntryPostCooldownRemaining = 0f;
+        stateTimer = new LoopingTimer { Time = 0f, Interval = 0f };
+
+        Debug.Log("[Horde] All waves completed.");
         OnFinalWaveSpawn?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
-    /// Executes all spawn entries for a given wave sequentially.
+    /// Returns true when there are additional waves to play.
     /// </summary>
-    /// <param name="wave">Wave definition containing spawn entries.</param>
-    private IEnumerator RunWave(HordeWaveSO wave)
+    /// <returns>True if additional waves remain.</returns>
+    private bool HasRemainingWaves()
     {
-        foreach (WaveSpawnEntrySO entry in wave.spawnEntries)
-        {
-            yield return StartCoroutine(RunEntry(entry));
-            yield return new WaitForSeconds(wave.entryInterval);
-        }
+        return hordeWaveRegistrySO != null && currentWaveIndex < hordeWaveRegistrySO.hordeWaveSOs.Count;
     }
 
     /// <summary>
-    /// Executes a single spawn entry, spawning units over time.
+    /// Returns the current wave definition.
     /// </summary>
-    /// <param name="entry">Spawn entry definition.</param>
-    private IEnumerator RunEntry(WaveSpawnEntrySO entry)
-    {
-        for (int i = 0; i < entry.spawnedAmount; i++)
-        {
-            SpawnUnit(entry);
-            yield return new WaitForSeconds(entry.spawnInterval);
-        }
+    private HordeWaveSO CurrentWave => HasRemainingWaves() ? hordeWaveRegistrySO.hordeWaveSOs[currentWaveIndex] : null;
 
-        yield return new WaitForSeconds(entry.postSpawnCooldown);
+    /// <summary>
+    /// Returns the current state value for save serialization.
+    /// </summary>
+    public int CurrentState => (int)currentState;
+
+    /// <summary>
+    /// Returns the current state timer value for save serialization.
+    /// </summary>
+    public float CurrentStateTimer => stateTimer.Time;
+
+    /// <summary>
+    /// Returns the current interval value for save serialization.
+    /// </summary>
+    public float CurrentTimerInterval => stateTimer.Interval;
+
+    /// <summary>
+    /// Applies saved horde progression state.
+    /// </summary>
+    /// <param name="horde">Horde state loaded from save.</param>
+    public void ApplyManagedData(DtoHordeData horde)
+    {
+        currentWaveIndex = horde.currentWaveIndex;
+        currentState = (HordeState)Mathf.Clamp(horde.currentState, 0, (int)HordeState.Completed);
+        stateTimer = new LoopingTimer
+        {
+            Time = Mathf.Max(0f, horde.currentStateTimer),
+            Interval = Mathf.Max(0f, horde.currentTimerInterval)
+        };
+        finalWave = horde.finalWave;
+        lastPoolIndex = horde.lastPoolIndex;
+
+        currentEntryIndex = horde.currentEntryIndex;
+        currentSpawnEntryIndex = horde.currentSpawnEntryIndex;
+        currentSpawnedInEntry = horde.currentSpawnedInEntry;
+        spawnEntryRemainingInterval = horde.spawnEntryRemainingInterval;
+        spawnEntryPostCooldownRemaining = horde.spawnEntryPostCooldownRemaining;
+
+        if (currentState == HordeState.WaitingForWaveStart && !HasRemainingWaves())
+            CompleteHorde();
+
+        UpdateWinCondition();
+        UpdateDebugIntervals();
     }
 
     /// <summary>
@@ -336,6 +572,19 @@ public class HordeManager : MonoBehaviour
         if (pool == eastSpawnPoints) return "East";
         return "Unknown";
     }
+}
+
+/// <summary>
+/// Defines the current horde state for various save/load interactions.
+/// </summary>
+internal enum HordeState
+{
+    Uninitialized = 0,
+    WaitingForWaveStart = 1,
+    SpawningEntry = 2,
+    WaitingForEntryInterval = 3,
+    WaitingForPostEntryCooldown = 4,
+    Completed = 5
 }
 
 /// <summary>

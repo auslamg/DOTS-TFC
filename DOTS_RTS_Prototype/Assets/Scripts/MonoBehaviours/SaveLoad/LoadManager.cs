@@ -132,20 +132,24 @@ public class LoadManager : MonoBehaviour
         Debug.Log("[LoadManager] LOADING...");
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
-        //TODO: Switch
-        if (!SaveFileExists(jsonSavePath))
+        if (isJson)
         {
-            Debug.LogWarning($"[LoadManager] No save file found at: {jsonSavePath}");
-            return false;
+            if (!File.Exists(jsonSavePath))
+            {
+                Debug.LogWarning($"[LoadManager] No JSON save file found at: {jsonSavePath}");
+                return false;
+            }
+            return TryLoadJson();
         }
 
-        if (!SaveFileExists(binarySavePath))
-        {
-            Debug.LogWarning($"[LoadManager] No save file found at: {jsonSavePath}");
-            return false;
-        }
+        if (File.Exists(binarySavePath))
+            return TryLoadBinary();
 
-        return TryLoadBinary() || TryLoadJson();
+        if (File.Exists(jsonSavePath))
+            return TryLoadJson();
+
+        Debug.LogWarning($"[LoadManager] No save file found at: {binarySavePath} or {jsonSavePath}");
+        return false;
     }
 
     /// <summary>
@@ -327,7 +331,6 @@ public class LoadManager : MonoBehaviour
         Unit unit = entityManager.GetComponentData<Unit>(entity);
         Faction faction = entityManager.GetComponentData<Faction>(entity);
         bool isSelected = unitData.selected;
-        Selected selected = entityManager.GetComponentData<Selected>(entity);
 
         UnitMover unitMover = entityManager.GetComponentData<UnitMover>(entity);
         ManualMove manualMove = entityManager.GetComponentData<ManualMove>(entity);
@@ -341,7 +344,6 @@ public class LoadManager : MonoBehaviour
 
         unit.ownerID = unitData.ownerID;
         faction.factionID = unitData.factionID;
-        selected.onSelected = isSelected;
 
         unitMover.targetPosition = unitData.unitMoverPosition;
         unitMover.hasStartedTargetPosition = true;
@@ -359,9 +361,14 @@ public class LoadManager : MonoBehaviour
         entityManager.SetComponentData(entity, localTransform);
         entityManager.SetComponentData(entity, unit);
         entityManager.SetComponentData(entity, faction);
-        entityManager.SetComponentEnabled<Selected>(entity, isSelected);
-        entityManager.SetComponentData(entity, selected);
         entityManager.SetComponentData(entity, unitMover);
+        if (entityManager.HasComponent<Selected>(entity))
+        {
+            Selected selected = entityManager.GetComponentData<Selected>(entity);
+            selected.onSelected = isSelected;
+            entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+            entityManager.SetComponentData(entity, selected);
+        }
         entityManager.SetComponentData(entity, manualMove);
         entityManager.SetComponentData(entity, pathRequest);
         entityManager.SetComponentData(entity, flowFieldFollower);
@@ -403,7 +410,6 @@ public class LoadManager : MonoBehaviour
         Building building = entityManager.GetComponentData<Building>(entity);
         Faction faction = entityManager.GetComponentData<Faction>(entity);
         bool isSelected = buildingData.selected;
-        Selected selected = entityManager.GetComponentData<Selected>(entity);
         Health health = entityManager.GetComponentData<Health>(entity);
 
         localTransform.Position = buildingData.position;
@@ -411,15 +417,19 @@ public class LoadManager : MonoBehaviour
 
         building.ownerID = buildingData.ownerID;
         faction.factionID = buildingData.factionID;
-        selected.onSelected = isSelected;
         health.currentHealth = buildingData.currentHealth;
 
         entityManager.SetComponentData(entity, localTransform);
         entityManager.SetComponentData(entity, building);
         entityManager.SetComponentData(entity, faction);
-        entityManager.SetComponentEnabled<Selected>(entity, isSelected);
-        entityManager.SetComponentData(entity, selected);
         entityManager.SetComponentData(entity, health);
+        if (entityManager.HasComponent<Selected>(entity))
+        {
+            Selected selected = entityManager.GetComponentData<Selected>(entity);
+            selected.onSelected = isSelected;
+            entityManager.SetComponentEnabled<Selected>(entity, isSelected);
+            entityManager.SetComponentData(entity, selected);
+        }
 
         if (entityManager.HasComponent<Trainer>(entity) &&
             entityManager.HasBuffer<QueuedUnitBuffer>(entity))
@@ -451,7 +461,12 @@ public class LoadManager : MonoBehaviour
     {
         Debug.Log("[LoadManager] Loading MANAGED DATA...");
 
-        cameraControllerGizmo.position = managed.camPosition;
-        cameraControllerGizmo.rotation = managed.camRotation;
+        cameraControllerGizmo.position = managed.camera.camPosition;
+        cameraControllerGizmo.rotation = managed.camera.camRotation;
+
+        if (HordeManager.Instance != null)
+        {
+            HordeManager.Instance.ApplyManagedData(managed.horde);
+        }
     }
 }

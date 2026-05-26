@@ -5820,9 +5820,11 @@ MonoBehaviour:
   initialWaveDelay: 90
   currentWaveIndex: 0
   finalWave: 0
-  nextWaveTimer:
-    Time: 0
-    Interval: 0
+  currentSpawnEntryIndex: -1
+  currentSpawnedInEntry: 0
+  spawnEntryRemainingInterval: 0
+  spawnEntryPostCooldownRemaining: 0
+  currentEntryIndex: -1
 --- !u!4 &797739796
 Transform:
   m_ObjectHideFlags: 0
@@ -6025,7 +6027,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadManager
   fileName: save_game_1
-  isJson: 0
+  isJson: 1
   cameraControllerGizmo: {fileID: 685637653}
 --- !u!114 &851923351
 MonoBehaviour:
@@ -6040,7 +6042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
   fileName: save_game_1
-  isJson: 0
+  isJson: 1
   cameraControllerGizmo: {fileID: 685637653}
 --- !u!4 &851923352
 Transform:
@@ -10300,8 +10302,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 372.5915, y: -150}
-  m_SizeDelta: {x: 725.183, y: 280}
+  m_AnchoredPosition: {x: 372.5314, y: -150}
+  m_SizeDelta: {x: 725.0628, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1430788263
 MonoBehaviour:

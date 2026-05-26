@@ -92,7 +92,7 @@ public struct UnitKey : IEquatable<UnitKey>, IComparable<UnitKey>, IEntityPrefab
 
         return new UnitKey
         {
-            name = data.name
+            name = SerializationUtil.ParseFixedString64Bytes(data.name)
         };
     }
 }
@@ -197,7 +197,7 @@ public struct BuildingKey : IEquatable<BuildingKey>, IComparable<BuildingKey>, I
 
         return new BuildingKey
         {
-            name = data.name
+            name = SerializationUtil.ParseFixedString64Bytes(data.name)
         };
     }
 }
@@ -305,7 +305,7 @@ public struct ResourceKey : IEquatable<ResourceKey>, IComparable<ResourceKey>
 
         return new ResourceKey
         {
-            name = data.name
+            name = SerializationUtil.ParseFixedString64Bytes(data.name)
         };
     }
 }
@@ -396,7 +396,7 @@ public struct EntityPrefabKey : IEquatable<EntityPrefabKey>, IComparable<EntityP
 
         return new EntityPrefabKey
         {
-            name = data.name
+            name = SerializationUtil.ParseFixedString64Bytes(data.name)
         };
     }
 }
