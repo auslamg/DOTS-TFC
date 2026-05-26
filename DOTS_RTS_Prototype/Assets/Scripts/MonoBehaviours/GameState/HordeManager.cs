@@ -23,10 +23,11 @@ public class HordeManager : MonoBehaviour
     /// </summary>
     private EntityManager entityManager;
 
+    [Header("Horde spawn points")]
+
     /// <summary>
     /// Spawn points located in the northern region of the map.
     /// </summary>
-    [Header("Horde spawn points")]
     [SerializeField] private List<Transform> northSpawnPoints;
 
     /// <summary>
@@ -50,16 +51,19 @@ public class HordeManager : MonoBehaviour
     [Header("Building spawn points")]
     [SerializeField] private List<Transform> lairSpawnPoints;
 
+    [Header("Waves")]
+
     /// <summary>
     /// Registry containing all wave definitions used by the horde system.
     /// </summary>
-    [Header("Waves")]
     [SerializeField] private HordeWaveRegistrySO hordeWaveRegistrySO;
 
     /// <summary>
     /// Initial delay before the first wave begins.
     /// </summary>
     [SerializeField] private float initialWaveDelay = 10f;
+
+    [Header("Debug")]
 
     /// <summary>
     /// Current wave index in the wave registry.
@@ -90,11 +94,6 @@ public class HordeManager : MonoBehaviour
     /// Invoked when the final wave has completed spawning.
     /// </summary>
     public event EventHandler OnFinalWaveSpawn;
-
-    /// <summary>
-    /// Singleton instance of the HordeManager.
-    /// </summary>
-    public static HordeManager Instance { get; private set; }
 
     /// <summary>
     /// Tracks last selected random spawn pool index to avoid repetition.
@@ -133,8 +132,13 @@ public class HordeManager : MonoBehaviour
     public float spawnEntryPostCooldownRemaining = 0f;
 
     private HordeState currentState = HordeState.Uninitialized;
-    private LoopingTimer stateTimer = new();
+    private LoopingTimer stateTimer = new LoopingTimer();
     public int currentEntryIndex = -1;
+
+    /// <summary>
+    /// Singleton instance of the HordeManager.
+    /// </summary>
+    public static HordeManager Instance { get; private set; }
 
     /// <summary>
     /// Ensures singleton instance integrity.
