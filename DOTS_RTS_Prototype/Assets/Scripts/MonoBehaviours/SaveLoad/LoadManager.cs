@@ -142,11 +142,8 @@ public class LoadManager : MonoBehaviour
             return TryLoadJson();
         }
 
-        if (File.Exists(binarySavePath))
+        else if (File.Exists(binarySavePath))
             return TryLoadBinary();
-
-        if (File.Exists(jsonSavePath))
-            return TryLoadJson();
 
         Debug.LogWarning($"[LoadManager] No save file found at: {binarySavePath} or {jsonSavePath}");
         return false;

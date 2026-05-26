@@ -279,14 +279,14 @@ public class TrainerUI : MonoBehaviour
     /// <summary>
     /// Instantiates a single trainable unit button and binds its data and logic.
     /// </summary>
-    /// <param name="queuedUnit">Trainable entry represented by the button.</param>
-    private void BuildUnitButton(TrainableEntry queuedUnit)
+    /// <param name="trainableEntry">Trainable entry represented by the button.</param>
+    private void BuildUnitButton(TrainableEntry trainableEntry)
     {
         Button unitTrainButton = Instantiate(trainingButtonTemplate, parent: trainingRosterContainer);
-        UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(queuedUnit.unitKey);
+        UnitDataSO unitDataSO = GameAssets.Instance.unitRegistrySO.GetUnitSO(trainableEntry.unitKey);
 
         SetUnitCard(unitDataSO, unitTrainButton.gameObject);
-        AddTrainingButtonListener(queuedUnit, unitTrainButton);
+        AddTrainingButtonListener(trainableEntry, unitTrainButton);
 
         unitTrainButton.gameObject.SetActive(true);
     }
@@ -294,19 +294,19 @@ public class TrainerUI : MonoBehaviour
     /// <summary>
     /// Wires a train button to enqueue a unit request in ECS.
     /// </summary>
-    /// <param name="queuedUnit">Unit entry represented by the button.</param>
+    /// <param name="trainableEntry">Unit entry represented by the button.</param>
     /// <param name="unitTrainButton">Button instance to wire.</param>
-    private void AddTrainingButtonListener(TrainableEntry queuedUnit, Button unitTrainButton)
+    private void AddTrainingButtonListener(TrainableEntry trainableEntry, Button unitTrainButton)
     {
         unitTrainButton.onClick.RemoveAllListeners();
         unitTrainButton.onClick.AddListener(() =>
         {
-            UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(queuedUnit.unitKey);
+            UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(trainableEntry.unitKey);
             if (ResourceManager.Instance.CanSpendResourceValues(unitDataSO.constructionCost))
             {
                 entityManager.SetComponentData(trainerEntity, new TrainUnitRequest
                 {
-                    unitKey = queuedUnit.unitKey
+                    unitKey = trainableEntry.unitKey
                 });
                 entityManager.SetComponentEnabled<TrainUnitRequest>(trainerEntity, true);
 
@@ -412,7 +412,7 @@ public class TrainerUI : MonoBehaviour
 
             DynamicBuffer<QueuedUnitBuffer> trainerQueueBuffer =
                 entityManager.GetBuffer<QueuedUnitBuffer>(trainerEntity, isReadOnly: false);
-
+    
             if (queueIndex >= 0 && queueIndex < trainerQueueBuffer.Length)
             {
                 UnitDataSO unitDataSO = unitDataRegistrySO.GetUnitSO(trainerQueueBuffer[queueIndex].unitKey);

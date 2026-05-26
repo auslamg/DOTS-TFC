@@ -489,8 +489,8 @@ public partial struct FollowFlowFieldJob : IJobEntity
             worldMovementVector * gridCellSize * 2;
 
         // Detect if the unit has reached its destination.
-        if (math.distance(localTransform.Position, flowFieldFollower.targetPosition) < gridCellSize * 1.5f ||
-            math.distance(localTransform.Position, flowFieldFollower.postFormationPosition) < gridCellSize * 1.5f)
+        if (math.distance(localTransform.Position, flowFieldFollower.postFormationPosition) < gridCellSize * 1.5f ||
+            math.distance(localTransform.Position, flowFieldFollower.targetPosition) < gridCellSize * 1.5f)
         {
             Debug.Log("Target REACHED. STOP.");
             unitMover.targetPosition = localTransform.Position;
@@ -528,7 +528,7 @@ public partial struct MoveUnitJob : IJobEntity
         /* Debug.Log($"Move direction: {moveDirection}"); */
 
 
-        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared; 
+        float targetReachedDistanceSquared = unitMover.targetReachedDistanceSquared;
         if (math.lengthsq(moveDirection) <= targetReachedDistanceSquared)
         {
             /* Debug.Log($"Target reached. STOP. {moveDirection}"); */
@@ -536,7 +536,7 @@ public partial struct MoveUnitJob : IJobEntity
             physicsVelocity.Linear = float3.zero;
             physicsVelocity.Angular = float3.zero;
             unitMover.isMoving = false;
-            
+
             manualMoveComponentLookup.SetComponentEnabled(entity, false);
             return;
         }
