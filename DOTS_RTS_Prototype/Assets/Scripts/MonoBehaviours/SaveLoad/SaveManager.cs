@@ -125,7 +125,7 @@ public class SaveManager : MonoBehaviour
             Directory.CreateDirectory(Path.GetDirectoryName(binarySavePath));
 
             using FileStream stream = new FileStream(binarySavePath, FileMode.Create);
-            SaveGameSerializer.SerializeToBinary(saveGame, stream);
+            SerializeToBinary(saveGame, stream);
 
             Debug.Log($"[SaveManager] Binary save written: {binarySavePath}");
             return true;

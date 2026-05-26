@@ -67,8 +67,7 @@ public class MainMenuUI : MonoBehaviour
             Application.Quit();
         });
 
-        if (!LoadManager.BinarySaveFileExists(saveFileName) &&
-            !LoadManager.JsonSaveFileExists(saveFileName))
+        if (!LoadManager.Instance.SaveFileExists(saveFileName))
         {
             loadButton.interactable = false;
         }

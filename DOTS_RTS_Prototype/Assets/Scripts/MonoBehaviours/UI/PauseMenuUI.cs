@@ -95,8 +95,7 @@ public class PauseMenuUI : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (!LoadManager.BinarySaveFileExists(saveFileName) &&
-            !LoadManager.JsonSaveFileExists(saveFileName))
+        if (!LoadManager.Instance.SaveFileExists(saveFileName))
         {
             loadButton.interactable = false;
         }
